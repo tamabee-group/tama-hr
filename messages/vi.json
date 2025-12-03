@@ -1,0 +1,31 @@
+{
+  "common": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "search": "Tìm kiếm",
+    "loading": "Đang tải..."
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "employeeCode": "Mã nhân viên"
+  },
+  "company": {
+    "name": "Tên công ty",
+    "employees": "Nhân viên",
+    "wallet": "Ví tiền",
+    "balance": "Số dư"
+  },
+  "header": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "pricing": "Bảng giá",
+    "contact": "Liên hệ",
+    "register": "Đăng ký",
+    "login": "Đăng nhập"
+  }
+}

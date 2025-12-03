@@ -1,0 +1,31 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading..."
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "employeeCode": "Employee Code"
+  },
+  "company": {
+    "name": "Company Name",
+    "employees": "Employees",
+    "wallet": "Wallet",
+    "balance": "Balance"
+  },
+  "header": {
+    "home": "Home",
+    "about": "About",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "register": "Register",
+    "login": "Login"
+  }
+}

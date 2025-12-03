@@ -1,6 +1,10 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
 
-export async function sendVerificationCode(email: string, companyName: string, language?: string) {
+export async function sendVerificationCode(
+  email: string,
+  companyName: string,
+  language?: string
+) {
   const response = await fetch(`${API_URL}/api/auth/send-verification`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -118,5 +118,65 @@
     @apply bg-background text-foreground;
   }
 
+  /* Hide scrollbar */
+  /* ::-webkit-scrollbar {
+    display: block;
+    background-color: red;
+  }
+  * {
+    -ms-overflow-style: block;
+    scrollbar-width: block;
+  } */
 
+  html::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: rgb(225, 225, 225);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background: green;
+    border-radius: 500;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: inherit !important;
+    caret-color: inherit !important;
+    filter: none !important;
+  }
+
+  /* input:-internal-autofill-selected {
+    appearance: menulist-button;
+    background-image: none !important;
+    background-color: light-dark(
+      rgb(255, 255, 255),
+      rgba(70, 90, 126, 0.4)
+    ) !important;
+    color: fieldtext !important;
+  } */
+
+  /* 
+  html {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body[data-scroll-locked] {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-right: 0 !important;
+  } */
 }

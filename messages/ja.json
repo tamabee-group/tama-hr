@@ -1,0 +1,31 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "search": "検索",
+    "loading": "読み込み中..."
+  },
+  "auth": {
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "email": "メール",
+    "password": "パスワード",
+    "employeeCode": "社員コード"
+  },
+  "company": {
+    "name": "会社名",
+    "employees": "従業員",
+    "wallet": "ウォレット",
+    "balance": "残高"
+  },
+  "header": {
+    "home": "ホーム",
+    "about": "会社案内",
+    "pricing": "料金",
+    "contact": "お問い合わせ",
+    "register": "登録",
+    "login": "ログイン"
+  }
+}

@@ -1,8 +1,38 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Checking TypeScript types..."
-npm run type-check || exit 1
+echo "=================================="
+echo "🚀 BẮT ĐẦU KIỂM TRA TRƯỚC KHI COMMIT"
+echo "=================================="
+echo ""
 
-echo "✨ Running lint-staged..."
-npx lint-staged
+# Bước 1: Kiểm tra lỗi TypeScript
+echo "📝 [Bước 1/2] Kiểm tra lỗi TypeScript..."
+echo "   → Đang phân tích kiểu dữ liệu..."
+npm run type-check
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ LỖI: Phát hiện lỗi TypeScript!"
+  echo "   → Vui lòng sửa các lỗi kiểu dữ liệu trước khi commit"
+  exit 1
+fi
+echo "   ✅ TypeScript: Không có lỗi"
+echo ""
+
+# Bước 2: Format code
+echo "✨ [Bước 2/2] Tự động format code..."
+echo "   → Đang định dạng lại code..."
+npm run lint-staged
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ LỖI: Không thể format code!"
+  echo "   → Vui lòng kiểm tra lại file code"
+  exit 1
+fi
+echo "   ✅ Format: Code đã được định dạng"
+echo ""
+
+echo "=================================="
+echo "✅ TẤT CẢ KIỂM TRA ĐÃ HOÀN TẤT!"
+echo "🎉 Đang tiến hành commit..."
+echo "=================================="

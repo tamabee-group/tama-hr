@@ -1,39 +1,45 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
+import { apiClient } from "@/lib/utils/fetch-client";
+import { User } from "@/types/user";
 
+/**
+ * API gửi mã xác thực email
+ * @client-only - Chỉ sử dụng được ở client side
+ */
 export async function sendVerificationCode(
   email: string,
   companyName: string,
-  language?: string
+  language?: string,
 ) {
-  const response = await fetch(`${API_URL}/api/auth/send-verification`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, companyName, language }),
+  return apiClient.post("/api/auth/send-verification", {
+    email,
+    companyName,
+    language,
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to send verification code");
-  }
-
-  return response.json();
 }
 
+/**
+ * API xác thực email với mã code
+ * @client-only - Chỉ sử dụng được ở client side
+ */
 export async function verifyEmail(email: string, code: string) {
-  const response = await fetch(`${API_URL}/api/auth/verify-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, code }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Verification failed");
-  }
-
-  return response.json();
+  return apiClient.post("/api/auth/verify-email", { email, code });
 }
 
+/**
+ * API đăng nhập
+ * @client-only - Chỉ sử dụng được ở client side
+ */
+export async function login(identifier: string, password: string) {
+  return apiClient.post<User>("/api/auth/login", {
+    email: identifier,
+    password,
+  });
+}
+
+/**
+ * API đăng ký tài khoản công ty
+ * @client-only - Chỉ sử dụng được ở client side
+ */
 export async function register(data: {
   companyName: string;
   ownerName: string;
@@ -47,16 +53,29 @@ export async function register(data: {
   zipcode?: string;
   referralCode?: string;
 }) {
-  const response = await fetch(`${API_URL}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+  return apiClient.post("/api/auth/register", data);
+}
+
+/**
+ * API gửi mã quên mật khẩu
+ * @client-only - Chỉ sử dụng được ở client side
+ */
+export async function forgotPassword(email: string) {
+  return apiClient.post("/api/auth/forgot-password", { email });
+}
+
+/**
+ * API đặt lại mật khẩu
+ * @client-only - Chỉ sử dụng được ở client side
+ */
+export async function resetPassword(
+  email: string,
+  code: string,
+  newPassword: string,
+) {
+  return apiClient.post("/api/auth/reset-password", {
+    email,
+    code,
+    newPassword,
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Registration failed");
-  }
-
-  return response.json();
 }

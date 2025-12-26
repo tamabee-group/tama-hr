@@ -1,0 +1,35 @@
+# Coding Rules
+
+## Navigation
+
+- Sử dụng `router.push()` từ `next/navigation` để chuyển trang thay vì `window.location.href` hoặc `<a href>` để đảm bảo client-side navigation mượt mà và giữ state của ứng dụng.
+- Với các link tĩnh, sử dụng component `<Link>` từ `next/link`.
+
+## API Calls
+
+- Client side: sử dụng `apiClient` từ `@/lib/utils`
+- Server side: sử dụng `apiServer` từ `@/lib/utils`
+
+## Authentication
+
+- Sử dụng `useAuth()` hook để truy cập thông tin user và các hàm auth
+- Không truy cập localStorage trực tiếp, sử dụng các hàm từ `@/lib/auth`
+
+## Comments
+
+- Viết comment bằng tiếng Việt
+- Ghi chú `@client-only` hoặc `@server-only` cho các hàm chỉ dùng được ở một môi trường
+
+## Backend (Java/Spring Boot)
+
+### Exception Handling
+
+- Sử dụng `ErrorCode` enum từ `com.tamabee.api_hr.enums.ErrorCode` cho tất cả error codes
+- Không hardcode error code string, luôn dùng enum: `ErrorCode.INVALID_CREDENTIALS` thay vì `"INVALID_CREDENTIALS"`
+- Sử dụng các custom exception: `BadRequestException`, `UnauthorizedException`, `ForbiddenException`, `NotFoundException`, `ConflictException`, `InternalServerException`
+- Ưu tiên sử dụng static factory methods: `NotFoundException.user(id)`, `ConflictException.emailExists(email)`, `InternalServerException.fileUploadFailed(cause)`
+
+### Response
+
+- Controller trả về `ResponseEntity<BaseResponse<T>>` để kiểm soát HTTP status code
+- Sử dụng `BaseResponse.success()`, `BaseResponse.created()`, `BaseResponse.error()` để tạo response

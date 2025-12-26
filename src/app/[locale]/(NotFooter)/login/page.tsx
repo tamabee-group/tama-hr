@@ -11,8 +11,14 @@ import {
 import { Mail, Lock } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { login } from "@/lib/apis/auth";
+import { useAuth, fetchCurrentUser } from "@/lib/auth";
+import { toast } from "sonner";
 
 const LoginPage = () => {
+  const router = useRouter();
+  const { login: setAuthUser } = useAuth();
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
@@ -22,9 +28,26 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: Call login API
-    console.log("Login:", formData);
-    setLoading(false);
+
+    try {
+      // Gọi API login
+      await login(formData.identifier, formData.password);
+
+      // Gọi API /me để lấy thông tin user đầy đủ
+      const user = await fetchCurrentUser();
+
+      // Lưu user vào context và localStorage
+      setAuthUser(user);
+
+      toast.success("Đăng nhập thành công!");
+      router.push("/");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Đăng nhập thất bại";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

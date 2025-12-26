@@ -7,6 +7,7 @@ import "./globals.css";
 import { ThemeProvider } from "./_components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { setRequestLocale } from "next-intl/server";
+import { AuthProvider } from "@/lib/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,8 +54,10 @@ export default async function RootLayout({ children, params }: Props) {
             enableSystem
             disableTransitionOnChange
           >
-            <Toaster position="top-right" />
-            {children}
+            <AuthProvider>
+              <Toaster position="top-right" />
+              {children}
+            </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

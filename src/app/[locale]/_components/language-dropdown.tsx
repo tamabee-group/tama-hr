@@ -25,10 +25,7 @@ const Languages: NextPage = () => {
   return (
     <>
       <Select value={locale} onValueChange={handleLanguageChange}>
-        <SelectTrigger
-          size="sm"
-          className="hidden md:flex border-none shadow-none"
-        >
+        <SelectTrigger size="sm" className="border-none shadow-none">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="z-222">
@@ -37,7 +34,7 @@ const Languages: NextPage = () => {
           <SelectItem value="ja">日本語</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={locale} onValueChange={handleLanguageChange}>
+      {/* <Select value={locale} onValueChange={handleLanguageChange}>
         <SelectTrigger size="sm" className="md:hidden">
           <SelectValue />
         </SelectTrigger>
@@ -46,7 +43,7 @@ const Languages: NextPage = () => {
           <SelectItem value="en">EN</SelectItem>
           <SelectItem value="ja">JP</SelectItem>
         </SelectContent>
-      </Select>
+      </Select> */}
     </>
   );
 };

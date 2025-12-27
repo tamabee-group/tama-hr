@@ -1,7 +1,5 @@
 "use client";
 
-import { API_URL } from "@/lib/constants";
-import { refreshAccessToken } from "@/lib/auth/token";
 import { getLocaleFromCookie } from "./locale";
 
 /**
@@ -9,8 +7,8 @@ import { getLocaleFromCookie } from "./locale";
  * @client-only - Chỉ sử dụng được ở client side
  *
  * Tính năng:
- * - Tự động gửi cookies (credentials: include)
- * - Tự động refresh token khi accessToken hết hạn (401)
+ * - Gọi qua Next.js proxy (/api/*) để đảm bảo cookies được xử lý đúng
+ * - Proxy tự động refresh token khi accessToken hết hạn (401)
  * - Tự động gửi Accept-Language header từ NEXT_LOCALE cookie
  * - Tự động parse JSON response
  * - Xử lý lỗi thống nhất
@@ -42,7 +40,26 @@ export class ApiError extends Error {
 }
 
 /**
- * Fetch client với tự động refresh token (dùng nội bộ)
+ * Chuyển đổi endpoint thành URL qua proxy
+ * /api/users -> /api/users (giữ nguyên)
+ * /users -> /api/users (thêm /api prefix)
+ */
+function toProxyUrl(endpoint: string): string {
+  // Nếu đã có /api prefix, giữ nguyên
+  if (endpoint.startsWith("/api/")) {
+    return endpoint;
+  }
+  // Nếu là full URL, bỏ qua proxy
+  if (endpoint.startsWith("http")) {
+    return endpoint;
+  }
+  // Thêm /api prefix để đi qua proxy
+  return `/api${endpoint}`;
+}
+
+/**
+ * Fetch client qua Next.js proxy (dùng nội bộ)
+ * Proxy sẽ tự động xử lý refresh token và forward cookies
  * @client-only - Chỉ sử dụng được ở client side
  */
 async function fetchClient<T = unknown>(
@@ -56,7 +73,8 @@ async function fetchClient<T = unknown>(
     ...restOptions
   } = options;
 
-  const url = endpoint.startsWith("http") ? endpoint : `${API_URL}${endpoint}`;
+  // Gọi qua proxy để proxy xử lý refresh token
+  const url = toProxyUrl(endpoint);
 
   // Lấy locale từ cookie để gửi trong header
   const locale = getLocaleFromCookie();
@@ -77,18 +95,34 @@ async function fetchClient<T = unknown>(
     fetchOptions.body = JSON.stringify(body);
   }
 
-  let response = await fetch(url, fetchOptions);
+  const response = await fetch(url, fetchOptions);
 
-  // Nếu 401 và không phải skipAuth, thử refresh token
-  if (response.status === 401 && !skipAuth) {
-    const refreshed = await refreshAccessToken();
-    if (refreshed) {
-      // Retry request sau khi refresh thành công
-      response = await fetch(url, fetchOptions);
-    }
+  // Parse response
+  const text = await response.text();
+
+  if (!text) {
+    // Response rỗng - tạo error dựa trên HTTP status
+    const errorMessages: Record<number, string> = {
+      401: "Phiên đăng nhập hết hạn",
+      403: "Không có quyền truy cập",
+      404: "Không tìm thấy tài nguyên",
+      500: "Lỗi server",
+    };
+    throw new ApiError(
+      errorMessages[response.status] || `Lỗi HTTP ${response.status}`,
+      response.status,
+    );
   }
 
-  const result: ApiResponse<T> = await response.json();
+  let result: ApiResponse<T>;
+  try {
+    result = JSON.parse(text);
+  } catch {
+    throw new ApiError(
+      `Lỗi parse JSON: ${text.substring(0, 100)}`,
+      response.status,
+    );
+  }
 
   // Kiểm tra status từ response body (ưu tiên) hoặc HTTP status
   const status = result.status || response.status;
@@ -132,4 +166,64 @@ export const apiClient = {
 
   delete: <T = unknown>(endpoint: string, options?: FetchOptions) =>
     fetchClient<T>(endpoint, { ...options, method: "DELETE" }),
+
+  /**
+   * Upload file với FormData
+   * Gọi qua proxy để proxy xử lý refresh token
+   * @client-only
+   */
+  upload: async <T = unknown>(
+    endpoint: string,
+    formData: FormData,
+    options?: Omit<FetchOptions, "body">,
+  ): Promise<T> => {
+    const url = toProxyUrl(endpoint);
+    const locale = getLocaleFromCookie();
+
+    const headers: HeadersInit = {
+      ...(locale && { "Accept-Language": locale }),
+    };
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+      headers,
+      ...options,
+    });
+
+    // Parse response
+    const text = await response.text();
+
+    if (!text) {
+      throw new ApiError(
+        response.status === 401
+          ? "Phiên đăng nhập hết hạn"
+          : `Lỗi HTTP ${response.status}`,
+        response.status,
+      );
+    }
+
+    let result: ApiResponse<T>;
+    try {
+      result = JSON.parse(text);
+    } catch {
+      throw new ApiError(
+        `Lỗi parse JSON: ${text.substring(0, 100)}`,
+        response.status,
+      );
+    }
+
+    const status = result.status || response.status;
+
+    if (!result.success || status >= 400) {
+      throw new ApiError(
+        result.message || "Có lỗi xảy ra",
+        status,
+        result.errorCode,
+      );
+    }
+
+    return result.data;
+  },
 };

@@ -1,6 +1,5 @@
 import { API_URL } from "@/lib/constants";
 import { getHasSession } from "./storage";
-import { getLocaleFromCookie } from "@/lib/utils/locale";
 
 /**
  * Kiểm tra cookie có tồn tại không
@@ -31,28 +30,6 @@ export function hasAccessToken(): boolean {
  */
 export function hasRefreshToken(): boolean {
   return getHasSession();
-}
-
-/**
- * Gọi API refresh token để cấp lại accessToken
- * @client-only - Chỉ sử dụng được ở client side
- */
-export async function refreshAccessToken(): Promise<boolean> {
-  try {
-    const locale = getLocaleFromCookie();
-
-    const response = await fetch(`${API_URL}/api/auth/refresh-token`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        ...(locale && { "Accept-Language": locale }),
-      },
-    });
-    return response.ok;
-  } catch {
-    return false;
-  }
 }
 
 /**

@@ -1,4 +1,4 @@
-import Header from "../(HomeLayout)/_components/Header";
+import Header from "../_components/_header/Header";
 
 export default function NotFooterLayout({
   children,
@@ -9,12 +9,11 @@ export default function NotFooterLayout({
   const widthContent: number = 1250;
   return (
     <div className="flex flex-col justify-center">
-      <Header height={headerHeight} widthContent={widthContent} />
+      <Header height={headerHeight} />
       <main
         style={{
           maxWidth: `${widthContent}px`,
           minHeight: `100vh`,
-          paddingTop: `${headerHeight}px`,
         }}
         className="w-full m-auto px-4"
       >

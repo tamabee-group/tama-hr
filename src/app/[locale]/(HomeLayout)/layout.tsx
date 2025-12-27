@@ -1,5 +1,5 @@
+import Header from "../_components/_header/Header";
 import Footer from "./_components/Footer";
-import Header from "./_components/Header";
 
 export default function HomeLayout({
   children,
@@ -10,12 +10,11 @@ export default function HomeLayout({
   const widthContent: number = 1250;
   return (
     <div className="flex flex-col justify-center">
-      <Header height={headerHeight} widthContent={widthContent} />
+      <Header height={headerHeight} />
       <main
         style={{
           maxWidth: `${widthContent}px`,
           minHeight: `100vh`,
-          paddingTop: `${headerHeight}px`,
         }}
         className="w-full m-auto px-4"
       >

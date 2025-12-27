@@ -3,7 +3,8 @@
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
 import { useZipcode } from "@/hooks/useZipcode";
-import { register } from "@/lib/apis/auth";
+import { login as loginApi, register } from "@/lib/apis/auth";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Step1 from "./Step1";
@@ -16,9 +17,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { RegisterFormData } from "@/types/register";
 
 const RegisterPage: NextPage = () => {
+  const { login } = useAuth();
   const [step, setStep] = useState(1);
+  const [prevStep, setPrevStep] = useState(1);
   const [zipcode, setZipcode] = useState("");
   const [emailSent, setEmailSent] = useState(""); // Track email đã gửi
+  const [companySent, setCompanySent] = useState(""); // Track tên công ty đã gửi verify
   const [verified, setVerified] = useState(false); // Track đã verify thành công
   const [resendTimer, setResendTimer] = useState(0); // Timer cho resend
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -48,8 +52,22 @@ const RegisterPage: NextPage = () => {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
-  const handleNext = () => setStep(step + 1);
-  const handleBack = () => setStep(step - 1);
+  const handleNext = () => {
+    setPrevStep(step);
+    setStep(step + 1);
+  };
+  const handleBack = () => {
+    setPrevStep(step);
+    setStep(step - 1);
+  };
+  const handleConfirmFromStep1 = () => {
+    setPrevStep(step);
+    setStep(4);
+  };
+  const handleEditInfo = () => {
+    setPrevStep(4);
+    setStep(1);
+  };
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -68,10 +86,11 @@ const RegisterPage: NextPage = () => {
         referralCode: formData.referralCode || undefined,
       });
 
-      toast.success("Đăng ký thành công! Đang chuyển đến trang đăng nhập...");
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      // Tự động đăng nhập sau khi đăng ký thành công
+      const user = await loginApi(formData.email, formData.password);
+      login(user);
+      toast.success("Đăng ký thành công!");
+      router.push("/");
     } catch (error) {
       console.error("Registration error:", error);
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -82,7 +101,7 @@ const RegisterPage: NextPage = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center py-8 gap-6">
+    <div className="w-full flex flex-col items-center pt-8 pb-14 gap-6">
       <div className="flex justify-center items-center gap-3">
         {[
           { num: 1, label: "Thông tin" },
@@ -96,10 +115,10 @@ const RegisterPage: NextPage = () => {
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all",
                   s.num === step
-                    ? "bg-primary text-white"
+                    ? "bg-primary dark:bg-(--blue) text-white"
                     : s.num < step
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
+                      ? "bg-primary/20 text-primary dark:bg-(--blue)"
+                      : "bg-muted text-muted-foreground",
                 )}
               >
                 {s.num < step ? <Check className="w-4 h-4" /> : s.num}
@@ -110,8 +129,8 @@ const RegisterPage: NextPage = () => {
                   s.num === step
                     ? "text-foreground"
                     : s.num < step
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                      ? "text-primary"
+                      : "text-muted-foreground",
                 )}
               >
                 {s.label}
@@ -121,7 +140,7 @@ const RegisterPage: NextPage = () => {
               <div
                 className={cn(
                   "w-12 h-0.5 relative top-4 transition-all rounded-full",
-                  s.num < step ? "bg-primary" : "bg-muted"
+                  s.num < step ? "bg-primary" : "bg-muted",
                 )}
               />
             )}
@@ -148,9 +167,13 @@ const RegisterPage: NextPage = () => {
                 handleNext={handleNext}
                 emailSent={emailSent}
                 setEmailSent={setEmailSent}
+                companySent={companySent}
+                setCompanySent={setCompanySent}
                 setResendTimer={setResendTimer}
                 verified={verified}
                 setVerified={setVerified}
+                fromStep4={prevStep === 4}
+                handleConfirm={handleConfirmFromStep1}
               />
             </motion.div>
           )}
@@ -170,7 +193,6 @@ const RegisterPage: NextPage = () => {
                 handleBack={handleBack}
                 verified={verified}
                 setVerified={setVerified}
-                emailSent={emailSent}
                 resendTimer={resendTimer}
                 setResendTimer={setResendTimer}
               />
@@ -207,6 +229,7 @@ const RegisterPage: NextPage = () => {
                 setFormData={setFormData}
                 handleBack={handleBack}
                 handleSubmit={handleSubmit}
+                handleEditInfo={handleEditInfo}
                 submitting={submitting}
               />
             </motion.div>

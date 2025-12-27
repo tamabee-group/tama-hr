@@ -2,17 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Lock, LockKeyhole } from "lucide-react";
 import { NextPage } from "next";
 import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/useKeyDown";
 import { useState } from "react";
+import { validatePassword } from "@/lib/validation";
 
 interface Props {
   formData: RegisterFormData;
@@ -29,13 +26,12 @@ const Step3: NextPage<Props> = ({
 }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validatePassword = () => {
+  const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.password.trim()) {
-      newErrors.password = "Vui lòng nhập mật khẩu";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      newErrors.password = passwordError;
     }
 
     if (!formData.confirmPassword.trim()) {
@@ -49,7 +45,7 @@ const Step3: NextPage<Props> = ({
   };
 
   const handleContinue = () => {
-    if (validatePassword()) {
+    if (validateForm()) {
       handleNext();
     }
   };
@@ -69,49 +65,38 @@ const Step3: NextPage<Props> = ({
       <div className="space-y-4">
         <div>
           <Label htmlFor="password">Mật khẩu</Label>
-          <InputGroup>
-            <InputGroupInput
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => {
-                setFormData({ ...formData, password: e.target.value });
-                if (errors.password) {
-                  setErrors({ ...errors, password: "" });
-                }
-              }}
-              placeholder="Nhập mật khẩu..."
-            />
-            <InputGroupAddon>
-              <Lock className="h-4 w-4" />
-            </InputGroupAddon>
-          </InputGroup>
+          <PasswordInput
+            id="password"
+            value={formData.password}
+            onChange={(e) => {
+              setFormData({ ...formData, password: e.target.value });
+              if (errors.password) {
+                setErrors({ ...errors, password: "" });
+              }
+            }}
+            placeholder="Nhập mật khẩu..."
+          />
           {errors.password && (
             <p className="text-sm text-destructive mt-1">{errors.password}</p>
           )}
         </div>
         <div>
           <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-          <InputGroup>
-            <InputGroupInput
-              id="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => {
-                setFormData({
-                  ...formData,
-                  confirmPassword: e.target.value,
-                });
-                if (errors.confirmPassword) {
-                  setErrors({ ...errors, confirmPassword: "" });
-                }
-              }}
-              placeholder="Nhập lại mật khẩu..."
-            />
-            <InputGroupAddon>
-              <LockKeyhole className="h-4 w-4" />
-            </InputGroupAddon>
-          </InputGroup>
+          <PasswordInput
+            id="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                confirmPassword: e.target.value,
+              });
+              if (errors.confirmPassword) {
+                setErrors({ ...errors, confirmPassword: "" });
+              }
+            }}
+            placeholder="Nhập lại mật khẩu..."
+            icon={<LockKeyhole />}
+          />
           {errors.confirmPassword && (
             <p className="text-sm text-destructive mt-1">
               {errors.confirmPassword}

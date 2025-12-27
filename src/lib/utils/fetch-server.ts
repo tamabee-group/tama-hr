@@ -1,24 +1,23 @@
 import { cookies } from "next/headers";
+import { refreshAccessTokenWithCookie } from "@/lib/auth/token";
 
 /**
- * Fetch server cho môi trường server side (Server Components, Route Handlers, Server Actions)
- * @server-only - Chỉ sử dụng được ở server side
+ * Fetch server cho Server Components, Route Handlers, Server Actions
+ * @server-only
  *
  * Tính năng:
- * - Tự động đọc cookies từ request headers
- * - Tự động gửi Accept-Language header từ NEXT_LOCALE cookie
- * - Hỗ trợ Next.js caching và revalidation
- * - Tự động parse JSON response
- * - Xử lý lỗi thống nhất
+ * - Tự động đọc cookies từ request
+ * - Tự động refresh token khi 401
+ * - Hỗ trợ Next.js caching
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
 
 export interface FetchServerOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
-  skipAuth?: boolean; // Bỏ qua việc gửi cookies
-  revalidate?: number | false; // Next.js revalidation (giây)
-  tags?: string[]; // Next.js cache tags
+  skipAuth?: boolean;
+  revalidate?: number | false;
+  tags?: string[];
 }
 
 export interface ApiResponse<T = unknown> {
@@ -42,24 +41,36 @@ export class ApiError extends Error {
 }
 
 /**
- * Lấy cookie string từ request headers
- * @server-only - Chỉ sử dụng được ở server side
+ * Lấy tokens từ cookies
+ * @server-only
  */
-async function getCookieString(): Promise<string> {
+async function getTokens(): Promise<{
+  accessToken?: string;
+  refreshToken?: string;
+}> {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-  const refreshToken = cookieStore.get("refreshToken")?.value;
-
-  const cookieParts: string[] = [];
-  if (accessToken) cookieParts.push(`accessToken=${accessToken}`);
-  if (refreshToken) cookieParts.push(`refreshToken=${refreshToken}`);
-
-  return cookieParts.join("; ");
+  return {
+    accessToken: cookieStore.get("accessToken")?.value,
+    refreshToken: cookieStore.get("refreshToken")?.value,
+  };
 }
 
 /**
- * Lấy locale từ cookie NEXT_LOCALE
- * @server-only - Chỉ sử dụng được ở server side
+ * Tạo cookie string từ tokens
+ */
+function buildCookieString(
+  accessToken?: string,
+  refreshToken?: string,
+): string {
+  const parts: string[] = [];
+  if (accessToken) parts.push(`accessToken=${accessToken}`);
+  if (refreshToken) parts.push(`refreshToken=${refreshToken}`);
+  return parts.join("; ");
+}
+
+/**
+ * Lấy locale từ cookie
+ * @server-only
  */
 async function getLocaleFromCookie(): Promise<string | null> {
   const cookieStore = await cookies();
@@ -67,8 +78,56 @@ async function getLocaleFromCookie(): Promise<string | null> {
 }
 
 /**
- * Fetch server với hỗ trợ Next.js caching (dùng nội bộ)
- * @server-only - Chỉ sử dụng được ở server side
+ * Parse response text thành ApiResponse
+ */
+function parseResponse<T>(
+  text: string,
+  httpStatus: number,
+): { result: ApiResponse<T>; status: number } {
+  if (!text) {
+    const errorMessages: Record<number, string> = {
+      401: "Phiên đăng nhập hết hạn",
+      403: "Không có quyền truy cập",
+      404: "Không tìm thấy tài nguyên",
+      500: "Lỗi server",
+    };
+    throw new ApiError(
+      errorMessages[httpStatus] || `Lỗi HTTP ${httpStatus}`,
+      httpStatus || 500,
+    );
+  }
+
+  let result: ApiResponse<T>;
+  try {
+    result = JSON.parse(text);
+  } catch {
+    throw new ApiError(
+      `Lỗi parse JSON: ${text.substring(0, 100)}`,
+      httpStatus || 500,
+    );
+  }
+
+  return { result, status: result.status || httpStatus };
+}
+
+/**
+ * Thực hiện fetch request
+ */
+async function doFetch(
+  url: string,
+  fetchOptions: RequestInit,
+  cookieString: string,
+): Promise<Response> {
+  const headers = { ...(fetchOptions.headers as Record<string, string>) };
+  if (cookieString) {
+    headers["Cookie"] = cookieString;
+  }
+  return fetch(url, { ...fetchOptions, headers });
+}
+
+/**
+ * Fetch server với auto refresh token
+ * @server-only
  */
 async function fetchServer<T = unknown>(
   endpoint: string,
@@ -84,23 +143,14 @@ async function fetchServer<T = unknown>(
   } = options;
 
   const url = endpoint.startsWith("http") ? endpoint : `${API_URL}${endpoint}`;
-
-  // Lấy locale từ cookie để gửi trong header
   const locale = await getLocaleFromCookie();
+  const { accessToken, refreshToken } = await getTokens();
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(locale && { "Accept-Language": locale }),
-    ...customHeaders,
+    ...(customHeaders as Record<string, string>),
   };
-
-  // Thêm cookies nếu cần auth
-  if (!skipAuth) {
-    const cookieString = await getCookieString();
-    if (cookieString) {
-      (headers as Record<string, string>)["Cookie"] = cookieString;
-    }
-  }
 
   // Cấu hình Next.js caching
   const nextOptions: { revalidate?: number | false; tags?: string[] } = {};
@@ -120,11 +170,43 @@ async function fetchServer<T = unknown>(
     fetchOptions.body = JSON.stringify(body);
   }
 
-  const response = await fetch(url, fetchOptions);
-  const result: ApiResponse<T> = await response.json();
+  let cookieString = skipAuth
+    ? ""
+    : buildCookieString(accessToken, refreshToken);
 
-  // Kiểm tra status từ response body (ưu tiên) hoặc HTTP status
-  const status = result.status || response.status;
+  // Thực hiện request
+  let response = await doFetch(url, fetchOptions, cookieString);
+  let text = await response.text();
+
+  // Nếu 401 và có refreshToken → thử refresh
+  if (response.status === 401 && refreshToken && !skipAuth) {
+    const refreshResult = await refreshAccessTokenWithCookie(
+      refreshToken,
+      locale || undefined,
+    );
+
+    if (refreshResult.success && refreshResult.cookies) {
+      // Parse accessToken mới
+      let newAccessToken: string | undefined;
+      for (const cookie of refreshResult.cookies) {
+        const match = cookie.match(/accessToken=([^;]+)/);
+        if (match) {
+          newAccessToken = match[1];
+          break;
+        }
+      }
+
+      if (newAccessToken) {
+        // Retry với token mới
+        cookieString = buildCookieString(newAccessToken, refreshToken);
+        response = await doFetch(url, fetchOptions, cookieString);
+        text = await response.text();
+      }
+    }
+  }
+
+  // Parse response
+  const { result, status } = parseResponse<T>(text, response.status);
 
   if (!result.success || status >= 400) {
     throw new ApiError(
@@ -139,7 +221,7 @@ async function fetchServer<T = unknown>(
 
 /**
  * Shorthand methods cho fetchServer
- * @server-only - Chỉ sử dụng được ở server side
+ * @server-only
  */
 export const apiServer = {
   get: <T = unknown>(endpoint: string, options?: FetchServerOptions) =>

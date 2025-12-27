@@ -22,7 +22,6 @@ interface Props {
   handleBack: () => void;
   verified: boolean;
   setVerified: (verified: boolean) => void;
-  emailSent: string;
   resendTimer: number;
   setResendTimer: (timer: number) => void;
 }
@@ -49,12 +48,14 @@ const Step2: NextPage<Props> = ({
   }, [resendTimer, setResendTimer]);
 
   const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const handleVerify = async () => {
     if (formData.otp.length !== 6) return;
 
     setVerifying(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       await verifyEmail(formData.email, formData.otp);
       setVerified(true);
     } catch (error) {
@@ -80,11 +81,12 @@ const Step2: NextPage<Props> = ({
   });
 
   const handleResend = async () => {
+    setResending(true);
     try {
       await sendVerificationCode(
         formData.email,
         formData.companyName,
-        formData.language
+        formData.language,
       );
       setResendTimer(60);
       setCanResend(false);
@@ -92,6 +94,8 @@ const Step2: NextPage<Props> = ({
       console.error("Error resending code:", error);
       const message = error instanceof Error ? error.message : "Unknown error";
       alert(`Không thể gửi lại mã: ${message}`);
+    } finally {
+      setResending(false);
     }
   };
 
@@ -101,9 +105,9 @@ const Step2: NextPage<Props> = ({
       <Card className="space-y-6 max-w-[450px] mx-auto">
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-4 ">
-            <BadgeCheck className="h-12 w-12 text-green-600" />
+            <BadgeCheck className="h-12 w-12 text-green-600 dark:text" />
           </div>
-          <CardTitle className="text-2xl text-green-600">
+          <CardTitle className="text-2xl text-green-600 dark:text">
             Xác thực thành công!
           </CardTitle>
           <CardDescription>
@@ -169,10 +173,14 @@ const Step2: NextPage<Props> = ({
           <Button
             variant="link"
             onClick={handleResend}
-            disabled={!canResend}
+            disabled={!canResend || resending}
             className="text-sm"
           >
-            {canResend ? "Gửi lại mã" : `Gửi lại sau ${resendTimer}s`}
+            {resending
+              ? "Đang gửi..."
+              : canResend
+                ? "Gửi lại mã"
+                : `Gửi lại sau ${resendTimer}s`}
           </Button>
         </div>
         <div className="flex gap-3 max-w-md mx-auto">

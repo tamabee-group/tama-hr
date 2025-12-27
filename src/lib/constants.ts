@@ -15,7 +15,7 @@ export const PROTECTED_ROUTES = [
 ];
 
 // Các route chỉ dành cho guest (chưa đăng nhập)
-export const GUEST_ONLY_ROUTES = ["/login", "/register", "/forgot-password"];
+export const GUEST_ONLY_ROUTES = ["/register", "/forgot-password"];
 
 // LocalStorage keys
 export const STORAGE_KEYS = {

@@ -1,17 +1,38 @@
 import { User } from "@/types/user";
-import { API_URL } from "@/lib/constants";
 import {
   getCurrentUser,
   removeCurrentUser,
   saveCurrentUser,
   setHasSession,
+  getHasSession,
 } from "./storage";
-import { refreshAccessToken, hasAccessToken, hasRefreshToken } from "./token";
+import { hasAccessToken } from "./token";
 import { getLocaleFromCookie } from "@/lib/utils/locale";
 
 /**
- * Fetch cơ bản cho auth (không có auto-refresh để tránh circular dependency)
- * @client-only - Chỉ sử dụng được ở client side
+ * Gọi API refresh token qua proxy
+ * @client-only
+ */
+async function refreshTokenViaProxy(): Promise<boolean> {
+  try {
+    const locale = getLocaleFromCookie();
+    const response = await fetch("/api/auth/refresh-token", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(locale && { "Accept-Language": locale }),
+      },
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Fetch cơ bản cho auth - gọi qua Next.js proxy
+ * @client-only
  */
 async function authFetch<T>(
   endpoint: string,
@@ -19,7 +40,7 @@ async function authFetch<T>(
 ): Promise<T> {
   const locale = getLocaleFromCookie();
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const response = await fetch(endpoint, {
     ...options,
     credentials: "include",
     headers: {
@@ -29,9 +50,24 @@ async function authFetch<T>(
     },
   });
 
-  const result = await response.json();
+  const text = await response.text();
 
-  if (!response.ok) {
+  if (!text) {
+    throw new Error(
+      response.status === 401
+        ? "Phiên đăng nhập hết hạn"
+        : "Response rỗng từ server",
+    );
+  }
+
+  let result;
+  try {
+    result = JSON.parse(text);
+  } catch {
+    throw new Error("Lỗi parse JSON");
+  }
+
+  if (!response.ok || !result.success) {
     throw new Error(result.message || "Có lỗi xảy ra");
   }
 
@@ -40,7 +76,7 @@ async function authFetch<T>(
 
 /**
  * Gọi API /me để lấy thông tin user hiện tại
- * @client-only - Chỉ sử dụng được ở client side
+ * @client-only
  */
 export async function fetchCurrentUser(): Promise<User> {
   return authFetch<User>("/api/auth/me", { method: "GET" });
@@ -48,9 +84,9 @@ export async function fetchCurrentUser(): Promise<User> {
 
 /**
  * Gọi API logout
- * @client-only - Chỉ sử dụng được ở client side
+ * @client-only
  */
-export async function logoutApi(): Promise<void> {
+async function logoutApi(): Promise<void> {
   try {
     await authFetch("/api/auth/logout", { method: "POST" });
   } catch {
@@ -67,56 +103,64 @@ export interface SessionResult {
 
 /**
  * Kiểm tra và khôi phục phiên đăng nhập
- * @client-only - Chỉ sử dụng được ở client side (do sử dụng localStorage và cookie)
+ * @client-only
  *
- * Logic:
- * 1. Không có cả accessToken và refreshToken -> unauthenticated (không gọi API)
- * 2. Có accessToken -> gọi API /me để kiểm tra
- * 3. Không có accessToken nhưng có refreshToken -> refresh token trước
- * 4. Nếu cả 2 token đều hết hạn -> xóa currentUser, trả về unauthenticated
+ * Flow xử lý:
+ * 1. Có accessToken + cachedUser → dùng cache
+ * 2. Có accessToken, không có cache → fetch /me
+ * 3. Không có accessToken + có hasSession → refresh token rồi fetch /me
+ * 4. Không có gì → thử fetch /me (middleware có thể đã refresh)
  */
 export async function validateSession(): Promise<SessionResult> {
   const cachedUser = getCurrentUser();
   const hasAccess = hasAccessToken();
-  const hasRefresh = hasRefreshToken();
+  const hasSession = getHasSession();
 
-  // Không có token nào -> không cần gọi API
-  if (!hasAccess && !hasRefresh) {
-    removeCurrentUser();
-    return { user: null, status: "unauthenticated" };
+  // Case 1: Có token và cache → dùng cache
+  if (hasAccess && cachedUser) {
+    setHasSession(true);
+    return { user: cachedUser, status: "authenticated" };
   }
 
-  // Có accessToken -> thử gọi API /me
+  // Case 2: Có token, không có cache → fetch user
   if (hasAccess) {
     try {
       const user = await fetchCurrentUser();
       saveCurrentUser(user);
+      setHasSession(true);
       return { user, status: "authenticated" };
     } catch {
-      // accessToken không hợp lệ hoặc hết hạn, thử refresh
+      // Token không hợp lệ, tiếp tục xử lý
     }
   }
 
-  // Có refreshToken -> thử refresh
-  if (hasRefresh) {
-    const refreshed = await refreshAccessToken();
+  // Case 3: Không có token nhưng có session → thử refresh
+  if (!hasAccess && hasSession) {
+    const refreshed = await refreshTokenViaProxy();
     if (refreshed) {
-      // Refresh thành công, dùng cached user nếu có
-      if (cachedUser) {
-        return { user: cachedUser, status: "authenticated" };
-      }
-      // Không có cached user, gọi API /me
       try {
         const user = await fetchCurrentUser();
         saveCurrentUser(user);
         return { user, status: "authenticated" };
       } catch {
-        // Không lấy được user
+        // Refresh thành công nhưng fetch thất bại
       }
     }
   }
 
-  // Cả 2 token đều không hợp lệ, xóa cached user và session flag
+  // Case 4: Không có gì → thử fetch (middleware có thể đã refresh)
+  if (!hasAccess && !hasSession && !cachedUser) {
+    try {
+      const user = await fetchCurrentUser();
+      saveCurrentUser(user);
+      setHasSession(true);
+      return { user, status: "authenticated" };
+    } catch {
+      // Không có session
+    }
+  }
+
+  // Tất cả thất bại → xóa session
   removeCurrentUser();
   setHasSession(false);
   return { user: null, status: "unauthenticated" };
@@ -124,7 +168,7 @@ export async function validateSession(): Promise<SessionResult> {
 
 /**
  * Đăng xuất: xóa localStorage và gọi API logout
- * @client-only - Chỉ sử dụng được ở client side (do sử dụng localStorage)
+ * @client-only
  */
 export async function logout(): Promise<void> {
   removeCurrentUser();

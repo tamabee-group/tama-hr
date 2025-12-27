@@ -7,8 +7,9 @@
 
 ## API Calls
 
-- Client side: sử dụng `apiClient` từ `@/lib/utils`
-- Server side: sử dụng `apiServer` từ `@/lib/utils`
+- Client side: sử dụng `apiClient` từ `@/lib/utils/fetch-client`
+- Server side: sử dụng `apiServer` từ `@/lib/utils/fetch-server`
+- Khi gọi API phân trang, khai báo constants tường minh: `DEFAULT_PAGE`, `DEFAULT_LIMIT` và truyền tham số `page`, `limit` vào hàm
 
 ## Authentication
 
@@ -19,6 +20,19 @@
 
 - Viết comment bằng tiếng Việt
 - Ghi chú `@client-only` hoặc `@server-only` cho các hàm chỉ dùng được ở một môi trường
+
+## Types & Enums
+
+- Định nghĩa types trong `types/` directory
+- Sử dụng constants từ `types/enums.ts` cho các giá trị cố định (roles, genders, statuses)
+- Derive types từ constants để tránh duplicate: `type UserRole = keyof typeof USER_ROLE_LABELS`
+- Không sử dụng `any` type
+
+## Components
+
+- Sử dụng `BaseTable` từ `@/app/[locale]/_components/_base/BaseTable` cho data tables
+- Sử dụng `BaseSidebar` cho sidebar navigation
+- Icon trong sidebar items là `ReactNode` (JSX element), không phải string
 
 ## Backend (Java/Spring Boot)
 
@@ -33,3 +47,8 @@
 
 - Controller trả về `ResponseEntity<BaseResponse<T>>` để kiểm soát HTTP status code
 - Sử dụng `BaseResponse.success()`, `BaseResponse.created()`, `BaseResponse.error()` để tạo response
+
+### Locale/Timezone
+
+- Sử dụng `LocaleUtil.toTimezone()` để chuyển đổi locale code (vi, ja) sang timezone (Asia/Ho_Chi_Minh, Asia/Tokyo)
+- Khi tạo user, locale được lưu dưới dạng timezone format

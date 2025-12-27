@@ -5,16 +5,24 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import { User } from "@/types/user";
-import { saveCurrentUser, setHasSession } from "./storage";
+import {
+  saveCurrentUser,
+  setHasSession,
+  getCurrentUser,
+  getHasSession,
+} from "./storage";
 import {
   validateSession,
   logout as logoutSession,
   fetchCurrentUser,
   SessionStatus,
 } from "./session";
+import { hasAccessToken } from "./token";
 
 export interface AuthContextType {
   user: User | null;
@@ -34,24 +42,71 @@ interface AuthProviderProps {
 
 /**
  * Provider quản lý trạng thái xác thực của ứng dụng
- * @client-only - Chỉ sử dụng được ở client side
+ * @client-only
  */
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<SessionStatus>("loading");
+  const pathname = usePathname();
+  const prevPathRef = useRef<string | null>(null);
 
-  // Khởi tạo: kiểm tra và khôi phục phiên đăng nhập
+  // Fetch user từ API và cập nhật state
+  const refreshUser = useCallback(async () => {
+    try {
+      const userData = await fetchCurrentUser();
+      saveCurrentUser(userData);
+      setUser(userData);
+      setStatus("authenticated");
+    } catch {
+      setUser(null);
+      setStatus("unauthenticated");
+      setHasSession(false);
+    }
+  }, []);
+
+  // Khởi tạo session khi mount
   useEffect(() => {
     const initSession = async () => {
       const result = await validateSession();
       setUser(result.user);
       setStatus(result.status);
     };
-
     initSession();
   }, []);
 
-  // Hàm login: lưu user vào state và localStorage, set session flag
+  // Sync session khi route thay đổi
+  useEffect(() => {
+    if (status === "loading") return;
+
+    // Bỏ qua lần đầu tiên
+    if (prevPathRef.current === null) {
+      prevPathRef.current = pathname;
+      return;
+    }
+
+    // Chỉ xử lý khi route thực sự thay đổi
+    if (prevPathRef.current === pathname) return;
+    prevPathRef.current = pathname;
+
+    const hasSession = getHasSession();
+    const cachedUser = getCurrentUser();
+    const hasToken = hasAccessToken();
+
+    // Có session/token nhưng không có user → fetch user
+    if ((hasSession || hasToken) && !user) {
+      if (cachedUser) {
+        // Sử dụng queueMicrotask để tránh setState trực tiếp trong effect
+        queueMicrotask(() => {
+          setUser(cachedUser);
+          setStatus("authenticated");
+        });
+      } else {
+        queueMicrotask(() => refreshUser());
+      }
+    }
+  }, [pathname, status, user, refreshUser]);
+
+  // Login: lưu user và set session flag
   const login = useCallback((userData: User) => {
     saveCurrentUser(userData);
     setHasSession(true);
@@ -59,24 +114,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setStatus("authenticated");
   }, []);
 
-  // Hàm logout: xóa user và gọi API logout
+  // Logout: xóa session và gọi API
   const logout = useCallback(async () => {
     await logoutSession();
     setUser(null);
     setStatus("unauthenticated");
   }, []);
-
-  // Hàm refresh: gọi lại API /me để cập nhật thông tin user
-  const refreshUser = useCallback(async () => {
-    try {
-      const userData = await fetchCurrentUser();
-      saveCurrentUser(userData);
-      setUser(userData);
-    } catch {
-      // Nếu không lấy được user, có thể session đã hết hạn
-      await logout();
-    }
-  }, [logout]);
 
   return (
     <AuthContext.Provider value={{ user, status, login, logout, refreshUser }}>

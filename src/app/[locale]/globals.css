@@ -42,6 +42,8 @@
 }
 
 :root {
+  --blue: #00b1ce;
+  --blue-light: #00ddff;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -77,7 +79,7 @@
 }
 
 .dark {
-  --background: oklch(29.716% 0.00003 271.152);
+  --background: oklch(22.645% 0.00003 271.152);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -118,16 +120,6 @@
     @apply bg-background text-foreground;
   }
 
-  /* Hide scrollbar */
-  /* ::-webkit-scrollbar {
-    display: block;
-    background-color: red;
-  }
-  * {
-    -ms-overflow-style: block;
-    scrollbar-width: block;
-  } */
-
   html::-webkit-scrollbar {
     width: 4px;
   }
@@ -151,32 +143,12 @@
     filter: none !important;
   }
 
-  /* input:-internal-autofill-selected {
-    appearance: menulist-button;
-    background-image: none !important;
-    background-color: light-dark(
-      rgb(255, 255, 255),
-      rgba(70, 90, 126, 0.4)
-    ) !important;
-    color: fieldtext !important;
-  } */
+  *:focus-visible {
+    --tw-ring-shadow: none !important;
+    box-shadow: none !important;
+  }
 
-  /* 
-  html {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    width: 100%;
+  #nprogress .spinner {
+    display: none !important;
   }
-  body {
-    @apply bg-background text-foreground;
-    overflow-x: hidden;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  body[data-scroll-locked] {
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    padding-right: 0 !important;
-  } */
 }

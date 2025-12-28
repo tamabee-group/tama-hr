@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * Breakpoints theo Tailwind CSS

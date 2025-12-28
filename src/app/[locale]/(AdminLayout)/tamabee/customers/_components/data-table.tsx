@@ -1,8 +1,8 @@
 "use client";
 
 import { ColumnDef, VisibilityState } from "@tanstack/react-table";
-import { BaseTable } from "@/app/[locale]/_components/_base/BaseTable";
-import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useMemo } from "react";
 
 interface DataTableProps<TData, TValue> {

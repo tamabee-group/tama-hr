@@ -1,4 +1,4 @@
-import Header from "../_components/_header/Header";
+import Header from "../_components/_header/_header";
 
 export default function NotFooterLayout({
   children,

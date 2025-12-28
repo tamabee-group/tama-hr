@@ -2,15 +2,15 @@
 
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
-import { useZipcode } from "@/hooks/useZipcode";
+import { useZipcode } from "@/hooks/use-zipcode";
 import { login as loginApi, register } from "@/lib/apis/auth";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Step1 from "./Step1";
-import Step2 from "./Step2";
-import Step3 from "./Step3";
-import Step4 from "./Step4";
+import Step1 from "./_step-1";
+import Step2 from "./_step-2";
+import Step3 from "./_step-3";
+import Step4 from "./_step-4";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";

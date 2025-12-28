@@ -6,7 +6,7 @@ import {
   Settings,
   LayoutDashboard,
 } from "lucide-react";
-import type { SidebarItem } from "../../tamabee/_components/TamabeeSidebarItems";
+import type { SidebarItem } from "../../tamabee/_components/_tamabee-sidebar-items";
 
 export const companySidebarItems: SidebarItem[] = [
   {

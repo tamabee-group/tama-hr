@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   ConfirmChangesDialog,
   FieldChange,
-} from "@/app/[locale]/_components/_base/ConfirmChangesDialog";
+} from "@/app/[locale]/_components/_base/confirm-changes-dialog";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
@@ -37,8 +37,8 @@ import {
   ScanBarcode,
 } from "lucide-react";
 import { LANGUAGES, USER_STATUS } from "@/types/enums";
-import { useZipcode } from "@/hooks/useZipcode";
-import { ImageCropDialog } from "@/app/[locale]/_components/ImageCropDialog";
+import { useZipcode } from "@/hooks/use-zipcode";
+import { ImageCropDialog } from "@/app/[locale]/_components/_image-crop-dialog";
 import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
 import { capitalizeWords } from "@/lib/utils/text-format";
 import { Spinner } from "@/components/ui/spinner";

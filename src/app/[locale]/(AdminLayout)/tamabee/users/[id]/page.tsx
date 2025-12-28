@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { UserProfileForm } from "./UserProfileForm";
-import { UserActivity } from "./UserActivity";
+import { UserProfileForm } from "./_user-profile-form";
+import { UserActivity } from "./_user-activity";
 import { User } from "@/types/user";
 import { apiServer } from "@/lib/utils/fetch-server";
 

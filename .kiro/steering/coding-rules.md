@@ -1,19 +1,20 @@
-# Coding Rules
+# Frontend Coding Rules (Next.js/TypeScript)
 
 ## Navigation
 
-- Sử dụng `router.push()` từ `next/navigation` để chuyển trang thay vì `window.location.href` hoặc `<a href>` để đảm bảo client-side navigation mượt mà và giữ state của ứng dụng.
-- Với các link tĩnh, sử dụng component `<Link>` từ `next/link`.
+- Sử dụng `router.push()` từ `next/navigation` để chuyển trang
+- Với các link tĩnh, sử dụng component `<Link>` từ `next/link`
+- KHÔNG dùng `window.location.href` hoặc `<a href>`
 
 ## API Calls
 
 - Client side: sử dụng `apiClient` từ `@/lib/utils/fetch-client`
 - Server side: sử dụng `apiServer` từ `@/lib/utils/fetch-server`
-- Khi gọi API phân trang, khai báo constants tường minh: `DEFAULT_PAGE`, `DEFAULT_LIMIT` và truyền tham số `page`, `limit` vào hàm
+- Khi gọi API phân trang, khai báo constants: `DEFAULT_PAGE`, `DEFAULT_LIMIT`
 
 ## Authentication
 
-- Sử dụng `useAuth()` hook để truy cập thông tin user và các hàm auth
+- Sử dụng `useAuth()` hook để truy cập thông tin user
 - Không truy cập localStorage trực tiếp, sử dụng các hàm từ `@/lib/auth`
 
 ## Comments
@@ -24,31 +25,32 @@
 ## Types & Enums
 
 - Định nghĩa types trong `types/` directory
-- Sử dụng constants từ `types/enums.ts` cho các giá trị cố định (roles, genders, statuses)
-- Derive types từ constants để tránh duplicate: `type UserRole = keyof typeof USER_ROLE_LABELS`
-- Không sử dụng `any` type
+- Sử dụng constants từ `types/enums.ts` cho các giá trị cố định
+- Derive types từ constants: `type UserRole = keyof typeof USER_ROLE_LABELS`
+- KHÔNG sử dụng `any` type
 
 ## Components
 
-- Sử dụng `BaseTable` từ `@/app/[locale]/_components/_base/BaseTable` cho data tables
-- Sử dụng `BaseSidebar` cho sidebar navigation
+- Sử dụng `BaseTable` từ `@/app/[locale]/_components/_base/base-table` cho data tables
+- Sử dụng `BaseSidebar` từ `@/app/[locale]/_components/_base/base-sidebar` cho sidebar navigation
 - Icon trong sidebar items là `ReactNode` (JSX element), không phải string
+- Server Components by default, `'use client'` only when needed
 
-## Backend (Java/Spring Boot)
+## Performance
 
-### Exception Handling
+- Use Suspense boundaries với skeleton loaders
+- Lazy load heavy components với `dynamic()`
+- Optimize images với `next/image`
+- Debounce search inputs (500ms)
 
-- Sử dụng `ErrorCode` enum từ `com.tamabee.api_hr.enums.ErrorCode` cho tất cả error codes
-- Không hardcode error code string, luôn dùng enum: `ErrorCode.INVALID_CREDENTIALS` thay vì `"INVALID_CREDENTIALS"`
-- Sử dụng các custom exception: `BadRequestException`, `UnauthorizedException`, `ForbiddenException`, `NotFoundException`, `ConflictException`, `InternalServerException`
-- Ưu tiên sử dụng static factory methods: `NotFoundException.user(id)`, `ConflictException.emailExists(email)`, `InternalServerException.fileUploadFailed(cause)`
+## i18n
 
-### Response
+- Locales: `vi`, `en`, `ja`
+- Use `useTranslations()` hook
+- Translation files in `messages/` directory
 
-- Controller trả về `ResponseEntity<BaseResponse<T>>` để kiểm soát HTTP status code
-- Sử dụng `BaseResponse.success()`, `BaseResponse.created()`, `BaseResponse.error()` để tạo response
+## Theme
 
-### Locale/Timezone
-
-- Sử dụng `LocaleUtil.toTimezone()` để chuyển đổi locale code (vi, ja) sang timezone (Asia/Ho_Chi_Minh, Asia/Tokyo)
-- Khi tạo user, locale được lưu dưới dạng timezone format
+- Support dark/light mode với `next-themes`
+- Primary color: `#00b1ce`
+- Use CSS variables for colors

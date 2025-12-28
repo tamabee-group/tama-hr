@@ -17,7 +17,7 @@ const NavLink: NextPage = () => {
         href={"/"}
         className={cn(
           "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/" && "border-b-2 border-primary"
+          pathReplace(path) === "/" && "border-b-2 border-primary",
         )}
       >
         {t("home")}
@@ -26,7 +26,7 @@ const NavLink: NextPage = () => {
         href={"/about"}
         className={cn(
           "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/about" && "border-b-2 border-primary"
+          pathReplace(path) === "/about" && "border-b-2 border-primary",
         )}
       >
         {t("about")}
@@ -35,7 +35,7 @@ const NavLink: NextPage = () => {
         href={"/pricing"}
         className={cn(
           "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/pricing" && "border-b-2 border-primary"
+          pathReplace(path) === "/pricing" && "border-b-2 border-primary",
         )}
       >
         {t("pricing")}
@@ -44,7 +44,7 @@ const NavLink: NextPage = () => {
         href={"/contact"}
         className={cn(
           "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/contact" && "border-b-2 border-primary"
+          pathReplace(path) === "/contact" && "border-b-2 border-primary",
         )}
       >
         {t("contact")}

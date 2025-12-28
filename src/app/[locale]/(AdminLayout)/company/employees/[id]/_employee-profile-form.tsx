@@ -3,7 +3,7 @@
 import {
   BaseUserProfileForm,
   UserProfileFormData,
-} from "@/app/[locale]/_components/_base/BaseUserProfileForm";
+} from "@/app/[locale]/_components/_base/base-user-profile-form";
 import {
   uploadCompanyEmployeeAvatar,
   updateCompanyEmployee,

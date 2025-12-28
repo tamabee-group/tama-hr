@@ -29,11 +29,11 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronRight } from "lucide-react";
-import type { SidebarItem } from "../../(AdminLayout)/tamabee/_components/TamabeeSidebarItems";
+import type { SidebarItem } from "../../(AdminLayout)/tamabee/_components/_tamabee-sidebar-items";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFileUrl } from "@/lib/utils/file-url";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { USER_ROLE_LABELS } from "@/types/user";
 import { toast } from "sonner";
 

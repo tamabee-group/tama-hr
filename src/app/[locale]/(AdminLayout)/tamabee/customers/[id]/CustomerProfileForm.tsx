@@ -29,8 +29,8 @@ import {
 } from "lucide-react";
 import { LANGUAGES, LOCALES, normalizeLocale } from "@/types/enums";
 import { INDUSTRIES, Company } from "@/types/company";
-import { useZipcode } from "@/hooks/useZipcode";
-import { ImageCropDialog } from "@/app/[locale]/_components/ImageCropDialog";
+import { useZipcode } from "@/hooks/use-zipcode";
+import { ImageCropDialog } from "@/app/[locale]/_components/_image-crop-dialog";
 import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
 import { updateCompany, uploadCompanyLogo } from "@/lib/apis/admin-companies";
 import { Spinner } from "@/components/ui/spinner";

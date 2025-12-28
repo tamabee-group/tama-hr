@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { useAuth } from "@/hooks/useAuth";
-import { LoginDialog } from "./LoginDialog";
-import { UserMenu } from "./UserMenu";
+import { useAuth } from "@/hooks/use-auth";
+import { LoginDialog } from "./_login-dialog";
+import { UserMenu } from "./_user-menu";
 
 /**
  * Component hiển thị nút đăng nhập/đăng ký hoặc menu user

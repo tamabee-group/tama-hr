@@ -1,10 +1,10 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { LogoFull } from "../../_components/Logo";
-import Languages from "../../_components/language-dropdown";
-import NavLinks from "./NavLinks";
-import AuthButtons from "./AuthButtons";
-import { ToggleTheme } from "../ToggleTheme";
+import { LogoFull } from "../../_components/_logo";
+import Languages from "../../_components/_language-dropdown";
+import NavLinks from "./_nav-links";
+import AuthButtons from "./_auth-buttons";
+import { ToggleTheme } from "../_toggle-theme";
 
 interface Props {
   height: number;

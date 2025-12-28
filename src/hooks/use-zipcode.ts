@@ -34,7 +34,7 @@ export function useZipcode(zipcode: string) {
 
       try {
         const response = await fetch(
-          `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zipcode}`
+          `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zipcode}`,
         );
         const data: ZipcodeResponse = await response.json();
 

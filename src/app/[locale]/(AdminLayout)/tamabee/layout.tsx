@@ -1,5 +1,5 @@
-import { AdminLayoutWrapper } from "../_components/AdminLayoutWrapper";
-import { tamabeeSidebarItems } from "./_components/TamabeeSidebarItems";
+import { AdminLayoutWrapper } from "../_components/_admin-layout-wrapper";
+import { tamabeeSidebarItems } from "./_components/_tamabee-sidebar-items";
 
 export default function TamabeeAdminLayout({
   children,

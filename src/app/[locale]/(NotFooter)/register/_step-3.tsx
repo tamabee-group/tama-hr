@@ -7,7 +7,7 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Lock, LockKeyhole } from "lucide-react";
 import { NextPage } from "next";
 import type { RegisterFormData } from "@/types/register";
-import { useKeyDown } from "@/hooks/useKeyDown";
+import { useKeyDown } from "@/hooks/use-key-down";
 import { useState } from "react";
 import { validatePassword } from "@/lib/validation";
 

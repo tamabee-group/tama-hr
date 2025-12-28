@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { LoginDialog } from "@/app/[locale]/_components/_header/LoginDialog";
+import { LoginDialog } from "@/app/[locale]/_components/_header/_login-dialog";
 import { ClearableInput } from "@/components/ui/clearable-input";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import {
@@ -27,7 +27,7 @@ import {
 import { sendVerificationCode } from "@/lib/apis/auth";
 import { useState } from "react";
 import type { RegisterFormData } from "@/types/register";
-import { useKeyDown } from "@/hooks/useKeyDown";
+import { useKeyDown } from "@/hooks/use-key-down";
 import { toast } from "sonner";
 import { INDUSTRIES } from "@/constants/industries";
 import { validateEmail, validatePhone } from "@/lib/validation";
@@ -200,11 +200,9 @@ const Step1: NextPage<Props> = ({
       handleNext();
     } catch (error: unknown) {
       console.error("Error sending verification code:", error);
-      // Xử lý lỗi từ ApiError (có errorCode property)
       const apiError = error as { errorCode?: string; message?: string };
       const errorCode = apiError.errorCode;
 
-      // Map errorCode sang field và message tương ứng
       const errorMap: Record<string, { field: string; message: string }> = {
         EMAIL_EXISTS: { field: "email", message: "Email này đã được đăng ký." },
         EMAIL_NOT_FOUND: {
@@ -233,7 +231,6 @@ const Step1: NextPage<Props> = ({
         const { field, message } = errorMap[errorCode];
         setErrors((prev) => ({ ...prev, [field]: message }));
       } else {
-        // Fallback: hiển thị message từ server hoặc message mặc định
         const message = apiError.message || "Đã có lỗi xảy ra.";
         setErrors((prev) => ({ ...prev, email: message }));
       }
@@ -262,14 +259,12 @@ const Step1: NextPage<Props> = ({
                 const value = toUpperCase(e.target.value);
                 setFormData({ ...formData, companyName: value });
                 validateField("companyName", value);
-                // Reset verified nếu tên công ty khác với lần gửi verify
                 setVerified(
                   value === companySent && formData.email === emailSent,
                 );
               }}
               onClear={() => {
                 setFormData({ ...formData, companyName: "" });
-                // Xoá tên công ty -> chắc chắn khác companySent (trừ khi companySent rỗng)
                 if (companySent) setVerified(false);
               }}
               onBlur={(e) => validateField("companyName", e.target.value)}
@@ -331,14 +326,12 @@ const Step1: NextPage<Props> = ({
                 const value = toLowerCase(e.target.value);
                 setFormData({ ...formData, email: value, otp: "" });
                 validateField("email", value);
-                // Reset verified nếu email khác với lần gửi verify
                 setVerified(
                   value === emailSent && formData.companyName === companySent,
                 );
               }}
               onClear={() => {
                 setFormData({ ...formData, email: "", otp: "" });
-                // Xoá email -> chắc chắn khác emailSent (trừ khi emailSent rỗng)
                 if (emailSent) setVerified(false);
               }}
               onBlur={(e) => validateField("email", e.target.value)}

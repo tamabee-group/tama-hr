@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { sendVerificationCode, verifyEmail } from "@/lib/apis/auth";
 import { Spinner } from "@/components/ui/spinner";
 import type { RegisterFormData } from "@/types/register";
-import { useKeyDown } from "@/hooks/useKeyDown";
+import { useKeyDown } from "@/hooks/use-key-down";
 
 interface Props {
   formData: RegisterFormData;
@@ -61,7 +61,7 @@ const Step2: NextPage<Props> = ({
     } catch (error) {
       console.error("Error verifying code:", error);
       const message = error instanceof Error ? error.message : "Unknown error";
-      alert(`M\u00e3 x\u00e1c th\u1ef1c kh\u00f4ng \u0111\u00fang: ${message}`);
+      alert(`Mã xác thực không đúng: ${message}`);
       setFormData({ ...formData, otp: "" });
     } finally {
       setVerifying(false);

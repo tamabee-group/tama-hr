@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { ToggleTheme } from "../_components/ToggleTheme";
+import { ToggleTheme } from "../_components/_toggle-theme";
 
 const LandingPage = () => {
   const t = useTranslations("company");

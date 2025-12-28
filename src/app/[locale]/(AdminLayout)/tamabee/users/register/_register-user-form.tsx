@@ -3,7 +3,7 @@
 import {
   BaseCreateUserForm,
   CreateUserFormData,
-} from "@/app/[locale]/_components/_base/BaseCreateUserForm";
+} from "@/app/[locale]/_components/_base/base-create-user-form";
 import { createTamabeeUser } from "@/lib/apis/users";
 import { TAMABEE_USER_ROLES } from "@/types/enums";
 

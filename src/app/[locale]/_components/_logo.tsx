@@ -16,7 +16,7 @@ const Logo: NextPage<Props> = ({ className }: Props) => {
         alt="Logo"
         className={cn(
           className,
-          "dark:hidden w-8 h-8 md:w-9 md:h-9 border-2 border-primary rounded-md p-1"
+          "dark:hidden w-8 h-8 md:w-9 md:h-9 border-2 border-primary rounded-md p-1",
         )}
       />
       <Image

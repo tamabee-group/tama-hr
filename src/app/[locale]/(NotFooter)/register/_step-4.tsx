@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { NextPage } from "next";
 import type { RegisterFormData } from "@/types/register";
-import { useKeyDown } from "@/hooks/useKeyDown";
+import { useKeyDown } from "@/hooks/use-key-down";
 import { getIndustryLabel } from "@/constants/industries";
 
 interface Props {

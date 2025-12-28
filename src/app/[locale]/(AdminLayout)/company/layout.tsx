@@ -1,5 +1,5 @@
-import { AdminLayoutWrapper } from "../_components/AdminLayoutWrapper";
-import { companySidebarItems } from "./_components/CompanySidebarItems";
+import { AdminLayoutWrapper } from "../_components/_admin-layout-wrapper";
+import { companySidebarItems } from "./_components/_company-sidebar-items";
 
 export default function CompanyAdminLayout({
   children,

@@ -1,5 +1,5 @@
 export { AuthProvider, AuthContext, type AuthContextType } from "./AuthContext";
-export { useAuth } from "@/hooks/useAuth";
+export { useAuth } from "@/hooks/use-auth";
 export { saveCurrentUser, getCurrentUser, removeCurrentUser } from "./storage";
 export { refreshAccessTokenWithCookie } from "./token";
 export {

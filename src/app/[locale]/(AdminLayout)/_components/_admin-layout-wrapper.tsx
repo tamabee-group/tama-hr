@@ -1,11 +1,11 @@
 "use client";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { BaseSidebar } from "@/app/[locale]/_components/_base/BaseSidebar";
+import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { Separator } from "@/components/ui/separator";
-import { ToggleTheme } from "@/app/[locale]/_components/ToggleTheme";
-import { BreadcrumbRouter } from "./BreadcrumbRouter";
-import type { SidebarItem } from "../tamabee/_components/TamabeeSidebarItems";
+import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
+import { BreadcrumbRouter } from "./_breadcrumb-router";
+import type { SidebarItem } from "../tamabee/_components/_tamabee-sidebar-items";
 
 interface AdminLayoutWrapperProps {
   children: React.ReactNode;

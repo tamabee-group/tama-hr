@@ -1,8 +1,16 @@
-export default function CompanyWalletPage() {
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Ví tiền</h1>
-      <p className="text-muted-foreground">Quản lý số dư và giao dịch</p>
-    </div>
-  );
+import { PageContent } from "./_page-content";
+import { SupportedLocale } from "@/lib/utils/format-currency";
+
+interface PageProps {
+  params: Promise<{ locale: string }>;
+}
+
+/**
+ * Server Component cho Company Wallet page
+ * Render PageContent client component với locale từ params
+ */
+export default async function CompanyWalletPage({ params }: PageProps) {
+  const { locale } = await params;
+
+  return <PageContent locale={(locale as SupportedLocale) || "vi"} />;
 }

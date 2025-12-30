@@ -5,27 +5,23 @@ import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import { User } from "@/types/user";
 import { apiServer } from "@/lib/utils/fetch-server";
+import {
+  PaginatedResponse,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from "@/types/api";
 
-// Response type cho paginated data
-interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
-// Cấu hình phân trang mặc định
-const DEFAULT_PAGE = 0;
-const DEFAULT_LIMIT = 10;
-
+/**
+ * Lấy danh sách nhân viên từ API
+ * @server-only
+ */
 async function getEmployees(
   page: number = DEFAULT_PAGE,
-  limit: number = DEFAULT_LIMIT,
+  size: number = DEFAULT_PAGE_SIZE,
 ): Promise<User[]> {
   try {
-    const result = await apiServer.get<PageResponse<User>>(
-      `/api/company/employees?page=${page}&size=${limit}`,
+    const result = await apiServer.get<PaginatedResponse<User>>(
+      `/api/company/employees?page=${page}&size=${size}`,
       { cache: "no-store" },
     );
     return result.content;
@@ -36,9 +32,7 @@ async function getEmployees(
 }
 
 export default async function CompanyEmployeesPage() {
-  const page = DEFAULT_PAGE;
-  const limit = DEFAULT_LIMIT;
-  const data = await getEmployees(page, limit);
+  const data = await getEmployees();
 
   return (
     <div className="space-y-6">

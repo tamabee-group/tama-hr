@@ -32,8 +32,6 @@ import {
   Users,
   Globe,
   Milestone,
-  CreditCard,
-  Landmark,
   ScanBarcode,
 } from "lucide-react";
 import { LANGUAGES, USER_STATUS } from "@/types/enums";
@@ -45,6 +43,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { User } from "@/types/user";
 import { validateEmail, validatePhone } from "@/lib/validation";
+import { BankInfoForm } from "@/app/[locale]/_components/_base/_bank-info-form";
+import { EmergencyContactForm } from "@/app/[locale]/_components/_base/_emergency-contact-form";
+import type {
+  BankAccountType,
+  BankAccountCategory,
+  JapanBankType,
+} from "@/types/user";
 
 // Định nghĩa kiểu dữ liệu cho role option
 interface RoleOption {
@@ -59,12 +64,25 @@ export interface UserProfileFormData {
   phone: string;
   language: string;
   status: string;
+  role: string;
   zipCode: string;
   address: string;
   avatar: string;
+  // Bank info - Common
+  bankAccountType: string;
+  japanBankType: string; // Loại ngân hàng Nhật: normal hoặc yucho
   bankName: string;
   bankAccount: string;
   bankAccountName: string;
+  // Bank info - Japan specific
+  bankCode: string;
+  bankBranchCode: string;
+  bankBranchName: string;
+  bankAccountCategory: string;
+  // Bank info - Japan Post Bank (ゆうちょ銀行)
+  bankSymbol: string;
+  bankNumber: string;
+  // Emergency contact
   emergencyContactName: string;
   emergencyContactPhone: string;
   emergencyContactRelation: string;
@@ -103,12 +121,25 @@ export function BaseUserProfileForm({
     phone: user.profile?.phone || "",
     language: user.language || "vi",
     status: user.status,
+    role: user.role,
     zipCode: user.profile?.zipCode || "",
     address: user.profile?.address || "",
     avatar: user.profile?.avatar || "",
+    // Bank info - Common
+    bankAccountType: user.profile?.bankAccountType || "VN",
+    japanBankType: user.profile?.japanBankType || "normal",
     bankName: user.profile?.bankName || "",
     bankAccount: user.profile?.bankAccount || "",
     bankAccountName: user.profile?.bankAccountName || "",
+    // Bank info - Japan specific
+    bankCode: user.profile?.bankCode || "",
+    bankBranchCode: user.profile?.bankBranchCode || "",
+    bankBranchName: user.profile?.bankBranchName || "",
+    bankAccountCategory: user.profile?.bankAccountCategory || "",
+    // Bank info - Japan Post Bank (ゆうちょ銀行)
+    bankSymbol: user.profile?.bankSymbol || "",
+    bankNumber: user.profile?.bankNumber || "",
+    // Emergency contact
     emergencyContactName: user.profile?.emergencyContactName || "",
     emergencyContactPhone: user.profile?.emergencyContactPhone || "",
     emergencyContactRelation: user.profile?.emergencyContactRelation || "",
@@ -142,12 +173,23 @@ export function BaseUserProfileForm({
     phone: "basic",
     language: "basic",
     status: "basic",
+    role: "basic",
     zipCode: "basic",
     address: "basic",
     avatar: "basic",
+    // Bank info
+    bankAccountType: "bank",
+    japanBankType: "bank",
     bankName: "bank",
     bankAccount: "bank",
     bankAccountName: "bank",
+    bankCode: "bank",
+    bankBranchCode: "bank",
+    bankBranchName: "bank",
+    bankAccountCategory: "bank",
+    bankSymbol: "bank",
+    bankNumber: "bank",
+    // Emergency contact
     emergencyContactName: "emergency",
     emergencyContactPhone: "emergency",
     emergencyContactRelation: "emergency",
@@ -161,12 +203,23 @@ export function BaseUserProfileForm({
     phone: "Số điện thoại",
     language: "Ngôn ngữ",
     status: "Trạng thái",
+    role: "Vai trò",
     zipCode: "Mã bưu điện",
     address: "Địa chỉ",
     avatar: "Ảnh đại diện",
+    // Bank info
+    bankAccountType: "Loại tài khoản",
+    japanBankType: "Loại ngân hàng Nhật",
     bankName: "Tên ngân hàng",
     bankAccount: "Số tài khoản",
     bankAccountName: "Tên chủ tài khoản",
+    bankCode: "Mã ngân hàng",
+    bankBranchCode: "Mã chi nhánh",
+    bankBranchName: "Tên chi nhánh",
+    bankAccountCategory: "Loại tài khoản NH",
+    bankSymbol: "記号 (Kigou)",
+    bankNumber: "番号 (Bangou)",
+    // Emergency contact
     emergencyContactName: "Họ tên",
     emergencyContactPhone: "Số điện thoại",
     emergencyContactRelation: "Mối quan hệ",
@@ -190,6 +243,12 @@ export function BaseUserProfileForm({
     if (key === "status") {
       const status = USER_STATUS.find((s) => s.value === value);
       return status ? status.label : value;
+    }
+
+    // Format role
+    if (key === "role") {
+      const role = roles.find((r) => r.value === value);
+      return role ? role.label : value;
     }
 
     return value;
@@ -467,10 +526,12 @@ export function BaseUserProfileForm({
           <div>
             <Label>Vai trò</Label>
             <SelectWithIcon
-              value={user.role}
-              onValueChange={() => {}}
+              value={formData.role}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, role: value }))
+              }
               icon={<Users />}
-              disabled
+              disabled={!isEditing}
             >
               <SelectContent>
                 {roles.map((role) => (
@@ -548,171 +609,45 @@ export function BaseUserProfileForm({
         </div>
 
         {/* Thông tin liên lạc khẩn cấp và ngân hàng */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="border p-4 rounded-md bg-secondary">
-            <h3 className="font-semibold mb-4">Thông tin liên lạc khẩn cấp</h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Họ & tên</Label>
-                <ClearableInput
-                  value={formData.emergencyContactName}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactName: capitalizeWords(e.target.value),
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactName: "",
-                    }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="Nhập họ tên"
-                  icon={<UserIcon />}
-                />
-              </div>
-              <div>
-                <Label>Số điện thoại</Label>
-                <ClearableInput
-                  value={formData.emergencyContactPhone}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactPhone: e.target.value,
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactPhone: "",
-                    }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="Nhập số điện thoại"
-                  icon={<Phone />}
-                />
-                {errors.emergencyContactPhone && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.emergencyContactPhone}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label>Mối quan hệ</Label>
-                <ClearableInput
-                  value={formData.emergencyContactRelation}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactRelation: e.target.value,
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactRelation: "",
-                    }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="VD: Bố/Mẹ/Vợ/Chồng"
-                  icon={<Users />}
-                />
-              </div>
-              <div>
-                <Label>Địa chỉ</Label>
-                <ClearableInput
-                  value={formData.emergencyContactAddress}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactAddress: e.target.value,
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      emergencyContactAddress: "",
-                    }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="VD: Số 123, Đường ABC, Quận XYZ"
-                  icon={<MapPin />}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <EmergencyContactForm
+            data={{
+              emergencyContactName: formData.emergencyContactName,
+              emergencyContactPhone: formData.emergencyContactPhone,
+              emergencyContactRelation: formData.emergencyContactRelation,
+              emergencyContactAddress: formData.emergencyContactAddress,
+            }}
+            onChange={(data) => setFormData((prev) => ({ ...prev, ...data }))}
+            isEditing={isEditing}
+            errors={errors}
+          />
 
-          <div className="border p-4 rounded-md bg-secondary">
-            <h3 className="font-semibold mb-4">Thông tin ngân hàng</h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Tên ngân hàng</Label>
-                <ClearableInput
-                  value={formData.bankName}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      bankName: e.target.value,
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({ ...prev, bankName: "" }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="VD: Vietcombank"
-                  icon={<Landmark />}
-                />
-              </div>
-              <div>
-                <Label>Số tài khoản</Label>
-                <ClearableInput
-                  value={formData.bankAccount}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      bankAccount: e.target.value,
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({ ...prev, bankAccount: "" }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="Nhập số tài khoản"
-                  icon={<CreditCard />}
-                />
-              </div>
-              <div>
-                <Label>Tên chủ tài khoản</Label>
-                <ClearableInput
-                  value={formData.bankAccountName}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      bankAccountName: capitalizeWords(e.target.value),
-                    }))
-                  }
-                  onClear={() =>
-                    setFormData((prev) => ({ ...prev, bankAccountName: "" }))
-                  }
-                  disabled={!isEditing}
-                  placeholder="Nhập tên chủ tài khoản"
-                  icon={<UserIcon />}
-                />
-              </div>
-              <span className="text-sm text-muted-foreground text-center italic block">
-                ※ Đây là tài khoản nhận lương, vui lòng kiểm tra kỹ thông tin
-                trước khi lưu.
-              </span>
-            </div>
-          </div>
+          <BankInfoForm
+            data={{
+              bankAccountType:
+                (formData.bankAccountType as BankAccountType) || "VN",
+              japanBankType:
+                (formData.japanBankType as JapanBankType) || "normal",
+              bankName: formData.bankName,
+              bankAccount: formData.bankAccount,
+              bankAccountName: formData.bankAccountName,
+              bankCode: formData.bankCode,
+              bankBranchCode: formData.bankBranchCode,
+              bankBranchName: formData.bankBranchName,
+              bankAccountCategory: formData.bankAccountCategory as
+                | BankAccountCategory
+                | "",
+              bankSymbol: formData.bankSymbol,
+              bankNumber: formData.bankNumber,
+            }}
+            onChange={(data) => setFormData((prev) => ({ ...prev, ...data }))}
+            isEditing={isEditing}
+          />
         </div>
         <div className="flex gap-4 text-xs text-muted-foreground">
           <span>
-            Ngày tạo: {new Date(user.createdAt).toLocaleDateString("vi-VN")}
+            Ngày đăng ký: {new Date(user.createdAt).toLocaleDateString("vi-VN")}
           </span>
-          <span>•</span>
           <span>
             Cập nhật lần cuối:{" "}
             {new Date(user.updatedAt).toLocaleDateString("vi-VN")}

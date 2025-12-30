@@ -5,20 +5,27 @@ import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
 import { BreadcrumbRouter } from "./_breadcrumb-router";
-import type { SidebarItem } from "../tamabee/_components/_tamabee-sidebar-items";
+import type { SidebarGroup, SidebarHeaderConfig } from "@/types/sidebar";
 
 interface AdminLayoutWrapperProps {
   children: React.ReactNode;
-  sidebarItems: SidebarItem[];
+  sidebarGroups: SidebarGroup[];
+  headerConfig: SidebarHeaderConfig;
+  badgeCounts?: Record<string, number>;
+  /** Role của user hiện tại, dùng để hiển thị visual indicators */
+  userRole?: string;
 }
 
 /**
- * Layout wrapper dùng chung cho các trang admin (tamabee, company)
+ * Layout wrapper dùng chung cho các trang admin (tamabee, company, employee)
  * @client-only - Cần client side cho sidebar state
  */
 export function AdminLayoutWrapper({
   children,
-  sidebarItems,
+  sidebarGroups,
+  headerConfig,
+  badgeCounts = {},
+  userRole,
 }: AdminLayoutWrapperProps) {
   const headerHeight = 50;
 
@@ -26,9 +33,12 @@ export function AdminLayoutWrapper({
     <div className="flex flex-col justify-center">
       <SidebarProvider>
         <BaseSidebar
-          items={sidebarItems}
+          groups={sidebarGroups}
+          headerConfig={headerConfig}
           className=""
           headerHeight={headerHeight}
+          badgeCounts={badgeCounts}
+          userRole={userRole}
         />
         <main className="w-full">
           <div className="flex items-center justify-between w-full bg-primary-foreground border-b border-primary/20 h-[50px] px-4">

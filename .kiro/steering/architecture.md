@@ -42,6 +42,35 @@ src/
 
 ## Component Reusability
 
+### Nguyên tắc đặt component (Component Placement)
+
+**Ưu tiên đặt component ở cấp con (leaf level):**
+
+1. **Mặc định**: Đặt component ngay trong folder của page sử dụng nó
+2. **Khi cần share**: Chỉ move lên cấp cha gần nhất khi có 2+ pages cùng cấp cần dùng
+3. **Tránh premature abstraction**: KHÔNG đặt component ở cấp cao hơn cần thiết
+
+```
+# ✅ ĐÚNG: Component ở cấp con
+app/[locale]/(tamabee-admin)/companies/
+├── page.tsx
+├── _company-table.tsx      # Chỉ page này dùng
+└── _company-dialog.tsx
+
+# ✅ ĐÚNG: Move lên khi 2+ pages cùng layout cần dùng
+app/[locale]/(tamabee-admin)/
+├── _components/
+│   └── _stats-card.tsx     # companies/ và dashboard/ đều dùng
+├── companies/
+│   └── page.tsx
+└── dashboard/
+    └── page.tsx
+
+# ❌ SAI: Đặt ở cấp cao không cần thiết
+app/[locale]/_components/
+└── _company-table.tsx      # Chỉ 1 page dùng, không nên ở đây
+```
+
 ### Khi nào tách component
 
 - Component được dùng ở **2+ màn hình** → chuyển vào `components/_shared/`
@@ -116,18 +145,43 @@ dialog.tsx
 
 ## Server vs Client Components
 
+### Page Components
+
+- Pages (`page.tsx`) PHẢI là Server Components - KHÔNG dùng `'use client'`
+- Fetch data ở page level, truyền xuống Client Components
+- Nếu cần interactivity (useState, useEffect, event handlers), tách thành internal component với `'use client'`
+
 ```tsx
-// Server Component (default) - fetch data
-export default async function Page() {
-  const data = await getData();
-  return <ClientComponent data={data} />;
+// ✅ ĐÚNG: Page là Server Component
+// app/[locale]/(admin)/users/page.tsx
+export default async function UsersPage() {
+  const users = await getUsers(); // Server-side fetch
+  return <UserTable data={users} />; // Client component nhận data
 }
 
-// Client Component - interactivity
+// ❌ SAI: Page là Client Component
 ("use client");
-export function ClientComponent({ data }) {
-  const [state, setState] = useState();
+export default function UsersPage() {
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
   // ...
+}
+```
+
+### Client Components
+
+- Chỉ dùng `'use client'` khi cần: useState, useEffect, event handlers, browser APIs
+- Đặt `'use client'` ở đầu file
+- Tách thành internal component (`_component-name.tsx`)
+
+```tsx
+// _user-table.tsx
+"use client";
+export function UserTable({ data }: { data: User[] }) {
+  const [selected, setSelected] = useState<User | null>(null);
+  // Interactive logic here
 }
 ```
 

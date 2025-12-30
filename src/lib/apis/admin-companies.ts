@@ -2,6 +2,14 @@ import { apiClient } from "@/lib/utils/fetch-client";
 import { Company } from "@/types/company";
 
 /**
+ * Lấy thông tin công ty theo ID
+ * @client-only
+ */
+export async function getCompanyById(id: number): Promise<Company> {
+  return apiClient.get<Company>(`/api/admin/companies/${id}`);
+}
+
+/**
  * Cập nhật thông tin công ty
  * @client-only
  */

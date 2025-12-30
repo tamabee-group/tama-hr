@@ -31,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DEFAULT_PAGE_SIZE } from "@/types/api";
 
 interface BaseTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -44,6 +45,8 @@ interface BaseTableProps<TData, TValue> {
   showRowSelection?: boolean;
   // Ẩn/hiện cột mặc định
   initialColumnVisibility?: VisibilityState;
+  // Cấu hình pagination - mặc định 20 theo Requirements 1.6, 3.3
+  pageSize?: number;
   // Text tùy chỉnh
   noResultsText?: string;
   selectedText?: string;
@@ -61,6 +64,7 @@ export function BaseTable<TData, TValue>({
   showPagination = true,
   showRowSelection = false,
   initialColumnVisibility = {},
+  pageSize = DEFAULT_PAGE_SIZE,
   noResultsText = "No results.",
   selectedText = "row(s) selected.",
   previousText = "Previous",
@@ -75,9 +79,27 @@ export function BaseTable<TData, TValue>({
     React.useState<VisibilityState>(initialColumnVisibility);
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // Lưu reference của initialColumnVisibility để so sánh
+  const initialColumnVisibilityRef = React.useRef(initialColumnVisibility);
+
   // Cập nhật columnVisibility khi initialColumnVisibility thay đổi (responsive)
+  // Chỉ update khi giá trị thực sự thay đổi (deep compare)
   React.useEffect(() => {
-    setColumnVisibility(initialColumnVisibility);
+    const prevKeys = Object.keys(initialColumnVisibilityRef.current);
+    const newKeys = Object.keys(initialColumnVisibility);
+
+    const hasChanged =
+      prevKeys.length !== newKeys.length ||
+      newKeys.some(
+        (key) =>
+          initialColumnVisibilityRef.current[key] !==
+          initialColumnVisibility[key],
+      );
+
+    if (hasChanged) {
+      initialColumnVisibilityRef.current = initialColumnVisibility;
+      setColumnVisibility(initialColumnVisibility);
+    }
   }, [initialColumnVisibility]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -97,6 +119,12 @@ export function BaseTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+    },
+    // Cấu hình pagination với pageSize mặc định = 20 (Requirements 1.6, 3.3)
+    initialState: {
+      pagination: {
+        pageSize,
+      },
     },
   });
 

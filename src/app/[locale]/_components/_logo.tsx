@@ -4,15 +4,17 @@ import Image from "next/image";
 
 interface Props {
   className?: string;
+  /** Size của logo (mặc định 32px) */
+  size?: number;
 }
 
-const Logo: NextPage<Props> = ({ className }: Props) => {
+const Logo: NextPage<Props> = ({ className, size = 32 }: Props) => {
   return (
     <>
       <Image
         src={"/logo/logo-simple-light.svg"}
-        width={34}
-        height={34}
+        width={size}
+        height={size}
         alt="Logo"
         className={cn(
           className,
@@ -21,12 +23,27 @@ const Logo: NextPage<Props> = ({ className }: Props) => {
       />
       <Image
         src={"/logo/dark-bg-rounded.svg"}
-        width={34}
-        height={34}
+        width={size}
+        height={size}
         alt="Logo"
-        className="hidden dark:block w-8 h-8 md:w-9 md:h-9"
+        className={cn(className, "hidden dark:block w-8 h-8 md:w-9 md:h-9")}
       />
     </>
+  );
+};
+
+/**
+ * Logo đơn giản cho sidebar - chỉ hiển thị 1 logo phù hợp với theme
+ */
+export const SidebarLogo = ({ size = 32 }: { size?: number }) => {
+  return (
+    <Image
+      src={"/logo/dark-bg-rounded.svg"}
+      width={size}
+      height={size}
+      alt="Logo"
+      className={cn("w-8 h-8 md:w-9 md:h-9")}
+    />
   );
 };
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Kanit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./_components/_theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -18,6 +18,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const kanit = Kanit({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-kanit",
+  subsets: ["latin", "vietnamese"],
 });
 
 export const metadata: Metadata = {
@@ -46,7 +52,7 @@ export default async function RootLayout({ children, params }: Props) {
     <html lang={locale} suppressHydrationWarning>
       <head />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${kanit.variable} antialiased`}
       >
         <NextIntlClientProvider locale={locale}>
           <ThemeProvider

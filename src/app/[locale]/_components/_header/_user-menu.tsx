@@ -30,7 +30,9 @@ interface UserMenuProps {
 const ADMIN_DASHBOARD_URLS: Partial<Record<UserRole, string>> = {
   ADMIN_TAMABEE: "/tamabee/users",
   MANAGER_TAMABEE: "/tamabee/users",
-  ADMIN_COMPANY: "/company/dashboard",
+  EMPLOYEE_TAMABEE: "/employee/support",
+  ADMIN_COMPANY: "/company/employees",
+  MANAGER_COMPANY: "/company/employees",
 };
 
 /**

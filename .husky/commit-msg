@@ -1,0 +1,23 @@
+# Validate commit message format (Conventional Commits)
+# Format: type(scope): message
+# Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build
+
+commit_msg=$(cat "$1")
+pattern="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)(\(.+\))?: .{1,100}$"
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+  echo ""
+  echo "❌ Invalid commit message format!"
+  echo ""
+  echo "Expected: type(scope): message"
+  echo ""
+  echo "Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build"
+  echo ""
+  echo "Examples:"
+  echo "  feat(auth): add login page"
+  echo "  fix(wallet): correct balance calculation"
+  echo "  docs: update README"
+  echo "  chore: update dependencies"
+  echo ""
+  exit 1
+fi

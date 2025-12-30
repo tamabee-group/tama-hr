@@ -1,0 +1,139 @@
+"use client";
+
+import {
+  PlanResponse,
+  getPlanName,
+  getPlanDescription,
+  getFeatureText,
+  LocaleKey,
+} from "@/types/plan";
+import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Check, Users, Star } from "lucide-react";
+
+interface LandingPlanCardProps {
+  plan: PlanResponse;
+  locale?: SupportedLocale;
+  onSelect?: () => void;
+}
+
+/**
+ * Plan Card cho Landing Page
+ * - Hiển thị name, description, price, features theo locale
+ * - Nút "Đăng ký" navigate đến register với planId
+ * - Highlighted features nổi bật
+ */
+export function LandingPlanCard({
+  plan,
+  locale = "vi",
+  onSelect,
+}: LandingPlanCardProps) {
+  const localeKey = locale as LocaleKey;
+
+  // Labels theo locale
+  const labels: Record<
+    SupportedLocale,
+    {
+      perMonth: string;
+      maxEmployees: string;
+      features: string;
+      register: string;
+    }
+  > = {
+    vi: {
+      perMonth: "/tháng",
+      maxEmployees: "Tối đa nhân viên",
+      features: "Tính năng",
+      register: "Đăng ký ngay",
+    },
+    en: {
+      perMonth: "/month",
+      maxEmployees: "Max employees",
+      features: "Features",
+      register: "Register now",
+    },
+    ja: {
+      perMonth: "/月",
+      maxEmployees: "最大従業員数",
+      features: "機能",
+      register: "今すぐ登録",
+    },
+  };
+
+  const t = labels[locale] || labels.vi;
+
+  // Sắp xếp features theo sortOrder
+  const sortedFeatures = [...plan.features].sort(
+    (a, b) => a.sortOrder - b.sortOrder,
+  );
+
+  return (
+    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
+      <CardHeader>
+        <CardTitle className="text-xl">
+          {getPlanName(plan, localeKey)}
+        </CardTitle>
+        <CardDescription>{getPlanDescription(plan, localeKey)}</CardDescription>
+      </CardHeader>
+
+      <CardContent className="flex-1 space-y-4">
+        {/* Giá */}
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-bold text-primary">
+            {formatCurrency(plan.monthlyPrice, locale)}
+          </span>
+          <span className="text-muted-foreground">{t.perMonth}</span>
+        </div>
+
+        {/* Max employees */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Users className="h-4 w-4" />
+          <span>
+            {t.maxEmployees}: {plan.maxEmployees}
+          </span>
+        </div>
+
+        {/* Features list */}
+        {sortedFeatures.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{t.features}:</p>
+            <ul className="space-y-2">
+              {sortedFeatures.map((feature) => (
+                <li
+                  key={feature.id}
+                  className={`flex items-start gap-2 text-sm ${
+                    feature.isHighlighted
+                      ? "text-primary font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {feature.isHighlighted ? (
+                    <Star className="h-4 w-4 mt-0.5 fill-primary" />
+                  ) : (
+                    <Check className="h-4 w-4 mt-0.5" />
+                  )}
+                  <span>{getFeatureText(feature, localeKey)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="pt-4">
+        {/* Register button */}
+        <Button onClick={onSelect} className="w-full" size="lg">
+          {t.register}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}

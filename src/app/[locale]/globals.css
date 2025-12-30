@@ -120,6 +120,11 @@
     @apply bg-background text-foreground;
   }
 
+  /* Font utilities */
+  .font-kanit {
+    font-family: var(--font-kanit), sans-serif;
+  }
+
   html::-webkit-scrollbar {
     width: 4px;
   }

@@ -2,19 +2,11 @@ import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import { Company } from "@/types/company";
 import { apiServer } from "@/lib/utils/fetch-server";
-
-// Response type cho paginated data
-interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
-// Cấu hình phân trang mặc định
-const DEFAULT_PAGE = 0;
-const DEFAULT_LIMIT = 10;
+import {
+  PaginatedResponse,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from "@/types/api";
 
 /**
  * Lấy danh sách công ty từ API
@@ -22,11 +14,11 @@ const DEFAULT_LIMIT = 10;
  */
 async function getCompanies(
   page: number = DEFAULT_PAGE,
-  limit: number = DEFAULT_LIMIT,
+  size: number = DEFAULT_PAGE_SIZE,
 ): Promise<Company[]> {
   try {
-    const result = await apiServer.get<PageResponse<Company>>(
-      `/api/admin/companies?page=${page}&size=${limit}`,
+    const result = await apiServer.get<PaginatedResponse<Company>>(
+      `/api/admin/companies?page=${page}&size=${size}`,
       { cache: "no-store" },
     );
     return result.content;
@@ -37,9 +29,7 @@ async function getCompanies(
 }
 
 export default async function TamabeeCustomersPage() {
-  const page = DEFAULT_PAGE;
-  const limit = DEFAULT_LIMIT;
-  const data = await getCompanies(page, limit);
+  const data = await getCompanies();
 
   return (
     <div className="space-y-6">

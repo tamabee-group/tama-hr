@@ -1,19 +1,20 @@
 "use client";
 
-import { ColumnDef, VisibilityState } from "@tanstack/react-table";
+import { VisibilityState } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useMemo } from "react";
+import { User } from "@/types/user";
+import { useColumns } from "./columns";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  data: User[];
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable({ data }: DataTableProps) {
+  const t = useTranslations("users");
+  const columns = useColumns();
   const { isMobile, isMd, isLg } = useBreakpoint();
 
   // Tính toán columnVisibility dựa trên breakpoint
@@ -53,7 +54,7 @@ export function DataTable<TData, TValue>({
   if (data.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center text-muted-foreground">
-        Chưa có người dùng nào
+        {t("noUsers")}
       </div>
     );
   }
@@ -63,7 +64,7 @@ export function DataTable<TData, TValue>({
       columns={columns}
       data={data}
       filterColumn="email"
-      filterPlaceholder="Tìm email..."
+      filterPlaceholder={t("searchEmail")}
       initialColumnVisibility={columnVisibility}
     />
   );

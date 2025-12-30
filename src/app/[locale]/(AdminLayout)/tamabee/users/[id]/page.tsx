@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { UserProfileForm } from "./_user-profile-form";
 import { UserActivity } from "./_user-activity";
 import { User } from "@/types/user";
@@ -25,6 +26,7 @@ export default async function UserDetailPage({
 }) {
   const { id } = await params;
   const user = await getUser(id);
+  const t = await getTranslations("users");
 
   if (!user) {
     notFound();
@@ -36,7 +38,7 @@ export default async function UserDetailPage({
         <Link href="/tamabee/users" className="hover:opacity-70">
           <ArrowLeft className="h-6 w-6" />
         </Link>
-        <h1 className="text-2xl font-bold">Chi tiết người dùng</h1>
+        <h1 className="text-2xl font-bold">{t("userDetail")}</h1>
       </div>
 
       <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6">
@@ -49,11 +51,11 @@ export default async function UserDetailPage({
 
           <Card>
             <CardHeader>
-              <CardTitle>Bảng lương</CardTitle>
+              <CardTitle>{t("payroll")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Chức năng đang cập nhật
+                {t("featureUpdating")}
               </p>
             </CardContent>
           </Card>

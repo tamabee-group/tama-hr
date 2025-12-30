@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { SupportedLocale } from "@/lib/utils/format-currency";
@@ -17,32 +18,12 @@ import { ImageModal } from "../_image-modal";
 export default function CompanyDepositsPage() {
   const params = useParams();
   const locale = (params.locale as SupportedLocale) || "vi";
+  const t = useTranslations("deposits");
 
   const [depositFormOpen, setDepositFormOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Yêu cầu nạp tiền",
-      description: "Quản lý các yêu cầu nạp tiền của công ty",
-      createDeposit: "Tạo yêu cầu nạp tiền",
-    },
-    en: {
-      title: "Deposit Requests",
-      description: "Manage company deposit requests",
-      createDeposit: "Create Deposit Request",
-    },
-    ja: {
-      title: "入金リクエスト",
-      description: "会社の入金リクエストを管理",
-      createDeposit: "入金リクエストを作成",
-    },
-  };
-
-  const t = labels[locale];
 
   const handleViewImage = (imageUrl: string) => {
     setSelectedImageUrl(imageUrl);
@@ -59,8 +40,10 @@ export default function CompanyDepositsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{t.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("description")}
+          </p>
         </div>
         <Button
           size="sm"
@@ -68,7 +51,7 @@ export default function CompanyDepositsPage() {
           className="gap-2"
         >
           <Plus className="h-4 w-4" />
-          {t.createDeposit}
+          {t("createRequest")}
         </Button>
       </div>
 

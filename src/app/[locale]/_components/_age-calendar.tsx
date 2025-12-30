@@ -2,6 +2,9 @@
 
 import * as React from "react";
 import { ChevronDownIcon } from "lucide-react";
+import { useLocale } from "next-intl";
+import { formatDate } from "@/lib/utils/format-date";
+import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +27,7 @@ export function AgeCalendar({
 }: AgeCalendarProps) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(defaultValue);
+  const locale = useLocale() as SupportedLocale;
   const selectedDate = value || date;
 
   return (
@@ -35,7 +39,7 @@ export function AgeCalendar({
             id="date"
             className="w-full h-9 justify-between font-normal"
           >
-            {selectedDate ? selectedDate.toLocaleDateString() : "Select date"}
+            {selectedDate ? formatDate(selectedDate, locale) : "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>

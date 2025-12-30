@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,8 @@ import { SelectContent, SelectItem } from "@/components/ui/select";
 import { SelectWithIcon } from "@/components/ui/select-with-icon";
 import { ClearableInput } from "@/components/ui/clearable-input";
 import { getFileUrl } from "@/lib/utils/file-url";
+import { formatDate } from "@/lib/utils/format-date";
+import { SupportedLocale } from "@/lib/utils/format-currency";
 import {
   Edit,
   Save,
@@ -36,6 +39,7 @@ import { updateCompany, uploadCompanyLogo } from "@/lib/apis/admin-companies";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { validateEmail, validatePhone } from "@/lib/validation";
+import { getLanguageLabel, getLocaleLabel } from "@/lib/utils/get-enum-label";
 
 interface FormData {
   name: string;
@@ -52,6 +56,12 @@ interface FormData {
 
 export function CustomerProfileForm({ company }: { company: Company }) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params.locale as SupportedLocale) || "vi";
+  const t = useTranslations("companies");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -95,7 +105,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Vui lòng nhập tên công ty";
+      newErrors.name = t("validation.nameRequired");
     }
 
     const emailError = validateEmail(formData.email);
@@ -107,7 +117,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
     }
 
     if (!formData.ownerName.trim()) {
-      newErrors.ownerName = "Vui lòng nhập tên người đại diện";
+      newErrors.ownerName = t("validation.ownerNameRequired");
     }
 
     setErrors(newErrors);
@@ -117,7 +127,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
   // Xử lý lưu
   const handleSave = async () => {
     if (!validateForm()) {
-      toast.error("Vui lòng kiểm tra lại thông tin");
+      toast.error(t("validation.checkInfo"));
       return;
     }
 
@@ -131,15 +141,14 @@ export function CustomerProfileForm({ company }: { company: Company }) {
       // Cập nhật thông tin công ty
       await updateCompany(company.id, formData);
 
-      toast.success("Cập nhật thành công");
+      toast.success(t("messages.updateSuccess"));
       setIsEditing(false);
       setLogoFile(null);
       setErrors({});
       router.refresh();
     } catch (error) {
       console.error("Save error:", error);
-      const message = error instanceof Error ? error.message : "Lỗi khi lưu";
-      toast.error(message);
+      toast.error(t("messages.updateError"));
     } finally {
       setIsSaving(false);
     }
@@ -175,7 +184,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
       setFormData((prev) => ({ ...prev, logo: previewUrl }));
     } catch (error) {
       console.error("Crop error:", error);
-      toast.error("Lỗi khi xử lý ảnh");
+      toast.error(tCommon("errorLoading"));
     }
   };
 
@@ -183,11 +192,11 @@ export function CustomerProfileForm({ company }: { company: Company }) {
     <Card>
       <CardHeader>
         <div className="flex flex-row items-center justify-between">
-          <CardTitle>Thông tin công ty</CardTitle>
+          <CardTitle>{t("companyInfo")}</CardTitle>
           {!isEditing ? (
             <Button size="sm" onClick={() => setIsEditing(true)}>
               <Edit className="h-4 w-4 mr-2" />
-              Sửa
+              {tCommon("edit")}
             </Button>
           ) : (
             <div className="flex gap-2">
@@ -201,7 +210,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
                 ) : (
                   <Save className="h-4 w-4 mr-2" />
                 )}
-                {isSaving ? "Đang lưu..." : "Lưu"}
+                {isSaving ? t("messages.saving") : tCommon("save")}
               </Button>
               <Button
                 size="sm"
@@ -210,7 +219,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
                 disabled={isSaving}
               >
                 <X className="h-4 w-4 mr-2" />
-                Hủy
+                {tCommon("cancel")}
               </Button>
             </div>
           )}
@@ -289,7 +298,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center col-span-2">
               {company.referredByEmployeeCode && (
                 <div>
-                  <Label>Mã giới thiệu</Label>
+                  <Label>{t("form.referralCode")}</Label>
                   <ClearableInput
                     value={company.referredByEmployeeCode}
                     disabled
@@ -300,7 +309,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
               )}
               {company.referredByEmployeeName && (
                 <div>
-                  <Label>Nhân viên tư vấn</Label>
+                  <Label>{t("form.referredBy")}</Label>
                   <ClearableInput
                     value={company.referredByEmployeeName}
                     disabled
@@ -316,7 +325,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
         {/* Thông tin công ty */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label>Tên công ty</Label>
+            <Label>{t("form.name")}</Label>
             <ClearableInput
               value={formData.name}
               onChange={(e) =>
@@ -332,7 +341,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Người đại diện</Label>
+            <Label>{t("form.ownerName")}</Label>
             <ClearableInput
               value={formData.ownerName}
               onChange={(e) =>
@@ -352,7 +361,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Email</Label>
+            <Label>{tCommon("email")}</Label>
             <ClearableInput
               value={formData.email}
               onChange={(e) =>
@@ -368,7 +377,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Số điện thoại</Label>
+            <Label>{tCommon("phone")}</Label>
             <ClearableInput
               value={formData.phone}
               onChange={(e) =>
@@ -384,7 +393,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Ngành nghề</Label>
+            <Label>{t("form.industry")}</Label>
             <SelectWithIcon
               value={formData.industry}
               onValueChange={(value) =>
@@ -392,7 +401,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
               }
               icon={<Briefcase />}
               disabled={!isEditing}
-              placeholder="Chọn ngành nghề"
+              placeholder={t("form.industryPlaceholder")}
             >
               <SelectContent>
                 {INDUSTRIES.map((ind) => (
@@ -405,7 +414,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Khu vực</Label>
+            <Label>{t("form.locale")}</Label>
             <SelectWithIcon
               value={formData.locale}
               onValueChange={(value) =>
@@ -413,12 +422,12 @@ export function CustomerProfileForm({ company }: { company: Company }) {
               }
               icon={<Globe />}
               disabled={!isEditing}
-              placeholder="Chọn khu vực"
+              placeholder={t("form.localePlaceholder")}
             >
               <SelectContent>
                 {LOCALES.map((loc) => (
-                  <SelectItem key={loc.value} value={loc.value}>
-                    {loc.label}
+                  <SelectItem key={loc} value={loc}>
+                    {getLocaleLabel(loc, tEnums)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -426,7 +435,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Ngôn ngữ</Label>
+            <Label>{t("form.language")}</Label>
             <SelectWithIcon
               value={formData.language}
               onValueChange={(value) =>
@@ -438,7 +447,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
               <SelectContent>
                 {LANGUAGES.map((lang) => (
                   <SelectItem key={lang.value} value={lang.value}>
-                    {lang.flag} {lang.label}
+                    {lang.flag} {getLanguageLabel(lang.value, tEnums)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -446,7 +455,7 @@ export function CustomerProfileForm({ company }: { company: Company }) {
           </div>
 
           <div>
-            <Label>Mã bưu điện</Label>
+            <Label>{t("form.zipcode")}</Label>
             <ClearableInput
               value={formData.zipcode}
               onChange={(e) =>
@@ -454,13 +463,13 @@ export function CustomerProfileForm({ company }: { company: Company }) {
               }
               onClear={() => setFormData((prev) => ({ ...prev, zipcode: "" }))}
               disabled={!isEditing}
-              placeholder="Nhập mã bưu điện"
+              placeholder={t("form.zipcodePlaceholder")}
               icon={<Milestone />}
             />
           </div>
 
           <div className="md:col-span-2">
-            <Label>Địa chỉ</Label>
+            <Label>{t("form.address")}</Label>
             <ClearableInput
               value={formData.address}
               onChange={(e) =>
@@ -468,20 +477,22 @@ export function CustomerProfileForm({ company }: { company: Company }) {
               }
               onClear={() => setFormData((prev) => ({ ...prev, address: "" }))}
               disabled={!isEditing || loading}
-              placeholder={loading ? "Đang tự nhập địa chỉ..." : "Nhập địa chỉ"}
+              placeholder={
+                loading
+                  ? t("form.autoFillAddress")
+                  : t("form.addressPlaceholder")
+              }
               icon={loading ? <Spinner /> : <MapPin />}
             />
           </div>
         </div>
         <div className="flex gap-4 text-xs text-muted-foreground">
           <span>
-            Ngày đăng ký:{" "}
-            {new Date(company.createdAt).toLocaleDateString("vi-VN")}
+            {t("table.createdAt")}: {formatDate(company.createdAt, locale)}
           </span>
           <span>•</span>
           <span>
-            Cập nhật lần cuối:{" "}
-            {new Date(company.updatedAt).toLocaleDateString("vi-VN")}
+            {t("table.updatedAt")}: {formatDate(company.updatedAt, locale)}
           </span>
         </div>
       </CardContent>

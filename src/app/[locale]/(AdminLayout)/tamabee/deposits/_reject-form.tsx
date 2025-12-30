@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -36,53 +37,13 @@ export function RejectForm({
   onOpenChange,
   depositId,
   onSuccess,
-  locale = "vi",
 }: RejectFormProps) {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+
   const [rejectionReason, setRejectionReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Từ chối yêu cầu nạp tiền",
-      description: "Vui lòng nhập lý do từ chối yêu cầu này",
-      rejectionReason: "Lý do từ chối",
-      placeholder: "Nhập lý do từ chối...",
-      cancel: "Hủy",
-      reject: "Từ chối",
-      rejecting: "Đang xử lý...",
-      required: "Vui lòng nhập lý do từ chối",
-      successReject: "Từ chối yêu cầu thành công",
-      errorReject: "Không thể từ chối yêu cầu",
-    },
-    en: {
-      title: "Reject Deposit Request",
-      description: "Please enter the reason for rejecting this request",
-      rejectionReason: "Rejection Reason",
-      placeholder: "Enter rejection reason...",
-      cancel: "Cancel",
-      reject: "Reject",
-      rejecting: "Processing...",
-      required: "Please enter rejection reason",
-      successReject: "Request rejected successfully",
-      errorReject: "Failed to reject request",
-    },
-    ja: {
-      title: "入金リクエストを却下",
-      description: "このリクエストを却下する理由を入力してください",
-      rejectionReason: "却下理由",
-      placeholder: "却下理由を入力...",
-      cancel: "キャンセル",
-      reject: "却下",
-      rejecting: "処理中...",
-      required: "却下理由を入力してください",
-      successReject: "リクエストが却下されました",
-      errorReject: "リクエストの却下に失敗しました",
-    },
-  };
-
-  const t = labels[locale];
 
   const resetForm = () => {
     setRejectionReason("");
@@ -94,7 +55,7 @@ export function RejectForm({
 
     // Validate
     if (!rejectionReason.trim()) {
-      setError(t.required);
+      setError(t("messages.required"));
       return;
     }
 
@@ -103,15 +64,14 @@ export function RejectForm({
       await depositApi.reject(depositId, {
         rejectionReason: rejectionReason.trim(),
       });
-      toast.success(t.successReject);
+      toast.success(t("messages.rejectSuccess"));
       resetForm();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
       console.error("Failed to reject deposit:", error);
       handleApiError(error, {
-        forbiddenMessage: "Bạn không có quyền từ chối yêu cầu này",
-        defaultMessage: t.errorReject,
+        defaultMessage: t("messages.rejectError"),
       });
     } finally {
       setIsSubmitting(false);
@@ -136,18 +96,18 @@ export function RejectForm({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t.title}</DialogTitle>
-          <DialogDescription>{t.description}</DialogDescription>
+          <DialogTitle>{t("dialog.rejectTitle")}</DialogTitle>
+          <DialogDescription>{t("dialog.rejectDescription")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="rejectionReason">{t.rejectionReason}</Label>
+            <Label htmlFor="rejectionReason">{t("dialog.rejectReason")}</Label>
             <Textarea
               id="rejectionReason"
               value={rejectionReason}
               onChange={(e) => handleReasonChange(e.target.value)}
-              placeholder={t.placeholder}
+              placeholder={t("dialog.rejectReasonPlaceholder")}
               disabled={isSubmitting}
               className={error ? "border-destructive" : ""}
               rows={4}
@@ -162,13 +122,13 @@ export function RejectForm({
               onClick={handleClose}
               disabled={isSubmitting}
             >
-              {t.cancel}
+              {tCommon("cancel")}
             </Button>
             <Button type="submit" variant="destructive" disabled={isSubmitting}>
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isSubmitting ? t.rejecting : t.reject}
+              {isSubmitting ? t("dialog.rejecting") : t("actions.reject")}
             </Button>
           </DialogFooter>
         </form>

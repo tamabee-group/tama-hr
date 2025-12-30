@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminLayoutWrapper } from "../_components/_admin-layout-wrapper";
-import { companySidebarGroups } from "./_components/_company-sidebar-items";
+import { useCompanySidebarGroups } from "./_components/_company-sidebar-items";
 import { useMyCompany } from "@/hooks/use-my-company";
 import { useAuth } from "@/lib/auth";
 import type { SidebarHeaderConfig } from "@/types/sidebar";
@@ -18,6 +18,7 @@ export default function CompanyAdminLayout({
 }) {
   const { user } = useAuth();
   const { company } = useMyCompany();
+  const sidebarGroups = useCompanySidebarGroups();
 
   // Header config: name từ user auth, logo từ company API
   const headerConfig: SidebarHeaderConfig = {
@@ -28,7 +29,7 @@ export default function CompanyAdminLayout({
 
   return (
     <AdminLayoutWrapper
-      sidebarGroups={companySidebarGroups}
+      sidebarGroups={sidebarGroups}
       headerConfig={headerConfig}
     >
       {children}

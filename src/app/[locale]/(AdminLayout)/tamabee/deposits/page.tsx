@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import { DepositRequestResponse } from "@/types/deposit";
@@ -16,29 +17,12 @@ import { DepositDetailDialog } from "./_deposit-detail-dialog";
 export default function TamabeeDepositsPage() {
   const params = useParams();
   const locale = (params.locale as SupportedLocale) || "vi";
+  const t = useTranslations("deposits");
 
   const [selectedDeposit, setSelectedDeposit] =
     useState<DepositRequestResponse | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Quản lý yêu cầu nạp tiền",
-      description: "Xem và duyệt các yêu cầu nạp tiền từ công ty",
-    },
-    en: {
-      title: "Deposit Request Management",
-      description: "View and process deposit requests from companies",
-    },
-    ja: {
-      title: "入金リクエスト管理",
-      description: "会社からの入金リクエストを確認・処理",
-    },
-  };
-
-  const t = labels[locale];
 
   const handleViewDetail = (deposit: DepositRequestResponse) => {
     setSelectedDeposit(deposit);
@@ -54,8 +38,8 @@ export default function TamabeeDepositsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">{t.title}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
       </div>
 
       {/* Deposit Table */}

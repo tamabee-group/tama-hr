@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { WalletResponse } from "@/types/wallet";
 import { getByCompanyId } from "@/lib/apis/wallet-api";
 import { WalletCard } from "@/app/[locale]/(AdminLayout)/company/wallet/_wallet-card";
@@ -23,10 +24,6 @@ interface WalletDetailContentProps {
 
 /**
  * Client component hiển thị chi tiết wallet của một công ty
- * - Hiển thị Wallet Card với thông tin công ty
- * - Hiển thị Transaction Table với filter và pagination
- * - Hỗ trợ hoàn tiền
- * - Admin only: Thêm/Trừ tiền trực tiếp
  */
 export function WalletDetailContent({
   companyId,
@@ -34,6 +31,8 @@ export function WalletDetailContent({
 }: WalletDetailContentProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const t = useTranslations("wallet");
+  const tCommon = useTranslations("common");
 
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,46 +50,10 @@ export function WalletDetailContent({
   // Kiểm tra quyền Admin
   const canDirectManipulate = user?.role ? isAdminTamabee(user.role) : false;
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      back: "Quay lại",
-      title: "Chi tiết ví",
-      refresh: "Làm mới",
-      errorLoading: "Không thể tải thông tin ví",
-      transactions: "Lịch sử giao dịch",
-      notFound: "Không tìm thấy công ty",
-      addBalance: "Thêm tiền",
-      deductBalance: "Trừ tiền",
-    },
-    en: {
-      back: "Back",
-      title: "Wallet Details",
-      refresh: "Refresh",
-      errorLoading: "Failed to load wallet information",
-      transactions: "Transaction History",
-      notFound: "Company not found",
-      addBalance: "Add Balance",
-      deductBalance: "Deduct Balance",
-    },
-    ja: {
-      back: "戻る",
-      title: "ウォレット詳細",
-      refresh: "更新",
-      errorLoading: "ウォレット情報の読み込みに失敗しました",
-      transactions: "取引履歴",
-      notFound: "会社が見つかりません",
-      addBalance: "残高追加",
-      deductBalance: "残高控除",
-    },
-  };
-
-  const t = labels[locale];
-
   // Fetch wallet
   const fetchWallet = useCallback(async () => {
     if (isNaN(companyId)) {
-      setError(t.notFound);
+      setError(t("notFound"));
       setLoading(false);
       return;
     }
@@ -102,12 +65,12 @@ export function WalletDetailContent({
       setError(null);
     } catch (err) {
       console.error("Failed to fetch wallet:", err);
-      setError(t.errorLoading);
-      toast.error(t.errorLoading);
+      setError(t("messages.errorLoading"));
+      toast.error(t("messages.errorLoading"));
     } finally {
       setLoading(false);
     }
-  }, [companyId, t.errorLoading, t.notFound]);
+  }, [companyId, t]);
 
   useEffect(() => {
     fetchWallet();
@@ -160,7 +123,7 @@ export function WalletDetailContent({
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{t.title}</h1>
+            <h1 className="text-2xl font-bold">{t("walletDetail")}</h1>
             {wallet && (
               <p className="text-muted-foreground">
                 Company ID: {wallet.companyId}
@@ -172,7 +135,7 @@ export function WalletDetailContent({
           <RefreshCw
             className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
           />
-          {t.refresh}
+          {tCommon("refresh")}
         </Button>
       </div>
 
@@ -208,7 +171,7 @@ export function WalletDetailContent({
                 className="flex-1"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {t.addBalance}
+                {t("addBalance")}
               </Button>
               <Button
                 onClick={handleDeductBalance}
@@ -216,7 +179,7 @@ export function WalletDetailContent({
                 className="flex-1"
               >
                 <Minus className="h-4 w-4 mr-2" />
-                {t.deductBalance}
+                {t("deductBalance")}
               </Button>
             </div>
           )}
@@ -226,7 +189,7 @@ export function WalletDetailContent({
       {/* Transaction History */}
       {!error && wallet && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">{t.transactions}</h2>
+          <h2 className="text-xl font-semibold">{t("transactions")}</h2>
           <AdminTransactionTable
             companyId={companyId}
             locale={locale}
@@ -243,7 +206,6 @@ export function WalletDetailContent({
           companyId={companyId}
           companyName={`Company ${companyId}`}
           onSuccess={handleRefundSuccess}
-          locale={locale}
         />
       )}
 
@@ -257,7 +219,6 @@ export function WalletDetailContent({
           currentBalance={wallet.balance}
           operation={directWalletOperation}
           onSuccess={handleDirectWalletSuccess}
-          locale={locale}
         />
       )}
     </div>

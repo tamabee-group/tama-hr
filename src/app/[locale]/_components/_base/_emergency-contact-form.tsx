@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
@@ -26,42 +27,46 @@ export function EmergencyContactForm({
   isEditing,
   errors,
 }: EmergencyContactFormProps) {
+  const t = useTranslations("users.emergencyContact");
+
   return (
     <div className="border-t pt-4 sm:border sm:rounded-lg sm:p-4 space-y-4">
-      <h3 className="font-semibold text-sm">Liên lạc khẩn cấp</h3>
+      <h3 className="font-semibold text-sm">{t("title")}</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <Label className="text-muted-foreground text-xs">Họ & tên</Label>
+          <Label className="text-muted-foreground text-xs">{t("name")}</Label>
           <Input
             value={data.emergencyContactName}
             onChange={(e) => onChange({ emergencyContactName: e.target.value })}
             disabled={!isEditing}
-            placeholder="Nguyễn Văn A"
+            placeholder={t("namePlaceholder")}
             className="mt-1"
           />
         </div>
         <div>
-          <Label className="text-muted-foreground text-xs">Mối quan hệ</Label>
+          <Label className="text-muted-foreground text-xs">
+            {t("relation")}
+          </Label>
           <Input
             value={data.emergencyContactRelation}
             onChange={(e) =>
               onChange({ emergencyContactRelation: e.target.value })
             }
             disabled={!isEditing}
-            placeholder="Bố/Mẹ/Vợ/Chồng"
+            placeholder={t("relationPlaceholder")}
             className="mt-1"
           />
         </div>
       </div>
 
       <div>
-        <Label className="text-muted-foreground text-xs">Số điện thoại</Label>
+        <Label className="text-muted-foreground text-xs">{t("phone")}</Label>
         <Input
           value={data.emergencyContactPhone}
           onChange={(e) => onChange({ emergencyContactPhone: e.target.value })}
           disabled={!isEditing}
-          placeholder="0901234567"
+          placeholder={t("phonePlaceholder")}
           className="mt-1"
         />
         {errors?.emergencyContactPhone && (
@@ -72,14 +77,14 @@ export function EmergencyContactForm({
       </div>
 
       <div>
-        <Label className="text-muted-foreground text-xs">Địa chỉ</Label>
+        <Label className="text-muted-foreground text-xs">{t("address")}</Label>
         <Input
           value={data.emergencyContactAddress}
           onChange={(e) =>
             onChange({ emergencyContactAddress: e.target.value })
           }
           disabled={!isEditing}
-          placeholder="123 Đường ABC, Quận XYZ"
+          placeholder={t("addressPlaceholder")}
           className="mt-1"
         />
       </div>

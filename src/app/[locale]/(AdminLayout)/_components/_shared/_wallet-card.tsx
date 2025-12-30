@@ -1,6 +1,7 @@
 "use client";
 
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatDate } from "@/lib/utils/format-date";
 import { Button } from "@/components/ui/button";
 import { Calendar, CreditCard, Gift } from "lucide-react";
 
@@ -41,20 +42,6 @@ export function SharedWalletCard({
   onDeposit,
   onRefund,
 }: SharedWalletCardProps) {
-  /** Format ngày theo định dạng dd/MM/yyyy */
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "-";
-    try {
-      return new Date(dateString).toLocaleDateString("vi-VN", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
   return (
     <div className="space-y-4">
       {/* Credit Card Style */}
@@ -141,8 +128,8 @@ export function SharedWalletCard({
                 </p>
                 <p className="text-white text-sm font-semibold">
                   {wallet.isFreeTrialActive
-                    ? formatDate(wallet.freeTrialEndDate)
-                    : formatDate(wallet.nextBillingDate)}
+                    ? formatDate(wallet.freeTrialEndDate, locale)
+                    : formatDate(wallet.nextBillingDate, locale)}
                 </p>
               </div>
               <Calendar className="h-4 w-4 text-white/60" />

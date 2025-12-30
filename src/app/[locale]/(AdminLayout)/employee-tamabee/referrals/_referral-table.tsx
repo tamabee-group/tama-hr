@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Pagination } from "@/app/[locale]/_components/_base/_pagination";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,27 +12,12 @@ import { ReferredCompany, ReferralFilterRequest } from "@/types/referral";
 import { referralApi } from "@/lib/apis/referral-api";
 import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { formatCurrency } from "@/lib/utils/format-currency";
-import {
-  CommissionStatus,
-  COMMISSION_STATUS_LABELS,
-  COMMISSION_STATUS_COLORS,
-} from "@/types/enums";
+import { CommissionStatus, COMMISSION_STATUS_COLORS } from "@/types/enums";
 
 interface ReferralTableProps {
   onRowClick: (company: ReferredCompany) => void;
   refreshTrigger?: number;
 }
-
-// Định nghĩa headers cho table
-const TABLE_HEADERS = [
-  "Tên công ty",
-  "Gói dịch vụ",
-  "Trạng thái",
-  "Số dư",
-  "Tổng nạp",
-  "Tổng billing",
-  "Trạng thái hoa hồng",
-];
 
 /**
  * Component bảng hiển thị danh sách công ty đã giới thiệu
@@ -42,11 +28,25 @@ export function ReferralTable({
   onRowClick,
   refreshTrigger,
 }: ReferralTableProps) {
+  const t = useTranslations("referrals");
+  const tEnums = useTranslations("enums");
+  const tErrors = useTranslations("errors");
   const [companies, setCompanies] = useState<ReferredCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Table headers
+  const tableHeaders = [
+    t("table.companyName"),
+    t("table.plan"),
+    t("table.status"),
+    t("table.balance"),
+    t("table.totalDeposits"),
+    t("table.totalBilling"),
+    t("table.commissionStatus"),
+  ];
 
   // Fetch danh sách companies
   const loadCompanies = useCallback(async () => {
@@ -67,12 +67,12 @@ export function ReferralTable({
     } catch (error) {
       console.error("Failed to fetch referred companies:", error);
       handleApiError(error, {
-        defaultMessage: "Không thể tải danh sách công ty đã giới thiệu",
+        defaultMessage: tErrors("generic"),
       });
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm]);
+  }, [page, searchTerm, tErrors]);
 
   useEffect(() => {
     loadCompanies();
@@ -129,7 +129,7 @@ export function ReferralTable({
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Tìm kiếm theo tên công ty..."
+            placeholder={t("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -141,14 +141,14 @@ export function ReferralTable({
       {/* Table */}
       {companies.length === 0 ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
-          Bạn chưa giới thiệu công ty nào
+          {t("noCompanies")}
         </div>
       ) : (
         <div className="rounded-md border overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50">
-                {TABLE_HEADERS.map((header, index) => (
+                {tableHeaders.map((header, index) => (
                   <th
                     key={index}
                     className="h-12 px-4 text-left align-middle font-medium text-muted-foreground whitespace-nowrap"
@@ -181,8 +181,8 @@ export function ReferralTable({
                       }
                     >
                       {company.status === "ACTIVE"
-                        ? "Hoạt động"
-                        : "Không hoạt động"}
+                        ? t("status.active")
+                        : t("status.inactive")}
                     </Badge>
                   </td>
                   <td className="p-4 text-right font-medium">
@@ -201,8 +201,7 @@ export function ReferralTable({
                         company.commissionStatus,
                       )}
                     >
-                      {COMMISSION_STATUS_LABELS[company.commissionStatus]?.vi ||
-                        company.commissionStatus}
+                      {tEnums(`commissionStatus.${company.commissionStatus}`)}
                     </Badge>
                   </td>
                 </tr>

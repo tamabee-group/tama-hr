@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AdminLayoutWrapper } from "../_components/_admin-layout-wrapper";
-import { getFilteredSidebarGroups } from "./_components/_tamabee-sidebar-items";
+import {
+  useTamabeeSidebarGroups,
+  getFilteredSidebarGroups,
+} from "./_components/_tamabee-sidebar-items";
 import { usePendingDepositsCount } from "@/hooks/use-pending-deposits-count";
 import type { SidebarHeaderConfig } from "@/types/sidebar";
 import { SidebarLogo } from "@/app/[locale]/_components/_logo";
@@ -31,6 +34,7 @@ export default function TamabeeAdminLayout({
   const router = useRouter();
   const { user, status } = useAuth();
   const { count: pendingDepositsCount } = usePendingDepositsCount();
+  const sidebarGroups = useTamabeeSidebarGroups();
 
   // Redirect nếu không có quyền truy cập
   useEffect(() => {
@@ -69,7 +73,10 @@ export default function TamabeeAdminLayout({
   };
 
   // Filter sidebar items dựa trên role của user
-  const filteredSidebarGroups = getFilteredSidebarGroups(user.role);
+  const filteredSidebarGroups = getFilteredSidebarGroups(
+    sidebarGroups,
+    user.role,
+  );
 
   return (
     <AdminLayoutWrapper

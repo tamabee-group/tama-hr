@@ -14,6 +14,9 @@ import { sendVerificationCode, verifyEmail } from "@/lib/apis/auth";
 import { Spinner } from "@/components/ui/spinner";
 import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/use-key-down";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 interface Props {
   formData: RegisterFormData;
@@ -36,6 +39,11 @@ const Step2: NextPage<Props> = ({
   resendTimer,
   setResendTimer,
 }) => {
+  const t = useTranslations("auth");
+  const tRegister = useTranslations("auth.register");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+
   const [canResend, setCanResend] = useState(resendTimer === 0);
 
   useEffect(() => {
@@ -60,8 +68,7 @@ const Step2: NextPage<Props> = ({
       setVerified(true);
     } catch (error) {
       console.error("Error verifying code:", error);
-      const message = error instanceof Error ? error.message : "Unknown error";
-      alert(`Mã xác thực không đúng: ${message}`);
+      toast.error(getErrorMessage(error, tErrors, t("invalidCode")));
       setFormData({ ...formData, otp: "" });
     } finally {
       setVerifying(false);
@@ -92,14 +99,12 @@ const Step2: NextPage<Props> = ({
       setCanResend(false);
     } catch (error) {
       console.error("Error resending code:", error);
-      const message = error instanceof Error ? error.message : "Unknown error";
-      alert(`Không thể gửi lại mã: ${message}`);
+      toast.error(getErrorMessage(error, tErrors, t("resendFailed")));
     } finally {
       setResending(false);
     }
   };
 
-  // Nếu đã verify thành công, hiển thị màn hình thành công
   if (verified) {
     return (
       <Card className="space-y-6 max-w-[450px] mx-auto">
@@ -108,10 +113,10 @@ const Step2: NextPage<Props> = ({
             <BadgeCheck className="h-12 w-12 text-green-600 dark:text" />
           </div>
           <CardTitle className="text-2xl text-green-600 dark:text">
-            Xác thực thành công!
+            {tRegister("verifySuccess")}
           </CardTitle>
           <CardDescription>
-            Email của bạn đã được xác thực
+            {tRegister("verifySuccessDesc")}
             <br />
             <span className="font-semibold text-foreground">
               {formData.email}
@@ -120,10 +125,10 @@ const Step2: NextPage<Props> = ({
         </div>
         <div className="flex gap-3 max-w-md mx-auto">
           <Button onClick={handleBack} variant="outline" className="flex-1">
-            Quay lại
+            {tCommon("back")}
           </Button>
           <Button onClick={handleNext} className="flex-1">
-            Tiếp theo
+            {tCommon("next")}
           </Button>
         </div>
       </Card>
@@ -136,9 +141,9 @@ const Step2: NextPage<Props> = ({
         <div className="flex justify-center mb-4">
           <Mail className="h-12 w-12 text-primary" />
         </div>
-        <CardTitle className="text-2xl">Xác thực email</CardTitle>
+        <CardTitle className="text-2xl">{tRegister("verifyTitle")}</CardTitle>
         <CardDescription>
-          Nhập mã 6 số đã gửi đến
+          {tRegister("verifyDescription")}
           <br />
           <span className="font-semibold text-foreground">
             {formData.email}
@@ -164,7 +169,7 @@ const Step2: NextPage<Props> = ({
         {verifying && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Spinner />
-            <span>Đang xác thực...</span>
+            <span>{tRegister("verifying")}</span>
           </div>
         )}
       </div>
@@ -177,10 +182,10 @@ const Step2: NextPage<Props> = ({
             className="text-sm"
           >
             {resending
-              ? "Đang gửi..."
+              ? tRegister("processing")
               : canResend
-                ? "Gửi lại mã"
-                : `Gửi lại sau ${resendTimer}s`}
+                ? t("resendCode")
+                : t("resendAfter", { seconds: resendTimer })}
           </Button>
         </div>
         <div className="flex gap-3 max-w-md mx-auto">
@@ -190,14 +195,14 @@ const Step2: NextPage<Props> = ({
             className="flex-1"
             disabled={verifying}
           >
-            Quay lại
+            {tCommon("back")}
           </Button>
           <Button
             onClick={handleVerify}
             className="flex-1"
             disabled={formData.otp.length !== 6 || verifying}
           >
-            Tiếp theo
+            {tCommon("next")}
           </Button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +39,7 @@ export interface PlanFormData {
 interface PlanFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  plan?: PlanResponse; // Edit mode nếu có
+  plan?: PlanResponse;
   onSuccess: () => void;
   locale?: SupportedLocale;
 }
@@ -54,8 +55,9 @@ export function PlanForm({
   onOpenChange,
   plan,
   onSuccess,
-  locale = "vi",
 }: PlanFormProps) {
+  const t = useTranslations("plans");
+  const tCommon = useTranslations("common");
   const isEditMode = !!plan;
 
   const [formData, setFormData] = useState<PlanFormData>({
@@ -73,84 +75,6 @@ export function PlanForm({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Labels theo locale
-  const labels = {
-    vi: {
-      titleCreate: "Thêm gói dịch vụ",
-      titleEdit: "Sửa gói dịch vụ",
-      description: "Nhập thông tin gói dịch vụ cho 3 ngôn ngữ",
-      vietnamese: "Tiếng Việt",
-      english: "Tiếng Anh",
-      japanese: "Tiếng Nhật",
-      name: "Tên gói",
-      descriptionField: "Mô tả",
-      monthlyPrice: "Giá hàng tháng (VND)",
-      maxEmployees: "Số nhân viên tối đa",
-      isActive: "Đang hoạt động",
-      features: "Tính năng",
-      cancel: "Hủy",
-      save: "Lưu",
-      saving: "Đang lưu...",
-      successCreate: "Tạo gói dịch vụ thành công",
-      successEdit: "Cập nhật gói dịch vụ thành công",
-      errorCreate: "Không thể tạo gói dịch vụ",
-      errorEdit: "Không thể cập nhật gói dịch vụ",
-      required: "Trường này là bắt buộc",
-      invalidPrice: "Giá phải lớn hơn hoặc bằng 0",
-      invalidMaxEmployees: "Số nhân viên phải lớn hơn 0",
-    },
-    en: {
-      titleCreate: "Add Plan",
-      titleEdit: "Edit Plan",
-      description: "Enter plan information for 3 languages",
-      vietnamese: "Vietnamese",
-      english: "English",
-      japanese: "Japanese",
-      name: "Plan Name",
-      descriptionField: "Description",
-      monthlyPrice: "Monthly Price (VND)",
-      maxEmployees: "Max Employees",
-      isActive: "Active",
-      features: "Features",
-      cancel: "Cancel",
-      save: "Save",
-      saving: "Saving...",
-      successCreate: "Plan created successfully",
-      successEdit: "Plan updated successfully",
-      errorCreate: "Failed to create plan",
-      errorEdit: "Failed to update plan",
-      required: "This field is required",
-      invalidPrice: "Price must be greater than or equal to 0",
-      invalidMaxEmployees: "Max employees must be greater than 0",
-    },
-    ja: {
-      titleCreate: "プランを追加",
-      titleEdit: "プランを編集",
-      description: "3言語でプラン情報を入力してください",
-      vietnamese: "ベトナム語",
-      english: "英語",
-      japanese: "日本語",
-      name: "プラン名",
-      descriptionField: "説明",
-      monthlyPrice: "月額料金 (VND)",
-      maxEmployees: "最大従業員数",
-      isActive: "有効",
-      features: "機能",
-      cancel: "キャンセル",
-      save: "保存",
-      saving: "保存中...",
-      successCreate: "プランが正常に作成されました",
-      successEdit: "プランが正常に更新されました",
-      errorCreate: "プランの作成に失敗しました",
-      errorEdit: "プランの更新に失敗しました",
-      required: "この項目は必須です",
-      invalidPrice: "価格は0以上である必要があります",
-      invalidMaxEmployees: "最大従業員数は0より大きくなければなりません",
-    },
-  };
-
-  const t = labels[locale];
 
   // Load plan data khi edit mode
   useEffect(() => {
@@ -198,21 +122,25 @@ export function PlanForm({
     const newErrors: Record<string, string> = {};
 
     // Validate names
-    if (!formData.nameVi.trim()) newErrors.nameVi = t.required;
-    if (!formData.nameEn.trim()) newErrors.nameEn = t.required;
-    if (!formData.nameJa.trim()) newErrors.nameJa = t.required;
+    if (!formData.nameVi.trim()) newErrors.nameVi = t("validation.required");
+    if (!formData.nameEn.trim()) newErrors.nameEn = t("validation.required");
+    if (!formData.nameJa.trim()) newErrors.nameJa = t("validation.required");
 
     // Validate descriptions
-    if (!formData.descriptionVi.trim()) newErrors.descriptionVi = t.required;
-    if (!formData.descriptionEn.trim()) newErrors.descriptionEn = t.required;
-    if (!formData.descriptionJa.trim()) newErrors.descriptionJa = t.required;
+    if (!formData.descriptionVi.trim())
+      newErrors.descriptionVi = t("validation.required");
+    if (!formData.descriptionEn.trim())
+      newErrors.descriptionEn = t("validation.required");
+    if (!formData.descriptionJa.trim())
+      newErrors.descriptionJa = t("validation.required");
 
     // Validate price
-    if (formData.monthlyPrice < 0) newErrors.monthlyPrice = t.invalidPrice;
+    if (formData.monthlyPrice < 0)
+      newErrors.monthlyPrice = t("validation.invalidPrice");
 
     // Validate maxEmployees
     if (formData.maxEmployees <= 0)
-      newErrors.maxEmployees = t.invalidMaxEmployees;
+      newErrors.maxEmployees = t("validation.invalidMaxEmployees");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -227,17 +155,19 @@ export function PlanForm({
     try {
       if (isEditMode && plan) {
         await planApi.update(plan.id, formData);
-        toast.success(t.successEdit);
+        toast.success(t("messages.updateSuccess"));
       } else {
         await planApi.create(formData);
-        toast.success(t.successCreate);
+        toast.success(t("messages.createSuccess"));
       }
       resetForm();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
       console.error("Failed to save plan:", error);
-      toast.error(isEditMode ? t.errorEdit : t.errorCreate);
+      toast.error(
+        isEditMode ? t("messages.updateError") : t("messages.createError"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -268,19 +198,21 @@ export function PlanForm({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? t.titleEdit : t.titleCreate}</DialogTitle>
-          <DialogDescription>{t.description}</DialogDescription>
+          <DialogTitle>
+            {isEditMode ? t("editPlan") : t("createPlan")}
+          </DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Vietnamese Section */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground">
-              🇻🇳 {t.vietnamese}
+              🇻🇳 {t("form.vietnamese")}
             </h3>
             <div className="grid gap-4">
               <div className="space-y-2">
-                <Label htmlFor="nameVi">{t.name}</Label>
+                <Label htmlFor="nameVi">{t("form.name")}</Label>
                 <Input
                   id="nameVi"
                   value={formData.nameVi}
@@ -293,7 +225,7 @@ export function PlanForm({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="descriptionVi">{t.descriptionField}</Label>
+                <Label htmlFor="descriptionVi">{t("form.description")}</Label>
                 <Textarea
                   id="descriptionVi"
                   value={formData.descriptionVi}
@@ -318,11 +250,11 @@ export function PlanForm({
           {/* English Section */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground">
-              🇺🇸 {t.english}
+              🇺🇸 {t("form.english")}
             </h3>
             <div className="grid gap-4">
               <div className="space-y-2">
-                <Label htmlFor="nameEn">{t.name}</Label>
+                <Label htmlFor="nameEn">{t("form.name")}</Label>
                 <Input
                   id="nameEn"
                   value={formData.nameEn}
@@ -335,7 +267,7 @@ export function PlanForm({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="descriptionEn">{t.descriptionField}</Label>
+                <Label htmlFor="descriptionEn">{t("form.description")}</Label>
                 <Textarea
                   id="descriptionEn"
                   value={formData.descriptionEn}
@@ -360,11 +292,11 @@ export function PlanForm({
           {/* Japanese Section */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground">
-              🇯🇵 {t.japanese}
+              🇯🇵 {t("form.japanese")}
             </h3>
             <div className="grid gap-4">
               <div className="space-y-2">
-                <Label htmlFor="nameJa">{t.name}</Label>
+                <Label htmlFor="nameJa">{t("form.name")}</Label>
                 <Input
                   id="nameJa"
                   value={formData.nameJa}
@@ -377,7 +309,7 @@ export function PlanForm({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="descriptionJa">{t.descriptionField}</Label>
+                <Label htmlFor="descriptionJa">{t("form.description")}</Label>
                 <Textarea
                   id="descriptionJa"
                   value={formData.descriptionJa}
@@ -402,7 +334,7 @@ export function PlanForm({
           {/* Common Fields */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="monthlyPrice">{t.monthlyPrice}</Label>
+              <Label htmlFor="monthlyPrice">{t("form.price")}</Label>
               <Input
                 id="monthlyPrice"
                 type="number"
@@ -423,7 +355,7 @@ export function PlanForm({
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="maxEmployees">{t.maxEmployees}</Label>
+              <Label htmlFor="maxEmployees">{t("form.maxEmployees")}</Label>
               <Input
                 id="maxEmployees"
                 type="number"
@@ -447,7 +379,7 @@ export function PlanForm({
 
           {/* Active toggle */}
           <div className="flex items-center justify-between">
-            <Label htmlFor="isActive">{t.isActive}</Label>
+            <Label htmlFor="isActive">{t("form.isActive")}</Label>
             <Switch
               id="isActive"
               checked={formData.isActive}
@@ -462,12 +394,11 @@ export function PlanForm({
 
           {/* Features Section */}
           <div className="space-y-4">
-            <h3 className="font-semibold">{t.features}</h3>
+            <h3 className="font-semibold">{t("form.features")}</h3>
             <PlanFeatureForm
               features={formData.features}
               onChange={handleFeaturesChange}
               disabled={isSubmitting}
-              locale={locale}
             />
           </div>
 
@@ -478,13 +409,13 @@ export function PlanForm({
               onClick={handleClose}
               disabled={isSubmitting}
             >
-              {t.cancel}
+              {tCommon("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isSubmitting ? t.saving : t.save}
+              {isSubmitting ? t("form.saving") : tCommon("save")}
             </Button>
           </DialogFooter>
         </form>

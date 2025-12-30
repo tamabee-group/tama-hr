@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { PlanResponse } from "@/types/plan";
 import { planApi } from "@/lib/apis/plan-api";
 import { PlanCard } from "./_plan-card";
@@ -31,6 +32,8 @@ import { SupportedLocale } from "@/lib/utils/format-currency";
 export default function TamabeePlansPage() {
   const params = useParams();
   const locale = (params.locale as SupportedLocale) || "vi";
+  const t = useTranslations("plans");
+  const tCommon = useTranslations("common");
 
   const [plans, setPlans] = useState<PlanResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,74 +48,20 @@ export default function TamabeePlansPage() {
   const [deletingPlan, setDeletingPlan] = useState<PlanResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Quản lý gói dịch vụ",
-      description: "Quản lý các gói subscription cho khách hàng",
-      addPlan: "Thêm gói",
-      refresh: "Làm mới",
-      errorLoading: "Không thể tải danh sách gói dịch vụ",
-      noPlans: "Chưa có gói dịch vụ nào",
-      deleteTitle: "Xác nhận xóa",
-      deleteDescription:
-        "Bạn có chắc chắn muốn xóa gói dịch vụ này? Hành động này không thể hoàn tác.",
-      deleteCancel: "Hủy",
-      deleteConfirm: "Xóa",
-      deleteSuccess: "Xóa gói dịch vụ thành công",
-      deleteError: "Không thể xóa gói dịch vụ",
-      planInUse: "Gói dịch vụ đang được sử dụng, không thể xóa",
-    },
-    en: {
-      title: "Plan Management",
-      description: "Manage subscription plans for customers",
-      addPlan: "Add Plan",
-      refresh: "Refresh",
-      errorLoading: "Failed to load plans",
-      noPlans: "No plans yet",
-      deleteTitle: "Confirm Delete",
-      deleteDescription:
-        "Are you sure you want to delete this plan? This action cannot be undone.",
-      deleteCancel: "Cancel",
-      deleteConfirm: "Delete",
-      deleteSuccess: "Plan deleted successfully",
-      deleteError: "Failed to delete plan",
-      planInUse: "Plan is in use and cannot be deleted",
-    },
-    ja: {
-      title: "プラン管理",
-      description: "顧客向けサブスクリプションプランの管理",
-      addPlan: "プランを追加",
-      refresh: "更新",
-      errorLoading: "プランの読み込みに失敗しました",
-      noPlans: "プランがまだありません",
-      deleteTitle: "削除の確認",
-      deleteDescription:
-        "このプランを削除してもよろしいですか？この操作は元に戻せません。",
-      deleteCancel: "キャンセル",
-      deleteConfirm: "削除",
-      deleteSuccess: "プランが正常に削除されました",
-      deleteError: "プランの削除に失敗しました",
-      planInUse: "プランは使用中のため削除できません",
-    },
-  };
-
-  const t = labels[locale];
-
   // Fetch plans
   const fetchPlans = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await planApi.getAll(0, 100); // Lấy tất cả plans
+      const response = await planApi.getAll(0, 100);
       setPlans(response.content);
       setError(null);
     } catch (err) {
       console.error("Failed to fetch plans:", err);
-      setError(t.errorLoading);
+      setError(tCommon("errorLoading"));
     } finally {
       setLoading(false);
     }
-  }, [t.errorLoading]);
+  }, [tCommon]);
 
   useEffect(() => {
     fetchPlans();
@@ -143,21 +92,20 @@ export default function TamabeePlansPage() {
     setIsDeleting(true);
     try {
       await planApi.delete(deletingPlan.id);
-      toast.success(t.deleteSuccess);
+      toast.success(t("messages.deleteSuccess"));
       setDeleteDialogOpen(false);
       setDeletingPlan(null);
       fetchPlans();
     } catch (error: unknown) {
       console.error("Failed to delete plan:", error);
-      // Kiểm tra nếu plan đang được sử dụng
       const errorMessage = error instanceof Error ? error.message : "";
       if (
         errorMessage.includes("in use") ||
         errorMessage.includes("CONFLICT")
       ) {
-        toast.error(t.planInUse);
+        toast.error(t("messages.planInUse"));
       } else {
-        toast.error(t.deleteError);
+        toast.error(t("messages.deleteError"));
       }
     } finally {
       setIsDeleting(false);
@@ -174,8 +122,10 @@ export default function TamabeePlansPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{t.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("description")}
+          </p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -187,11 +137,11 @@ export default function TamabeePlansPage() {
             <RefreshCw
               className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
             />
-            {t.refresh}
+            {t("refresh")}
           </Button>
           <Button size="sm" onClick={handleAddPlan}>
             <Plus className="h-4 w-4 mr-2" />
-            {t.addPlan}
+            {t("addPlan")}
           </Button>
         </div>
       </div>
@@ -218,10 +168,10 @@ export default function TamabeePlansPage() {
         </div>
       ) : plans.length === 0 ? (
         <div className="rounded-xl border p-12 text-center">
-          <p className="text-muted-foreground">{t.noPlans}</p>
+          <p className="text-muted-foreground">{t("noPlans")}</p>
           <Button onClick={handleAddPlan} className="mt-4">
             <Plus className="h-4 w-4 mr-2" />
-            {t.addPlan}
+            {t("addPlan")}
           </Button>
         </div>
       ) : (
@@ -252,21 +202,21 @@ export default function TamabeePlansPage() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t.deleteTitle}</AlertDialogTitle>
+            <AlertDialogTitle>{t("dialog.deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t.deleteDescription}
+              {t("dialog.deleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>
-              {t.deleteCancel}
+              {tCommon("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {t.deleteConfirm}
+              {tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

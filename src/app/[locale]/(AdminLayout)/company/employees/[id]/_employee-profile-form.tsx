@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   BaseUserProfileForm,
   UserProfileFormData,
@@ -12,6 +13,8 @@ import { COMPANY_USER_ROLES } from "@/types/enums";
 import { User } from "@/types/user";
 
 export function EmployeeProfileForm({ employee }: { employee: User }) {
+  const t = useTranslations("users");
+
   const handleSave = async (userId: number, data: UserProfileFormData) => {
     await updateCompanyEmployee(userId, data);
   };
@@ -23,7 +26,7 @@ export function EmployeeProfileForm({ employee }: { employee: User }) {
   return (
     <BaseUserProfileForm
       user={employee}
-      title="Thông tin nhân viên"
+      title={t("personalInfo")}
       roles={COMPANY_USER_ROLES}
       onSave={handleSave}
       onUploadAvatar={handleUploadAvatar}

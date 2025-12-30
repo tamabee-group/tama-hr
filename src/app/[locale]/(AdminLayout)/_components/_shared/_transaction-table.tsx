@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { Pagination } from "@/app/[locale]/_components/_base/_pagination";
 import {
@@ -9,9 +10,9 @@ import {
 } from "@/types/wallet";
 import { TransactionType } from "@/types/enums";
 import { SupportedLocale } from "@/lib/utils/format-currency";
+import { formatDateForApi } from "@/lib/utils/format-date";
 import { PaginatedResponse, DEFAULT_PAGE_SIZE } from "@/types/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import { TransactionFilters } from "./_transaction-filters";
 import { createTransactionColumns } from "./_transaction-columns";
@@ -49,6 +50,8 @@ export function SharedTransactionTable({
   locale = "vi",
   refreshTrigger,
 }: SharedTransactionTableProps) {
+  const tEnums = useTranslations("enums");
+  const t = useTranslations("commissions");
   const [transactions, setTransactions] = useState<WalletTransactionResponse[]>(
     [],
   );
@@ -60,7 +63,10 @@ export function SharedTransactionTable({
   const [endDate, setEndDate] = useState<Date | undefined>();
 
   // Memoize columns để tránh re-render không cần thiết
-  const columns = useMemo(() => createTransactionColumns(locale), [locale]);
+  const columns = useMemo(
+    () => createTransactionColumns(locale, tEnums),
+    [locale, tEnums],
+  );
 
   // Fetch transactions data
   const loadTransactions = useCallback(async () => {
@@ -71,11 +77,11 @@ export function SharedTransactionTable({
       setTotalPages(response.totalPages);
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
-      toast.error("Không thể tải lịch sử giao dịch");
+      toast.error(t("messages.loadTransactionsError"));
     } finally {
       setLoading(false);
     }
-  }, [fetchTransactions, filter, page]);
+  }, [fetchTransactions, filter, page, t]);
 
   // Load data khi mount hoặc dependencies thay đổi
   useEffect(() => {
@@ -97,8 +103,9 @@ export function SharedTransactionTable({
   const handleStartDateChange = (date: Date | undefined) => {
     setStartDate(date);
     const newFilter = { ...filter };
-    if (date) {
-      newFilter.startDate = format(date, "yyyy-MM-dd");
+    const formattedDate = formatDateForApi(date);
+    if (formattedDate) {
+      newFilter.startDate = formattedDate;
     } else {
       delete newFilter.startDate;
     }
@@ -109,8 +116,9 @@ export function SharedTransactionTable({
   const handleEndDateChange = (date: Date | undefined) => {
     setEndDate(date);
     const newFilter = { ...filter };
-    if (date) {
-      newFilter.endDate = format(date, "yyyy-MM-dd");
+    const formattedDate = formatDateForApi(date);
+    if (formattedDate) {
+      newFilter.endDate = formattedDate;
     } else {
       delete newFilter.endDate;
     }
@@ -151,6 +159,7 @@ export function SharedTransactionTable({
         startDate={startDate}
         endDate={endDate}
         locale={locale}
+        tEnums={tEnums}
         onTypeChange={handleTypeChange}
         onStartDateChange={handleStartDateChange}
         onEndDateChange={handleEndDateChange}

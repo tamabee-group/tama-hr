@@ -7,6 +7,7 @@ import { login as loginApi, register } from "@/lib/apis/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Step1 from "./_step-1";
 import Step2 from "./_step-2";
 import Step3 from "./_step-3";
@@ -15,16 +16,19 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import type { RegisterFormData } from "@/types/register";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 const RegisterPage: NextPage = () => {
   const { login } = useAuth();
+  const t = useTranslations("auth");
+  const tErrors = useTranslations("errors");
   const [step, setStep] = useState(1);
   const [prevStep, setPrevStep] = useState(1);
   const [zipcode, setZipcode] = useState("");
-  const [emailSent, setEmailSent] = useState(""); // Track email đã gửi
-  const [companySent, setCompanySent] = useState(""); // Track tên công ty đã gửi verify
-  const [verified, setVerified] = useState(false); // Track đã verify thành công
-  const [resendTimer, setResendTimer] = useState(0); // Timer cho resend
+  const [emailSent, setEmailSent] = useState("");
+  const [companySent, setCompanySent] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const [formData, setFormData] = useState<RegisterFormData>({
     companyName: "TAMABEE",
     ownerName: "Quang Hiep",
@@ -86,29 +90,29 @@ const RegisterPage: NextPage = () => {
         referralCode: formData.referralCode || undefined,
       });
 
-      // Tự động đăng nhập sau khi đăng ký thành công
       const user = await loginApi(formData.email, formData.password);
       login(user);
-      toast.success("Đăng ký thành công!");
+      toast.success(t("registerSuccess"));
       router.push("/");
     } catch (error) {
       console.error("Registration error:", error);
-      const message = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Đăng ký thất bại: ${message}`);
+      toast.error(getErrorMessage(error, tErrors, t("registerFailed")));
     } finally {
       setSubmitting(false);
     }
   };
 
+  const steps = [
+    { num: 1, label: t("step.info") },
+    { num: 2, label: t("step.verify") },
+    { num: 3, label: t("step.password") },
+    { num: 4, label: t("step.confirm") },
+  ];
+
   return (
     <div className="w-full flex flex-col items-center pt-8 pb-14 gap-6">
       <div className="flex justify-center items-center gap-3">
-        {[
-          { num: 1, label: "Thông tin" },
-          { num: 2, label: "Xác thực" },
-          { num: 3, label: "Mật khẩu" },
-          { num: 4, label: "Xác nhận" },
-        ].map((s, idx) => (
+        {steps.map((s, idx) => (
           <div key={s.num} className="flex gap-3">
             <div className="flex flex-col items-center gap-2">
               <div

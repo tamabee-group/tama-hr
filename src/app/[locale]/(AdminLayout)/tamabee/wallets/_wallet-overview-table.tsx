@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { WalletOverviewResponse, WalletFilterRequest } from "@/types/wallet";
 import { PaginatedResponse, DEFAULT_PAGE_SIZE } from "@/types/api";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { getOverview } from "@/lib/apis/wallet-api";
+import { formatDate } from "@/lib/utils/format-date";
 import {
   Table,
   TableBody,
@@ -34,8 +36,6 @@ import {
   Gift,
   RefreshCw,
 } from "lucide-react";
-import { format } from "date-fns";
-import { vi, enUS, ja } from "date-fns/locale";
 
 interface WalletOverviewTableProps {
   locale?: SupportedLocale;
@@ -49,10 +49,6 @@ type SortOrder = "asc" | "desc";
 
 /**
  * Component hiển thị bảng tổng quan wallet của tất cả công ty
- * - Columns: companyName, balance, planName, nextBillingDate, isFreeTrialActive, totalDeposits
- * - Filter theo balance range và free trial status
- * - Sorting theo balance, nextBillingDate, companyName
- * - Pagination
  */
 export function WalletOverviewTable({
   locale = "vi",
@@ -61,6 +57,8 @@ export function WalletOverviewTable({
   onRefund,
 }: WalletOverviewTableProps) {
   const router = useRouter();
+  const t = useTranslations("wallet");
+
   const [data, setData] =
     useState<PaginatedResponse<WalletOverviewResponse> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,16 +68,11 @@ export function WalletOverviewTable({
   const [sortField, setSortField] = useState<SortField>("companyName");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
-  // Labels theo locale
-  const labels = getLabels(locale);
-  const dateLocale = locale === "vi" ? vi : locale === "ja" ? ja : enUS;
-
   // Fetch wallets
   const fetchWallets = useCallback(async () => {
     setLoading(true);
     try {
       const result = await getOverview(filter, currentPage, pageSize);
-      // Client-side sorting
       const sortedContent = sortWallets(result.content, sortField, sortOrder);
       setData({ ...result, content: sortedContent });
     } catch (error) {
@@ -139,17 +132,6 @@ export function WalletOverviewTable({
     router.push(`/${locale}/tamabee/wallets/${companyId}`);
   };
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "-";
-    try {
-      const date = new Date(dateString);
-      return format(date, "dd/MM/yyyy", { locale: dateLocale });
-    } catch {
-      return dateString;
-    }
-  };
-
   const hasActiveFilters =
     filter.companyName || filter.isFreeTrialActive !== undefined;
 
@@ -157,10 +139,9 @@ export function WalletOverviewTable({
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-center">
-        {/* Search by company name */}
         <div className="flex gap-2">
           <Input
-            placeholder={labels.searchPlaceholder}
+            placeholder={t("filter.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -171,7 +152,6 @@ export function WalletOverviewTable({
           </Button>
         </div>
 
-        {/* Free Trial Filter */}
         <Select
           value={
             filter.isFreeTrialActive === undefined
@@ -181,20 +161,19 @@ export function WalletOverviewTable({
           onValueChange={handleFreeTrialFilter}
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={labels.allStatus} />
+            <SelectValue placeholder={t("filter.allStatus")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{labels.allStatus}</SelectItem>
-            <SelectItem value="true">{labels.freeTrialOnly}</SelectItem>
-            <SelectItem value="false">{labels.paidOnly}</SelectItem>
+            <SelectItem value="ALL">{t("filter.allStatus")}</SelectItem>
+            <SelectItem value="true">{t("filter.freeTrialOnly")}</SelectItem>
+            <SelectItem value="false">{t("filter.paidOnly")}</SelectItem>
           </SelectContent>
         </Select>
 
-        {/* Clear Filters */}
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="h-4 w-4 mr-1" />
-            {labels.clearFilters}
+            {t("filter.clearFilters")}
           </Button>
         )}
       </div>
@@ -211,7 +190,7 @@ export function WalletOverviewTable({
                   className="-ml-3 h-8"
                   onClick={() => handleSort("companyName")}
                 >
-                  {labels.companyName}
+                  {t("table.companyName")}
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
@@ -222,11 +201,11 @@ export function WalletOverviewTable({
                   className="-ml-3 h-8"
                   onClick={() => handleSort("balance")}
                 >
-                  {labels.balance}
+                  {t("table.balance")}
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>{labels.planName}</TableHead>
+              <TableHead>{t("table.planName")}</TableHead>
               <TableHead>
                 <Button
                   variant="ghost"
@@ -234,42 +213,26 @@ export function WalletOverviewTable({
                   className="-ml-3 h-8"
                   onClick={() => handleSort("nextBillingDate")}
                 >
-                  {labels.nextBillingDate}
+                  {t("table.billingDate")}
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>{labels.status}</TableHead>
+              <TableHead>{t("table.status")}</TableHead>
               <TableHead className="text-right">
-                {labels.totalDeposits}
+                {t("table.totalDeposits")}
               </TableHead>
-              <TableHead className="text-right">{labels.actions}</TableHead>
+              <TableHead className="text-right">{t("table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="h-4 w-32" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-16" />
-                  </TableCell>
+                  {Array.from({ length: 7 }).map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             ) : data?.content.length ? (
@@ -288,8 +251,8 @@ export function WalletOverviewTable({
                   <TableCell>{wallet.planName || "-"}</TableCell>
                   <TableCell>
                     {wallet.isFreeTrialActive
-                      ? formatDate(wallet.freeTrialEndDate)
-                      : formatDate(wallet.nextBillingDate)}
+                      ? formatDate(wallet.freeTrialEndDate, locale)
+                      : formatDate(wallet.nextBillingDate, locale)}
                   </TableCell>
                   <TableCell>
                     {wallet.isFreeTrialActive ? (
@@ -298,10 +261,10 @@ export function WalletOverviewTable({
                         className="bg-purple-100 text-purple-700"
                       >
                         <Gift className="h-3 w-3 mr-1" />
-                        {labels.freeTrial}
+                        {t("status.freeTrial")}
                       </Badge>
                     ) : (
-                      <Badge variant="outline">{labels.active}</Badge>
+                      <Badge variant="outline">{t("status.active")}</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -317,7 +280,7 @@ export function WalletOverviewTable({
                       }}
                     >
                       <RefreshCw className="h-3 w-3 mr-1" />
-                      {labels.refund}
+                      {t("refund.button")}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -325,7 +288,7 @@ export function WalletOverviewTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  {labels.noResults}
+                  {t("messages.noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -337,9 +300,9 @@ export function WalletOverviewTable({
       {data && data.totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {labels.showing} {data.number * data.size + 1}-
+            {t("pagination.showing")} {data.number * data.size + 1}-
             {Math.min((data.number + 1) * data.size, data.totalElements)}{" "}
-            {labels.of} {data.totalElements}
+            {t("pagination.of")} {data.totalElements}
           </p>
           <div className="flex items-center gap-2">
             <Button
@@ -349,7 +312,7 @@ export function WalletOverviewTable({
               disabled={data.first}
             >
               <ChevronLeft className="h-4 w-4" />
-              {labels.previous}
+              {t("pagination.previous")}
             </Button>
             <span className="text-sm">
               {data.number + 1} / {data.totalPages}
@@ -360,7 +323,7 @@ export function WalletOverviewTable({
               onClick={() => setCurrentPage((p) => p + 1)}
               disabled={data.last}
             >
-              {labels.next}
+              {t("pagination.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -397,77 +360,4 @@ function sortWallets(
     }
     return order === "asc" ? comparison : -comparison;
   });
-}
-
-// Helper function để lấy labels theo locale
-function getLabels(locale: SupportedLocale) {
-  const labels = {
-    vi: {
-      companyName: "Tên công ty",
-      balance: "Số dư",
-      planName: "Gói dịch vụ",
-      nextBillingDate: "Ngày thanh toán",
-      status: "Trạng thái",
-      totalDeposits: "Tổng nạp",
-      actions: "Thao tác",
-      searchPlaceholder: "Tìm theo tên công ty...",
-      allStatus: "Tất cả trạng thái",
-      freeTrialOnly: "Đang dùng thử",
-      paidOnly: "Đã thanh toán",
-      clearFilters: "Xóa bộ lọc",
-      noResults: "Không có công ty nào",
-      showing: "Hiển thị",
-      of: "của",
-      previous: "Trước",
-      next: "Sau",
-      freeTrial: "Dùng thử",
-      active: "Hoạt động",
-      refund: "Hoàn tiền",
-    },
-    en: {
-      companyName: "Company Name",
-      balance: "Balance",
-      planName: "Plan",
-      nextBillingDate: "Billing Date",
-      status: "Status",
-      totalDeposits: "Total Deposits",
-      actions: "Actions",
-      searchPlaceholder: "Search by company name...",
-      allStatus: "All Status",
-      freeTrialOnly: "Free Trial",
-      paidOnly: "Paid",
-      clearFilters: "Clear Filters",
-      noResults: "No companies found",
-      showing: "Showing",
-      of: "of",
-      previous: "Previous",
-      next: "Next",
-      freeTrial: "Trial",
-      active: "Active",
-      refund: "Refund",
-    },
-    ja: {
-      companyName: "会社名",
-      balance: "残高",
-      planName: "プラン",
-      nextBillingDate: "請求日",
-      status: "ステータス",
-      totalDeposits: "入金合計",
-      actions: "操作",
-      searchPlaceholder: "会社名で検索...",
-      allStatus: "すべてのステータス",
-      freeTrialOnly: "無料トライアル",
-      paidOnly: "有料",
-      clearFilters: "フィルターをクリア",
-      noResults: "会社が見つかりません",
-      showing: "表示中",
-      of: "/",
-      previous: "前へ",
-      next: "次へ",
-      freeTrial: "トライアル",
-      active: "アクティブ",
-      refund: "返金",
-    },
-  };
-  return labels[locale];
 }

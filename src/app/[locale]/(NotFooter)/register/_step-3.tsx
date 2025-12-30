@@ -10,6 +10,7 @@ import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/use-key-down";
 import { useState } from "react";
 import { validatePassword } from "@/lib/validation";
+import { useTranslations } from "next-intl";
 
 interface Props {
   formData: RegisterFormData;
@@ -24,6 +25,11 @@ const Step3: NextPage<Props> = ({
   handleNext,
   handleBack,
 }) => {
+  const t = useTranslations("auth");
+  const tRegister = useTranslations("auth.register");
+  const tValidation = useTranslations("auth.validation");
+  const tCommon = useTranslations("common");
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = () => {
@@ -35,9 +41,9 @@ const Step3: NextPage<Props> = ({
     }
 
     if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+      newErrors.confirmPassword = tValidation("confirmPasswordRequired");
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Mật khẩu không khớp";
+      newErrors.confirmPassword = tValidation("passwordMismatch");
     }
 
     setErrors(newErrors);
@@ -59,12 +65,12 @@ const Step3: NextPage<Props> = ({
           <Lock className="h-12 w-12 text-primary" />
         </div>
 
-        <CardTitle className="text-2xl">Đặt mật khẩu</CardTitle>
-        <CardDescription>Tạo mật khẩu mạnh để bảo vệ tài khoản</CardDescription>
+        <CardTitle className="text-2xl">{tRegister("passwordTitle")}</CardTitle>
+        <CardDescription>{tRegister("passwordDescription")}</CardDescription>
       </div>
       <div className="space-y-4">
         <div>
-          <Label htmlFor="password">Mật khẩu</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <PasswordInput
             id="password"
             value={formData.password}
@@ -74,14 +80,14 @@ const Step3: NextPage<Props> = ({
                 setErrors({ ...errors, password: "" });
               }
             }}
-            placeholder="Nhập mật khẩu..."
+            placeholder={tRegister("passwordPlaceholder")}
           />
           {errors.password && (
             <p className="text-sm text-destructive mt-1">{errors.password}</p>
           )}
         </div>
         <div>
-          <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+          <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
           <PasswordInput
             id="confirmPassword"
             value={formData.confirmPassword}
@@ -94,7 +100,7 @@ const Step3: NextPage<Props> = ({
                 setErrors({ ...errors, confirmPassword: "" });
               }
             }}
-            placeholder="Nhập lại mật khẩu..."
+            placeholder={tRegister("confirmPasswordPlaceholder")}
             icon={<LockKeyhole />}
           />
           {errors.confirmPassword && (
@@ -106,10 +112,10 @@ const Step3: NextPage<Props> = ({
       </div>
       <div className="flex gap-2">
         <Button onClick={handleBack} variant="outline" className="flex-1">
-          Quay lại
+          {tCommon("back")}
         </Button>
         <Button onClick={handleContinue} className="flex-1">
-          Tiếp tục
+          {tRegister("continue")}
         </Button>
       </div>
     </Card>

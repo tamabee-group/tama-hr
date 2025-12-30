@@ -18,8 +18,9 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import type { User, UserRole } from "@/types/user";
-import { USER_ROLE_LABELS, ADMIN_ROLES } from "@/types/user";
+import { ADMIN_ROLES } from "@/types/user";
 import { getFileUrl } from "@/lib/utils/file-url";
+import { useTranslations } from "next-intl";
 
 interface UserMenuProps {
   user: User;
@@ -40,6 +41,9 @@ const ADMIN_DASHBOARD_URLS: Partial<Record<UserRole, string>> = {
  * @client-only - Chỉ sử dụng được ở client side
  */
 export function UserMenu({ user, onLogout }: UserMenuProps) {
+  const t = useTranslations("header");
+  const tEnums = useTranslations("enums");
+
   if (!user) return null;
 
   const isAdmin = ADMIN_ROLES.includes(user.role);
@@ -72,7 +76,7 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              {USER_ROLE_LABELS[user.role]}
+              {tEnums(`userRole.${user.role}`)}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -83,7 +87,7 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
             <Link href={adminDashboardUrl}>
               <DropdownMenuItem>
                 <ShieldUser className="mr-2 h-4 w-4" />
-                Trang quản trị
+                {t("adminDashboard")}
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
@@ -93,14 +97,14 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
         <Link href="/profile">
           <DropdownMenuItem>
             <UserIcon className="mr-2 h-4 w-4" />
-            Hồ sơ cá nhân
+            {t("userProfile")}
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={onLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          Đăng xuất
+          {t("logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

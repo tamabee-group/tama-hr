@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import { depositApi } from "@/lib/apis/deposit-api";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { formatRequesterFullInfo } from "@/lib/utils/format-requester";
 import { handleApiError } from "@/lib/utils/api-error-handler";
+import { formatDateTime } from "@/lib/utils/format-date";
 import { toast } from "sonner";
 import { Check, X, Download, Loader2 } from "lucide-react";
 import { RejectForm } from "./_reject-form";
@@ -28,7 +30,7 @@ interface DepositDetailDialogProps {
   deposit: DepositRequestResponse | null;
   onSuccess: () => void;
   locale?: SupportedLocale;
-  canApproveReject?: boolean; // Cho phép approve/reject (ADMIN_TAMABEE, MANAGER_TAMABEE)
+  canApproveReject?: boolean;
 }
 
 /**
@@ -45,6 +47,9 @@ export function DepositDetailDialog({
   locale = "vi",
   canApproveReject = true,
 }: DepositDetailDialogProps) {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+
   const [isApproving, setIsApproving] = useState(false);
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -52,101 +57,6 @@ export function DepositDetailDialog({
   const handleImageLoadStatusChange = useCallback((loaded: boolean) => {
     setIsImageLoaded(loaded);
   }, []);
-
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Chi tiết yêu cầu nạp tiền",
-      description: "Xem thông tin chi tiết và duyệt yêu cầu",
-      companyName: "Công ty",
-      amount: "Số tiền",
-      status: "Trạng thái",
-      requestedBy: "Người yêu cầu",
-      requesterName: "Tên người yêu cầu",
-      requesterEmail: "Email người yêu cầu",
-      employeeCode: "Mã nhân viên",
-      createdAt: "Ngày tạo",
-      processedAt: "Ngày xử lý",
-      approvedBy: "Người duyệt",
-      rejectionReason: "Lý do từ chối",
-      transferProof: "Ảnh chứng minh chuyển khoản",
-      download: "Tải xuống",
-      approve: "Duyệt",
-      reject: "Từ chối",
-      close: "Đóng",
-      approving: "Đang duyệt...",
-      successApprove: "Duyệt yêu cầu thành công",
-      errorApprove: "Không thể duyệt yêu cầu",
-    },
-    en: {
-      title: "Deposit Request Detail",
-      description: "View details and process request",
-      companyName: "Company",
-      amount: "Amount",
-      status: "Status",
-      requestedBy: "Requested By",
-      requesterName: "Requester Name",
-      requesterEmail: "Requester Email",
-      employeeCode: "Employee Code",
-      createdAt: "Created At",
-      processedAt: "Processed At",
-      approvedBy: "Approved By",
-      rejectionReason: "Rejection Reason",
-      transferProof: "Transfer Proof",
-      download: "Download",
-      approve: "Approve",
-      reject: "Reject",
-      close: "Close",
-      approving: "Approving...",
-      successApprove: "Request approved successfully",
-      errorApprove: "Failed to approve request",
-    },
-    ja: {
-      title: "入金リクエスト詳細",
-      description: "詳細を確認してリクエストを処理",
-      companyName: "会社",
-      amount: "金額",
-      status: "ステータス",
-      requestedBy: "申請者",
-      requesterName: "申請者名",
-      requesterEmail: "申請者メール",
-      employeeCode: "社員コード",
-      createdAt: "作成日",
-      processedAt: "処理日",
-      approvedBy: "承認者",
-      rejectionReason: "却下理由",
-      transferProof: "振込証明",
-      download: "ダウンロード",
-      approve: "承認",
-      reject: "却下",
-      close: "閉じる",
-      approving: "承認中...",
-      successApprove: "リクエストが承認されました",
-      errorApprove: "リクエストの承認に失敗しました",
-    },
-  };
-
-  const t = labels[locale];
-
-  // Format ngày theo locale
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "-";
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(
-        locale === "vi" ? "vi-VN" : locale === "ja" ? "ja-JP" : "en-US",
-        {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        },
-      );
-    } catch {
-      return dateString;
-    }
-  };
 
   const handleDownload = () => {
     if (!deposit?.transferProofUrl) return;
@@ -166,14 +76,13 @@ export function DepositDetailDialog({
     setIsApproving(true);
     try {
       await depositApi.approve(deposit.id);
-      toast.success(t.successApprove);
+      toast.success(t("messages.approveSuccess"));
       onOpenChange(false);
       onSuccess();
     } catch (error) {
       console.error("Failed to approve deposit:", error);
       handleApiError(error, {
-        forbiddenMessage: "Bạn không có quyền duyệt yêu cầu này",
-        defaultMessage: t.errorApprove,
+        defaultMessage: t("messages.approveError"),
       });
     } finally {
       setIsApproving(false);
@@ -203,30 +112,38 @@ export function DepositDetailDialog({
       <Dialog open={open && !showRejectForm} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t.title}</DialogTitle>
-            <DialogDescription>{t.description}</DialogDescription>
+            <DialogTitle>{t("dialog.detailTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("dialog.detailDescription")}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
             {/* Detail Info */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">{t.companyName}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("table.companyName")}
+                </p>
                 <p className="font-medium">{deposit.companyName}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">{t.amount}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("table.amount")}
+                </p>
                 <p className="font-medium text-lg">
                   {formatCurrency(deposit.amount, locale)}
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">{t.status}</p>
-                <DepositStatusBadge status={deposit.status} locale={locale} />
+                <p className="text-sm text-muted-foreground">
+                  {t("table.status")}
+                </p>
+                <DepositStatusBadge status={deposit.status} />
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
-                  {t.requesterName}
+                  {t("table.requesterName")}
                 </p>
                 <p className="font-medium">
                   {
@@ -243,34 +160,38 @@ export function DepositDetailDialog({
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
-                  {t.requesterEmail}
+                  {t("table.requesterEmail")}
                 </p>
                 <p className="font-medium">{deposit.requesterEmail || "-"}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
-                  {t.employeeCode}
+                  {t("table.employeeCode")}
                 </p>
                 <p className="font-medium">{deposit.requestedBy || "-"}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">{t.createdAt}</p>
-                <p className="font-medium">{formatDate(deposit.createdAt)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("table.createdAt")}
+                </p>
+                <p className="font-medium">
+                  {formatDateTime(deposit.createdAt, locale)}
+                </p>
               </div>
               {deposit.processedAt && (
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">
-                    {t.processedAt}
+                    {t("table.processedAt")}
                   </p>
                   <p className="font-medium">
-                    {formatDate(deposit.processedAt)}
+                    {formatDateTime(deposit.processedAt, locale)}
                   </p>
                 </div>
               )}
               {deposit.approvedBy && (
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">
-                    {t.approvedBy}
+                    {t("table.approvedBy")}
                   </p>
                   <p className="font-medium">{deposit.approvedBy}</p>
                 </div>
@@ -278,7 +199,7 @@ export function DepositDetailDialog({
               {deposit.rejectionReason && (
                 <div className="col-span-2 space-y-1">
                   <p className="text-sm text-muted-foreground">
-                    {t.rejectionReason}
+                    {t("table.rejectionReason")}
                   </p>
                   <p className="font-medium text-destructive">
                     {deposit.rejectionReason}
@@ -289,11 +210,11 @@ export function DepositDetailDialog({
 
             {/* Transfer Proof Image */}
             <div className="space-y-3">
-              <p className="text-sm font-medium">{t.transferProof}</p>
+              <p className="text-sm font-medium">{t("table.transferProof")}</p>
               <div className="flex items-center justify-center p-4 bg-muted rounded-lg min-h-[200px]">
                 <FallbackImage
                   src={getFileUrl(deposit.transferProofUrl)}
-                  alt={t.transferProof}
+                  alt={t("table.transferProof")}
                   className="max-w-full max-h-[50vh] object-contain rounded-lg"
                   fallbackClassName="w-32 h-32 rounded-lg"
                   onLoadStatusChange={handleImageLoadStatusChange}
@@ -308,7 +229,7 @@ export function DepositDetailDialog({
                     className="gap-2"
                   >
                     <Download className="h-4 w-4" />
-                    {t.download}
+                    {t("actions.download")}
                   </Button>
                 </div>
               )}
@@ -325,7 +246,7 @@ export function DepositDetailDialog({
                   className="gap-2"
                 >
                   <X className="h-4 w-4" />
-                  {t.reject}
+                  {t("actions.reject")}
                 </Button>
                 <Button
                   onClick={handleApprove}
@@ -337,12 +258,12 @@ export function DepositDetailDialog({
                   ) : (
                     <Check className="h-4 w-4" />
                   )}
-                  {isApproving ? t.approving : t.approve}
+                  {isApproving ? t("actions.approving") : t("actions.approve")}
                 </Button>
               </>
             ) : (
               <Button variant="outline" onClick={handleClose}>
-                {t.close}
+                {tCommon("close")}
               </Button>
             )}
           </DialogFooter>

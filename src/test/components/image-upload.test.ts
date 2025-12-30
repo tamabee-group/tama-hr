@@ -27,7 +27,12 @@ describe("ImageUpload - Property Tests", () => {
           // Tạo kích thước file lớn hơn max (5MB đến 100MB)
           fc.integer({ min: MAX_SIZE_BYTES + 1, max: 100 * 1024 * 1024 }),
           (fileSize) => {
-            const result = validateFileSize(fileSize, DEFAULT_MAX_SIZE_MB);
+            const errorMessage = `File quá lớn. Tối đa ${DEFAULT_MAX_SIZE_MB}MB`;
+            const result = validateFileSize(
+              fileSize,
+              DEFAULT_MAX_SIZE_MB,
+              errorMessage,
+            );
             expect(result.valid).toBe(false);
             expect(result.error).toBeDefined();
             expect(result.error).toContain(`${DEFAULT_MAX_SIZE_MB}MB`);
@@ -43,7 +48,12 @@ describe("ImageUpload - Property Tests", () => {
           // Tạo kích thước file từ 0 đến max size
           fc.integer({ min: 0, max: MAX_SIZE_BYTES }),
           (fileSize) => {
-            const result = validateFileSize(fileSize, DEFAULT_MAX_SIZE_MB);
+            const errorMessage = `File quá lớn. Tối đa ${DEFAULT_MAX_SIZE_MB}MB`;
+            const result = validateFileSize(
+              fileSize,
+              DEFAULT_MAX_SIZE_MB,
+              errorMessage,
+            );
             expect(result.valid).toBe(true);
             expect(result.error).toBeUndefined();
           },
@@ -61,7 +71,8 @@ describe("ImageUpload - Property Tests", () => {
           fc.integer({ min: 0, max: 100 * 1024 * 1024 }),
           (maxSizeMB, fileSize) => {
             const maxSizeBytes = maxSizeMB * 1024 * 1024;
-            const result = validateFileSize(fileSize, maxSizeMB);
+            const errorMessage = `File quá lớn. Tối đa ${maxSizeMB}MB`;
+            const result = validateFileSize(fileSize, maxSizeMB, errorMessage);
 
             if (fileSize > maxSizeBytes) {
               expect(result.valid).toBe(false);
@@ -85,7 +96,12 @@ describe("ImageUpload - Property Tests", () => {
     it("phải chấp nhận các loại ảnh hợp lệ", () => {
       fc.assert(
         fc.property(fc.constantFrom(...ACCEPTED_TYPES), (fileType) => {
-          const result = validateFileType(fileType, ACCEPTED_TYPES);
+          const errorMessage = "Định dạng file không hợp lệ";
+          const result = validateFileType(
+            fileType,
+            ACCEPTED_TYPES,
+            errorMessage,
+          );
           expect(result.valid).toBe(true);
           expect(result.error).toBeUndefined();
         }),
@@ -105,7 +121,12 @@ describe("ImageUpload - Property Tests", () => {
 
       fc.assert(
         fc.property(fc.constantFrom(...invalidTypes), (fileType) => {
-          const result = validateFileType(fileType, ACCEPTED_TYPES);
+          const errorMessage = "Định dạng file không hợp lệ";
+          const result = validateFileType(
+            fileType,
+            ACCEPTED_TYPES,
+            errorMessage,
+          );
           expect(result.valid).toBe(false);
           expect(result.error).toBeDefined();
         }),

@@ -2,9 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { WalletTransactionResponse } from "@/types/wallet";
-import { TransactionType, getTransactionTypeLabel } from "@/types/enums";
+import { TransactionType } from "@/types/enums";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDateTime } from "@/lib/utils/format-date";
+import { getTransactionTypeLabel } from "@/lib/utils/get-enum-label";
 
 /**
  * Format số tiền với màu sắc theo loại giao dịch
@@ -27,12 +28,17 @@ export function formatTransactionAmount(
   );
 }
 
+// Type cho translation function
+type EnumTranslationFunction = (key: string) => string;
+
 /**
  * Tạo column definitions cho bảng giao dịch
  * @param locale - Locale cho format tiền tệ và ngày tháng
+ * @param tEnums - Translation function từ useTranslations('enums')
  */
 export function createTransactionColumns(
   locale: SupportedLocale,
+  tEnums: EnumTranslationFunction,
 ): ColumnDef<WalletTransactionResponse>[] {
   return [
     {
@@ -48,7 +54,7 @@ export function createTransactionColumns(
       accessorKey: "transactionType",
       header: "Loại",
       cell: ({ row }) =>
-        getTransactionTypeLabel(row.getValue("transactionType"), locale),
+        getTransactionTypeLabel(row.getValue("transactionType"), tEnums),
     },
     {
       accessorKey: "amount",

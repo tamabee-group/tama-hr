@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { WalletStatisticsResponse } from "@/types/wallet";
 import { getStatistics } from "@/lib/apis/wallet-api";
@@ -22,6 +23,8 @@ import { SupportedLocale } from "@/lib/utils/format-currency";
 export default function TamabeeWalletsPage() {
   const params = useParams();
   const locale = (params.locale as SupportedLocale) || "vi";
+  const t = useTranslations("wallet");
+  const tCommon = useTranslations("common");
 
   const [statistics, setStatistics] = useState<WalletStatisticsResponse | null>(
     null,
@@ -37,33 +40,6 @@ export default function TamabeeWalletsPage() {
     name: string;
   } | null>(null);
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Quản lý Ví",
-      description: "Xem tổng quan và quản lý ví của tất cả công ty",
-      refresh: "Làm mới",
-      errorLoading: "Không thể tải thống kê",
-      walletOverview: "Danh sách công ty",
-    },
-    en: {
-      title: "Wallet Management",
-      description: "View overview and manage wallets of all companies",
-      refresh: "Refresh",
-      errorLoading: "Failed to load statistics",
-      walletOverview: "Company List",
-    },
-    ja: {
-      title: "ウォレット管理",
-      description: "すべての会社のウォレットの概要を表示・管理",
-      refresh: "更新",
-      errorLoading: "統計の読み込みに失敗しました",
-      walletOverview: "会社一覧",
-    },
-  };
-
-  const t = labels[locale];
-
   // Fetch statistics
   const fetchStatistics = useCallback(async () => {
     try {
@@ -73,12 +49,12 @@ export default function TamabeeWalletsPage() {
       setError(null);
     } catch (err) {
       console.error("Failed to fetch statistics:", err);
-      setError(t.errorLoading);
-      toast.error(t.errorLoading);
+      setError(t("messages.errorLoading"));
+      toast.error(t("messages.errorLoading"));
     } finally {
       setLoading(false);
     }
-  }, [t.errorLoading]);
+  }, [t]);
 
   useEffect(() => {
     fetchStatistics();
@@ -106,8 +82,10 @@ export default function TamabeeWalletsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{t.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("description")}
+          </p>
         </div>
         <Button
           variant="outline"
@@ -118,7 +96,7 @@ export default function TamabeeWalletsPage() {
           <RefreshCw
             className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
           />
-          {t.refresh}
+          {tCommon("refresh")}
         </Button>
       </div>
 
@@ -142,7 +120,7 @@ export default function TamabeeWalletsPage() {
 
       {/* Wallet Overview Table */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">{t.walletOverview}</h2>
+        <h2 className="text-xl font-semibold">{t("companyList")}</h2>
         <WalletOverviewTable
           locale={locale}
           refreshTrigger={refreshTrigger}
@@ -158,7 +136,6 @@ export default function TamabeeWalletsPage() {
           companyId={selectedCompany.id}
           companyName={selectedCompany.name}
           onSuccess={handleRefundSuccess}
-          locale={locale}
         />
       )}
     </div>

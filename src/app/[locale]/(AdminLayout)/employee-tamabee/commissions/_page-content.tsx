@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { commissionApi } from "@/lib/apis/commission-api";
 import { CommissionPage } from "../../_components/_shared/_commission-page";
 import { CommissionTable } from "../../_components/_shared/_commission-table";
@@ -11,6 +12,7 @@ import { CommissionSummary } from "../../_components/_shared/_commission-summary
  * Sử dụng các shared components với API dành cho employee (filter by current employee)
  */
 export function EmployeeCommissionsPageContent() {
+  const t = useTranslations("commissions");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   /** Callback làm mới dữ liệu */
@@ -20,8 +22,8 @@ export function EmployeeCommissionsPageContent() {
 
   return (
     <CommissionPage
-      title="Hoa hồng của tôi"
-      description="Xem danh sách hoa hồng từ các công ty bạn đã giới thiệu"
+      title={t("myCommissions")}
+      description={t("myDescription")}
       tableComponent={
         <CommissionTable
           fetchCommissions={commissionApi.getMyCommissions}

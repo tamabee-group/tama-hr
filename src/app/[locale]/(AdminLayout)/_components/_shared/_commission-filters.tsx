@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,6 +12,7 @@ import {
 import { DatePicker } from "@/components/ui/date-picker";
 import { Search } from "lucide-react";
 import { CommissionStatus, COMMISSION_STATUSES } from "@/types/enums";
+import { getCommissionStatusLabel } from "@/lib/utils/get-enum-label";
 
 /**
  * Props cho CommissionFilters component
@@ -54,6 +56,10 @@ export function CommissionFilters({
   onStartDateChange,
   onEndDateChange,
 }: CommissionFiltersProps) {
+  const t = useTranslations("commissions");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+
   return (
     <div className="flex flex-wrap items-center gap-4">
       {/* Employee code filter - chỉ hiển thị cho admin */}
@@ -61,7 +67,7 @@ export function CommissionFilters({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm theo mã nhân viên"
+            placeholder={t("filter.searchEmployeeCode")}
             value={employeeCodeFilter}
             onChange={(e) => onEmployeeCodeChange(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onEmployeeCodeSearch()}
@@ -78,13 +84,13 @@ export function CommissionFilters({
         }
       >
         <SelectTrigger className="w-40 h-9">
-          <SelectValue placeholder="Trạng thái" />
+          <SelectValue placeholder={tCommon("status")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ALL">Tất cả</SelectItem>
+          <SelectItem value="ALL">{tCommon("all")}</SelectItem>
           {COMMISSION_STATUSES.map((status) => (
-            <SelectItem key={status.value} value={status.value}>
-              {status.label}
+            <SelectItem key={status} value={status}>
+              {getCommissionStatusLabel(status, tEnums)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -94,13 +100,13 @@ export function CommissionFilters({
       <DatePicker
         value={startDate}
         onChange={onStartDateChange}
-        placeholder="Từ ngày"
+        placeholder={tCommon("from")}
         className="w-40 h-9"
       />
       <DatePicker
         value={endDate}
         onChange={onEndDateChange}
-        placeholder="Đến ngày"
+        placeholder={tCommon("to")}
         className="w-40 h-9"
       />
     </div>

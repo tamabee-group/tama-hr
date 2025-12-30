@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Users, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface LandingPlanCardProps {
   plan: PlanResponse;
@@ -36,41 +37,9 @@ export function LandingPlanCard({
   locale = "vi",
   onSelect,
 }: LandingPlanCardProps) {
+  const t = useTranslations("landing.pricing");
   const localeKey = locale as LocaleKey;
 
-  // Labels theo locale
-  const labels: Record<
-    SupportedLocale,
-    {
-      perMonth: string;
-      maxEmployees: string;
-      features: string;
-      register: string;
-    }
-  > = {
-    vi: {
-      perMonth: "/tháng",
-      maxEmployees: "Tối đa nhân viên",
-      features: "Tính năng",
-      register: "Đăng ký ngay",
-    },
-    en: {
-      perMonth: "/month",
-      maxEmployees: "Max employees",
-      features: "Features",
-      register: "Register now",
-    },
-    ja: {
-      perMonth: "/月",
-      maxEmployees: "最大従業員数",
-      features: "機能",
-      register: "今すぐ登録",
-    },
-  };
-
-  const t = labels[locale] || labels.vi;
-
-  // Sắp xếp features theo sortOrder
   const sortedFeatures = [...plan.features].sort(
     (a, b) => a.sortOrder - b.sortOrder,
   );
@@ -85,26 +54,23 @@ export function LandingPlanCard({
       </CardHeader>
 
       <CardContent className="flex-1 space-y-4">
-        {/* Giá */}
         <div className="flex items-baseline gap-1">
           <span className="text-3xl font-bold text-primary">
             {formatCurrency(plan.monthlyPrice, locale)}
           </span>
-          <span className="text-muted-foreground">{t.perMonth}</span>
+          <span className="text-muted-foreground">{t("perMonth")}</span>
         </div>
 
-        {/* Max employees */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
           <span>
-            {t.maxEmployees}: {plan.maxEmployees}
+            {t("maxEmployees")}: {plan.maxEmployees}
           </span>
         </div>
 
-        {/* Features list */}
         {sortedFeatures.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium">{t.features}:</p>
+            <p className="text-sm font-medium">{t("features")}:</p>
             <ul className="space-y-2">
               {sortedFeatures.map((feature) => (
                 <li
@@ -129,9 +95,8 @@ export function LandingPlanCard({
       </CardContent>
 
       <CardFooter className="pt-4">
-        {/* Register button */}
         <Button onClick={onSelect} className="w-full" size="lg">
-          {t.register}
+          {t("registerNow")}
         </Button>
       </CardFooter>
     </Card>

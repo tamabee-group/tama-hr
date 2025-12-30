@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   WalletTransactionResponse,
   TransactionFilterRequest,
 } from "@/types/wallet";
-import {
-  TransactionType,
-  TRANSACTION_TYPES,
-  getTransactionTypeLabel,
-} from "@/types/enums";
+import { TransactionType, TRANSACTION_TYPES } from "@/types/enums";
 import { PaginatedResponse, DEFAULT_PAGE_SIZE } from "@/types/api";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import {
+  formatDate,
+  formatDateTime,
+  formatDateForApi,
+} from "@/lib/utils/format-date";
+import { getTransactionTypeLabel } from "@/lib/utils/get-enum-label";
 import { getTransactionsByCompanyId } from "@/lib/apis/wallet-api";
 import {
   Table,
@@ -38,7 +41,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { CalendarIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { vi, enUS, ja } from "date-fns/locale";
 
 interface AdminTransactionTableProps {
@@ -50,7 +52,6 @@ interface AdminTransactionTableProps {
 
 /**
  * Component hiển thị bảng giao dịch cho Admin view
- * Sử dụng API getTransactionsByCompanyId thay vì getMyTransactions
  */
 export function AdminTransactionTable({
   companyId,
@@ -58,6 +59,9 @@ export function AdminTransactionTable({
   pageSize = DEFAULT_PAGE_SIZE,
   refreshTrigger,
 }: AdminTransactionTableProps) {
+  const t = useTranslations("wallet");
+  const tEnums = useTranslations("enums");
+
   const [data, setData] =
     useState<PaginatedResponse<WalletTransactionResponse> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,8 +70,6 @@ export function AdminTransactionTable({
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
 
-  // Labels theo locale
-  const labels = getLabels(locale);
   const dateLocale = locale === "vi" ? vi : locale === "ja" ? ja : enUS;
 
   // Fetch transactions
@@ -107,8 +109,9 @@ export function AdminTransactionTable({
   const handleStartDateChange = (date: Date | undefined) => {
     setStartDate(date);
     const newFilter = { ...filter };
-    if (date) {
-      newFilter.startDate = format(date, "yyyy-MM-dd");
+    const formattedDate = formatDateForApi(date);
+    if (formattedDate) {
+      newFilter.startDate = formattedDate;
     } else {
       delete newFilter.startDate;
     }
@@ -119,8 +122,9 @@ export function AdminTransactionTable({
   const handleEndDateChange = (date: Date | undefined) => {
     setEndDate(date);
     const newFilter = { ...filter };
-    if (date) {
-      newFilter.endDate = format(date, "yyyy-MM-dd");
+    const formattedDate = formatDateForApi(date);
+    if (formattedDate) {
+      newFilter.endDate = formattedDate;
     } else {
       delete newFilter.endDate;
     }
@@ -133,17 +137,6 @@ export function AdminTransactionTable({
     setStartDate(undefined);
     setEndDate(undefined);
     setCurrentPage(0);
-  };
-
-  // Format date cho hiển thị
-  const formatDateTime = (dateString: string) => {
-    if (!dateString) return "-";
-    try {
-      const date = new Date(dateString);
-      return format(date, "dd/MM/yyyy HH:mm", { locale: dateLocale });
-    } catch {
-      return dateString;
-    }
   };
 
   // Format amount với màu sắc
@@ -166,25 +159,23 @@ export function AdminTransactionTable({
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-center">
-        {/* Transaction Type Filter */}
         <Select
           value={filter.transactionType || "ALL"}
           onValueChange={handleTypeChange}
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={labels.allTypes} />
+            <SelectValue placeholder={t("filter.allTypes")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{labels.allTypes}</SelectItem>
+            <SelectItem value="ALL">{t("filter.allTypes")}</SelectItem>
             {TRANSACTION_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {getTransactionTypeLabel(type.value, locale)}
+              <SelectItem key={type} value={type}>
+                {getTransactionTypeLabel(type, tEnums)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* Start Date Filter */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -195,7 +186,9 @@ export function AdminTransactionTable({
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {startDate ? format(startDate, "dd/MM/yyyy") : labels.startDate}
+              {startDate
+                ? formatDate(startDate, locale)
+                : t("filter.startDate")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -209,7 +202,6 @@ export function AdminTransactionTable({
           </PopoverContent>
         </Popover>
 
-        {/* End Date Filter */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -220,7 +212,7 @@ export function AdminTransactionTable({
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {endDate ? format(endDate, "dd/MM/yyyy") : labels.endDate}
+              {endDate ? formatDate(endDate, locale) : t("filter.endDate")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -234,11 +226,10 @@ export function AdminTransactionTable({
           </PopoverContent>
         </Popover>
 
-        {/* Clear Filters */}
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="h-4 w-4 mr-1" />
-            {labels.clearFilters}
+            {t("filter.clearFilters")}
           </Button>
         )}
       </div>
@@ -248,52 +239,39 @@ export function AdminTransactionTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{labels.date}</TableHead>
-              <TableHead>{labels.type}</TableHead>
-              <TableHead className="text-right">{labels.amount}</TableHead>
+              <TableHead>{t("table.date")}</TableHead>
+              <TableHead>{t("table.type")}</TableHead>
+              <TableHead className="text-right">{t("table.amount")}</TableHead>
               <TableHead className="text-right">
-                {labels.balanceBefore}
+                {t("table.balanceBefore")}
               </TableHead>
               <TableHead className="text-right">
-                {labels.balanceAfter}
+                {t("table.balanceAfter")}
               </TableHead>
-              <TableHead>{labels.description}</TableHead>
+              <TableHead>{t("table.description")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-32" />
-                  </TableCell>
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             ) : data?.content.length ? (
               data.content.map((transaction) => (
                 <TableRow key={transaction.id}>
                   <TableCell className="whitespace-nowrap">
-                    {formatDateTime(transaction.createdAt)}
+                    {formatDateTime(transaction.createdAt, locale)}
                   </TableCell>
                   <TableCell>
                     {getTransactionTypeLabel(
                       transaction.transactionType,
-                      locale,
+                      tEnums,
                     )}
                   </TableCell>
                   <TableCell className="text-right font-medium">
@@ -316,7 +294,7 @@ export function AdminTransactionTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
-                  {labels.noResults}
+                  {t("messages.noTransactions")}
                 </TableCell>
               </TableRow>
             )}
@@ -328,9 +306,9 @@ export function AdminTransactionTable({
       {data && data.totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {labels.showing} {data.number * data.size + 1}-
+            {t("pagination.showing")} {data.number * data.size + 1}-
             {Math.min((data.number + 1) * data.size, data.totalElements)}{" "}
-            {labels.of} {data.totalElements}
+            {t("pagination.of")} {data.totalElements}
           </p>
           <div className="flex items-center gap-2">
             <Button
@@ -340,7 +318,7 @@ export function AdminTransactionTable({
               disabled={data.first}
             >
               <ChevronLeft className="h-4 w-4" />
-              {labels.previous}
+              {t("pagination.previous")}
             </Button>
             <span className="text-sm">
               {data.number + 1} / {data.totalPages}
@@ -351,7 +329,7 @@ export function AdminTransactionTable({
               onClick={() => setCurrentPage((p) => p + 1)}
               disabled={data.last}
             >
-              {labels.next}
+              {t("pagination.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -359,62 +337,4 @@ export function AdminTransactionTable({
       )}
     </div>
   );
-}
-
-// Helper function để lấy labels theo locale
-function getLabels(locale: SupportedLocale) {
-  const labels = {
-    vi: {
-      date: "Ngày",
-      type: "Loại",
-      amount: "Số tiền",
-      balanceBefore: "Số dư trước",
-      balanceAfter: "Số dư sau",
-      description: "Mô tả",
-      allTypes: "Tất cả loại",
-      startDate: "Từ ngày",
-      endDate: "Đến ngày",
-      clearFilters: "Xóa bộ lọc",
-      noResults: "Không có giao dịch nào",
-      showing: "Hiển thị",
-      of: "của",
-      previous: "Trước",
-      next: "Sau",
-    },
-    en: {
-      date: "Date",
-      type: "Type",
-      amount: "Amount",
-      balanceBefore: "Balance Before",
-      balanceAfter: "Balance After",
-      description: "Description",
-      allTypes: "All Types",
-      startDate: "Start Date",
-      endDate: "End Date",
-      clearFilters: "Clear Filters",
-      noResults: "No transactions found",
-      showing: "Showing",
-      of: "of",
-      previous: "Previous",
-      next: "Next",
-    },
-    ja: {
-      date: "日付",
-      type: "種類",
-      amount: "金額",
-      balanceBefore: "取引前残高",
-      balanceAfter: "取引後残高",
-      description: "説明",
-      allTypes: "すべての種類",
-      startDate: "開始日",
-      endDate: "終了日",
-      clearFilters: "フィルターをクリア",
-      noResults: "取引がありません",
-      showing: "表示中",
-      of: "/",
-      previous: "前へ",
-      next: "次へ",
-    },
-  };
-  return labels[locale];
 }

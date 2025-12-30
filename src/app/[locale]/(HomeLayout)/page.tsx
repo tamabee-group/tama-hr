@@ -3,14 +3,13 @@ import { ToggleTheme } from "../_components/_toggle-theme";
 import { PricingSection } from "./_components/_pricing-section";
 
 const LandingPage = () => {
-  const t = useTranslations("company");
+  const t = useTranslations("landing");
+
   return (
     <div>
-      <h1>Content</h1>
+      <h1>{t("content")}</h1>
       <ToggleTheme />
-      <h2>{t("name")}</h2>
 
-      {/* Pricing Section - Hiển thị các gói dịch vụ */}
       <PricingSection />
     </div>
   );

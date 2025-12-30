@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   BaseUserProfileForm,
   UserProfileFormData,
@@ -9,6 +10,8 @@ import { TAMABEE_USER_ROLES } from "@/types/enums";
 import { User } from "@/types/user";
 
 export function UserProfileForm({ user }: { user: User }) {
+  const t = useTranslations("users");
+
   const handleSave = async (userId: number, data: UserProfileFormData) => {
     await updateUserProfile(userId, data);
   };
@@ -20,7 +23,7 @@ export function UserProfileForm({ user }: { user: User }) {
   return (
     <BaseUserProfileForm
       user={user}
-      title="Thông tin cá nhân"
+      title={t("personalInfo")}
       roles={TAMABEE_USER_ROLES}
       onSave={handleSave}
       onUploadAvatar={handleUploadAvatar}

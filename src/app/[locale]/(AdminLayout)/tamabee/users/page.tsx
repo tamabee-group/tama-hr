@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import { User } from "@/types/user";
 import { apiServer } from "@/lib/utils/fetch-server";
@@ -10,6 +9,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from "@/types/api";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Lấy danh sách users từ API
@@ -33,20 +33,21 @@ async function getUsers(
 
 export default async function TamabeeUsersPage() {
   const data = await getUsers();
+  const t = await getTranslations("users");
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Quản lý nhân sự</h1>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
         <Link href="/tamabee/users/register">
           <Button>
             <Plus />
-            Đăng ký mới
+            {t("registerNew")}
           </Button>
         </Link>
       </div>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable data={data} />
     </div>
   );
 }

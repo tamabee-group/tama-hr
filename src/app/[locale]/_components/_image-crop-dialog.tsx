@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 const getCroppedImg = async (
   imageSrc: string,
@@ -63,6 +64,7 @@ export function ImageCropDialog({
   aspectRatio = 1,
   cropShape = "rect",
 }: ImageCropDialogProps) {
+  const t = useTranslations("dialogs");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -102,9 +104,9 @@ export function ImageCropDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:max-w-2xl max-h-[90vh] overflow-y-scroll">
         <DialogHeader>
-          <DialogTitle>Cắt ảnh</DialogTitle>
+          <DialogTitle>{t("imageCrop.title")}</DialogTitle>
           <DialogDescription className="sr-only">
-            Điều chỉnh vùng cắt và zoom để cắt ảnh theo ý muốn
+            {t("imageCrop.description")}
           </DialogDescription>
         </DialogHeader>
         <div className="relative h-96 w-full">
@@ -121,7 +123,7 @@ export function ImageCropDialog({
         </div>
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Zoom</label>
+            <label className="text-sm font-medium">{t("imageCrop.zoom")}</label>
             <Slider
               value={[zoom]}
               onValueChange={(value) => setZoom(value[0])}
@@ -136,10 +138,10 @@ export function ImageCropDialog({
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
-              Hủy
+              {t("imageCrop.cancel")}
             </Button>
             <Button onClick={handleSave} disabled={loading}>
-              {loading ? "Đang xử lý..." : "Xác nhận"}
+              {loading ? t("imageCrop.processing") : t("imageCrop.confirm")}
             </Button>
           </div>
         </div>

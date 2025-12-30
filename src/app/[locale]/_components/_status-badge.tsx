@@ -1,12 +1,11 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   DepositStatus,
-  DEPOSIT_STATUS_LABELS,
   DEPOSIT_STATUS_COLORS,
   CommissionStatus,
-  COMMISSION_STATUS_LABELS,
   COMMISSION_STATUS_COLORS,
 } from "@/types/enums";
 
@@ -74,17 +73,16 @@ export function StatusBadge({
 // Deposit Status Badge - component tiện lợi cho deposit status
 interface DepositStatusBadgeProps {
   status: DepositStatus;
-  locale?: "vi" | "en" | "ja";
   className?: string;
 }
 
 export function DepositStatusBadge({
   status,
-  locale = "vi",
   className,
 }: DepositStatusBadgeProps) {
+  const tEnums = useTranslations("enums");
   const variant = getDepositStatusVariant(status);
-  const label = DEPOSIT_STATUS_LABELS[status]?.[locale] || status;
+  const label = tEnums(`depositStatus.${status}`);
 
   return (
     <StatusBadge variant={variant} className={className}>
@@ -96,17 +94,16 @@ export function DepositStatusBadge({
 // Commission Status Badge - component tiện lợi cho commission status
 interface CommissionStatusBadgeProps {
   status: CommissionStatus;
-  locale?: "vi" | "en" | "ja";
   className?: string;
 }
 
 export function CommissionStatusBadge({
   status,
-  locale = "vi",
   className,
 }: CommissionStatusBadgeProps) {
+  const tEnums = useTranslations("enums");
   const variant = getCommissionStatusVariant(status);
-  const label = COMMISSION_STATUS_LABELS[status]?.[locale] || status;
+  const label = tEnums(`commissionStatus.${status}`);
 
   return (
     <StatusBadge variant={variant} className={className}>

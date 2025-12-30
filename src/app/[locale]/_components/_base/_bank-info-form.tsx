@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,11 +15,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { BankAccountType, BankAccountCategory } from "@/types/user";
 
 export type JapanBankType = "normal" | "yucho";
-
-const BANK_ACCOUNT_CATEGORIES = [
-  { value: "futsu", label: "普通 (Thông thường)" },
-  { value: "toza", label: "当座 (Vãng lai)" },
-] as const;
 
 export interface BankInfoFormData {
   bankAccountType: BankAccountType;
@@ -44,13 +40,15 @@ interface BankInfoFormProps {
  * Form thông tin ngân hàng với tabs VN/JP
  */
 export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
+  const t = useTranslations("users.bankInfo");
+
   const handleTabChange = (value: string) => {
     onChange({ bankAccountType: value as BankAccountType });
   };
 
   return (
     <div className="border-t pt-4 sm:border sm:rounded-lg sm:p-4 space-y-4">
-      <h3 className="font-semibold text-sm">Thông tin ngân hàng</h3>
+      <h3 className="font-semibold text-sm">{t("title")}</h3>
 
       <Tabs
         value={data.bankAccountType || "VN"}
@@ -58,10 +56,10 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="VN" disabled={!isEditing}>
-            Việt Nam
+            {t("vietnam")}
           </TabsTrigger>
           <TabsTrigger value="JP" disabled={!isEditing}>
-            Nhật Bản
+            {t("japan")}
           </TabsTrigger>
         </TabsList>
 
@@ -69,31 +67,31 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
         <TabsContent value="VN" className="space-y-3 mt-4">
           <div>
             <Label className="text-muted-foreground text-xs">
-              Tên ngân hàng
+              {t("bankName")}
             </Label>
             <Input
               value={data.bankName}
               onChange={(e) => onChange({ bankName: e.target.value })}
               disabled={!isEditing}
-              placeholder="Vietcombank"
+              placeholder={t("bankNamePlaceholderVN")}
               className="mt-1"
             />
           </div>
           <div>
             <Label className="text-muted-foreground text-xs">
-              Số tài khoản
+              {t("accountNumber")}
             </Label>
             <Input
               value={data.bankAccount}
               onChange={(e) => onChange({ bankAccount: e.target.value })}
               disabled={!isEditing}
-              placeholder="0123456789"
+              placeholder={t("accountNumberPlaceholder")}
               className="mt-1"
             />
           </div>
           <div>
             <Label className="text-muted-foreground text-xs">
-              Tên chủ tài khoản
+              {t("accountHolder")}
             </Label>
             <Input
               value={data.bankAccountName}
@@ -101,7 +99,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
                 onChange({ bankAccountName: e.target.value.toUpperCase() })
               }
               disabled={!isEditing}
-              placeholder="NGUYEN VAN A"
+              placeholder={t("accountHolderPlaceholderVN")}
               className="mt-1"
             />
           </div>
@@ -121,13 +119,13 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="normal" id="bank-normal" />
               <Label htmlFor="bank-normal" className="cursor-pointer text-sm">
-                Ngân hàng thông thường
+                {t("normalBank")}
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="yucho" id="bank-yucho" />
               <Label htmlFor="bank-yucho" className="cursor-pointer text-sm">
-                ゆうちょ銀行
+                {t("yuchoBank")}
               </Label>
             </div>
           </RadioGroup>
@@ -138,19 +136,19 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    Tên ngân hàng (銀行名)
+                    {t("bankNameJP")}
                   </Label>
                   <Input
                     value={data.bankName}
                     onChange={(e) => onChange({ bankName: e.target.value })}
                     disabled={!isEditing}
-                    placeholder="Rakuten"
+                    placeholder={t("bankNamePlaceholderJP")}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    Mã ngân hàng (銀行コード)
+                    {t("bankCode")}
                   </Label>
                   <Input
                     value={data.bankCode}
@@ -166,7 +164,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    Tên chi nhánh (支店名)
+                    {t("branchName")}
                   </Label>
                   <Input
                     value={data.bankBranchName}
@@ -174,13 +172,13 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
                       onChange({ bankBranchName: e.target.value })
                     }
                     disabled={!isEditing}
-                    placeholder="渋谷支店"
+                    placeholder={t("branchNamePlaceholder")}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    Mã chi nhánh (支店コード)
+                    {t("branchCode")}
                   </Label>
                   <Input
                     value={data.bankBranchCode}
@@ -198,7 +196,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    Loại tài khoản (口座種別)
+                    {t("accountType")}
                   </Label>
                   <Select
                     value={data.bankAccountCategory || ""}
@@ -210,20 +208,17 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
                     disabled={!isEditing}
                   >
                     <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Chọn loại" />
+                      <SelectValue placeholder={t("selectType")} />
                     </SelectTrigger>
                     <SelectContent>
-                      {BANK_ACCOUNT_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="futsu">{t("futsu")}</SelectItem>
+                      <SelectItem value="toza">{t("toza")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    Số tài khoản (口座番号)
+                    {t("accountNumberJP")}
                   </Label>
                   <Input
                     value={data.bankAccount}
@@ -238,7 +233,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
 
               <div>
                 <Label className="text-muted-foreground text-xs">
-                  Tên chủ tài khoản (口座名義)
+                  {t("accountHolderJP")}
                 </Label>
                 <Input
                   value={data.bankAccountName}
@@ -246,7 +241,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
                     onChange({ bankAccountName: e.target.value })
                   }
                   disabled={!isEditing}
-                  placeholder="SATO MISAKI"
+                  placeholder={t("accountHolderPlaceholderJP")}
                   className="mt-1"
                 />
               </div>
@@ -259,7 +254,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    記号 (Kigou)
+                    {t("kigou")}
                   </Label>
                   <Input
                     value={data.bankSymbol}
@@ -272,7 +267,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">
-                    番号 (Bangou)
+                    {t("bangou")}
                   </Label>
                   <Input
                     value={data.bankNumber}
@@ -287,7 +282,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
 
               <div>
                 <Label className="text-muted-foreground text-xs">
-                  Tên chủ tài khoản (口座名義)
+                  {t("accountHolderJP")}
                 </Label>
                 <Input
                   value={data.bankAccountName}
@@ -295,7 +290,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
                     onChange({ bankAccountName: e.target.value })
                   }
                   disabled={!isEditing}
-                  placeholder="SATO MISAKI"
+                  placeholder={t("accountHolderPlaceholderJP")}
                   className="mt-1"
                 />
               </div>
@@ -305,7 +300,7 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
       </Tabs>
 
       <p className="text-xs text-muted-foreground text-center italic bg-secondary py-1 rounded-xs">
-        ※ Đây là tài khoản nhận lương, vui lòng kiểm tra kỹ thông tin.
+        {t("salaryAccountNote")}
       </p>
     </div>
   );

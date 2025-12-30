@@ -26,8 +26,8 @@
 ## Types & Enums
 
 - Định nghĩa types trong `types/` directory
-- Sử dụng constants từ `types/enums.ts` cho các giá trị cố định
-- Derive types từ constants: `type UserRole = keyof typeof USER_ROLE_LABELS`
+- Sử dụng constants từ `types/enums.ts` cho các giá trị cố định (chỉ chứa enum values, KHÔNG chứa translations)
+- Derive types từ constants: `type UserRole = keyof typeof UserRole`
 - KHÔNG sử dụng `any` type
 
 ## Components
@@ -57,8 +57,8 @@
 // Ví dụ chuẩn
 <Card className="py-2">
   <CardContent>
-    <p className="text-sm text-muted-foreground">Label</p>
-    <p className="text-2xl font-bold text-green-600">Value</p>
+    <p className="text-sm text-muted-foreground">{t("label")}</p>
+    <p className="text-2xl font-bold text-green-600">{value}</p>
   </CardContent>
 </Card>
 ```
@@ -70,11 +70,99 @@
 - Optimize images với `next/image`
 - Debounce search inputs (500ms)
 
-## i18n
+## i18n (Internationalization)
+
+### Cấu trúc Message Files
 
 - Locales: `vi`, `en`, `ja`
-- Use `useTranslations()` hook
-- Translation files in `messages/` directory
+- Translation files: `messages/{locale}.json`
+- Namespaces: `common`, `auth`, `header`, `deposits`, `plans`, `companies`, `wallet`, `users`, `settings`, `enums`, `errors`, `validation`, `dialogs`, `commissions`
+- Key naming: camelCase, max 3 levels depth (e.g., `deposits.table.companyName`)
+
+### Sử dụng Translations
+
+**Client Components:**
+
+```tsx
+"use client";
+import { useTranslations } from "next-intl";
+
+export function MyComponent() {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+
+  return <h1>{t("title")}</h1>;
+}
+```
+
+**Server Components:**
+
+```tsx
+import { getTranslations } from "next-intl/server";
+
+export default async function MyPage() {
+  const t = await getTranslations("deposits");
+  return <h1>{t("title")}</h1>;
+}
+```
+
+### Quy tắc i18n
+
+- **KHÔNG** hardcode text trong components (Vietnamese, English, Japanese)
+- **KHÔNG** sử dụng inline labels pattern: `const labels = { vi: {...}, en: {...} }`
+- **LUÔN** dùng `useTranslations()` hoặc `getTranslations()` với namespace
+- **KHÔNG** truyền locale parameter - next-intl tự xử lý
+- Khi thêm key mới vào 1 locale file, **PHẢI** thêm vào tất cả locale files
+
+### Enum Translations
+
+- Enum translations nằm trong namespace `enums`
+- Pattern: `enums.{enumName}.{enumValue}` (e.g., `enums.depositStatus.PENDING`)
+- Sử dụng `getEnumLabel()` từ `@/lib/utils/get-enum-label`
+
+```tsx
+import { useTranslations } from "next-intl";
+import { getEnumLabel } from "@/lib/utils/get-enum-label";
+
+const tEnums = useTranslations("enums");
+const label = getEnumLabel("depositStatus", status, tEnums);
+```
+
+### Error Messages
+
+- Error translations nằm trong namespace `errors`
+- Sử dụng `getErrorMessage()` từ `@/lib/utils/get-error-message`
+- Fallback to generic error nếu error code không tồn tại
+
+```tsx
+import { useTranslations } from "next-intl";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
+
+const tErrors = useTranslations("errors");
+toast.error(getErrorMessage(errorCode, tErrors));
+```
+
+### Date Formatting
+
+- Sử dụng `formatDate()`, `formatDateTime()` từ `@/lib/utils/format-date`
+- Vietnamese/English: `dd/MM/yyyy` (e.g., 31/12/2025)
+- Japanese: `yyyy年MM月dd日` (e.g., 2025年12月31日)
+- **KHÔNG** dùng `toLocaleDateString()` trực tiếp
+
+```tsx
+import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import { useLocale } from "next-intl";
+
+const locale = useLocale();
+const dateStr = formatDate(date, locale);
+```
+
+### Toast Messages
+
+- Toast messages **PHẢI** được translate
+- Success: `t('messages.createSuccess')`
+- Error: `getErrorMessage(errorCode, tErrors)`
 
 ## Theme
 
@@ -92,7 +180,7 @@
 
 - Luôn thêm cột **STT (số thứ tự)** làm cột đầu tiên
 - Tính STT: `page * pageSize + index + 1`
-- Header: "STT" hoặc "#"
+- Header: dùng translation key `common.stt` hoặc "#"
 - Width cột STT: `w-[60px]` hoặc tương đương
 
 ## Image Upload

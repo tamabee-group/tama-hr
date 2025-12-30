@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Upload, X, Image as ImageIcon, AlertCircle } from "lucide-react";
@@ -27,12 +28,13 @@ export interface ImageUploadProps {
 export function validateFileSize(
   fileSize: number,
   maxSizeMB: number,
+  errorMessage: string,
 ): { valid: boolean; error?: string } {
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   if (fileSize > maxSizeBytes) {
     return {
       valid: false,
-      error: `File vượt quá ${maxSizeMB}MB. Vui lòng chọn file nhỏ hơn.`,
+      error: errorMessage,
     };
   }
   return { valid: true };
@@ -42,11 +44,12 @@ export function validateFileSize(
 export function validateFileType(
   fileType: string,
   acceptedTypes: string[],
+  errorMessage: string,
 ): { valid: boolean; error?: string } {
   if (!acceptedTypes.includes(fileType)) {
     return {
       valid: false,
-      error: `Định dạng file không hợp lệ. Chỉ chấp nhận: ${acceptedTypes.map((t) => t.split("/")[1]).join(", ")}`,
+      error: errorMessage,
     };
   }
   return { valid: true };
@@ -67,6 +70,7 @@ export function ImageUpload({
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(value || null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("imageUpload");
 
   // Xử lý file được chọn
   const handleFile = useCallback(
@@ -74,16 +78,27 @@ export function ImageUpload({
       setError(null);
 
       // Validate file type
-      const typeValidation = validateFileType(file.type, accept);
+      const acceptedFormats = accept
+        .map((type) => type.split("/")[1])
+        .join(", ");
+      const typeValidation = validateFileType(
+        file.type,
+        accept,
+        t("invalidFormat", { formats: acceptedFormats }),
+      );
       if (!typeValidation.valid) {
-        setError(typeValidation.error || "File không hợp lệ");
+        setError(typeValidation.error || t("invalidFile"));
         return;
       }
 
       // Validate file size
-      const sizeValidation = validateFileSize(file.size, maxSize);
+      const sizeValidation = validateFileSize(
+        file.size,
+        maxSize,
+        t("fileTooLarge", { maxSize }),
+      );
       if (!sizeValidation.valid) {
-        setError(sizeValidation.error || "File quá lớn");
+        setError(sizeValidation.error || t("fileTooLargeGeneric"));
         return;
       }
 
@@ -105,12 +120,12 @@ export function ImageUpload({
         // Gọi onChange với URL preview
         onChange(objectUrl);
       } catch {
-        setError("Không thể xử lý file. Vui lòng thử lại.");
+        setError(t("processError"));
       } finally {
         setIsLoading(false);
       }
     },
-    [accept, maxSize, onChange, onFileSelect],
+    [accept, maxSize, onChange, onFileSelect, t],
   );
 
   // Xử lý khi chọn file từ input
@@ -205,7 +220,7 @@ export function ImageUpload({
           <div className="flex flex-col items-center justify-center p-8">
             <Spinner className="h-8 w-8 text-primary" />
             <p className="mt-2 text-sm text-muted-foreground">
-              Đang xử lý ảnh...
+              {t("processing")}
             </p>
           </div>
         ) : previewUrl ? (
@@ -240,13 +255,13 @@ export function ImageUpload({
               )}
             </div>
             <p className="text-sm font-medium text-foreground">
-              {isDragging
-                ? "Thả ảnh vào đây"
-                : "Kéo thả ảnh hoặc click để chọn"}
+              {isDragging ? t("dropHere") : t("dragOrClick")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {accept.map((t) => t.split("/")[1].toUpperCase()).join(", ")} •
-              Tối đa {maxSize}MB
+              {accept
+                .map((type) => type.split("/")[1].toUpperCase())
+                .join(", ")}{" "}
+              • {t("maxSize", { maxSize })}
             </p>
           </div>
         )}

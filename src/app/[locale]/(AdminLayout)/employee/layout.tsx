@@ -1,5 +1,7 @@
+"use client";
+
 import { AdminLayoutWrapper } from "../_components/_admin-layout-wrapper";
-import { employeeSidebarGroups } from "./_components/_employee-sidebar-items";
+import { useEmployeeSidebarGroups } from "./_components/_employee-sidebar-items";
 import type { SidebarHeaderConfig } from "@/types/sidebar";
 import { SidebarLogo } from "@/app/[locale]/_components/_logo";
 
@@ -19,9 +21,11 @@ export default function EmployeeTamabeeLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const sidebarGroups = useEmployeeSidebarGroups();
+
   return (
     <AdminLayoutWrapper
-      sidebarGroups={employeeSidebarGroups}
+      sidebarGroups={sidebarGroups}
       headerConfig={employeeHeaderConfig}
     >
       {children}

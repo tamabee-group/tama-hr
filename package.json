@@ -13,12 +13,7 @@
     "prepare": "husky",
     "test": "vitest",
     "test:run": "vitest --run",
-    "test:coverage": "vitest --coverage",
-    "check:rules": "npx ts-node --project scripts/tsconfig.json --transpile-only scripts/check-rules.ts",
-    "check:rules:fix": "npx ts-node --project scripts/tsconfig.json --transpile-only scripts/check-rules.ts --fix",
-    "check:rules:verbose": "npx ts-node --project scripts/tsconfig.json --transpile-only scripts/check-rules.ts --verbose",
-    "check:rules:frontend": "npx ts-node --project scripts/tsconfig.json --transpile-only scripts/check-rules.ts --frontend-only",
-    "check:rules:backend": "npx ts-node --project scripts/tsconfig.json --transpile-only scripts/check-rules.ts --backend-only"
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",

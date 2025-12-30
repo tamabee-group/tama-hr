@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, CheckCircle, Wallet, Users } from "lucide-react";
@@ -21,6 +22,8 @@ interface CommissionSummaryCardProps {
 export function CommissionSummaryCard({
   refreshTrigger,
 }: CommissionSummaryCardProps) {
+  const t = useTranslations("referrals");
+  const tErrors = useTranslations("errors");
   const [summary, setSummary] = useState<CommissionSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +36,7 @@ export function CommissionSummaryCard({
     } catch (error) {
       console.error("Failed to fetch commission summary:", error);
       handleApiError(error, {
-        defaultMessage: "Không thể tải thống kê hoa hồng",
+        defaultMessage: tErrors("generic"),
       });
     } finally {
       setLoading(false);
@@ -66,32 +69,32 @@ export function CommissionSummaryCard({
   // Summary cards config
   const summaryCards = [
     {
-      title: "Tổng công ty giới thiệu",
+      title: t("summary.totalReferrals"),
       value: summary.totalReferrals.toString(),
       icon: Users,
       iconColor: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
-      title: "Chờ đủ điều kiện",
+      title: t("summary.pendingAmount"),
       value: formatCurrency(summary.totalPendingAmount, "vi"),
-      subValue: `${summary.pendingCommissions} hoa hồng`,
+      subValue: `${summary.pendingCommissions} ${t("summary.commissions")}`,
       icon: Clock,
       iconColor: "text-yellow-500",
       bgColor: "bg-yellow-500/10",
     },
     {
-      title: "Đủ điều kiện",
+      title: t("summary.eligibleAmount"),
       value: formatCurrency(summary.totalEligibleAmount, "vi"),
-      subValue: `${summary.eligibleCommissions} hoa hồng`,
+      subValue: `${summary.eligibleCommissions} ${t("summary.commissions")}`,
       icon: CheckCircle,
       iconColor: "text-cyan-500",
       bgColor: "bg-cyan-500/10",
     },
     {
-      title: "Đã thanh toán",
+      title: t("summary.paidAmount"),
       value: formatCurrency(summary.totalPaidAmount, "vi"),
-      subValue: `${summary.paidCommissions} hoa hồng`,
+      subValue: `${summary.paidCommissions} ${t("summary.commissions")}`,
       icon: Wallet,
       iconColor: "text-green-500",
       bgColor: "bg-green-500/10",

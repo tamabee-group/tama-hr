@@ -1,25 +1,26 @@
 "use client";
 
-import { ColumnDef, VisibilityState } from "@tanstack/react-table";
+import { VisibilityState } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useMemo } from "react";
+import { Company } from "@/types/company";
+import { useColumns } from "./columns";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  data: Company[];
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable({ data }: DataTableProps) {
+  const t = useTranslations("companies");
+  const tCommon = useTranslations("common");
   const { isMobile, isMd, isLg } = useBreakpoint();
+  const columns = useColumns();
 
   // Tính toán columnVisibility dựa trên breakpoint
   const columnVisibility = useMemo((): VisibilityState => {
     if (isMobile) {
-      // < 640px: Chỉ hiện logo, name, actions
       return {
         ownerName: false,
         phone: false,
@@ -29,7 +30,6 @@ export function DataTable<TData, TValue>({
       } as VisibilityState;
     }
     if (!isMd) {
-      // < 768px: Ẩn industry, locale, createdAt
       return {
         industry: false,
         locale: false,
@@ -37,20 +37,18 @@ export function DataTable<TData, TValue>({
       } as VisibilityState;
     }
     if (!isLg) {
-      // < 1024px: Ẩn locale, createdAt
       return {
         locale: false,
         createdAt: false,
       } as VisibilityState;
     }
-    // >= 1024px: Hiện tất cả
     return {} as VisibilityState;
   }, [isMobile, isMd, isLg]);
 
   if (data.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center text-muted-foreground">
-        Chưa có doanh nghiệp nào
+        {tCommon("noResults")}
       </div>
     );
   }
@@ -60,7 +58,7 @@ export function DataTable<TData, TValue>({
       columns={columns}
       data={data}
       filterColumn="name"
-      filterPlaceholder="Tìm tên doanh nghiệp..."
+      filterPlaceholder={tCommon("search")}
       initialColumnVisibility={columnVisibility}
     />
   );

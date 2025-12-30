@@ -20,6 +20,8 @@ import { Mail, Lock } from "lucide-react";
 import { login } from "@/lib/apis/auth";
 import { useAuth, fetchCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 interface LoginDialogProps {
   open: boolean;
@@ -38,6 +40,11 @@ export function LoginDialog({
 }: LoginDialogProps) {
   const router = useRouter();
   const { login: setAuthUser } = useAuth();
+  const t = useTranslations("auth");
+  const tDialog = useTranslations("auth.loginDialog");
+  const tHeader = useTranslations("header");
+  const tErrors = useTranslations("errors");
+
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
@@ -49,29 +56,22 @@ export function LoginDialog({
     setLoading(true);
 
     try {
-      // Gọi API login
       await login(formData.identifier, formData.password);
-
-      // Gọi API /me để lấy thông tin user đầy đủ
       const user = await fetchCurrentUser();
-
-      // Lưu user vào context và localStorage
       setAuthUser(user);
 
-      toast.success("Đăng nhập thành công!");
+      toast.success(t("loginSuccess"));
       onOpenChange(false);
       onLoginSuccess?.();
       router.push("/");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Đăng nhập thất bại";
+      const message = getErrorMessage(error, tErrors, t("loginFailed"));
       toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Reset form khi đóng dialog
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setFormData({ identifier: "", password: "" });
@@ -83,11 +83,13 @@ export function LoginDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl">Đăng nhập</DialogTitle>
+          <DialogTitle className="text-center text-2xl">
+            {tDialog("title")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="dialog-identifier">Email hoặc mã nhân viên</Label>
+            <Label htmlFor="dialog-identifier">{tDialog("identifier")}</Label>
             <InputGroup>
               <InputGroupInput
                 id="dialog-identifier"
@@ -95,7 +97,7 @@ export function LoginDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, identifier: e.target.value })
                 }
-                placeholder="Nhập email hoặc mã nhân viên..."
+                placeholder={tDialog("identifierPlaceholder")}
                 autoComplete="off"
                 required
               />
@@ -105,7 +107,7 @@ export function LoginDialog({
             </InputGroup>
           </div>
           <div>
-            <Label htmlFor="dialog-password">Mật khẩu</Label>
+            <Label htmlFor="dialog-password">{t("password")}</Label>
             <InputGroup>
               <InputGroupInput
                 id="dialog-password"
@@ -114,7 +116,7 @@ export function LoginDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                placeholder="Nhập mật khẩu..."
+                placeholder={tDialog("passwordPlaceholder")}
                 autoComplete="off"
                 required
               />
@@ -128,21 +130,21 @@ export function LoginDialog({
                 className="text-sm text-primary hover:underline"
                 onClick={() => onOpenChange(false)}
               >
-                Quên mật khẩu?
+                {t("forgotPassword.title")}?
               </Link>
             </div>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            {loading ? t("loggingIn") : t("login")}
           </Button>
           <div className="text-center text-sm">
-            Bạn chưa có tài khoản?{" "}
+            {tDialog("noAccount")}{" "}
             <Link
               href="/register"
               className="text-primary dark:text-(--blue-light) hover:underline font-medium"
               onClick={() => onOpenChange(false)}
             >
-              Đăng ký
+              {tHeader("register")}
             </Link>
           </div>
         </form>

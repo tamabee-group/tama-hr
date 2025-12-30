@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import { formatCurrency } from "@/lib/utils/format-currency";
 import { formatDateTime } from "@/lib/utils/format-date";
 import { CommissionStatus } from "@/types/enums";
 import { Badge } from "@/components/ui/badge";
+import { getEnumLabel } from "@/lib/utils/get-enum-label";
 
 interface CommissionPayDialogProps {
   open: boolean;
@@ -27,18 +29,24 @@ interface CommissionPayDialogProps {
 /**
  * Component hiển thị trạng thái thanh toán
  */
-function StatusBadge({ status }: { status: CommissionStatus }) {
+function StatusBadge({
+  status,
+  tEnums,
+}: {
+  status: CommissionStatus;
+  tEnums: ReturnType<typeof useTranslations<"enums">>;
+}) {
+  const label = getEnumLabel("commissionStatus", status, tEnums);
+
   if (status === "PAID") {
-    return <Badge className="bg-green-100 text-green-800">Đã thanh toán</Badge>;
+    return <Badge className="bg-green-100 text-green-800">{label}</Badge>;
   }
 
   if (status === "PENDING") {
-    return (
-      <Badge className="bg-yellow-100 text-yellow-800">Chờ đủ điều kiện</Badge>
-    );
+    return <Badge className="bg-yellow-100 text-yellow-800">{label}</Badge>;
   }
 
-  return <Badge className="bg-blue-100 text-blue-800">Chờ thanh toán</Badge>;
+  return <Badge className="bg-blue-100 text-blue-800">{label}</Badge>;
 }
 
 /**
@@ -52,6 +60,10 @@ export function CommissionPayDialog({
   onConfirm,
 }: CommissionPayDialogProps) {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("commissions");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+  const locale = useLocale() as "vi" | "en" | "ja";
 
   if (!commission) return null;
 
@@ -77,59 +89,67 @@ export function CommissionPayDialog({
             ) : (
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
             )}
-            Xác nhận thanh toán hoa hồng
+            {t("payDialog.title")}
           </DialogTitle>
-          <DialogDescription>
-            Vui lòng kiểm tra thông tin trước khi xác nhận thanh toán
-          </DialogDescription>
+          <DialogDescription>{t("payDialog.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           {/* Thông tin nhân viên */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Nhân viên</p>
+              <p className="text-sm text-muted-foreground">
+                {t("payDialog.employee")}
+              </p>
               <p className="font-medium">{commission.employeeName || "-"}</p>
               <p className="text-xs text-muted-foreground">
                 {commission.employeeCode}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Số tiền hoa hồng</p>
+              <p className="text-sm text-muted-foreground">
+                {t("payDialog.commissionAmount")}
+              </p>
               <p className="font-medium text-lg text-primary">
-                {formatCurrency(commission.amount, "vi")}
+                {formatCurrency(commission.amount, locale)}
               </p>
             </div>
           </div>
 
           {/* Thông tin company */}
           <div className="rounded-lg border p-4 space-y-3">
-            <h4 className="font-medium">Thông tin công ty được giới thiệu</h4>
+            <h4 className="font-medium">
+              {t("payDialog.referredCompanyInfo")}
+            </h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-muted-foreground">Tên công ty</p>
+                <p className="text-muted-foreground">
+                  {t("payDialog.companyName")}
+                </p>
                 <p className="font-medium">{commission.companyName || "-"}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Trạng thái</p>
-                <StatusBadge status={commission.status} />
+                <p className="text-muted-foreground">{tCommon("status")}</p>
+                <StatusBadge status={commission.status} tEnums={tEnums} />
               </div>
               <div>
                 <p className="text-muted-foreground">
-                  Billing tại thời điểm tạo
+                  {t("payDialog.billingAtCreation")}
                 </p>
                 <p className="font-medium">
                   {formatCurrency(
                     commission.companyBillingAtCreation || 0,
-                    "vi",
+                    locale,
                   )}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Ngày tạo commission</p>
+                <p className="text-muted-foreground">
+                  {t("payDialog.createdAt")}
+                </p>
                 <p className="font-medium">
                   {commission.createdAt
-                    ? formatDateTime(commission.createdAt, "vi")
+                    ? formatDateTime(commission.createdAt, locale)
                     : "-"}
                 </p>
               </div>
@@ -142,11 +162,10 @@ export function CommissionPayDialog({
               <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
               <div className="text-sm">
                 <p className="font-medium text-yellow-800">
-                  Chưa đủ điều kiện thanh toán
+                  {t("payDialog.notEligibleTitle")}
                 </p>
                 <p className="text-yellow-700">
-                  Commission này chưa đạt điều kiện thanh toán. Công ty cần đạt
-                  mức billing tối thiểu trước khi có thể thanh toán hoa hồng.
+                  {t("payDialog.notEligibleDescription")}
                 </p>
               </div>
             </div>
@@ -159,16 +178,16 @@ export function CommissionPayDialog({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            Hủy
+            {tCommon("cancel")}
           </Button>
           <Button onClick={handleConfirm} disabled={loading || !isEligible}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang xử lý...
+                {tCommon("loading")}
               </>
             ) : (
-              "Xác nhận thanh toán"
+              t("payDialog.confirmPayment")
             )}
           </Button>
         </DialogFooter>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { WalletOverviewResponse } from "@/types/wallet";
 import { SupportWalletCard } from "./_support-wallet-card";
 import { SupportTransactionTable } from "./_support-transaction-table";
@@ -19,13 +20,15 @@ interface CompanyDetailProps {
  */
 export function CompanyDetail({ company, onBack }: CompanyDetailProps) {
   const [activeTab, setActiveTab] = useState("transactions");
+  const t = useTranslations("wallet");
+  const tCommon = useTranslations("common");
 
   return (
     <div className="space-y-6">
       {/* Back button */}
       <Button variant="ghost" onClick={onBack} className="gap-2">
         <ArrowLeft className="h-4 w-4" />
-        Quay lại tìm kiếm
+        {tCommon("back")}
       </Button>
 
       {/* Wallet Card */}
@@ -36,11 +39,11 @@ export function CompanyDetail({ company, onBack }: CompanyDetailProps) {
         <TabsList>
           <TabsTrigger value="transactions" className="flex items-center gap-2">
             <History className="h-4 w-4" />
-            Lịch sử giao dịch
+            {t("transactions")}
           </TabsTrigger>
           <TabsTrigger value="deposits" className="flex items-center gap-2">
             <Receipt className="h-4 w-4" />
-            Yêu cầu nạp tiền
+            {t("deposit")}
           </TabsTrigger>
         </TabsList>
 

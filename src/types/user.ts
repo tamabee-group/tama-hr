@@ -1,23 +1,18 @@
 import {
   TAMABEE_USER_ROLES,
   COMPANY_USER_ROLES,
-  USER_STATUS,
+  USER_STATUSES,
   GENDERS,
+  type TamabeeUserRole,
+  type CompanyUserRole,
+  type UserStatus as UserStatusType,
+  type Gender as GenderType,
 } from "./enums";
 
-// Derive types từ constants
-type TamabeeRole = (typeof TAMABEE_USER_ROLES)[number]["value"];
-type CompanyRole = (typeof COMPANY_USER_ROLES)[number]["value"];
-export type UserRole = TamabeeRole | CompanyRole;
-
-export type UserStatus = (typeof USER_STATUS)[number]["value"];
-export type Gender = (typeof GENDERS)[number]["value"];
-
-// Label hiển thị cho từng role (derive từ enums)
-export const USER_ROLE_LABELS: Record<UserRole, string> = Object.fromEntries([
-  ...TAMABEE_USER_ROLES.map((r) => [r.value, r.label]),
-  ...COMPANY_USER_ROLES.map((r) => [r.value, r.label]),
-]) as Record<UserRole, string>;
+// Re-export types từ enums
+export type UserRole = TamabeeUserRole | CompanyUserRole;
+export type UserStatus = UserStatusType;
+export type Gender = GenderType;
 
 // Các role có quyền admin (hiển thị link "Trang quản trị")
 export const ADMIN_ROLES: UserRole[] = [

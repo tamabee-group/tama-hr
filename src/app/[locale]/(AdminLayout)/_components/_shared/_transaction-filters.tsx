@@ -16,14 +16,21 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
-import {
-  TransactionType,
-  TRANSACTION_TYPES,
-  getTransactionTypeLabel,
-} from "@/types/enums";
+import { vi, enUS, ja } from "date-fns/locale";
+import { TransactionType, TRANSACTION_TYPES } from "@/types/enums";
 import { SupportedLocale } from "@/lib/utils/format-currency";
+import { formatDate } from "@/lib/utils/format-date";
+import { getTransactionTypeLabel } from "@/lib/utils/get-enum-label";
+
+// Mapping locale sang date-fns locale cho Calendar
+const dateLocaleMap = {
+  vi: vi,
+  en: enUS,
+  ja: ja,
+};
+
+// Type cho translation function
+type EnumTranslationFunction = (key: string) => string;
 
 /**
  * Props cho TransactionFilters component
@@ -37,6 +44,8 @@ interface TransactionFiltersProps {
   endDate?: Date;
   /** Locale cho hiển thị label */
   locale?: SupportedLocale;
+  /** Translation function từ useTranslations('enums') */
+  tEnums: EnumTranslationFunction;
   /** Callback khi thay đổi loại giao dịch */
   onTypeChange: (value: string) => void;
   /** Callback khi thay đổi ngày bắt đầu */
@@ -56,12 +65,14 @@ export function TransactionFilters({
   startDate,
   endDate,
   locale = "vi",
+  tEnums,
   onTypeChange,
   onStartDateChange,
   onEndDateChange,
   onClearFilters,
 }: TransactionFiltersProps) {
   const hasActiveFilters = transactionType || startDate || endDate;
+  const dateLocale = dateLocaleMap[locale];
 
   return (
     <div className="flex flex-wrap gap-4 items-center">
@@ -73,8 +84,8 @@ export function TransactionFilters({
         <SelectContent>
           <SelectItem value="ALL">Tất cả loại</SelectItem>
           {TRANSACTION_TYPES.map((type) => (
-            <SelectItem key={type.value} value={type.value}>
-              {getTransactionTypeLabel(type.value, locale)}
+            <SelectItem key={type} value={type}>
+              {getTransactionTypeLabel(type, tEnums)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -91,7 +102,7 @@ export function TransactionFilters({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {startDate ? format(startDate, "dd/MM/yyyy") : "Từ ngày"}
+            {startDate ? formatDate(startDate, locale) : "Từ ngày"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -99,7 +110,7 @@ export function TransactionFilters({
             mode="single"
             selected={startDate}
             onSelect={onStartDateChange}
-            locale={vi}
+            locale={dateLocale}
             autoFocus
           />
         </PopoverContent>
@@ -116,7 +127,7 @@ export function TransactionFilters({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {endDate ? format(endDate, "dd/MM/yyyy") : "Đến ngày"}
+            {endDate ? formatDate(endDate, locale) : "Đến ngày"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -124,7 +135,7 @@ export function TransactionFilters({
             mode="single"
             selected={endDate}
             onSelect={onEndDateChange}
-            locale={vi}
+            locale={dateLocale}
             autoFocus
           />
         </PopoverContent>

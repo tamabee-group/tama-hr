@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { ImageOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -68,6 +69,8 @@ function FallbackPlaceholder({
   compact?: boolean;
   onClick?: () => void;
 }) {
+  const t = useTranslations("common");
+
   if (compact) {
     return (
       <div
@@ -93,7 +96,7 @@ function FallbackPlaceholder({
       <div className="p-3 bg-muted rounded-full">
         <ImageOff className="h-10 w-10" />
       </div>
-      <span className="text-sm font-medium">Không có ảnh</span>
+      <span className="text-sm font-medium">{t("noImage")}</span>
     </div>
   );
 }

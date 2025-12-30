@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ReferredCompany } from "@/types/referral";
 import { CommissionSummaryCard } from "./_commission-summary-card";
 import { ReferralTable } from "./_referral-table";
@@ -12,6 +13,7 @@ import { ReferralDetailDialog } from "./_referral-detail-dialog";
  * @client-only
  */
 export function ReferralsPageContent() {
+  const t = useTranslations("referrals");
   const [selectedCompany, setSelectedCompany] =
     useState<ReferredCompany | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -30,10 +32,8 @@ export function ReferralsPageContent() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Công ty đã giới thiệu</h1>
-        <p className="text-muted-foreground">
-          Danh sách các công ty bạn đã giới thiệu và trạng thái hoa hồng
-        </p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Commission Summary Card */}

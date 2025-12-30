@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
@@ -8,7 +9,7 @@ import { DepositRequestResponse, DepositFilterRequest } from "@/types/deposit";
 import { depositApi } from "@/lib/apis/deposit-api";
 import { DepositStatusBadge } from "@/app/[locale]/_components/_status-badge";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { DepositStatus, DEPOSIT_STATUSES } from "@/types/enums";
+import { DepositStatus } from "@/types/enums";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Eye } from "lucide-react";
@@ -16,6 +17,7 @@ import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { cn } from "@/lib/utils";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { formatRequesterName } from "@/lib/utils/format-requester";
+import { formatDateTime } from "@/lib/utils/format-date";
 
 type TabStatus = "ALL" | DepositStatus;
 
@@ -36,99 +38,22 @@ export function AdminDepositTable({
   onViewDetail,
   refreshTrigger,
 }: AdminDepositTableProps) {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+
   const [deposits, setDeposits] = useState<DepositRequestResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabStatus>("ALL");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      companyName: "Công ty",
-      amount: "Số tiền",
-      transferProof: "Ảnh chứng minh",
-      status: "Trạng thái",
-      requestedBy: "Người yêu cầu",
-      requesterName: "Tên người yêu cầu",
-      createdAt: "Ngày tạo",
-      viewDetail: "Xem chi tiết",
-      all: "Tất cả",
-      pending: "Đang chờ",
-      approved: "Đã duyệt",
-      rejected: "Đã từ chối",
-      noResults: "Không có yêu cầu nạp tiền nào",
-      previous: "Trước",
-      next: "Sau",
-      errorLoading: "Không thể tải danh sách yêu cầu nạp tiền",
-    },
-    en: {
-      companyName: "Company",
-      amount: "Amount",
-      transferProof: "Transfer Proof",
-      status: "Status",
-      requestedBy: "Requested By",
-      requesterName: "Requester Name",
-      createdAt: "Created At",
-      viewDetail: "View Detail",
-      all: "All",
-      pending: "Pending",
-      approved: "Approved",
-      rejected: "Rejected",
-      noResults: "No deposit requests found",
-      previous: "Previous",
-      next: "Next",
-      errorLoading: "Failed to load deposit requests",
-    },
-    ja: {
-      companyName: "会社",
-      amount: "金額",
-      transferProof: "振込証明",
-      status: "ステータス",
-      requestedBy: "申請者",
-      requesterName: "申請者名",
-      createdAt: "作成日",
-      viewDetail: "詳細を見る",
-      all: "すべて",
-      pending: "保留中",
-      approved: "承認済み",
-      rejected: "却下",
-      noResults: "入金リクエストがありません",
-      previous: "前へ",
-      next: "次へ",
-      errorLoading: "入金リクエストの読み込みに失敗しました",
-    },
-  };
-
-  const t = labels[locale];
-
   // Danh sách tab
   const tabs: { value: TabStatus; label: string }[] = [
-    { value: "ALL", label: t.all },
-    { value: "PENDING", label: t.pending },
-    { value: "APPROVED", label: t.approved },
-    { value: "REJECTED", label: t.rejected },
+    { value: "ALL", label: t("tabs.all") },
+    { value: "PENDING", label: t("tabs.pending") },
+    { value: "APPROVED", label: t("tabs.approved") },
+    { value: "REJECTED", label: t("tabs.rejected") },
   ];
-
-  // Format ngày theo locale
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "-";
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(
-        locale === "vi" ? "vi-VN" : locale === "ja" ? "ja-JP" : "en-US",
-        {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        },
-      );
-    } catch {
-      return dateString;
-    }
-  };
 
   // Lấy danh sách deposits từ API
   const fetchDeposits = useCallback(async () => {
@@ -162,14 +87,14 @@ export function AdminDepositTable({
   const columns: ColumnDef<DepositRequestResponse>[] = [
     {
       accessorKey: "companyName",
-      header: t.companyName,
+      header: t("table.companyName"),
       cell: ({ row }) => (
         <span className="font-medium">{row.getValue("companyName")}</span>
       ),
     },
     {
       accessorKey: "amount",
-      header: t.amount,
+      header: t("table.amount"),
       cell: ({ row }) => (
         <span className="font-medium">
           {formatCurrency(row.getValue("amount"), locale)}
@@ -178,7 +103,7 @@ export function AdminDepositTable({
     },
     {
       accessorKey: "transferProofUrl",
-      header: t.transferProof,
+      header: t("table.transferProof"),
       cell: ({ row }) => {
         const imageUrl = row.getValue("transferProofUrl") as string;
         return (
@@ -195,14 +120,12 @@ export function AdminDepositTable({
     },
     {
       accessorKey: "status",
-      header: t.status,
-      cell: ({ row }) => (
-        <DepositStatusBadge status={row.getValue("status")} locale={locale} />
-      ),
+      header: t("table.status"),
+      cell: ({ row }) => <DepositStatusBadge status={row.getValue("status")} />,
     },
     {
       accessorKey: "requesterName",
-      header: t.requesterName,
+      header: t("table.requesterName"),
       cell: ({ row }) => {
         const deposit = row.original;
         return formatRequesterName({
@@ -213,8 +136,8 @@ export function AdminDepositTable({
     },
     {
       accessorKey: "createdAt",
-      header: t.createdAt,
-      cell: ({ row }) => formatDate(row.getValue("createdAt")),
+      header: t("table.createdAt"),
+      cell: ({ row }) => formatDateTime(row.getValue("createdAt"), locale),
     },
     {
       id: "actions",
@@ -223,7 +146,7 @@ export function AdminDepositTable({
           variant="ghost"
           size="icon-sm"
           onClick={() => onViewDetail?.(row.original)}
-          title={t.viewDetail}
+          title={t("actions.viewDetail")}
         >
           <Eye className="h-4 w-4" />
         </Button>
@@ -275,7 +198,7 @@ export function AdminDepositTable({
         columns={columns}
         data={deposits}
         showPagination={false}
-        noResultsText={t.noResults}
+        noResultsText={tCommon("noResults")}
       />
 
       {/* Custom Pagination */}
@@ -287,7 +210,7 @@ export function AdminDepositTable({
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
           >
-            {t.previous}
+            {tCommon("previous")}
           </Button>
           <span className="text-sm text-muted-foreground">
             {page + 1} / {totalPages}
@@ -298,7 +221,7 @@ export function AdminDepositTable({
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
           >
-            {t.next}
+            {tCommon("next")}
           </Button>
         </div>
       )}

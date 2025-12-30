@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,11 @@ import {
   Calendar,
 } from "lucide-react";
 import { ReferredCompany } from "@/types/referral";
-import { formatCurrency } from "@/lib/utils/format-currency";
-import {
-  COMMISSION_STATUS_LABELS,
-  COMMISSION_STATUS_COLORS,
-  CommissionStatus,
-} from "@/types/enums";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatDateTime } from "@/lib/utils/format-date";
+import { COMMISSION_STATUS_COLORS, CommissionStatus } from "@/types/enums";
+import { vi, ja, enUS } from "date-fns/locale";
+import { useLocale } from "next-intl";
 
 interface ReferralDetailDialogProps {
   company: ReferredCompany | null;
@@ -43,7 +41,23 @@ export function ReferralDetailDialog({
   open,
   onClose,
 }: ReferralDetailDialogProps) {
+  const t = useTranslations("referrals");
+  const tEnums = useTranslations("enums");
+  const locale = useLocale() as SupportedLocale;
+
   if (!company) return null;
+
+  // Get date-fns locale
+  const getDateLocale = () => {
+    switch (locale) {
+      case "vi":
+        return vi;
+      case "ja":
+        return ja;
+      default:
+        return enUS;
+    }
+  };
 
   // Lấy className cho commission status badge
   const getCommissionBadgeClassName = (status: CommissionStatus): string => {
@@ -62,12 +76,8 @@ export function ReferralDetailDialog({
 
   // Format ngày thanh toán hoa hồng
   const formatPaidDate = (dateStr?: string) => {
-    if (!dateStr) return "Chưa thanh toán";
-    try {
-      return format(new Date(dateStr), "dd/MM/yyyy HH:mm", { locale: vi });
-    } catch {
-      return dateStr;
-    }
+    if (!dateStr) return t("detail.notPaid");
+    return formatDateTime(dateStr, locale);
   };
 
   return (
@@ -76,7 +86,7 @@ export function ReferralDetailDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Chi tiết công ty
+            {t("detail.title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -84,33 +94,33 @@ export function ReferralDetailDialog({
           {/* Thông tin công ty */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-              Thông tin công ty
+              {t("detail.companyInfo")}
             </h3>
             <div className="grid gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Building2 className="h-4 w-4" />
-                  <span>Tên công ty</span>
+                  <span>{t("detail.companyName")}</span>
                 </div>
                 <span className="font-medium">{company.companyName}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <User className="h-4 w-4" />
-                  <span>Chủ sở hữu</span>
+                  <span>{t("detail.owner")}</span>
                 </div>
                 <span className="font-medium">{company.ownerName}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <CreditCard className="h-4 w-4" />
-                  <span>Gói dịch vụ</span>
+                  <span>{t("detail.plan")}</span>
                 </div>
                 <Badge variant="outline">{company.planName}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <span>Trạng thái</span>
+                  <span>{t("detail.status")}</span>
                 </div>
                 <Badge
                   variant="secondary"
@@ -121,8 +131,8 @@ export function ReferralDetailDialog({
                   }
                 >
                   {company.status === "ACTIVE"
-                    ? "Hoạt động"
-                    : "Không hoạt động"}
+                    ? t("status.active")
+                    : t("status.inactive")}
                 </Badge>
               </div>
             </div>
@@ -133,34 +143,34 @@ export function ReferralDetailDialog({
           {/* Thông tin tài chính */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-              Thông tin tài chính
+              {t("detail.financialInfo")}
             </h3>
             <div className="grid gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Wallet className="h-4 w-4" />
-                  <span>Số dư hiện tại</span>
+                  <span>{t("detail.currentBalance")}</span>
                 </div>
                 <span className="font-medium text-green-600">
-                  {formatCurrency(company.currentBalance, "vi")}
+                  {formatCurrency(company.currentBalance, locale)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <TrendingUp className="h-4 w-4" />
-                  <span>Tổng nạp tiền</span>
+                  <span>{t("detail.totalDeposits")}</span>
                 </div>
                 <span className="font-medium">
-                  {formatCurrency(company.totalDeposits, "vi")}
+                  {formatCurrency(company.totalDeposits, locale)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <CreditCard className="h-4 w-4" />
-                  <span>Tổng billing</span>
+                  <span>{t("detail.totalBilling")}</span>
                 </div>
                 <span className="font-medium">
-                  {formatCurrency(company.totalBilling, "vi")}
+                  {formatCurrency(company.totalBilling, locale)}
                 </span>
               </div>
             </div>
@@ -171,21 +181,21 @@ export function ReferralDetailDialog({
           {/* Thông tin hoa hồng */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-              Thông tin hoa hồng
+              {t("detail.commissionInfo")}
             </h3>
             <div className="grid gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Award className="h-4 w-4" />
-                  <span>Số tiền hoa hồng</span>
+                  <span>{t("detail.commissionAmount")}</span>
                 </div>
                 <span className="font-medium text-cyan-600">
-                  {formatCurrency(company.commissionAmount, "vi")}
+                  {formatCurrency(company.commissionAmount, locale)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <span>Trạng thái</span>
+                  <span>{t("detail.commissionStatus")}</span>
                 </div>
                 <Badge
                   variant="secondary"
@@ -193,15 +203,14 @@ export function ReferralDetailDialog({
                     company.commissionStatus,
                   )}
                 >
-                  {COMMISSION_STATUS_LABELS[company.commissionStatus]?.vi ||
-                    company.commissionStatus}
+                  {tEnums(`commissionStatus.${company.commissionStatus}`)}
                 </Badge>
               </div>
               {company.commissionPaidAt && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>Ngày thanh toán</span>
+                    <span>{t("detail.paidDate")}</span>
                   </div>
                   <span className="font-medium">
                     {formatPaidDate(company.commissionPaidAt)}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { WalletOverviewResponse } from "@/types/wallet";
 import { walletApi } from "@/lib/apis/wallet-api";
 import { formatCurrency } from "@/lib/utils/format-currency";
@@ -19,6 +20,8 @@ interface CompanySearchProps {
  * Component tìm kiếm công ty cho Employee Support
  */
 export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
+  const tCommon = useTranslations("common");
+  const tWallet = useTranslations("wallet");
   const [searchTerm, setSearchTerm] = useState("");
   const [companies, setCompanies] = useState<WalletOverviewResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,12 +46,12 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
       setCompanies(response.content);
     } catch (error) {
       console.error("Failed to search companies:", error);
-      toast.error("Không thể tìm kiếm công ty");
+      toast.error(tCommon("searchError"));
       setCompanies([]);
     } finally {
       setLoading(false);
     }
-  }, [searchTerm]);
+  }, [searchTerm, tCommon]);
 
   // Handle enter key
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -64,7 +67,7 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Nhập tên công ty để tìm kiếm..."
+            placeholder={tWallet("filter.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -73,7 +76,7 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
         </div>
         <Button onClick={handleSearch} disabled={loading || !searchTerm.trim()}>
           <Search className="h-4 w-4 mr-2" />
-          Tìm kiếm
+          {tCommon("search")}
         </Button>
       </div>
 
@@ -86,7 +89,7 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
         </div>
       ) : hasSearched && companies.length === 0 ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
-          Không tìm thấy công ty nào
+          {tWallet("messages.noResults")}
         </div>
       ) : companies.length > 0 ? (
         <div className="space-y-2">
@@ -105,7 +108,7 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
                     <div>
                       <p className="font-medium">{company.companyName}</p>
                       <p className="text-sm text-muted-foreground">
-                        {company.planName || "Chưa có gói"}
+                        {company.planName || tCommon("noResults")}
                       </p>
                     </div>
                   </div>
@@ -113,7 +116,7 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
                     {company.isFreeTrialActive && (
                       <div className="flex items-center gap-1 text-green-600 text-sm">
                         <Gift className="h-4 w-4" />
-                        <span>Dùng thử</span>
+                        <span>{tWallet("status.freeTrial")}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1 text-primary">

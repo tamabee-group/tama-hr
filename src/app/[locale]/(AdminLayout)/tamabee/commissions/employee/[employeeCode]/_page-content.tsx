@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { commissionApi } from "@/lib/apis/commission-api";
 import { getCompanyById } from "@/lib/apis/admin-companies";
 import { CommissionResponse } from "@/types/commission";
 import { Company } from "@/types/company";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDateTime } from "@/lib/utils/format-date";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { getCommissionStatusLabel, CommissionStatus } from "@/types/enums";
+import { CommissionStatus } from "@/types/enums";
 import { CompanyDetailDialog } from "./_company-detail-dialog";
 
 interface Props {
@@ -23,10 +24,14 @@ interface Props {
 
 /**
  * Nội dung trang chi tiết hoa hồng theo nhân viên
- * Hiển thị danh sách công ty mà nhân viên đó giới thiệu
  */
 export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params.locale as SupportedLocale) || "vi";
+  const t = useTranslations("commissions");
+  const tEnums = useTranslations("enums");
+
   const [commissions, setCommissions] = useState<CommissionResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [employeeName, setEmployeeName] = useState<string>("");
@@ -41,25 +46,20 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await commissionApi.getAll(
-          { employeeCode },
-          0,
-          100, // Lấy tối đa 100 records
-        );
+        const response = await commissionApi.getAll({ employeeCode }, 0, 100);
         setCommissions(response.content);
-        // Lấy tên nhân viên từ commission đầu tiên
         if (response.content.length > 0) {
           setEmployeeName(response.content[0].employeeName);
         }
       } catch (error) {
         console.error("Failed to fetch commissions:", error);
-        toast.error("Không thể tải dữ liệu hoa hồng");
+        toast.error(t("messages.loadError"));
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [employeeCode]);
+  }, [employeeCode, t]);
 
   // Xử lý click vào công ty
   const handleCompanyClick = async (companyId: number) => {
@@ -70,7 +70,7 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
       setDialogOpen(true);
     } catch (error) {
       console.error("Failed to fetch company:", error);
-      toast.error("Không thể tải thông tin công ty");
+      toast.error(t("messages.loadError"));
     } finally {
       setLoadingCompany(false);
     }
@@ -126,8 +126,8 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
         <div>
           <h1 className="text-2xl font-bold">{employeeName || employeeCode}</h1>
           <p className="text-sm text-muted-foreground">
-            Mã nhân viên: {employeeCode} • {commissions.length} công ty giới
-            thiệu
+            {t("employeeCode")}: {employeeCode} • {commissions.length}{" "}
+            {t("referredCompanies")}
           </p>
         </div>
       </div>
@@ -136,33 +136,39 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Chờ đủ điều kiện</p>
+            <p className="text-sm text-muted-foreground">
+              {t("pendingAmount")}
+            </p>
             <p className="text-2xl font-bold text-yellow-600">
-              {formatCurrency(pendingAmount, "vi")}
+              {formatCurrency(pendingAmount, locale)}
             </p>
           </CardContent>
         </Card>
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Chờ thanh toán</p>
+            <p className="text-sm text-muted-foreground">
+              {t("eligibleAmount")}
+            </p>
             <p className="text-2xl font-bold text-blue-600">
-              {formatCurrency(eligibleAmount, "vi")}
+              {formatCurrency(eligibleAmount, locale)}
             </p>
           </CardContent>
         </Card>
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Đã thanh toán</p>
+            <p className="text-sm text-muted-foreground">{t("paidAmount")}</p>
             <p className="text-2xl font-bold text-green-600">
-              {formatCurrency(paidAmount, "vi")}
+              {formatCurrency(paidAmount, locale)}
             </p>
           </CardContent>
         </Card>
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Tổng hoa hồng</p>
+            <p className="text-sm text-muted-foreground">
+              {t("totalCommission")}
+            </p>
             <p className="text-2xl font-bold">
-              {formatCurrency(totalAmount, "vi")}
+              {formatCurrency(totalAmount, locale)}
             </p>
           </CardContent>
         </Card>
@@ -171,18 +177,24 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
       {/* Company List */}
       <div className="rounded-lg border">
         <div className="p-4 border-b">
-          <h3 className="font-semibold">Danh sách công ty giới thiệu</h3>
+          <h3 className="font-semibold">{t("referredCompanyList")}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="text-left py-3 px-4 font-medium">Công ty</th>
-                <th className="text-right py-3 px-4 font-medium">Hoa hồng</th>
-                <th className="text-center py-3 px-4 font-medium">
-                  Trạng thái
+                <th className="text-left py-3 px-4 font-medium">
+                  {t("table.company")}
                 </th>
-                <th className="text-left py-3 px-4 font-medium">Ngày tạo</th>
+                <th className="text-right py-3 px-4 font-medium">
+                  {t("table.commission")}
+                </th>
+                <th className="text-center py-3 px-4 font-medium">
+                  {t("table.status")}
+                </th>
+                <th className="text-left py-3 px-4 font-medium">
+                  {t("table.createdAt")}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -192,7 +204,7 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
                     colSpan={4}
                     className="py-8 text-center text-muted-foreground"
                   >
-                    Chưa có công ty nào được giới thiệu
+                    {t("noCompanies")}
                   </td>
                 </tr>
               ) : (
@@ -208,15 +220,15 @@ export function EmployeeCommissionDetailContent({ employeeCode }: Props) {
                       </p>
                     </td>
                     <td className="text-right py-3 px-4 font-medium">
-                      {formatCurrency(commission.amount, "vi")}
+                      {formatCurrency(commission.amount, locale)}
                     </td>
                     <td className="text-center py-3 px-4">
                       <Badge variant={getStatusVariant(commission.status)}>
-                        {getCommissionStatusLabel(commission.status)}
+                        {tEnums(`commissionStatus.${commission.status}`)}
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-muted-foreground">
-                      {formatDateTime(commission.createdAt)}
+                      {formatDateTime(commission.createdAt, locale)}
                     </td>
                   </tr>
                 ))

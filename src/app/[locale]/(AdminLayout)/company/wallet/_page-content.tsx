@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { WalletResponse } from "@/types/wallet";
 import { getMyWallet } from "@/lib/apis/wallet-api";
 import { useAuth } from "@/lib/auth";
@@ -24,6 +25,9 @@ interface PageContentProps {
  */
 export function PageContent({ locale }: PageContentProps) {
   const { user } = useAuth();
+  const t = useTranslations("wallet");
+  const tDeposits = useTranslations("deposits");
+  const tErrors = useTranslations("errors");
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,11 +44,11 @@ export function PageContent({ locale }: PageContentProps) {
       setError(null);
     } catch (err) {
       console.error("Failed to fetch wallet:", err);
-      setError("Không thể tải thông tin ví");
+      setError(tErrors("generic"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tErrors]);
 
   useEffect(() => {
     fetchWallet();
@@ -70,8 +74,8 @@ export function PageContent({ locale }: PageContentProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Ví tiền</h1>
-        <p className="text-muted-foreground">Quản lý số dư và giao dịch</p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Wallet Card + Chart */}
@@ -110,8 +114,8 @@ export function PageContent({ locale }: PageContentProps) {
       {/* Tabs: Giao dịch / Yêu cầu nạp tiền */}
       <Tabs defaultValue="transactions" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="transactions">Lịch sử giao dịch</TabsTrigger>
-          <TabsTrigger value="deposits">Yêu cầu nạp tiền</TabsTrigger>
+          <TabsTrigger value="transactions">{t("transactions")}</TabsTrigger>
+          <TabsTrigger value="deposits">{tDeposits("title")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="transactions">

@@ -11,24 +11,35 @@ import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { getFileUrl } from "@/lib/utils/file-url";
 
+interface DepositColumnLabels {
+  createdAt: string;
+  amount: string;
+  status: string;
+  transferProof: string;
+  rejectionReason: string;
+  viewImage: string;
+}
+
 /**
  * Tạo column definitions cho bảng yêu cầu nạp tiền
  * @param locale - Locale cho format tiền tệ và ngày tháng
+ * @param labels - Labels cho các cột
  * @param onViewImage - Callback khi xem ảnh chứng minh
  */
 export function createDepositColumns(
   locale: SupportedLocale,
+  labels: DepositColumnLabels,
   onViewImage?: (imageUrl: string) => void,
 ): ColumnDef<DepositRequestResponse>[] {
   return [
     {
       accessorKey: "createdAt",
-      header: "Ngày tạo",
+      header: labels.createdAt,
       cell: ({ row }) => formatDateTime(row.getValue("createdAt"), locale),
     },
     {
       accessorKey: "amount",
-      header: "Số tiền",
+      header: labels.amount,
       cell: ({ row }) => (
         <span className="font-medium">
           {formatCurrency(row.getValue("amount"), locale)}
@@ -37,14 +48,12 @@ export function createDepositColumns(
     },
     {
       accessorKey: "status",
-      header: "Trạng thái",
-      cell: ({ row }) => (
-        <DepositStatusBadge status={row.getValue("status")} locale={locale} />
-      ),
+      header: labels.status,
+      cell: ({ row }) => <DepositStatusBadge status={row.getValue("status")} />,
     },
     {
       accessorKey: "transferProofUrl",
-      header: "Ảnh chứng minh",
+      header: labels.transferProof,
       cell: ({ row }) => {
         const imageUrl = row.getValue("transferProofUrl") as string;
         const fullUrl = getFileUrl(imageUrl);
@@ -63,7 +72,7 @@ export function createDepositColumns(
                 variant="ghost"
                 size="icon"
                 onClick={() => onViewImage?.(fullUrl)}
-                title="Xem ảnh"
+                title={labels.viewImage}
               >
                 <Eye className="h-4 w-4" />
               </Button>
@@ -74,7 +83,7 @@ export function createDepositColumns(
     },
     {
       accessorKey: "rejectionReason",
-      header: "Lý do từ chối",
+      header: labels.rejectionReason,
       cell: ({ row }) => {
         const status = row.getValue("status") as DepositStatus;
         const reason = row.original.rejectionReason;

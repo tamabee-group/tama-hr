@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Eye, EllipsisVertical } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,86 +12,102 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Company, INDUSTRY_LABELS, LOCALE_LABELS } from "@/types/company";
+import { Company, INDUSTRY_LABELS } from "@/types/company";
 import { getFileUrl } from "@/lib/utils/file-url";
+import { formatDate } from "@/lib/utils/format-date";
+import { useParams } from "next/navigation";
+import { SupportedLocale } from "@/lib/utils/format-currency";
+import { getLocaleLabel } from "@/lib/utils/get-enum-label";
 
-export const columns: ColumnDef<Company>[] = [
-  {
-    id: "actions",
-    header: "",
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <EllipsisVertical />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <Link href={`/tamabee/customers/${row.original.id}`}>
-            <DropdownMenuItem>
-              <Eye className="h-4 w-4" />
-              Xem chi tiết
-            </DropdownMenuItem>
-          </Link>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-  {
-    accessorKey: "logo",
-    header: "",
-    cell: ({ row }) => {
-      const logo = row.original.logo;
-      return logo ? (
-        <div className="relative h-8 w-8">
-          <Image
-            src={getFileUrl(logo)}
-            alt="Logo"
-            fill
-            className="rounded object-cover"
-          />
-        </div>
-      ) : (
-        <div className="h-8 w-8 rounded bg-muted flex items-center justify-center">
-          <span className="text-[8px] text-muted-foreground font-medium">
-            LOGO
-          </span>
-        </div>
-      );
+export function useColumns(): ColumnDef<Company>[] {
+  const t = useTranslations("companies");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+  const params = useParams();
+  const locale = (params.locale as SupportedLocale) || "vi";
+
+  return [
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <EllipsisVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <Link href={`/tamabee/customers/${row.original.id}`}>
+              <DropdownMenuItem>
+                <Eye className="h-4 w-4" />
+                {tCommon("details")}
+              </DropdownMenuItem>
+            </Link>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
     },
-  },
-  {
-    accessorKey: "name",
-    header: "Tên công ty",
-  },
-  {
-    accessorKey: "ownerName",
-    header: "Người đại diện",
-  },
-  {
-    accessorKey: "phone",
-    header: "Số điện thoại",
-  },
-  {
-    accessorKey: "industry",
-    header: "Ngành nghề",
-    cell: ({ row }) => {
-      const industry = row.getValue("industry") as string;
-      return INDUSTRY_LABELS[industry] || industry;
+    {
+      accessorKey: "logo",
+      header: "",
+      cell: ({ row }) => {
+        const logo = row.original.logo;
+        return logo ? (
+          <div className="relative h-8 w-8">
+            <Image
+              src={getFileUrl(logo)}
+              alt="Logo"
+              fill
+              className="rounded object-cover"
+            />
+          </div>
+        ) : (
+          <div className="h-8 w-8 rounded bg-muted flex items-center justify-center">
+            <span className="text-[8px] text-muted-foreground font-medium">
+              LOGO
+            </span>
+          </div>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "locale",
-    header: "Khu vực",
-    cell: ({ row }) => {
-      const locale = row.getValue("locale") as string;
-      return LOCALE_LABELS[locale] || locale;
+    {
+      accessorKey: "name",
+      header: t("table.name"),
     },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Ngày đăng ký",
-    cell: ({ row }) =>
-      new Date(row.getValue("createdAt")).toLocaleDateString("vi-VN"),
-  },
-];
+    {
+      accessorKey: "ownerName",
+      header: t("form.name"),
+    },
+    {
+      accessorKey: "phone",
+      header: tCommon("phone"),
+    },
+    {
+      accessorKey: "industry",
+      header: t("form.industry") || "Industry",
+      cell: ({ row }) => {
+        const industry = row.getValue("industry") as string;
+        return INDUSTRY_LABELS[industry] || industry;
+      },
+    },
+    {
+      accessorKey: "locale",
+      header: t("form.locale") || "Locale",
+      cell: ({ row }) => {
+        const localeValue = row.getValue("locale") as string;
+        return localeValue
+          ? getLocaleLabel(localeValue as "vi" | "ja", tEnums)
+          : localeValue;
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: t("table.createdAt"),
+      cell: ({ row }) => formatDate(row.getValue("createdAt"), locale),
+    },
+  ];
+}
+
+// Export static columns for backward compatibility
+export const columns: ColumnDef<Company>[] = [];

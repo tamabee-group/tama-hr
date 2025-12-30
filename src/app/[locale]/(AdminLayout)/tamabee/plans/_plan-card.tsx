@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   PlanResponse,
   getPlanName,
@@ -48,43 +49,9 @@ export function PlanCard({
   isDeleteDisabled = false,
   deleteDisabledReason,
 }: PlanCardProps) {
+  const t = useTranslations("plans");
+  const tCommon = useTranslations("common");
   const localeKey = locale as LocaleKey;
-
-  // Labels theo locale
-  const labels = {
-    vi: {
-      perMonth: "/tháng",
-      maxEmployees: "Tối đa nhân viên",
-      active: "Đang hoạt động",
-      inactive: "Không hoạt động",
-      edit: "Sửa",
-      delete: "Xóa",
-      select: "Chọn gói này",
-      features: "Tính năng",
-    },
-    en: {
-      perMonth: "/month",
-      maxEmployees: "Max employees",
-      active: "Active",
-      inactive: "Inactive",
-      edit: "Edit",
-      delete: "Delete",
-      select: "Select this plan",
-      features: "Features",
-    },
-    ja: {
-      perMonth: "/月",
-      maxEmployees: "最大従業員数",
-      active: "有効",
-      inactive: "無効",
-      edit: "編集",
-      delete: "削除",
-      select: "このプランを選択",
-      features: "機能",
-    },
-  };
-
-  const t = labels[locale];
 
   // Sắp xếp features theo sortOrder
   const sortedFeatures = [...plan.features].sort(
@@ -104,7 +71,7 @@ export function PlanCard({
             </CardDescription>
           </div>
           <Badge variant={plan.isActive ? "default" : "secondary"}>
-            {plan.isActive ? t.active : t.inactive}
+            {plan.isActive ? t("card.active") : t("card.inactive")}
           </Badge>
         </div>
       </CardHeader>
@@ -115,21 +82,21 @@ export function PlanCard({
           <span className="text-3xl font-bold text-primary">
             {formatCurrency(plan.monthlyPrice, locale)}
           </span>
-          <span className="text-muted-foreground">{t.perMonth}</span>
+          <span className="text-muted-foreground">{t("card.perMonth")}</span>
         </div>
 
         {/* Max employees */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
           <span>
-            {t.maxEmployees}: {plan.maxEmployees}
+            {t("card.maxEmployees")}: {plan.maxEmployees}
           </span>
         </div>
 
         {/* Features list */}
         {sortedFeatures.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium">{t.features}:</p>
+            <p className="text-sm font-medium">{t("table.features")}:</p>
             <ul className="space-y-2">
               {sortedFeatures.map((feature) => (
                 <li
@@ -157,7 +124,7 @@ export function PlanCard({
         {/* Select button cho landing page */}
         {onSelect && (
           <Button onClick={onSelect} className="flex-1">
-            {t.select}
+            {t("card.select")}
           </Button>
         )}
 
@@ -167,7 +134,7 @@ export function PlanCard({
             {onEdit && (
               <Button variant="outline" size="sm" onClick={onEdit}>
                 <Edit className="h-4 w-4 mr-1" />
-                {t.edit}
+                {tCommon("edit")}
               </Button>
             )}
             {onDelete && (
@@ -179,7 +146,7 @@ export function PlanCard({
                 title={isDeleteDisabled ? deleteDisabledReason : undefined}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
-                {t.delete}
+                {tCommon("delete")}
               </Button>
             )}
           </>

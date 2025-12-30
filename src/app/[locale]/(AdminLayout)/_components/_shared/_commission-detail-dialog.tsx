@@ -1,18 +1,20 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { CommissionResponse } from "@/types/commission";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDateTime } from "@/lib/utils/format-date";
 import { CommissionStatus } from "@/types/enums";
 import { Badge } from "@/components/ui/badge";
 import { User, Building2, Coins, CreditCard } from "lucide-react";
+import { getCommissionStatusLabel } from "@/lib/utils/get-enum-label";
 
 interface CommissionDetailDialogProps {
   open: boolean;
@@ -23,18 +25,23 @@ interface CommissionDetailDialogProps {
 /**
  * Component hiển thị trạng thái thanh toán
  */
-function StatusBadge({ status }: { status: CommissionStatus }) {
+interface StatusBadgeProps {
+  status: CommissionStatus;
+  tEnums: (key: string) => string;
+}
+
+function StatusBadge({ status, tEnums }: StatusBadgeProps) {
+  const label = getCommissionStatusLabel(status, tEnums);
+
   if (status === "PAID") {
-    return <Badge className="bg-green-100 text-green-800">Đã thanh toán</Badge>;
+    return <Badge className="bg-green-100 text-green-800">{label}</Badge>;
   }
 
   if (status === "PENDING") {
-    return (
-      <Badge className="bg-yellow-100 text-yellow-800">Chờ đủ điều kiện</Badge>
-    );
+    return <Badge className="bg-yellow-100 text-yellow-800">{label}</Badge>;
   }
 
-  return <Badge className="bg-blue-100 text-blue-800">Chờ thanh toán</Badge>;
+  return <Badge className="bg-blue-100 text-blue-800">{label}</Badge>;
 }
 
 /**
@@ -45,13 +52,18 @@ export function CommissionDetailDialog({
   onOpenChange,
   commission,
 }: CommissionDetailDialogProps) {
+  const t = useTranslations("commissions");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+  const locale = useLocale() as SupportedLocale;
+
   if (!commission) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Chi tiết hoa hồng</DialogTitle>
+          <DialogTitle>{t("detailDialog.title")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
@@ -59,15 +71,21 @@ export function CommissionDetailDialog({
           <div className="rounded-lg border p-4 space-y-3">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
-              <h4 className="font-semibold text-sm">Nhân viên nhận hoa hồng</h4>
+              <h4 className="font-semibold text-sm">
+                {t("detailDialog.employeeSection")}
+              </h4>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Tên nhân viên</p>
+                <p className="text-muted-foreground">
+                  {t("detailDialog.employeeName")}
+                </p>
                 <p className="font-medium">{commission.employeeName || "-"}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Mã nhân viên</p>
+                <p className="text-muted-foreground">
+                  {t("detailDialog.employeeCode")}
+                </p>
                 <p className="font-medium">{commission.employeeCode}</p>
               </div>
             </div>
@@ -77,21 +95,25 @@ export function CommissionDetailDialog({
           <div className="rounded-lg border p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-muted-foreground" />
-              <h4 className="font-semibold text-sm">Công ty được giới thiệu</h4>
+              <h4 className="font-semibold text-sm">
+                {t("detailDialog.companySection")}
+              </h4>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Tên công ty</p>
+                <p className="text-muted-foreground">
+                  {t("detailDialog.companyName")}
+                </p>
                 <p className="font-medium">{commission.companyName || "-"}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">
-                  Billing tại thời điểm tạo
+                  {t("detailDialog.billingAtCreation")}
                 </p>
                 <p className="font-medium">
                   {formatCurrency(
                     commission.companyBillingAtCreation || 0,
-                    "vi",
+                    locale,
                   )}
                 </p>
               </div>
@@ -102,26 +124,28 @@ export function CommissionDetailDialog({
           <div className="rounded-lg border p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Coins className="h-4 w-4 text-muted-foreground" />
-              <h4 className="font-semibold text-sm">Thông tin hoa hồng</h4>
+              <h4 className="font-semibold text-sm">
+                {t("detailDialog.commissionSection")}
+              </h4>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Số tiền</p>
+                <p className="text-muted-foreground">{tCommon("amount")}</p>
                 <p className="font-semibold text-lg text-primary">
-                  {formatCurrency(commission.amount, "vi")}
+                  {formatCurrency(commission.amount, locale)}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Trạng thái</p>
+                <p className="text-muted-foreground">{tCommon("status")}</p>
                 <div className="mt-1">
-                  <StatusBadge status={commission.status} />
+                  <StatusBadge status={commission.status} tEnums={tEnums} />
                 </div>
               </div>
               <div className="col-span-2">
-                <p className="text-muted-foreground">Ngày tạo</p>
+                <p className="text-muted-foreground">{tCommon("createdAt")}</p>
                 <p className="font-medium">
                   {commission.createdAt
-                    ? formatDateTime(commission.createdAt, "vi")
+                    ? formatDateTime(commission.createdAt, locale)
                     : "-"}
                 </p>
               </div>
@@ -134,21 +158,25 @@ export function CommissionDetailDialog({
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 text-green-600" />
                 <h4 className="font-semibold text-sm text-green-700 dark:text-green-400">
-                  Thông tin thanh toán
+                  {t("detailDialog.paymentSection")}
                 </h4>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Người thanh toán</p>
+                  <p className="text-muted-foreground">
+                    {t("detailDialog.paidBy")}
+                  </p>
                   <p className="font-medium">
                     {commission.paidByName || commission.paidBy || "-"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Ngày thanh toán</p>
+                  <p className="text-muted-foreground">
+                    {t("detailDialog.paidAt")}
+                  </p>
                   <p className="font-medium">
                     {commission.paidAt
-                      ? formatDateTime(commission.paidAt, "vi")
+                      ? formatDateTime(commission.paidAt, locale)
                       : "-"}
                   </p>
                 </div>

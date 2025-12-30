@@ -15,15 +15,21 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import {
   sendResetCode,
   verifyResetCode,
   resetPassword,
 } from "@/lib/apis/forgot-password";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 type Step = "email" | "verify" | "password";
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth");
+  const tForgot = useTranslations("auth.forgotPassword");
+  const tErrors = useTranslations("errors");
+
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -38,11 +44,10 @@ export function ForgotPasswordForm() {
 
     try {
       await sendResetCode(email);
-      toast.success("Mã xác thực đã được gửi đến email của bạn!");
+      toast.success(tForgot("codeSent"));
       setStep("verify");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Gửi mã thất bại";
+      const message = getErrorMessage(error, tErrors, tForgot("sendFailed"));
       toast.error(message);
     } finally {
       setLoading(false);
@@ -56,11 +61,10 @@ export function ForgotPasswordForm() {
 
     try {
       await verifyResetCode(email, code);
-      toast.success("Xác thực thành công!");
+      toast.success(tForgot("verifySuccess"));
       setStep("password");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Xác thực thất bại";
+      const message = getErrorMessage(error, tErrors, tForgot("verifyFailed"));
       toast.error(message);
       setCode("");
     } finally {
@@ -77,7 +81,7 @@ export function ForgotPasswordForm() {
 
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
-      toast.error("Mật khẩu xác nhận không khớp!");
+      toast.error(tForgot("passwordMismatch"));
       return;
     }
 
@@ -85,11 +89,10 @@ export function ForgotPasswordForm() {
 
     try {
       await resetPassword(email, code, password);
-      toast.success("Đặt lại mật khẩu thành công!");
+      toast.success(tForgot("resetSuccess"));
       setTimeout(() => router.push("/login"), 1000);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Đặt lại mật khẩu thất bại";
+      const message = getErrorMessage(error, tErrors, tForgot("resetFailed"));
       toast.error(message);
     } finally {
       setLoading(false);
@@ -99,18 +102,18 @@ export function ForgotPasswordForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-6">
       <div className="text-center space-y-2">
-        <CardTitle className="text-2xl">Quên mật khẩu</CardTitle>
+        <CardTitle className="text-2xl">{tForgot("title")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          {step === "email" && "Nhập email để nhận mã xác thực"}
-          {step === "verify" && "Nhập mã 6 số đã gửi đến email"}
-          {step === "password" && "Nhập mật khẩu mới"}
+          {step === "email" && tForgot("emailStep")}
+          {step === "verify" && tForgot("verifyStep")}
+          {step === "password" && tForgot("passwordStep")}
         </p>
       </div>
 
       {step === "email" && (
         <form onSubmit={handleSendCode} className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <ClearableInput
               id="email"
               type="email"
@@ -118,16 +121,16 @@ export function ForgotPasswordForm() {
               onChange={(e) => setEmail(e.target.value)}
               onClear={() => setEmail("")}
               icon={<Mail />}
-              placeholder="Nhập email của bạn..."
+              placeholder={tForgot("emailPlaceholder")}
               required
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Đang gửi..." : "Gửi mã xác thực"}
+            {loading ? tForgot("sending") : tForgot("sendCode")}
           </Button>
           <div className="text-center text-sm">
             <Link href="/login" className="text-primary hover:underline">
-              Quay lại đăng nhập
+              {tForgot("backToLogin")}
             </Link>
           </div>
         </form>
@@ -154,7 +157,7 @@ export function ForgotPasswordForm() {
             {loading && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <span>Đang xác thực...</span>
+                <span>{tForgot("verifying")}</span>
               </div>
             )}
           </div>
@@ -165,7 +168,7 @@ export function ForgotPasswordForm() {
                 onClick={() => setStep("email")}
                 className="text-sm"
               >
-                Gửi lại mã
+                {t("resendCode")}
               </Button>
             </div>
             <Button
@@ -173,7 +176,7 @@ export function ForgotPasswordForm() {
               className="w-full"
               disabled={code.length !== 6 || loading}
             >
-              Xác thực
+              {tForgot("verify")}
             </Button>
           </div>
         </div>
@@ -182,21 +185,21 @@ export function ForgotPasswordForm() {
       {step === "password" && (
         <div className="space-y-4">
           <div>
-            <Label htmlFor="password">Mật khẩu mới</Label>
+            <Label htmlFor="password">{tForgot("newPassword")}</Label>
             <PasswordInput
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Nhập mật khẩu..."
+              placeholder={tForgot("newPasswordPlaceholder")}
             />
           </div>
           <div>
-            <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+            <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
             <PasswordInput
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Nhập lại mật khẩu..."
+              placeholder={tForgot("confirmPasswordPlaceholder")}
             />
           </div>
           <Button
@@ -204,7 +207,7 @@ export function ForgotPasswordForm() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
+            {loading ? tForgot("processing") : t("resetPassword")}
           </Button>
         </div>
       )}

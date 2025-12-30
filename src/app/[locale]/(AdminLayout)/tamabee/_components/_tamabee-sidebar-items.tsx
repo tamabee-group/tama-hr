@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Home,
   Settings,
@@ -8,96 +10,97 @@ import {
   Package,
   Coins,
 } from "lucide-react";
-import type {
-  SidebarGroup,
-  SidebarItem,
-  SidebarSubItem,
-} from "@/types/sidebar";
+import { useTranslations } from "next-intl";
+import type { SidebarGroup, SidebarSubItem } from "@/types/sidebar";
 import type { PermissionKey } from "@/types/permissions";
 import { hasPermission } from "@/types/permissions";
 
 /**
- * Danh sách menu sidebar cho Tamabee Admin/Manager
+ * Hook để lấy danh sách menu sidebar cho Tamabee Admin/Manager
  * Được nhóm theo: Tổng quan, Quản lý, Tài chính, Hệ thống
  * Mỗi item có thể có requiredPermission để kiểm tra quyền truy cập
  */
-export const tamabeeSidebarGroups: SidebarGroup[] = [
-  {
-    label: "Tổng quan",
-    items: [
-      {
-        title: "Trang chủ",
-        url: "/",
-        icon: <Home />,
-      },
-    ],
-  },
-  {
-    label: "Quản lý",
-    items: [
-      {
-        title: "Nhân sự",
-        url: "#",
-        icon: <UsersRound />,
-        requiredPermission: "VIEW_USERS",
-        items: [
-          {
-            title: "Nhân viên",
-            url: "/tamabee/users",
-            requiredPermission: "VIEW_USERS",
-          },
-        ],
-      },
-      {
-        title: "Khách hàng",
-        url: "/tamabee/customers",
-        icon: <LayoutDashboard />,
-        requiredPermission: "VIEW_ALL_COMPANIES",
-      },
-      {
-        title: "Gói dịch vụ",
-        url: "/tamabee/plans",
-        icon: <Package />,
-        requiredPermission: "SYSTEM_SETTINGS",
-      },
-    ],
-  },
-  {
-    label: "Tài chính",
-    items: [
-      {
-        title: "Ví tiền",
-        url: "/tamabee/wallets",
-        icon: <Wallet />,
-        requiredPermission: "VIEW_WALLETS",
-      },
-      {
-        title: "Nạp tiền",
-        url: "/tamabee/deposits",
-        icon: <Receipt />,
-        badgeKey: "pendingDeposits",
-        requiredPermission: "DEPOSIT_APPROVAL",
-      },
-      {
-        title: "Hoa hồng",
-        url: "/tamabee/commissions",
-        icon: <Coins />,
-        requiredPermission: "COMMISSION_PAYMENT",
-      },
-    ],
-  },
-  {
-    label: "Hệ thống",
-    items: [
-      {
-        title: "Cài đặt",
-        url: "/tamabee/settings",
-        icon: <Settings />,
-        requiredPermission: "SYSTEM_SETTINGS",
-      },
-    ],
-  },
-];
+export function useTamabeeSidebarGroups(): SidebarGroup[] {
+  const t = useTranslations("sidebar");
+
+  return [
+    {
+      label: t("groups.overview"),
+      items: [
+        {
+          title: t("items.home"),
+          url: "/",
+          icon: <Home />,
+        },
+      ],
+    },
+    {
+      label: t("groups.management"),
+      items: [
+        {
+          title: t("items.users"),
+          url: "#",
+          icon: <UsersRound />,
+          requiredPermission: "VIEW_USERS",
+          items: [
+            {
+              title: t("items.employees"),
+              url: "/tamabee/users",
+              requiredPermission: "VIEW_USERS",
+            },
+          ],
+        },
+        {
+          title: t("items.customers"),
+          url: "/tamabee/customers",
+          icon: <LayoutDashboard />,
+          requiredPermission: "VIEW_ALL_COMPANIES",
+        },
+        {
+          title: t("items.plans"),
+          url: "/tamabee/plans",
+          icon: <Package />,
+          requiredPermission: "SYSTEM_SETTINGS",
+        },
+      ],
+    },
+    {
+      label: t("groups.finance"),
+      items: [
+        {
+          title: t("items.wallets"),
+          url: "/tamabee/wallets",
+          icon: <Wallet />,
+          requiredPermission: "VIEW_WALLETS",
+        },
+        {
+          title: t("items.deposits"),
+          url: "/tamabee/deposits",
+          icon: <Receipt />,
+          badgeKey: "pendingDeposits",
+          requiredPermission: "DEPOSIT_APPROVAL",
+        },
+        {
+          title: t("items.commissions"),
+          url: "/tamabee/commissions",
+          icon: <Coins />,
+          requiredPermission: "COMMISSION_PAYMENT",
+        },
+      ],
+    },
+    {
+      label: t("groups.system"),
+      items: [
+        {
+          title: t("items.settings"),
+          url: "/tamabee/settings",
+          icon: <Settings />,
+          requiredPermission: "SYSTEM_SETTINGS",
+        },
+      ],
+    },
+  ];
+}
 
 /**
  * Filter sub-items dựa trên role của user
@@ -118,11 +121,15 @@ function filterSubItems(
 
 /**
  * Filter sidebar items dựa trên role của user
+ * @param groups Danh sách sidebar groups
  * @param role Role của user hiện tại
  * @returns Danh sách sidebar groups đã được filter theo quyền
  */
-export function getFilteredSidebarGroups(role: string): SidebarGroup[] {
-  return tamabeeSidebarGroups
+export function getFilteredSidebarGroups(
+  groups: SidebarGroup[],
+  role: string,
+): SidebarGroup[] {
+  return groups
     .map((group) => ({
       ...group,
       items: group.items

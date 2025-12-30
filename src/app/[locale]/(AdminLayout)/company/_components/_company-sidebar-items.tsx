@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Home,
   Users,
@@ -6,69 +8,75 @@ import {
   Settings,
   LayoutDashboard,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { SidebarGroup } from "@/types/sidebar";
 
 /**
- * Danh sách menu sidebar cho Company Admin
+ * Hook để lấy danh sách menu sidebar cho Company Admin
  * Được nhóm theo: Tổng quan, Quản lý, Tài chính, Hệ thống
  */
-export const companySidebarGroups: SidebarGroup[] = [
-  {
-    label: "Tổng quan",
-    items: [
-      {
-        title: "Trang chủ",
-        url: "/",
-        icon: <Home />,
-      },
-      {
-        title: "Dashboard",
-        url: "/company/dashboard",
-        icon: <LayoutDashboard />,
-      },
-    ],
-  },
-  {
-    label: "Quản lý",
-    items: [
-      {
-        title: "Nhân viên",
-        url: "#",
-        icon: <Users />,
-        items: [
-          { title: "Danh sách", url: "/company/employees" },
-          { title: "Thêm mới", url: "/company/employees/create" },
-        ],
-      },
-      {
-        title: "Công ty",
-        url: "/company/profile",
-        icon: <Building2 />,
-      },
-    ],
-  },
-  {
-    label: "Tài chính",
-    items: [
-      {
-        title: "Ví tiền",
-        url: "#",
-        icon: <Wallet />,
-        items: [
-          { title: "Tổng quan", url: "/company/wallet" },
-          { title: "Nạp tiền", url: "/company/wallet/deposits" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Hệ thống",
-    items: [
-      {
-        title: "Cài đặt",
-        url: "/company/settings",
-        icon: <Settings />,
-      },
-    ],
-  },
-];
+export function useCompanySidebarGroups(): SidebarGroup[] {
+  const t = useTranslations("sidebar");
+  const tCommon = useTranslations("common");
+
+  return [
+    {
+      label: t("groups.overview"),
+      items: [
+        {
+          title: t("items.home"),
+          url: "/",
+          icon: <Home />,
+        },
+        {
+          title: t("items.dashboard"),
+          url: "/company/dashboard",
+          icon: <LayoutDashboard />,
+        },
+      ],
+    },
+    {
+      label: t("groups.management"),
+      items: [
+        {
+          title: t("items.employees"),
+          url: "#",
+          icon: <Users />,
+          items: [
+            { title: tCommon("all"), url: "/company/employees" },
+            { title: tCommon("add"), url: "/company/employees/create" },
+          ],
+        },
+        {
+          title: t("items.companyInfo"),
+          url: "/company/profile",
+          icon: <Building2 />,
+        },
+      ],
+    },
+    {
+      label: t("groups.finance"),
+      items: [
+        {
+          title: t("items.wallets"),
+          url: "#",
+          icon: <Wallet />,
+          items: [
+            { title: tCommon("all"), url: "/company/wallet" },
+            { title: t("items.deposits"), url: "/company/wallet/deposits" },
+          ],
+        },
+      ],
+    },
+    {
+      label: t("groups.system"),
+      items: [
+        {
+          title: t("items.settings"),
+          url: "/company/settings",
+          icon: <Settings />,
+        },
+      ],
+    },
+  ];
+}

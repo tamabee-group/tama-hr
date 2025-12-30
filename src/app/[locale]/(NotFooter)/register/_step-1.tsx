@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { INDUSTRIES } from "@/constants/industries";
 import { validateEmail, validatePhone } from "@/lib/validation";
 import { Spinner } from "@/components/ui/spinner";
+import { useTranslations } from "next-intl";
 
 interface Props {
   formData: RegisterFormData;
@@ -68,6 +69,11 @@ const Step1: NextPage<Props> = ({
   fromStep4 = false,
   handleConfirm,
 }) => {
+  const t = useTranslations("auth");
+  const tValidation = useTranslations("auth.validation");
+  const tRegister = useTranslations("auth.register");
+  const tErrors = useTranslations("errors");
+
   const [sending, setSending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loginOpen, setLoginOpen] = useState(false);
@@ -87,37 +93,34 @@ const Step1: NextPage<Props> = ({
   const getFieldError = (field: string, value: string): string | null => {
     switch (field) {
       case "companyName":
-        if (!value.trim()) return "Vui lòng nhập tên công ty";
-        if (value.trim().length < 3)
-          return "Tên công ty phải có ít nhất 3 ký tự";
+        if (!value.trim()) return tValidation("companyNameRequired");
+        if (value.trim().length < 3) return tValidation("companyNameMinLength");
         return null;
       case "ownerName":
-        if (!value.trim()) return "Vui lòng nhập tên chủ doanh nghiệp";
-        if (hasCJKCharacters(value))
-          return "Tên chủ doanh nghiệp chỉ được nhập chữ Romaji";
-        if (value.trim().length < 2)
-          return "Tên chủ doanh nghiệp phải có ít nhất 2 ký tự";
+        if (!value.trim()) return tValidation("ownerNameRequired");
+        if (hasCJKCharacters(value)) return tValidation("ownerNameRomajiOnly");
+        if (value.trim().length < 2) return tValidation("ownerNameMinLength");
         return null;
       case "phone":
-        if (!value.trim()) return "Vui lòng nhập số điện thoại";
+        if (!value.trim()) return tValidation("phoneRequired");
         const phoneError = validatePhone(value);
         if (phoneError) return phoneError;
-        if (!isPhoneValid(value)) return "Số điện thoại không hợp lệ";
+        if (!isPhoneValid(value)) return tValidation("phoneInvalid");
         return null;
       case "email":
         return validateEmail(value);
       case "industry":
-        if (!value) return "Vui lòng chọn ngành nghề kinh doanh";
+        if (!value) return tValidation("industryRequired");
         return null;
       case "locale":
-        if (!value) return "Vui lòng chọn khu vực hoạt động";
+        if (!value) return tValidation("localeRequired");
         return null;
       case "language":
-        if (!value) return "Vui lòng chọn ngôn ngữ thông báo";
+        if (!value) return tValidation("languageRequired");
         return null;
       case "address":
-        if (!value.trim()) return "Vui lòng nhập địa chỉ";
-        if (value.trim().length < 5) return "Địa chỉ phải có ít nhất 5 ký tự";
+        if (!value.trim()) return tValidation("addressRequired");
+        if (value.trim().length < 5) return tValidation("addressMinLength");
         return null;
       default:
         return null;
@@ -162,13 +165,11 @@ const Step1: NextPage<Props> = ({
 
     if (Object.keys(newErrors).length > 0) return;
 
-    // Nếu từ Step4 quay về, chỉ cần validate và confirm
     if (fromStep4 && verified && handleConfirm) {
       handleConfirm();
       return;
     }
 
-    // Nếu đã verify thành công và email + tên công ty không đổi, bỏ qua gửi email
     if (
       verified &&
       emailSent === formData.email &&
@@ -178,7 +179,6 @@ const Step1: NextPage<Props> = ({
       return;
     }
 
-    // Nếu email và tên công ty không đổi so với lần gửi trước, chuyển tiếp
     if (emailSent === formData.email && companySent === formData.companyName) {
       handleNext();
       return;
@@ -191,47 +191,28 @@ const Step1: NextPage<Props> = ({
         formData.companyName,
         formData.language,
       );
-      // Reset OTP khi gửi mã mới
       setFormData({ ...formData, otp: "" });
       setEmailSent(formData.email);
       setCompanySent(formData.companyName);
       setResendTimer(60);
-      toast.success("Mã xác thực đã được gửi đến email của bạn");
+      toast.success(t("codeSent"));
       handleNext();
     } catch (error: unknown) {
       console.error("Error sending verification code:", error);
       const apiError = error as { errorCode?: string; message?: string };
       const errorCode = apiError.errorCode;
 
-      const errorMap: Record<string, { field: string; message: string }> = {
-        EMAIL_EXISTS: { field: "email", message: "Email này đã được đăng ký." },
-        EMAIL_NOT_FOUND: {
-          field: "email",
-          message: "Email không tồn tại trong hệ thống",
-        },
-        COMPANY_NAME_EXISTS: {
-          field: "companyName",
-          message: "Tên công ty này đã được đăng ký.",
-        },
-        VALIDATION_ERROR: {
-          field: "email",
-          message: apiError.message || "Dữ liệu không hợp lệ.",
-        },
-        EMAIL_SEND_FAILED: {
-          field: "email",
-          message: "Không thể gửi email xác thực, vui lòng thử lại.",
-        },
-        BAD_REQUEST: {
-          field: "email",
-          message: apiError.message || "Yêu cầu không hợp lệ.",
-        },
-      };
-
-      if (errorCode && errorMap[errorCode]) {
-        const { field, message } = errorMap[errorCode];
-        setErrors((prev) => ({ ...prev, [field]: message }));
+      if (errorCode) {
+        const errorMessage = tErrors(errorCode as string);
+        if (errorCode === "EMAIL_EXISTS" || errorCode === "EMAIL_NOT_FOUND") {
+          setErrors((prev) => ({ ...prev, email: errorMessage }));
+        } else if (errorCode === "COMPANY_NAME_EXISTS") {
+          setErrors((prev) => ({ ...prev, companyName: errorMessage }));
+        } else {
+          setErrors((prev) => ({ ...prev, email: errorMessage }));
+        }
       } else {
-        const message = apiError.message || "Đã có lỗi xảy ra.";
+        const message = apiError.message || tErrors("generic");
         setErrors((prev) => ({ ...prev, email: message }));
       }
     } finally {
@@ -244,14 +225,14 @@ const Step1: NextPage<Props> = ({
     <div className="grid md:grid-cols-2 md:border md:p-6 md:rounded-xl md:shadow-md">
       <div className="md:col-span-2 space-y-6">
         <div className="space-y-2 text-center">
-          <CardTitle className="text-2xl">Thông tin doanh nghiệp</CardTitle>
+          <CardTitle className="text-2xl">{tRegister("title")}</CardTitle>
           <CardDescription className="text-sm">
-            Vui lòng điền đầy đủ thông tin.
+            {tRegister("description")}
           </CardDescription>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="companyName">Tên công ty</Label>
+            <Label htmlFor="companyName">{tRegister("companyName")}</Label>
             <ClearableInput
               id="companyName"
               value={formData.companyName}
@@ -269,7 +250,7 @@ const Step1: NextPage<Props> = ({
               }}
               onBlur={(e) => validateField("companyName", e.target.value)}
               icon={<Building2 />}
-              placeholder="Nhập tên công ty..."
+              placeholder={tRegister("companyNamePlaceholder")}
             />
             {errors.companyName && (
               <p className="text-sm text-destructive mt-1">
@@ -278,7 +259,7 @@ const Step1: NextPage<Props> = ({
             )}
           </div>
           <div>
-            <Label htmlFor="ownerName">Chủ doanh nghiệp</Label>
+            <Label htmlFor="ownerName">{tRegister("ownerName")}</Label>
             <ClearableInput
               id="ownerName"
               value={formData.ownerName}
@@ -290,7 +271,7 @@ const Step1: NextPage<Props> = ({
               onClear={() => setFormData({ ...formData, ownerName: "" })}
               onBlur={(e) => validateField("ownerName", e.target.value)}
               icon={<User />}
-              placeholder="Người đại diện..."
+              placeholder={tRegister("ownerNamePlaceholder")}
             />
             {errors.ownerName && (
               <p className="text-sm text-destructive mt-1">
@@ -299,7 +280,7 @@ const Step1: NextPage<Props> = ({
             )}
           </div>
           <div>
-            <Label htmlFor="phone">Số điện thoại</Label>
+            <Label htmlFor="phone">{tRegister("phone")}</Label>
             <ClearableInput
               id="phone"
               value={formData.phone}
@@ -310,14 +291,14 @@ const Step1: NextPage<Props> = ({
               onClear={() => setFormData({ ...formData, phone: "" })}
               onBlur={(e) => validateField("phone", e.target.value)}
               icon={<Phone />}
-              placeholder="Nhập số điện thoại..."
+              placeholder={tRegister("phonePlaceholder")}
             />
             {errors.phone && (
               <p className="text-sm text-destructive mt-1">{errors.phone}</p>
             )}
           </div>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tRegister("email")}</Label>
             <ClearableInput
               id="email"
               type="email"
@@ -336,21 +317,21 @@ const Step1: NextPage<Props> = ({
               }}
               onBlur={(e) => validateField("email", e.target.value)}
               icon={<Mail />}
-              placeholder="Nhập email..."
+              placeholder={tRegister("emailPlaceholder")}
             />
             {errors.email && (
               <p className="text-sm text-destructive mt-1">{errors.email}</p>
             )}
           </div>
           <div>
-            <Label htmlFor="industry">Ngành nghề kinh doanh</Label>
+            <Label htmlFor="industry">{tRegister("industry")}</Label>
             <SelectWithIcon
               value={formData.industry}
               onValueChange={(value) => {
                 setFormData({ ...formData, industry: value });
                 validateField("industry", value);
               }}
-              placeholder="Chọn ngành nghề..."
+              placeholder={tRegister("industryPlaceholder")}
               icon={<Briefcase />}
             >
               {INDUSTRIES.map((industry) => (
@@ -364,56 +345,56 @@ const Step1: NextPage<Props> = ({
             )}
           </div>
           <div>
-            <Label htmlFor="locale">Khu vực hoạt động</Label>
+            <Label htmlFor="locale">{tRegister("locale")}</Label>
             <SelectWithIcon
               value={formData.locale}
               onValueChange={(value) => {
                 setFormData({ ...formData, locale: value });
                 validateField("locale", value);
               }}
-              placeholder="Chọn khu vực..."
+              placeholder={tRegister("localePlaceholder")}
               icon={<Globe />}
             >
-              <SelectItem value="vi">Việt Nam</SelectItem>
-              <SelectItem value="ja">Nhật Bản</SelectItem>
+              <SelectItem value="vi">{tRegister("localeVietnam")}</SelectItem>
+              <SelectItem value="ja">{tRegister("localeJapan")}</SelectItem>
             </SelectWithIcon>
             {errors.locale && (
               <p className="text-sm text-destructive mt-1">{errors.locale}</p>
             )}
           </div>
           <div>
-            <Label htmlFor="language">Ngôn ngữ thông báo</Label>
+            <Label htmlFor="language">{tRegister("language")}</Label>
             <SelectWithIcon
               value={formData.language}
               onValueChange={(value) => {
                 setFormData({ ...formData, language: value });
                 validateField("language", value);
               }}
-              placeholder="Chọn ngôn ngữ..."
+              placeholder={tRegister("languagePlaceholder")}
               icon={<Languages />}
             >
-              <SelectItem value="vi">Tiếng Việt</SelectItem>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="ja">日本語</SelectItem>
+              <SelectItem value="vi">{tRegister("languageVi")}</SelectItem>
+              <SelectItem value="en">{tRegister("languageEn")}</SelectItem>
+              <SelectItem value="ja">{tRegister("languageJa")}</SelectItem>
             </SelectWithIcon>
             {errors.language && (
               <p className="text-sm text-destructive mt-1">{errors.language}</p>
             )}
           </div>
           <div>
-            <Label htmlFor="zipcode">Mã bưu điện (không bắt buộc)</Label>
+            <Label htmlFor="zipcode">{tRegister("zipcode")}</Label>
             <ClearableInput
               id="zipcode"
               value={zipcode}
               onChange={(e) => setZipcode(e.target.value)}
               onClear={() => setZipcode("")}
               icon={<Milestone />}
-              placeholder="Nhập mã bưu điện..."
+              placeholder={tRegister("zipcodePlaceholder")}
               maxLength={7}
             />
           </div>
           <div className="md:col-span-2">
-            <Label htmlFor="address">Địa chỉ</Label>
+            <Label htmlFor="address">{tRegister("address")}</Label>
             <ClearableInput
               id="address"
               value={formData.address}
@@ -424,7 +405,11 @@ const Step1: NextPage<Props> = ({
               onClear={() => setFormData({ ...formData, address: "" })}
               onBlur={(e) => validateField("address", e.target.value)}
               icon={loading ? <Spinner /> : <MapPin />}
-              placeholder={loading ? "Đang tìm địa chỉ..." : "Nhập địa chỉ..."}
+              placeholder={
+                loading
+                  ? tRegister("addressLoading")
+                  : tRegister("addressPlaceholder")
+              }
               disabled={loading}
             />
             {errors.address && (
@@ -438,16 +423,20 @@ const Step1: NextPage<Props> = ({
             disabled={sending}
             className="w-full md:w-auto md:px-12 md:ml-auto md:flex"
           >
-            {sending ? "Đang xử lý..." : fromStep4 ? "Xác nhận" : "Tiếp tục"}
+            {sending
+              ? tRegister("processing")
+              : fromStep4
+                ? t("confirm")
+                : tRegister("continue")}
           </Button>
           <div className="text-center text-sm">
-            Bạn đã có tài khoản?{" "}
+            {tRegister("haveAccount")}{" "}
             <button
               type="button"
               onClick={() => setLoginOpen(true)}
               className="text-primary cursor-pointer dark:text-(--blue-light) hover:underline font-medium"
             >
-              Đăng nhập
+              {t("login")}
             </button>
           </div>
           <LoginDialog

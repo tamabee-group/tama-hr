@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { formatDate } from "@/lib/utils/format-date";
+import type { SupportedLocale } from "@/lib/utils/format-currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +37,12 @@ import {
   Milestone,
   ScanBarcode,
 } from "lucide-react";
-import { LANGUAGES, USER_STATUS } from "@/types/enums";
+import { LANGUAGES, USER_STATUSES } from "@/types/enums";
+import {
+  getLanguageLabel,
+  getUserStatusLabel,
+  getUserRoleLabel,
+} from "@/lib/utils/get-enum-label";
 import { useZipcode } from "@/hooks/use-zipcode";
 import { ImageCropDialog } from "@/app/[locale]/_components/_image-crop-dialog";
 import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
@@ -50,12 +58,10 @@ import type {
   BankAccountCategory,
   JapanBankType,
 } from "@/types/user";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
 
-// Định nghĩa kiểu dữ liệu cho role option
-interface RoleOption {
-  readonly value: string;
-  readonly label: string;
-}
+// Định nghĩa kiểu dữ liệu cho role option (chỉ giữ value, label sẽ lấy từ translations)
+type RoleValue = string;
 
 // Định nghĩa kiểu dữ liệu cho form
 export interface UserProfileFormData {
@@ -93,7 +99,7 @@ export interface UserProfileFormData {
 interface BaseUserProfileFormProps {
   user: User;
   title: string;
-  roles: readonly RoleOption[];
+  roles: readonly RoleValue[];
   onSave: (userId: number, data: UserProfileFormData) => Promise<void>;
   onUploadAvatar: (userId: number, file: File) => Promise<void>;
 }
@@ -106,6 +112,12 @@ export function BaseUserProfileForm({
   onUploadAvatar,
 }: BaseUserProfileFormProps) {
   const router = useRouter();
+  const locale = useLocale() as SupportedLocale;
+  const t = useTranslations("users.profile");
+  const tEnums = useTranslations("enums");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tValidation = useTranslations("validation");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -196,34 +208,37 @@ export function BaseUserProfileForm({
     emergencyContactAddress: "emergency",
   };
 
-  // Mapping tên field sang tiếng Việt
-  const fieldLabels: Record<keyof UserProfileFormData, string> = {
-    name: "Họ & tên",
-    email: "Email",
-    phone: "Số điện thoại",
-    language: "Ngôn ngữ",
-    status: "Trạng thái",
-    role: "Vai trò",
-    zipCode: "Mã bưu điện",
-    address: "Địa chỉ",
-    avatar: "Ảnh đại diện",
-    // Bank info
-    bankAccountType: "Loại tài khoản",
-    japanBankType: "Loại ngân hàng Nhật",
-    bankName: "Tên ngân hàng",
-    bankAccount: "Số tài khoản",
-    bankAccountName: "Tên chủ tài khoản",
-    bankCode: "Mã ngân hàng",
-    bankBranchCode: "Mã chi nhánh",
-    bankBranchName: "Tên chi nhánh",
-    bankAccountCategory: "Loại tài khoản NH",
-    bankSymbol: "記号 (Kigou)",
-    bankNumber: "番号 (Bangou)",
-    // Emergency contact
-    emergencyContactName: "Họ tên",
-    emergencyContactPhone: "Số điện thoại",
-    emergencyContactRelation: "Mối quan hệ",
-    emergencyContactAddress: "Địa chỉ",
+  // Mapping tên field sang translation keys
+  const getFieldLabel = (key: keyof UserProfileFormData): string => {
+    const labelMap: Record<keyof UserProfileFormData, string> = {
+      name: t("name"),
+      email: t("email"),
+      phone: t("phone"),
+      language: t("language"),
+      status: t("status"),
+      role: t("role"),
+      zipCode: t("zipCode"),
+      address: t("address"),
+      avatar: t("avatar"),
+      // Bank info
+      bankAccountType: t("bankAccountType"),
+      japanBankType: t("japanBankType"),
+      bankName: t("bankName"),
+      bankAccount: t("bankAccount"),
+      bankAccountName: t("bankAccountName"),
+      bankCode: t("bankCode"),
+      bankBranchCode: t("bankBranchCode"),
+      bankBranchName: t("bankBranchName"),
+      bankAccountCategory: t("bankAccountCategory"),
+      bankSymbol: t("bankSymbol"),
+      bankNumber: t("bankNumber"),
+      // Emergency contact
+      emergencyContactName: t("emergencyName"),
+      emergencyContactPhone: t("emergencyPhone"),
+      emergencyContactRelation: t("emergencyRelation"),
+      emergencyContactAddress: t("emergencyAddress"),
+    };
+    return labelMap[key];
   };
 
   // Hàm format giá trị hiển thị (chuyển value sang label)
@@ -231,24 +246,24 @@ export function BaseUserProfileForm({
     key: keyof UserProfileFormData,
     value: string,
   ): string => {
-    if (!value) return "(trống)";
+    if (!value) return t("empty");
 
     // Format language
     if (key === "language") {
       const lang = LANGUAGES.find((l) => l.value === value);
-      return lang ? `${lang.flag} ${lang.label}` : value;
+      return lang
+        ? `${lang.flag} ${getLanguageLabel(value as "vi" | "en" | "ja", tEnums)}`
+        : value;
     }
 
     // Format status
     if (key === "status") {
-      const status = USER_STATUS.find((s) => s.value === value);
-      return status ? status.label : value;
+      return getUserStatusLabel(value as "ACTIVE" | "INACTIVE", tEnums);
     }
 
     // Format role
     if (key === "role") {
-      const role = roles.find((r) => r.value === value);
-      return role ? role.label : value;
+      return getUserRoleLabel(value, tEnums);
     }
 
     return value;
@@ -264,16 +279,16 @@ export function BaseUserProfileForm({
         if (avatarFile) {
           changes.push({
             field: key,
-            label: fieldLabels[key],
-            oldValue: initialData[key] ? "Có ảnh" : "Chưa có ảnh",
-            newValue: "Ảnh mới",
+            label: getFieldLabel(key),
+            oldValue: initialData[key] ? t("hasImage") : t("noImage"),
+            newValue: t("newImage"),
             group: fieldGroups[key],
           });
         }
       } else if (formData[key] !== initialData[key]) {
         changes.push({
           field: key,
-          label: fieldLabels[key],
+          label: getFieldLabel(key),
           oldValue: formatDisplayValue(key, initialData[key]),
           newValue: formatDisplayValue(key, formData[key]),
           group: fieldGroups[key],
@@ -297,7 +312,7 @@ export function BaseUserProfileForm({
     }
 
     if (!formData.name.trim()) {
-      newErrors.name = "Vui lòng nhập họ tên";
+      newErrors.name = tValidation("required");
     }
 
     if (formData.emergencyContactPhone) {
@@ -313,7 +328,7 @@ export function BaseUserProfileForm({
   // Mở dialog xác nhận trước khi lưu
   const handleSaveClick = () => {
     if (!validateForm()) {
-      toast.error("Vui lòng kiểm tra lại thông tin");
+      toast.error(tCommon("checkInfo"));
       return;
     }
     setConfirmDialogOpen(true);
@@ -330,14 +345,14 @@ export function BaseUserProfileForm({
 
       await onSave(user.id, formData);
 
-      toast.success("Cập nhật thành công");
+      toast.success(tCommon("updateSuccess"));
       setIsEditing(false);
       setAvatarFile(null);
       setErrors({});
       router.refresh();
     } catch (error) {
       console.error("Save error:", error);
-      const message = error instanceof Error ? error.message : "Lỗi khi lưu";
+      const message = getErrorMessage(error, tErrors, tCommon("saveError"));
       toast.error(message);
     } finally {
       setIsSaving(false);
@@ -374,7 +389,7 @@ export function BaseUserProfileForm({
       setFormData((prev) => ({ ...prev, avatar: previewUrl }));
     } catch (error) {
       console.error("Crop error:", error);
-      toast.error("Lỗi khi xử lý ảnh");
+      toast.error(tCommon("imageProcessError"));
     }
   };
 
@@ -386,7 +401,7 @@ export function BaseUserProfileForm({
           {!isEditing ? (
             <Button size="sm" onClick={() => setIsEditing(true)}>
               <Edit className="h-4 w-4 mr-2" />
-              Sửa
+              {tCommon("edit")}
             </Button>
           ) : (
             <div className="flex gap-2">
@@ -400,7 +415,7 @@ export function BaseUserProfileForm({
                 ) : (
                   <Save className="h-4 w-4 mr-2" />
                 )}
-                {isSaving ? "Đang lưu..." : "Lưu"}
+                {isSaving ? tCommon("loading") : tCommon("save")}
               </Button>
               <Button
                 size="sm"
@@ -409,7 +424,7 @@ export function BaseUserProfileForm({
                 disabled={isSaving}
               >
                 <X className="h-4 w-4 mr-2" />
-                Hủy
+                {tCommon("cancel")}
               </Button>
             </div>
           )}
@@ -457,7 +472,7 @@ export function BaseUserProfileForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center col-span-2">
             <div>
-              <Label>Mã nhân viên</Label>
+              <Label>{t("employeeCode")}</Label>
               <InputGroup>
                 <InputGroupInput value={user.employeeCode || "-"} disabled />
                 <InputGroupAddon>
@@ -466,7 +481,7 @@ export function BaseUserProfileForm({
               </InputGroup>
             </div>
             <div>
-              <Label>Trạng thái</Label>
+              <Label>{t("status")}</Label>
               <SelectWithIcon
                 value={formData.status}
                 onValueChange={(value) =>
@@ -475,9 +490,9 @@ export function BaseUserProfileForm({
                 disabled={!isEditing}
               >
                 <SelectContent>
-                  {USER_STATUS.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      {status.label}
+                  {USER_STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {getUserStatusLabel(status, tEnums)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -489,7 +504,7 @@ export function BaseUserProfileForm({
         {/* Thông tin cá nhân */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label>Họ & tên</Label>
+            <Label>{t("name")}</Label>
             <ClearableInput
               value={formData.name}
               onChange={(e) =>
@@ -508,7 +523,7 @@ export function BaseUserProfileForm({
           </div>
 
           <div>
-            <Label>Email</Label>
+            <Label>{t("email")}</Label>
             <ClearableInput
               value={formData.email}
               onChange={(e) =>
@@ -524,7 +539,7 @@ export function BaseUserProfileForm({
           </div>
 
           <div>
-            <Label>Vai trò</Label>
+            <Label>{t("role")}</Label>
             <SelectWithIcon
               value={formData.role}
               onValueChange={(value) =>
@@ -535,8 +550,8 @@ export function BaseUserProfileForm({
             >
               <SelectContent>
                 {roles.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
+                  <SelectItem key={role} value={role}>
+                    {getUserRoleLabel(role, tEnums)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -544,7 +559,7 @@ export function BaseUserProfileForm({
           </div>
 
           <div>
-            <Label>Số điện thoại</Label>
+            <Label>{t("phone")}</Label>
             <ClearableInput
               value={formData.phone}
               onChange={(e) =>
@@ -560,7 +575,7 @@ export function BaseUserProfileForm({
           </div>
 
           <div>
-            <Label>Ngôn ngữ nhận thông báo</Label>
+            <Label>{t("notificationLanguage")}</Label>
             <SelectWithIcon
               value={formData.language}
               onValueChange={(value) =>
@@ -572,7 +587,7 @@ export function BaseUserProfileForm({
               <SelectContent>
                 {LANGUAGES.map((lang) => (
                   <SelectItem key={lang.value} value={lang.value}>
-                    {lang.flag} {lang.label}
+                    {lang.flag} {getLanguageLabel(lang.value, tEnums)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -580,7 +595,7 @@ export function BaseUserProfileForm({
           </div>
 
           <div>
-            <Label>Mã bưu điện</Label>
+            <Label>{t("zipCode")}</Label>
             <ClearableInput
               value={formData.zipCode}
               onChange={(e) =>
@@ -588,13 +603,13 @@ export function BaseUserProfileForm({
               }
               onClear={() => setFormData((prev) => ({ ...prev, zipCode: "" }))}
               disabled={!isEditing}
-              placeholder="Nhập mã bưu điện"
+              placeholder={t("zipCodePlaceholder")}
               icon={<Milestone />}
             />
           </div>
 
           <div className="md:col-span-2">
-            <Label>Địa chỉ</Label>
+            <Label>{t("address")}</Label>
             <ClearableInput
               value={formData.address}
               onChange={(e) =>
@@ -602,7 +617,9 @@ export function BaseUserProfileForm({
               }
               onClear={() => setFormData((prev) => ({ ...prev, address: "" }))}
               disabled={!isEditing || loading}
-              placeholder={loading ? "Đang tự nhập địa chỉ..." : "Nhập địa chỉ"}
+              placeholder={
+                loading ? t("addressLoading") : t("addressPlaceholder")
+              }
               icon={loading ? <Spinner /> : <MapPin />}
             />
           </div>
@@ -646,11 +663,10 @@ export function BaseUserProfileForm({
         </div>
         <div className="flex gap-4 text-xs text-muted-foreground">
           <span>
-            Ngày đăng ký: {new Date(user.createdAt).toLocaleDateString("vi-VN")}
+            {t("registeredAt")}: {formatDate(user.createdAt, locale)}
           </span>
           <span>
-            Cập nhật lần cuối:{" "}
-            {new Date(user.updatedAt).toLocaleDateString("vi-VN")}
+            {t("lastUpdated")}: {formatDate(user.updatedAt, locale)}
           </span>
         </div>
       </CardContent>

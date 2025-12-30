@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface BreadcrumbConfig {
-  label: string;
+  labelKey: string;
   href?: string;
 }
 
@@ -24,112 +25,113 @@ function getBreadcrumbs(pathname: string): BreadcrumbConfig[] {
   // Check for dynamic routes - Tamabee
   if (pathWithoutLocale.match(/^\/tamabee\/users\/\d+$/)) {
     return [
-      { label: "Admin", href: "/tamabee/dashboard" },
-      { label: "Nhân sự", href: "/tamabee/users" },
-      { label: "Chi tiết" },
+      { labelKey: "admin", href: "/tamabee/dashboard" },
+      { labelKey: "users", href: "/tamabee/users" },
+      { labelKey: "detail" },
     ];
   }
 
   // Check for dynamic routes - Company employees
   if (pathWithoutLocale.match(/^\/company\/employees\/\d+$/)) {
     return [
-      { label: "Quản trị công ty", href: "/company/dashboard" },
-      { label: "Nhân viên", href: "/company/employees" },
-      { label: "Chi tiết" },
+      { labelKey: "companyAdmin", href: "/company/dashboard" },
+      { labelKey: "employees", href: "/company/employees" },
+      { labelKey: "detail" },
     ];
   }
 
   switch (pathWithoutLocale) {
     case "/tamabee/users":
       return [
-        { label: "Admin", href: "/tamabee/dashboard" },
-        { label: "Nhân sự" },
+        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "users" },
       ];
 
     case "/tamabee/users/register":
       return [
-        { label: "Admin", href: "/tamabee/dashboard" },
-        { label: "Nhân sự", href: "/tamabee/users" },
-        { label: "Đăng ký mới" },
+        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "users", href: "/tamabee/users" },
+        { labelKey: "registerNew" },
       ];
 
     case "/tamabee/companies":
       return [
-        { label: "Admin", href: "/tamabee/dashboard" },
-        { label: "Quản lý công ty" },
+        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "companyManagement" },
       ];
 
     case "/tamabee/deposits":
       return [
-        { label: "Admin", href: "/tamabee/dashboard" },
-        { label: "Yêu cầu nạp tiền" },
+        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "depositRequests" },
       ];
 
     case "/tamabee/plans":
       return [
-        { label: "Admin", href: "/tamabee/dashboard" },
-        { label: "Gói dịch vụ" },
+        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "plans" },
       ];
 
     // Company Admin routes
     case "/company/dashboard":
       return [
-        { label: "Quản trị công ty", href: "/company/dashboard" },
-        { label: "Dashboard" },
+        { labelKey: "companyAdmin", href: "/company/dashboard" },
+        { labelKey: "dashboard" },
       ];
 
     case "/company/employees":
       return [
-        { label: "Quản trị công ty", href: "/company/dashboard" },
-        { label: "Nhân viên" },
+        { labelKey: "companyAdmin", href: "/company/dashboard" },
+        { labelKey: "employees" },
       ];
 
     case "/company/employees/create":
       return [
-        { label: "Quản trị công ty", href: "/company/dashboard" },
-        { label: "Nhân viên", href: "/company/employees" },
-        { label: "Thêm mới" },
+        { labelKey: "companyAdmin", href: "/company/dashboard" },
+        { labelKey: "employees", href: "/company/employees" },
+        { labelKey: "addNew" },
       ];
 
     case "/company/wallet":
       return [
-        { label: "Quản trị công ty", href: "/company/dashboard" },
-        { label: "Ví tiền" },
+        { labelKey: "companyAdmin", href: "/company/dashboard" },
+        { labelKey: "wallet" },
       ];
 
     case "/company/profile":
       return [
-        { label: "Quản trị công ty", href: "/company/dashboard" },
-        { label: "Thông tin công ty" },
+        { labelKey: "companyAdmin", href: "/company/dashboard" },
+        { labelKey: "companyInfo" },
       ];
 
     case "/company/settings":
       return [
-        { label: "Quản trị công ty", href: "/company/dashboard" },
-        { label: "Cài đặt" },
+        { labelKey: "companyAdmin", href: "/company/dashboard" },
+        { labelKey: "settings" },
       ];
 
     default:
-      return [{ label: "Admin" }];
+      return [{ labelKey: "admin" }];
   }
 }
 
 export function BreadcrumbRouter() {
   const pathname = usePathname();
+  const t = useTranslations("breadcrumb");
   const breadcrumbs = getBreadcrumbs(pathname);
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbs.map((breadcrumb, index) => (
-          <React.Fragment key={`${breadcrumb.label}-${index}`}>
+          <React.Fragment key={`${breadcrumb.labelKey}-${index}`}>
             <BreadcrumbItem>
               {breadcrumb.href ? (
                 <BreadcrumbLink asChild>
-                  <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
+                  <Link href={breadcrumb.href}>{t(breadcrumb.labelKey)}</Link>
                 </BreadcrumbLink>
               ) : (
-                <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
+                <BreadcrumbPage>{t(breadcrumb.labelKey)}</BreadcrumbPage>
               )}
             </BreadcrumbItem>
             {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}

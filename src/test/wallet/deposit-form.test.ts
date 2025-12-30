@@ -22,7 +22,7 @@ describe("DepositForm - Property Tests", () => {
           (amount) => {
             const result = validateAmount(amount);
             expect(result.valid).toBe(false);
-            expect(result.error).toBeDefined();
+            expect(result.errorKey).toBeDefined();
           },
         ),
         { numRuns: 100 },
@@ -36,7 +36,7 @@ describe("DepositForm - Property Tests", () => {
           (amount) => {
             const result = validateAmount(amount);
             expect(result.valid).toBe(true);
-            expect(result.error).toBeUndefined();
+            expect(result.errorKey).toBeUndefined();
           },
         ),
         { numRuns: 100 },
@@ -54,7 +54,7 @@ describe("DepositForm - Property Tests", () => {
           (amount) => {
             const result = validateAmount(amount);
             expect(result.valid).toBe(true);
-            expect(result.error).toBeUndefined();
+            expect(result.errorKey).toBeUndefined();
           },
         ),
         { numRuns: 100 },
@@ -72,7 +72,7 @@ describe("DepositForm - Property Tests", () => {
           (amount) => {
             const result = validateAmount(amount);
             expect(result.valid).toBe(false);
-            expect(result.error).toBeDefined();
+            expect(result.errorKey).toBeDefined();
           },
         ),
         { numRuns: 100 },
@@ -82,16 +82,16 @@ describe("DepositForm - Property Tests", () => {
     it("phải từ chối số 0", () => {
       const result = validateAmount(0);
       expect(result.valid).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(result.errorKey).toBeDefined();
     });
 
     it("phải từ chối NaN", () => {
       const result = validateAmount(NaN);
       expect(result.valid).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(result.errorKey).toBeDefined();
     });
 
-    it("validation phải nhất quán: valid XOR error được định nghĩa", () => {
+    it("validation phải nhất quán: valid XOR errorKey được định nghĩa", () => {
       fc.assert(
         fc.property(
           fc.oneof(
@@ -102,10 +102,10 @@ describe("DepositForm - Property Tests", () => {
           ),
           (amount) => {
             const result = validateAmount(amount);
-            // XOR: valid === true thì error undefined, valid === false thì error defined
+            // XOR: valid === true thì errorKey undefined, valid === false thì errorKey defined
             const isConsistent =
-              (result.valid && result.error === undefined) ||
-              (!result.valid && result.error !== undefined);
+              (result.valid && result.errorKey === undefined) ||
+              (!result.valid && result.errorKey !== undefined);
             expect(isConsistent).toBe(true);
           },
         ),

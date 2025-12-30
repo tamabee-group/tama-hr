@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { PlanResponse } from "@/types/plan";
 import { getActivePlans } from "@/lib/apis/plan-api";
 import { SupportedLocale } from "@/lib/utils/format-currency";
@@ -18,35 +18,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function PricingSection() {
   const router = useRouter();
   const locale = useLocale() as SupportedLocale;
+  const t = useTranslations("landing.pricing");
+
   const [plans, setPlans] = useState<PlanResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Labels theo locale
-  const labels: Record<
-    SupportedLocale,
-    { title: string; subtitle: string; error: string }
-  > = {
-    vi: {
-      title: "Bảng giá",
-      subtitle: "Chọn gói phù hợp với nhu cầu của bạn",
-      error: "Không thể tải danh sách gói dịch vụ",
-    },
-    en: {
-      title: "Pricing",
-      subtitle: "Choose the plan that fits your needs",
-      error: "Unable to load pricing plans",
-    },
-    ja: {
-      title: "料金プラン",
-      subtitle: "ニーズに合ったプランをお選びください",
-      error: "料金プランを読み込めませんでした",
-    },
-  };
-
-  const t = labels[locale] || labels.vi;
-
-  // Fetch active plans
   useEffect(() => {
     const fetchPlans = async () => {
       try {
@@ -56,21 +33,19 @@ export function PricingSection() {
         setPlans(data);
       } catch (err) {
         console.error("Error fetching plans:", err);
-        setError(t.error);
+        setError(t("error"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchPlans();
-  }, [t.error]);
+  }, [t]);
 
-  // Handle select plan - navigate to register with planId
   const handleSelectPlan = (planId: number) => {
     router.push(`/${locale}/register?planId=${planId}`);
   };
 
-  // Loading skeleton
   if (loading) {
     return (
       <section id="pricing" className="py-16">
@@ -87,7 +62,6 @@ export function PricingSection() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <section id="pricing" className="py-16">
@@ -98,20 +72,17 @@ export function PricingSection() {
     );
   }
 
-  // No plans available
   if (plans.length === 0) {
     return null;
   }
 
   return (
     <section id="pricing" className="py-16">
-      {/* Header */}
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold tracking-tight mb-4">{t.title}</h2>
-        <p className="text-muted-foreground text-lg">{t.subtitle}</p>
+        <h2 className="text-3xl font-bold tracking-tight mb-4">{t("title")}</h2>
+        <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
       </div>
 
-      {/* Plan Cards Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {plans.map((plan) => (
           <LandingPlanCard

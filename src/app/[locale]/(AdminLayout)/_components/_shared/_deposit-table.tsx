@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { Pagination } from "@/app/[locale]/_components/_base/_pagination";
 import { DepositRequestResponse, DepositFilterRequest } from "@/types/deposit";
-import { DepositStatus, DEPOSIT_STATUSES } from "@/types/enums";
+import { DepositStatus } from "@/types/enums";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import {
   Select,
@@ -49,6 +50,10 @@ export function SharedDepositTable({
   onViewImage,
   refreshTrigger,
 }: SharedDepositTableProps) {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+
   const [deposits, setDeposits] = useState<DepositRequestResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<DepositStatus | "ALL">(
@@ -57,10 +62,23 @@ export function SharedDepositTable({
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  // Labels cho columns
+  const columnLabels = useMemo(
+    () => ({
+      createdAt: t("table.createdAt"),
+      amount: t("table.amount"),
+      status: t("table.status"),
+      transferProof: t("table.transferProof"),
+      rejectionReason: t("table.rejectionReason"),
+      viewImage: t("actions.viewProof"),
+    }),
+    [t],
+  );
+
   // Memoize columns để tránh re-render không cần thiết
   const columns = useMemo(
-    () => createDepositColumns(locale, onViewImage),
-    [locale, onViewImage],
+    () => createDepositColumns(locale, columnLabels, onViewImage),
+    [locale, columnLabels, onViewImage],
   );
 
   // Fetch deposits data
@@ -78,12 +96,12 @@ export function SharedDepositTable({
     } catch (error) {
       console.error("Failed to fetch deposits:", error);
       handleApiError(error, {
-        defaultMessage: "Không thể tải danh sách yêu cầu nạp tiền",
+        defaultMessage: tCommon("errorLoading"),
       });
     } finally {
       setLoading(false);
     }
-  }, [fetchDeposits, statusFilter, page]);
+  }, [fetchDeposits, statusFilter, page, tCommon]);
 
   // Load data khi mount hoặc dependencies thay đổi
   useEffect(() => {
@@ -111,6 +129,13 @@ export function SharedDepositTable({
     );
   }
 
+  // Deposit status options
+  const depositStatusOptions: { value: DepositStatus; label: string }[] = [
+    { value: "PENDING", label: tEnums("depositStatus.PENDING") },
+    { value: "APPROVED", label: tEnums("depositStatus.APPROVED") },
+    { value: "REJECTED", label: tEnums("depositStatus.REJECTED") },
+  ];
+
   return (
     <div className="space-y-4">
       {/* Filter theo status */}
@@ -122,11 +147,11 @@ export function SharedDepositTable({
           }
         >
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Lọc theo trạng thái" />
+            <SelectValue placeholder={tCommon("filter")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">Tất cả</SelectItem>
-            {DEPOSIT_STATUSES.map((status) => (
+            <SelectItem value="ALL">{tCommon("all")}</SelectItem>
+            {depositStatusOptions.map((status) => (
               <SelectItem key={status.value} value={status.value}>
                 {status.label}
               </SelectItem>
@@ -140,7 +165,7 @@ export function SharedDepositTable({
         columns={columns}
         data={deposits}
         showPagination={false}
-        noResultsText="Không có yêu cầu nạp tiền nào"
+        noResultsText={tCommon("noResults")}
       />
 
       {/* Pagination */}

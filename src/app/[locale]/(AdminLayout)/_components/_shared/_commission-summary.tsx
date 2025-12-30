@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   CommissionSummaryResponse,
   CommissionOverallSummaryResponse,
@@ -36,6 +37,8 @@ export function CommissionSummary({
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
+  const t = useTranslations("commissions");
+  const tCommon = useTranslations("common");
   const [summary, setSummary] = useState<
     CommissionSummaryResponse | CommissionOverallSummaryResponse | null
   >(null);
@@ -54,7 +57,7 @@ export function CommissionSummary({
       setSummary(data);
     } catch (error) {
       console.error("Failed to fetch commission summary:", error);
-      toast.error("Không thể tải thống kê hoa hồng");
+      toast.error(t("messages.loadSummaryError"));
     } finally {
       setLoading(false);
     }
@@ -83,7 +86,7 @@ export function CommissionSummary({
   if (!summary) {
     return (
       <div className="rounded-lg border p-6 text-center text-muted-foreground">
-        Chưa có dữ liệu
+        {tCommon("noData")}
       </div>
     );
   }
@@ -103,8 +106,10 @@ export function CommissionSummary({
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Chờ đủ điều kiện</p>
-            <p className="text-2xl font-bold text-yellow-600">
+            <p className="text-sm text-muted-foreground">
+              {t("pendingAmount")}
+            </p>
+            <p className="text-2xl font-bold text-yellow-500">
               {formatCurrency(
                 overallSummary
                   ? overallSummary.totalPending
@@ -118,8 +123,10 @@ export function CommissionSummary({
         {overallSummary && (
           <Card className="py-2">
             <CardContent>
-              <p className="text-sm text-muted-foreground">Chờ thanh toán</p>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-sm text-muted-foreground">
+                {t("eligibleAmount")}
+              </p>
+              <p className="text-2xl font-bold text-blue-400">
                 {formatCurrency(overallSummary.totalEligible || 0, "vi")}
               </p>
             </CardContent>
@@ -128,8 +135,8 @@ export function CommissionSummary({
 
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Đã thanh toán</p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-sm text-muted-foreground">{t("paidAmount")}</p>
+            <p className="text-2xl font-bold text-green-500">
               {formatCurrency(
                 overallSummary
                   ? overallSummary.totalPaid
@@ -142,7 +149,9 @@ export function CommissionSummary({
 
         <Card className="py-2">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Tổng hoa hồng</p>
+            <p className="text-sm text-muted-foreground">
+              {t("totalCommission")}
+            </p>
             <p className="text-2xl font-bold">
               {formatCurrency(
                 overallSummary
@@ -159,24 +168,30 @@ export function CommissionSummary({
       {overallSummary?.byEmployee && overallSummary.byEmployee.length > 0 && (
         <div className="rounded-lg border">
           <div className="p-4 border-b">
-            <h3 className="font-semibold">Theo nhân viên</h3>
+            <h3 className="font-semibold">{t("summary.byEmployee")}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left py-3 px-4 font-medium">Nhân viên</th>
-                  <th className="text-right py-3 px-4 font-medium">Số lượng</th>
-                  <th className="text-right py-3 px-4 font-medium">
-                    Chờ đủ điều kiện
+                  <th className="text-left py-3 px-4 font-medium">
+                    {t("summary.employee")}
                   </th>
                   <th className="text-right py-3 px-4 font-medium">
-                    Chờ thanh toán
+                    {t("summary.count")}
                   </th>
                   <th className="text-right py-3 px-4 font-medium">
-                    Đã thanh toán
+                    {t("pendingAmount")}
                   </th>
-                  <th className="text-right py-3 px-4 font-medium">Tổng</th>
+                  <th className="text-right py-3 px-4 font-medium">
+                    {t("eligibleAmount")}
+                  </th>
+                  <th className="text-right py-3 px-4 font-medium">
+                    {t("paidAmount")}
+                  </th>
+                  <th className="text-right py-3 px-4 font-medium">
+                    {tCommon("total")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -200,13 +215,13 @@ export function CommissionSummary({
                       <td className="text-right py-3 px-4">
                         <Badge variant="secondary">{emp.count}</Badge>
                       </td>
-                      <td className="text-right py-3 px-4 text-yellow-600">
+                      <td className="text-right py-3 px-4 text-yellow-500">
                         {formatCurrency(emp.totalPending || 0, "vi")}
                       </td>
-                      <td className="text-right py-3 px-4 text-blue-600">
+                      <td className="text-right py-3 px-4 text-blue-400">
                         {formatCurrency(emp.totalEligible || 0, "vi")}
                       </td>
-                      <td className="text-right py-3 px-4 text-green-600">
+                      <td className="text-right py-3 px-4 text-green-500">
                         {formatCurrency(emp.totalPaid || 0, "vi")}
                       </td>
                       <td className="text-right py-3 px-4 font-medium">
@@ -225,21 +240,27 @@ export function CommissionSummary({
       {overallSummary?.byMonth && overallSummary.byMonth.length > 0 && (
         <div className="rounded-lg border">
           <div className="p-4 border-b">
-            <h3 className="font-semibold">Theo tháng</h3>
+            <h3 className="font-semibold">{t("summary.byMonth")}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left py-3 px-4 font-medium">Tháng</th>
-                  <th className="text-right py-3 px-4 font-medium">Số lượng</th>
-                  <th className="text-right py-3 px-4 font-medium">
-                    Chờ thanh toán
+                  <th className="text-left py-3 px-4 font-medium">
+                    {t("summary.month")}
                   </th>
                   <th className="text-right py-3 px-4 font-medium">
-                    Đã thanh toán
+                    {t("summary.count")}
                   </th>
-                  <th className="text-right py-3 px-4 font-medium">Tổng</th>
+                  <th className="text-right py-3 px-4 font-medium">
+                    {t("eligibleAmount")}
+                  </th>
+                  <th className="text-right py-3 px-4 font-medium">
+                    {t("paidAmount")}
+                  </th>
+                  <th className="text-right py-3 px-4 font-medium">
+                    {tCommon("total")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -255,10 +276,10 @@ export function CommissionSummary({
                       <td className="text-right py-3 px-4">
                         <Badge variant="secondary">{monthData.count}</Badge>
                       </td>
-                      <td className="text-right py-3 px-4 text-yellow-600">
+                      <td className="text-right py-3 px-4 text-yellow-500">
                         {formatCurrency(monthData.totalPending || 0, "vi")}
                       </td>
-                      <td className="text-right py-3 px-4 text-green-600">
+                      <td className="text-right py-3 px-4 text-green-500">
                         {formatCurrency(monthData.totalPaid || 0, "vi")}
                       </td>
                       <td className="text-right py-3 px-4 font-medium">

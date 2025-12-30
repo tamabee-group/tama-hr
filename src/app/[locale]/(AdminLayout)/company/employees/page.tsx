@@ -10,6 +10,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from "@/types/api";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Lấy danh sách nhân viên từ API
@@ -33,15 +34,17 @@ async function getEmployees(
 
 export default async function CompanyEmployeesPage() {
   const data = await getEmployees();
+  const t = await getTranslations("users");
+  const tCommon = await getTranslations("common");
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Quản lý nhân viên</h1>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
         <Link href="/company/employees/create">
           <Button>
             <Plus />
-            Thêm nhân viên
+            {tCommon("add")}
           </Button>
         </Link>
       </div>

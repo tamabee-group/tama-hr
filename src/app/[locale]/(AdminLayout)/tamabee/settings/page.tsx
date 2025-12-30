@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
 import { SettingResponse } from "@/types/setting";
 import { settingApi } from "@/lib/apis/setting-api";
 import { SettingForm } from "./_setting-form";
@@ -18,8 +17,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { RefreshCw, Pencil, Settings } from "lucide-react";
-import { SupportedLocale } from "@/lib/utils/format-currency";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslations } from "next-intl";
+import { formatDateTime } from "@/lib/utils/format-date";
 
 /**
  * Trang quản lý Settings cho Tamabee Admin
@@ -28,9 +28,9 @@ import { useAuth } from "@/hooks/use-auth";
  * - MANAGER_TAMABEE: chỉ được xem
  */
 export default function TamabeeSettingsPage() {
-  const params = useParams();
-  const locale = (params.locale as SupportedLocale) || "vi";
   const { user } = useAuth();
+  const t = useTranslations("settings");
+  const tCommon = useTranslations("common");
 
   const [settings, setSettings] = useState<SettingResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,54 +45,6 @@ export default function TamabeeSettingsPage() {
   // Kiểm tra quyền edit (chỉ ADMIN_TAMABEE)
   const canEdit = user?.role === "ADMIN_TAMABEE";
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Cài đặt hệ thống",
-      description: "Quản lý các thông số cấu hình hệ thống",
-      refresh: "Làm mới",
-      errorLoading: "Không thể tải danh sách cài đặt",
-      noSettings: "Chưa có cài đặt nào",
-      settingKey: "Khóa cài đặt",
-      settingValue: "Giá trị",
-      valueType: "Loại",
-      description_col: "Mô tả",
-      updatedAt: "Cập nhật lúc",
-      actions: "Thao tác",
-      viewOnly: "Bạn chỉ có quyền xem",
-    },
-    en: {
-      title: "System Settings",
-      description: "Manage system configuration parameters",
-      refresh: "Refresh",
-      errorLoading: "Failed to load settings",
-      noSettings: "No settings yet",
-      settingKey: "Setting Key",
-      settingValue: "Value",
-      valueType: "Type",
-      description_col: "Description",
-      updatedAt: "Updated At",
-      actions: "Actions",
-      viewOnly: "You have view-only access",
-    },
-    ja: {
-      title: "システム設定",
-      description: "システム構成パラメータの管理",
-      refresh: "更新",
-      errorLoading: "設定の読み込みに失敗しました",
-      noSettings: "設定がまだありません",
-      settingKey: "設定キー",
-      settingValue: "値",
-      valueType: "型",
-      description_col: "説明",
-      updatedAt: "更新日時",
-      actions: "操作",
-      viewOnly: "閲覧のみ可能です",
-    },
-  };
-
-  const t = labels[locale];
-
   // Fetch settings (không phân trang)
   const fetchSettings = useCallback(async () => {
     try {
@@ -102,13 +54,13 @@ export default function TamabeeSettingsPage() {
       setError(null);
     } catch (err) {
       console.error("Failed to fetch settings:", err);
-      setError(t.errorLoading);
+      setError(tCommon("errorLoading"));
       setSettings([]);
-      toast.error(t.errorLoading);
+      toast.error(tCommon("errorLoading"));
     } finally {
       setLoading(false);
     }
-  }, [t.errorLoading]);
+  }, [tCommon]);
 
   useEffect(() => {
     fetchSettings();
@@ -117,7 +69,7 @@ export default function TamabeeSettingsPage() {
   // Handle edit setting
   const handleEditSetting = (setting: SettingResponse) => {
     if (!canEdit) {
-      toast.error(t.viewOnly);
+      toast.error(t("viewOnly"));
       return;
     }
     setEditingSetting(setting);
@@ -127,20 +79,6 @@ export default function TamabeeSettingsPage() {
   // Handle form success
   const handleFormSuccess = () => {
     fetchSettings();
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString(
-      locale === "vi" ? "vi-VN" : locale === "ja" ? "ja-JP" : "en-US",
-      {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      },
-    );
   };
 
   // Get badge variant for value type
@@ -177,13 +115,15 @@ export default function TamabeeSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{t.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("description")}
+          </p>
         </div>
         <div className="flex gap-2 items-center">
           {!canEdit && (
             <Badge variant="secondary" className="mr-2">
-              {t.viewOnly}
+              {t("viewOnly")}
             </Badge>
           )}
           <Button
@@ -195,7 +135,7 @@ export default function TamabeeSettingsPage() {
             <RefreshCw
               className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
             />
-            {t.refresh}
+            {tCommon("refresh")}
           </Button>
         </div>
       </div>
@@ -219,21 +159,29 @@ export default function TamabeeSettingsPage() {
         ) : !settings || settings.length === 0 ? (
           <div className="p-12 text-center">
             <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">{t.noSettings}</p>
+            <p className="text-muted-foreground">{t("noSettings")}</p>
           </div>
         ) : (
           <>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">{t.settingKey}</TableHead>
-                  <TableHead className="w-[150px]">{t.settingValue}</TableHead>
-                  <TableHead className="w-[100px]">{t.valueType}</TableHead>
-                  <TableHead>{t.description_col}</TableHead>
-                  <TableHead className="w-[150px]">{t.updatedAt}</TableHead>
+                  <TableHead className="w-[200px]">
+                    {t("table.settingKey")}
+                  </TableHead>
+                  <TableHead className="w-[150px]">
+                    {t("table.settingValue")}
+                  </TableHead>
+                  <TableHead className="w-[100px]">
+                    {t("table.valueType")}
+                  </TableHead>
+                  <TableHead>{t("table.description")}</TableHead>
+                  <TableHead className="w-[150px]">
+                    {t("table.updatedAt")}
+                  </TableHead>
                   {canEdit && (
                     <TableHead className="w-[80px] text-right">
-                      {t.actions}
+                      {t("table.actions")}
                     </TableHead>
                   )}
                 </TableRow>
@@ -252,7 +200,7 @@ export default function TamabeeSettingsPage() {
                       {setting.description}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(setting.updatedAt)}
+                      {formatDateTime(setting.updatedAt)}
                     </TableCell>
                     {canEdit && (
                       <TableCell className="text-right">
@@ -279,7 +227,6 @@ export default function TamabeeSettingsPage() {
         onOpenChange={setFormOpen}
         setting={editingSetting}
         onSuccess={handleFormSuccess}
-        locale={locale}
       />
     </div>
   );

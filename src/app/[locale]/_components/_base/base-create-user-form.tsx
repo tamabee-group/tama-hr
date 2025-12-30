@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ClearableInput } from "@/components/ui/clearable-input";
@@ -29,12 +30,14 @@ import {
   Users,
 } from "lucide-react";
 import { LANGUAGES, GENDERS } from "@/types/enums";
+import {
+  getLanguageLabel,
+  getGenderLabel,
+  getUserRoleLabel,
+} from "@/lib/utils/get-enum-label";
 
-// Định nghĩa kiểu dữ liệu cho role option
-interface RoleOption {
-  readonly value: string;
-  readonly label: string;
-}
+// Định nghĩa kiểu dữ liệu cho role option (chỉ giữ value, label sẽ lấy từ translations)
+type RoleValue = string;
 
 // Định nghĩa kiểu dữ liệu cho form
 export interface CreateUserFormData {
@@ -52,7 +55,7 @@ export interface CreateUserFormData {
 // Props cho BaseCreateUserForm
 interface BaseCreateUserFormProps {
   title: string;
-  roles: readonly RoleOption[];
+  roles: readonly RoleValue[];
   defaultRole: string;
   onSubmit: (data: CreateUserFormData) => Promise<void>;
   submitButtonText?: string;
@@ -67,13 +70,17 @@ export function BaseCreateUserForm({
   roles,
   defaultRole,
   onSubmit,
-  submitButtonText = "Đăng ký",
-  loadingText = "Đang xử lý...",
-  successMessage = "Thành công!",
+  submitButtonText,
+  loadingText,
+  successMessage,
   successRedirectUrl,
   resetAfterSuccess = false,
 }: BaseCreateUserFormProps) {
   const router = useRouter();
+  const t = useTranslations("users");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+  const tValidation = useTranslations("validation");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<CreateUserFormData>({
     email: "",
@@ -106,11 +113,11 @@ export function BaseCreateUserForm({
     const emailError = validateEmail(formData.email);
     if (emailError) newErrors.email = emailError;
 
-    const nameError = validateRequired(formData.name, "Họ và tên");
+    const nameError = validateRequired(formData.name, t("form.name"));
     if (nameError) newErrors.name = nameError;
 
-    if (!formData.gender) newErrors.gender = "Vui lòng chọn giới tính";
-    if (!formData.role) newErrors.role = "Vui lòng chọn vai trò";
+    if (!formData.gender) newErrors.gender = tValidation("genderRequired");
+    if (!formData.role) newErrors.role = tValidation("roleRequired");
 
     if (formData.phone) {
       const phoneError = validatePhone(formData.phone);
@@ -144,7 +151,7 @@ export function BaseCreateUserForm({
     const promise = onSubmit(formData);
 
     toast.promise(promise, {
-      loading: loadingText,
+      loading: loadingText || tCommon("loading"),
       success: () => {
         if (resetAfterSuccess) {
           resetForm();
@@ -152,11 +159,11 @@ export function BaseCreateUserForm({
         if (successRedirectUrl) {
           router.push(successRedirectUrl);
         }
-        return successMessage;
+        return successMessage || tCommon("success");
       },
       error: (err) => {
         setErrors({ submit: err.message });
-        return err.message || "Thao tác thất bại";
+        return err.message || tCommon("errorLoading");
       },
     });
   };
@@ -191,7 +198,7 @@ export function BaseCreateUserForm({
               }}
               onClear={() => setFormData({ ...formData, email: "" })}
               icon={<Mail />}
-              placeholder="Nhập email..."
+              placeholder={t("form.emailPlaceholder")}
             />
             {errors.email && (
               <p className="text-sm text-destructive mt-1">{errors.email}</p>
@@ -199,7 +206,7 @@ export function BaseCreateUserForm({
           </div>
 
           <div>
-            <Label htmlFor="name">Họ và tên *</Label>
+            <Label htmlFor="name">{t("form.name")} *</Label>
             <ClearableInput
               id="name"
               required
@@ -211,7 +218,7 @@ export function BaseCreateUserForm({
               }}
               onClear={() => setFormData({ ...formData, name: "" })}
               icon={<User />}
-              placeholder="Nhập họ và tên..."
+              placeholder={t("form.namePlaceholder")}
             />
             {errors.name && (
               <p className="text-sm text-destructive mt-1">{errors.name}</p>
@@ -219,18 +226,18 @@ export function BaseCreateUserForm({
           </div>
 
           <div>
-            <Label htmlFor="gender">Giới tính *</Label>
+            <Label htmlFor="gender">{t("form.gender")} *</Label>
             <SelectWithIcon
               value={formData.gender}
               onValueChange={(value) =>
                 setFormData({ ...formData, gender: value })
               }
-              placeholder="Chọn giới tính"
+              placeholder={t("form.genderPlaceholder")}
               icon={<Users />}
             >
               {GENDERS.map((gender) => (
-                <SelectItem key={gender.value} value={gender.value}>
-                  {gender.label}
+                <SelectItem key={gender} value={gender}>
+                  {getGenderLabel(gender, tEnums)}
                 </SelectItem>
               ))}
             </SelectWithIcon>
@@ -240,7 +247,7 @@ export function BaseCreateUserForm({
           </div>
 
           <div>
-            <Label htmlFor="dateOfBirth">Ngày sinh</Label>
+            <Label htmlFor="dateOfBirth">{t("form.dateOfBirth")}</Label>
             <AgeCalendar
               defaultValue={new Date("1998-05-31")}
               onChange={(date) => {
@@ -253,7 +260,7 @@ export function BaseCreateUserForm({
           </div>
 
           <div>
-            <Label htmlFor="phone">Số điện thoại</Label>
+            <Label htmlFor="phone">{t("form.phone")}</Label>
             <ClearableInput
               id="phone"
               type="tel"
@@ -264,7 +271,7 @@ export function BaseCreateUserForm({
               }}
               onClear={() => setFormData({ ...formData, phone: "" })}
               icon={<Phone />}
-              placeholder="Nhập số điện thoại..."
+              placeholder={t("form.phonePlaceholder")}
             />
             {errors.phone && (
               <p className="text-sm text-destructive mt-1">{errors.phone}</p>
@@ -272,7 +279,7 @@ export function BaseCreateUserForm({
           </div>
 
           <div>
-            <Label htmlFor="zipCode">Mã bưu điện</Label>
+            <Label htmlFor="zipCode">{t("form.zipCode")}</Label>
             <ClearableInput
               id="zipCode"
               value={formData.zipCode}
@@ -282,13 +289,13 @@ export function BaseCreateUserForm({
               }}
               onClear={() => setFormData({ ...formData, zipCode: "" })}
               icon={<Milestone />}
-              placeholder="Nhập 7 số"
+              placeholder={t("form.zipCodePlaceholder")}
               maxLength={7}
             />
           </div>
 
           <div className="col-span-1 md:col-span-2">
-            <Label htmlFor="address">Địa chỉ</Label>
+            <Label htmlFor="address">{t("form.address")}</Label>
             <ClearableInput
               id="address"
               value={formData.address}
@@ -297,12 +304,12 @@ export function BaseCreateUserForm({
               }}
               onClear={() => setFormData({ ...formData, address: "" })}
               icon={<MapPin />}
-              placeholder="Nhập địa chỉ..."
+              placeholder={t("form.addressPlaceholder")}
             />
           </div>
 
           <div>
-            <Label htmlFor="language">Ngôn ngữ *</Label>
+            <Label htmlFor="language">{t("form.language")} *</Label>
             <SelectWithIcon
               value={formData.language}
               onValueChange={(value) =>
@@ -312,25 +319,25 @@ export function BaseCreateUserForm({
             >
               {LANGUAGES.map((lang) => (
                 <SelectItem key={lang.value} value={lang.value}>
-                  {lang.label}
+                  {lang.flag} {getLanguageLabel(lang.value, tEnums)}
                 </SelectItem>
               ))}
             </SelectWithIcon>
           </div>
 
           <div>
-            <Label htmlFor="role">Vai trò *</Label>
+            <Label htmlFor="role">{t("form.role")} *</Label>
             <SelectWithIcon
               value={formData.role}
               onValueChange={(value) =>
                 setFormData({ ...formData, role: value })
               }
-              placeholder="Chọn vai trò"
+              placeholder={t("form.rolePlaceholder")}
               icon={<UserCog />}
             >
               {roles.map((role) => (
-                <SelectItem key={role.value} value={role.value}>
-                  {role.label}
+                <SelectItem key={role} value={role}>
+                  {getUserRoleLabel(role, tEnums)}
                 </SelectItem>
               ))}
             </SelectWithIcon>
@@ -345,9 +352,11 @@ export function BaseCreateUserForm({
               variant="outline"
               onClick={() => router.back()}
             >
-              Hủy
+              {tCommon("cancel")}
             </Button>
-            <Button type="submit">{submitButtonText}</Button>
+            <Button type="submit">
+              {submitButtonText || tCommon("submit")}
+            </Button>
           </div>
         </form>
       </CardContent>

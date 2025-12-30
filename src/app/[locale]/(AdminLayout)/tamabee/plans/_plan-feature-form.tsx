@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlanFeatureCreateRequest } from "@/types/plan";
-import { SupportedLocale } from "@/lib/utils/format-currency";
 import {
   Plus,
   Trash2,
@@ -21,7 +20,6 @@ interface PlanFeatureFormProps {
   features: PlanFeatureCreateRequest[];
   onChange: (features: PlanFeatureCreateRequest[]) => void;
   disabled?: boolean;
-  locale?: SupportedLocale;
 }
 
 /**
@@ -33,49 +31,8 @@ export function PlanFeatureForm({
   features,
   onChange,
   disabled = false,
-  locale = "vi",
 }: PlanFeatureFormProps) {
-  // Labels theo locale
-  const labels = {
-    vi: {
-      addFeature: "Thêm tính năng",
-      featureVi: "Tiếng Việt",
-      featureEn: "Tiếng Anh",
-      featureJa: "Tiếng Nhật",
-      highlighted: "Nổi bật",
-      remove: "Xóa",
-      moveUp: "Di chuyển lên",
-      moveDown: "Di chuyển xuống",
-      noFeatures: "Chưa có tính năng nào",
-      featurePlaceholder: "Nhập tính năng...",
-    },
-    en: {
-      addFeature: "Add Feature",
-      featureVi: "Vietnamese",
-      featureEn: "English",
-      featureJa: "Japanese",
-      highlighted: "Highlighted",
-      remove: "Remove",
-      moveUp: "Move Up",
-      moveDown: "Move Down",
-      noFeatures: "No features yet",
-      featurePlaceholder: "Enter feature...",
-    },
-    ja: {
-      addFeature: "機能を追加",
-      featureVi: "ベトナム語",
-      featureEn: "英語",
-      featureJa: "日本語",
-      highlighted: "ハイライト",
-      remove: "削除",
-      moveUp: "上に移動",
-      moveDown: "下に移動",
-      noFeatures: "機能がまだありません",
-      featurePlaceholder: "機能を入力...",
-    },
-  };
-
-  const t = labels[locale];
+  const t = useTranslations("plans");
 
   // Thêm feature mới
   const handleAddFeature = () => {
@@ -147,7 +104,7 @@ export function PlanFeatureForm({
     <div className="space-y-4">
       {features.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-4">
-          {t.noFeatures}
+          {t("feature.noFeatures")}
         </p>
       ) : (
         <div className="space-y-3">
@@ -164,7 +121,7 @@ export function PlanFeatureForm({
                       className="h-6 w-6"
                       onClick={() => handleMoveUp(index)}
                       disabled={disabled || index === 0}
-                      title={t.moveUp}
+                      title={t("feature.moveUp")}
                     >
                       <ChevronUp className="h-4 w-4" />
                     </Button>
@@ -178,7 +135,7 @@ export function PlanFeatureForm({
                       className="h-6 w-6"
                       onClick={() => handleMoveDown(index)}
                       disabled={disabled || index === features.length - 1}
-                      title={t.moveDown}
+                      title={t("feature.moveDown")}
                     >
                       <ChevronDown className="h-4 w-4" />
                     </Button>
@@ -189,7 +146,7 @@ export function PlanFeatureForm({
                     <div className="grid grid-cols-3 gap-2">
                       <div className="space-y-1">
                         <Label className="text-xs text-muted-foreground">
-                          🇻🇳 {t.featureVi}
+                          🇻🇳 {t("feature.featureVi")}
                         </Label>
                         <Input
                           value={feature.featureVi}
@@ -200,14 +157,14 @@ export function PlanFeatureForm({
                               e.target.value,
                             )
                           }
-                          placeholder={t.featurePlaceholder}
+                          placeholder={t("feature.featurePlaceholder")}
                           disabled={disabled}
                           className="h-8 text-sm"
                         />
                       </div>
                       <div className="space-y-1">
                         <Label className="text-xs text-muted-foreground">
-                          🇺🇸 {t.featureEn}
+                          🇺🇸 {t("feature.featureEn")}
                         </Label>
                         <Input
                           value={feature.featureEn}
@@ -218,14 +175,14 @@ export function PlanFeatureForm({
                               e.target.value,
                             )
                           }
-                          placeholder={t.featurePlaceholder}
+                          placeholder={t("feature.featurePlaceholder")}
                           disabled={disabled}
                           className="h-8 text-sm"
                         />
                       </div>
                       <div className="space-y-1">
                         <Label className="text-xs text-muted-foreground">
-                          🇯🇵 {t.featureJa}
+                          🇯🇵 {t("feature.featureJa")}
                         </Label>
                         <Input
                           value={feature.featureJa}
@@ -236,7 +193,7 @@ export function PlanFeatureForm({
                               e.target.value,
                             )
                           }
-                          placeholder={t.featurePlaceholder}
+                          placeholder={t("feature.featurePlaceholder")}
                           disabled={disabled}
                           className="h-8 text-sm"
                         />
@@ -261,7 +218,7 @@ export function PlanFeatureForm({
                                 : "text-muted-foreground"
                             }`}
                           />
-                          {t.highlighted}
+                          {t("feature.highlighted")}
                         </Label>
                       </div>
 
@@ -275,7 +232,7 @@ export function PlanFeatureForm({
                         className="text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4 mr-1" />
-                        {t.remove}
+                        {t("feature.remove")}
                       </Button>
                     </div>
                   </div>
@@ -295,7 +252,7 @@ export function PlanFeatureForm({
         className="w-full"
       >
         <Plus className="h-4 w-4 mr-2" />
-        {t.addFeature}
+        {t("feature.addFeature")}
       </Button>
     </div>
   );

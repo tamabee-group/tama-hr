@@ -1,8 +1,8 @@
 "use client";
 
-import { format } from "date-fns";
 import { vi, enUS, ja } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
+import { formatDate } from "@/lib/utils/format-date";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -54,9 +54,7 @@ export function DatePicker({
         >
           <CalendarIcon className="h-4 w-4 shrink-0" />
           <span className="ml-2 truncate">
-            {value
-              ? format(value, "dd/MM/yyyy", { locale: dateLocale })
-              : placeholder}
+            {value ? formatDate(value, locale) : placeholder}
           </span>
         </Button>
       </PopoverTrigger>

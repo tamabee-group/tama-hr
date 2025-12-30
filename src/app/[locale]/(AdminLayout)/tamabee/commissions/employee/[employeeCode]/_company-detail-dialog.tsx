@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Company, INDUSTRY_LABELS, LOCALE_LABELS } from "@/types/company";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { Company, INDUSTRY_LABELS } from "@/types/company";
 import { WalletResponse } from "@/types/wallet";
 import { formatDateTime, formatDate } from "@/lib/utils/format-date";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { getLocaleLabel } from "@/lib/utils/get-enum-label";
 import { walletApi } from "@/lib/apis/wallet-api";
 import {
   Dialog,
@@ -25,6 +28,11 @@ interface Props {
  * Dialog hiển thị thông tin chi tiết công ty và billing
  */
 export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
+  const t = useTranslations("commissions.companyDetail");
+  const tEnums = useTranslations("enums");
+  const params = useParams();
+  const locale = (params.locale as SupportedLocale) || "vi";
+
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
   const [loadingWallet, setLoadingWallet] = useState(false);
 
@@ -60,25 +68,25 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
           {/* Thông tin cơ bản */}
           <div className="rounded-lg border p-4 space-y-3">
             <h4 className="font-medium text-sm text-muted-foreground">
-              Thông tin cơ bản
+              {t("basicInfo")}
             </h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-muted-foreground">Chủ sở hữu</p>
+                <p className="text-muted-foreground">{t("owner")}</p>
                 <p className="font-medium">{company.ownerName || "-"}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Ngành nghề</p>
+                <p className="text-muted-foreground">{t("industry")}</p>
                 <p className="font-medium">
                   {INDUSTRY_LABELS[company.industry] || company.industry || "-"}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Email</p>
+                <p className="text-muted-foreground">{t("email")}</p>
                 <p className="font-medium">{company.email || "-"}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Điện thoại</p>
+                <p className="text-muted-foreground">{t("phone")}</p>
                 <p className="font-medium">{company.phone || "-"}</p>
               </div>
             </div>
@@ -87,21 +95,23 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
           {/* Địa chỉ */}
           <div className="rounded-lg border p-4 space-y-3">
             <h4 className="font-medium text-sm text-muted-foreground">
-              Địa chỉ
+              {t("address")}
             </h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="col-span-2">
-                <p className="text-muted-foreground">Địa chỉ</p>
+                <p className="text-muted-foreground">{t("address")}</p>
                 <p className="font-medium">{company.address || "-"}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Mã bưu điện</p>
+                <p className="text-muted-foreground">{t("zipcode")}</p>
                 <p className="font-medium">{company.zipcode || "-"}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Khu vực</p>
+                <p className="text-muted-foreground">{t("region")}</p>
                 <p className="font-medium">
-                  {LOCALE_LABELS[company.locale] || company.locale || "-"}
+                  {company.locale
+                    ? getLocaleLabel(company.locale as "vi" | "ja", tEnums)
+                    : "-"}
                 </p>
               </div>
             </div>
@@ -110,7 +120,7 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
           {/* Thông tin billing */}
           <div className="rounded-lg border p-4 space-y-3">
             <h4 className="font-medium text-sm text-muted-foreground">
-              Thông tin thanh toán
+              {t("billingInfo")}
             </h4>
             {loadingWallet ? (
               <div className="space-y-2">
@@ -120,38 +130,39 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
             ) : wallet ? (
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Số dư ví</p>
+                  <p className="text-muted-foreground">{t("walletBalance")}</p>
                   <p className="font-medium text-lg">
-                    {formatCurrency(wallet.balance, "vi")}
+                    {formatCurrency(wallet.balance, locale)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Gói dịch vụ</p>
+                  <p className="text-muted-foreground">{t("plan")}</p>
                   <p className="font-medium">{wallet.planName || "-"}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Billing gần nhất</p>
+                  <p className="text-muted-foreground">{t("lastBilling")}</p>
                   <p className="font-medium">
                     {wallet.lastBillingDate
-                      ? formatDate(wallet.lastBillingDate)
+                      ? formatDate(wallet.lastBillingDate, locale)
                       : "-"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Billing tiếp theo</p>
+                  <p className="text-muted-foreground">{t("nextBilling")}</p>
                   <p className="font-medium">
                     {wallet.nextBillingDate
-                      ? formatDate(wallet.nextBillingDate)
+                      ? formatDate(wallet.nextBillingDate, locale)
                       : "-"}
                   </p>
                 </div>
                 {wallet.isFreeTrialActive && (
                   <div className="col-span-2">
-                    <p className="text-muted-foreground">Dùng thử</p>
+                    <p className="text-muted-foreground">{t("freeTrial")}</p>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">Đang dùng thử</Badge>
+                      <Badge variant="secondary">{t("freeTrialActive")}</Badge>
                       <span className="text-sm">
-                        đến {formatDate(wallet.freeTrialEndDate)}
+                        {t("until")}{" "}
+                        {formatDate(wallet.freeTrialEndDate, locale)}
                       </span>
                     </div>
                   </div>
@@ -159,7 +170,7 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Không có thông tin ví
+                {t("noWalletInfo")}
               </p>
             )}
           </div>
@@ -168,17 +179,17 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
           {company.referredByEmployeeCode && (
             <div className="rounded-lg border p-4 space-y-3">
               <h4 className="font-medium text-sm text-muted-foreground">
-                Người giới thiệu
+                {t("referrer")}
               </h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Mã nhân viên</p>
+                  <p className="text-muted-foreground">{t("employeeCode")}</p>
                   <p className="font-medium">
                     {company.referredByEmployeeCode}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Tên nhân viên</p>
+                  <p className="text-muted-foreground">{t("employeeName")}</p>
                   <p className="font-medium">
                     {company.referredByEmployeeName || "-"}
                   </p>
@@ -190,19 +201,19 @@ export function CompanyDetailDialog({ company, open, onOpenChange }: Props) {
           {/* Thời gian */}
           <div className="rounded-lg border p-4 space-y-3">
             <h4 className="font-medium text-sm text-muted-foreground">
-              Thời gian
+              {t("timestamps")}
             </h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-muted-foreground">Ngày tạo</p>
+                <p className="text-muted-foreground">{t("createdAt")}</p>
                 <p className="font-medium">
-                  {formatDateTime(company.createdAt)}
+                  {formatDateTime(company.createdAt, locale)}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Cập nhật lần cuối</p>
+                <p className="text-muted-foreground">{t("updatedAt")}</p>
                 <p className="font-medium">
-                  {formatDateTime(company.updatedAt)}
+                  {formatDateTime(company.updatedAt, locale)}
                 </p>
               </div>
             </div>

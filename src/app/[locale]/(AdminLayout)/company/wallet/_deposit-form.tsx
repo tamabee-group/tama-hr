@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -24,15 +25,16 @@ export interface DepositFormData {
 }
 
 // Hàm validate amount - export để test
+// Note: Error messages should be translated at the component level
 export function validateAmount(amount: number): {
   valid: boolean;
-  error?: string;
+  errorKey?: string;
 } {
   if (typeof amount !== "number" || isNaN(amount)) {
-    return { valid: false, error: "Số tiền phải là số hợp lệ" };
+    return { valid: false, errorKey: "invalidNumber" };
   }
   if (amount <= 0) {
-    return { valid: false, error: "Số tiền phải lớn hơn 0" };
+    return { valid: false, errorKey: "positiveNumber" };
   }
   return { valid: true };
 }
@@ -56,6 +58,9 @@ export function DepositForm({
   onSuccess,
   locale = "vi",
 }: DepositFormProps) {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+  const tValidation = useTranslations("validation");
   const [amount, setAmount] = useState<string>("");
   const [transferProofUrl, setTransferProofUrl] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,57 +69,6 @@ export function DepositForm({
     transferProofUrl?: string;
   }>({});
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      title: "Tạo yêu cầu nạp tiền",
-      description: "Nhập số tiền và tải lên ảnh chứng minh chuyển khoản",
-      amount: "Số tiền (VND)",
-      amountPlaceholder: "Nhập số tiền cần nạp",
-      transferProof: "Ảnh chứng minh chuyển khoản",
-      cancel: "Hủy",
-      submit: "Gửi yêu cầu",
-      submitting: "Đang gửi...",
-      successMessage: "Yêu cầu nạp tiền đã được gửi thành công",
-      errorMessage: "Không thể gửi yêu cầu. Vui lòng thử lại.",
-      amountRequired: "Vui lòng nhập số tiền",
-      amountInvalid: "Số tiền phải lớn hơn 0",
-      transferProofRequired: "Vui lòng tải lên ảnh chứng minh chuyển khoản",
-    },
-    en: {
-      title: "Create Deposit Request",
-      description: "Enter amount and upload transfer proof image",
-      amount: "Amount (VND)",
-      amountPlaceholder: "Enter deposit amount",
-      transferProof: "Transfer Proof Image",
-      cancel: "Cancel",
-      submit: "Submit Request",
-      submitting: "Submitting...",
-      successMessage: "Deposit request submitted successfully",
-      errorMessage: "Failed to submit request. Please try again.",
-      amountRequired: "Please enter amount",
-      amountInvalid: "Amount must be greater than 0",
-      transferProofRequired: "Please upload transfer proof image",
-    },
-    ja: {
-      title: "入金リクエストを作成",
-      description: "金額を入力し、振込証明画像をアップロードしてください",
-      amount: "金額 (VND)",
-      amountPlaceholder: "入金額を入力",
-      transferProof: "振込証明画像",
-      cancel: "キャンセル",
-      submit: "リクエストを送信",
-      submitting: "送信中...",
-      successMessage: "入金リクエストが正常に送信されました",
-      errorMessage: "リクエストの送信に失敗しました。もう一度お試しください。",
-      amountRequired: "金額を入力してください",
-      amountInvalid: "金額は0より大きくなければなりません",
-      transferProofRequired: "振込証明画像をアップロードしてください",
-    },
-  };
-
-  const t = labels[locale];
-
   // Validate form
   const validateForm = (): boolean => {
     const newErrors: { amount?: string; transferProofUrl?: string } = {};
@@ -122,14 +76,14 @@ export function DepositForm({
     // Validate amount
     const amountNum = parseFloat(amount);
     if (!amount || amount.trim() === "") {
-      newErrors.amount = t.amountRequired;
+      newErrors.amount = tValidation("required");
     } else if (isNaN(amountNum) || amountNum <= 0) {
-      newErrors.amount = t.amountInvalid;
+      newErrors.amount = tValidation("positiveNumber");
     }
 
     // Validate transferProofUrl
     if (!transferProofUrl || transferProofUrl.trim() === "") {
-      newErrors.transferProofUrl = t.transferProofRequired;
+      newErrors.transferProofUrl = tValidation("required");
     }
 
     setErrors(newErrors);
@@ -149,13 +103,13 @@ export function DepositForm({
         amount: parseFloat(amount),
         transferProofUrl: transferProofUrl,
       });
-      toast.success(t.successMessage);
+      toast.success(t("messages.createSuccess"));
       resetForm();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
       console.error("Failed to create deposit request:", error);
-      toast.error(t.errorMessage);
+      toast.error(t("messages.createError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -194,18 +148,18 @@ export function DepositForm({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t.title}</DialogTitle>
-          <DialogDescription>{t.description}</DialogDescription>
+          <DialogTitle>{t("createRequest")}</DialogTitle>
+          <DialogDescription>{t("form.transferProofHint")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Amount field */}
           <div className="space-y-2">
-            <Label htmlFor="amount">{t.amount}</Label>
+            <Label htmlFor="amount">{t("form.amount")}</Label>
             <Input
               id="amount"
               type="number"
-              placeholder={t.amountPlaceholder}
+              placeholder={t("form.amountPlaceholder")}
               value={amount}
               onChange={handleAmountChange}
               disabled={isSubmitting}
@@ -218,7 +172,7 @@ export function DepositForm({
 
           {/* Transfer proof image upload */}
           <div className="space-y-2">
-            <Label>{t.transferProof}</Label>
+            <Label>{t("form.transferProof")}</Label>
             <ImageUpload
               value={transferProofUrl}
               onChange={handleImageChange}
@@ -234,13 +188,13 @@ export function DepositForm({
               onClick={handleClose}
               disabled={isSubmitting}
             >
-              {t.cancel}
+              {tCommon("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {isSubmitting ? t.submitting : t.submit}
+              {isSubmitting ? tCommon("loading") : tCommon("submit")}
             </Button>
           </DialogFooter>
         </form>

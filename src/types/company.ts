@@ -46,5 +46,5 @@ export const INDUSTRIES = [
   { value: "other", label: "Khác" },
 ] as const;
 
-// Re-export LOCALE_LABELS và normalizeLocale từ enums để backward compatible
-export { LOCALE_LABELS, normalizeLocale } from "./enums";
+// Re-export normalizeLocale từ enums để backward compatible
+export { normalizeLocale } from "./enums";

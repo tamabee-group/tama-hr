@@ -8,6 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import {
   Sidebar,
@@ -54,7 +55,6 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { useAuth } from "@/hooks/use-auth";
-import { USER_ROLE_LABELS } from "@/types/user";
 import { toast } from "sonner";
 import { isAdminTamabee } from "@/types/permissions";
 
@@ -75,7 +75,7 @@ function isAdminOnlyItem(item: SidebarItem): boolean {
 /**
  * Component hiển thị Admin badge cho các features chỉ Admin mới có
  */
-function AdminBadge() {
+function AdminBadge({ tooltip }: { tooltip: string }) {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -85,7 +85,7 @@ function AdminBadge() {
           </span>
         </TooltipTrigger>
         <TooltipContent side="right">
-          <p>Chỉ Admin</p>
+          <p>{tooltip}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -115,6 +115,10 @@ export function BaseSidebar({
   const { user, logout } = useAuth();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const t = useTranslations("common");
+  const tHeader = useTranslations("header");
+  const tEnums = useTranslations("enums");
+  const tAuth = useTranslations("auth");
 
   // Chỉ hiển thị Admin badge khi user không phải Admin
   const showAdminBadge = userRole ? !isAdminTamabee(userRole) : false;
@@ -122,13 +126,13 @@ export function BaseSidebar({
   const handleLogout = async () => {
     await logout();
     router.push("/");
-    toast.success("Đăng xuất thành công");
+    toast.success(tAuth("logoutSuccess"));
   };
 
   return (
     <Sidebar collapsible="icon">
       {/* Header với logo và tên */}
-      <SidebarHeader className="border-b">
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -190,7 +194,7 @@ export function BaseSidebar({
                             {item.icon}
                             <span>{item.title}</span>
                             {showAdminBadge && isAdminOnlyItem(item) && (
-                              <AdminBadge />
+                              <AdminBadge tooltip={t("adminOnly")} />
                             )}
                             <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>
@@ -223,7 +227,7 @@ export function BaseSidebar({
                           {item.icon}
                           <span>{item.title}</span>
                           {showAdminBadge && isAdminOnlyItem(item) && (
-                            <AdminBadge />
+                            <AdminBadge tooltip={t("adminOnly")} />
                           )}
                         </Link>
                       </SidebarMenuButton>
@@ -263,7 +267,7 @@ export function BaseSidebar({
                       {user?.email}
                     </span>
                     <span className="text-xs text-muted-foreground truncate w-full">
-                      {user?.role ? USER_ROLE_LABELS[user.role] : ""}
+                      {user?.role ? tEnums(`userRole.${user.role}`) : ""}
                     </span>
                   </div>
                   <ChevronUp className="ml-auto" />
@@ -275,15 +279,15 @@ export function BaseSidebar({
               >
                 <DropdownMenuItem>
                   <UserRoundPen />
-                  <span>Profile</span>
+                  <span>{tHeader("profile")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Wallet />
-                  <span>Wallet</span>
+                  <span>{tHeader("wallet")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut />
-                  <span>Logout</span>
+                  <span>{tHeader("logout")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

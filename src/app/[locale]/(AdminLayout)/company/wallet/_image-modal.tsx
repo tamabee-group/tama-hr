@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -32,25 +33,11 @@ export function ImageModal({
   title,
   locale = "vi",
 }: ImageModalProps) {
+  const t = useTranslations("deposits");
+  const tCommon = useTranslations("common");
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  // Labels theo locale
-  const labels = {
-    vi: {
-      defaultTitle: "Ảnh chứng minh chuyển khoản",
-      download: "Tải xuống",
-    },
-    en: {
-      defaultTitle: "Transfer Proof Image",
-      download: "Download",
-    },
-    ja: {
-      defaultTitle: "振込証明画像",
-      download: "ダウンロード",
-    },
-  };
-
-  const t = labels[locale];
+  const defaultTitle = t("table.transferProof");
 
   const handleDownload = () => {
     if (!imageUrl || !isImageLoaded) return;
@@ -72,13 +59,13 @@ export function ImageModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-auto">
         <DialogHeader>
-          <DialogTitle>{title || t.defaultTitle}</DialogTitle>
+          <DialogTitle>{title || defaultTitle}</DialogTitle>
         </DialogHeader>
 
         <div className="flex items-center justify-center p-4 bg-muted rounded-lg min-h-[200px]">
           <FallbackImage
             src={imageUrl}
-            alt={title || t.defaultTitle}
+            alt={title || defaultTitle}
             className="max-w-full max-h-[70vh] object-contain rounded-lg"
             fallbackClassName="w-32 h-32 rounded-lg"
             onLoadStatusChange={handleLoadStatusChange}
@@ -94,7 +81,7 @@ export function ImageModal({
               className="gap-2"
             >
               <Download className="h-4 w-4" />
-              {t.download}
+              {tCommon("download")}
             </Button>
           </div>
         )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   CommissionResponse,
   CommissionFilterRequest,
@@ -11,13 +12,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { handleApiError } from "@/lib/utils/api-error-handler";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { formatDateForApi } from "@/lib/utils/format-date";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { Pagination } from "@/app/[locale]/_components/_base/_pagination";
 import {
-  baseCommissionColumns,
   createAdminCommissionColumns,
   createEmployeeCommissionColumns,
+  CommissionColumnTranslations,
 } from "./_commission-columns";
 import { CommissionFilters } from "./_commission-filters";
 import { CommissionPayDialog } from "./_commission-pay-dialog";
@@ -59,6 +60,11 @@ export function CommissionTable({
   refreshTrigger,
   onRefresh,
 }: CommissionTableProps) {
+  const t = useTranslations("commissions");
+  const tCommon = useTranslations("common");
+  const tEnums = useTranslations("enums");
+  const locale = useLocale();
+
   const [commissions, setCommissions] = useState<CommissionResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -79,6 +85,14 @@ export function CommissionTable({
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
+  // Translation object cho columns
+  const columnTranslations: CommissionColumnTranslations = {
+    t,
+    tCommon,
+    tEnums,
+    locale,
+  };
+
   /** Fetch danh sách commissions với filter hiện tại */
   const loadCommissions = async () => {
     setLoading(true);
@@ -88,8 +102,8 @@ export function CommissionTable({
         filter.employeeCode = employeeCodeFilter;
       }
       if (statusFilter !== "ALL") filter.status = statusFilter;
-      if (startDate) filter.startDate = format(startDate, "yyyy-MM-dd");
-      if (endDate) filter.endDate = format(endDate, "yyyy-MM-dd");
+      if (startDate) filter.startDate = formatDateForApi(startDate);
+      if (endDate) filter.endDate = formatDateForApi(endDate);
 
       const response = await fetchCommissions(filter, page, DEFAULT_PAGE_SIZE);
       setCommissions(response.content);
@@ -97,7 +111,7 @@ export function CommissionTable({
     } catch (error) {
       console.error("Failed to fetch commissions:", error);
       handleApiError(error, {
-        defaultMessage: "Không thể tải danh sách hoa hồng",
+        defaultMessage: t("messages.loadCommissionsError"),
       });
     } finally {
       setLoading(false);
@@ -140,14 +154,14 @@ export function CommissionTable({
     setMarkingPaid(selectedCommission.id);
     try {
       await onMarkAsPaid(selectedCommission.id);
-      toast.success("Đã đánh dấu thanh toán thành công");
+      toast.success(t("messages.markPaidSuccess"));
       loadCommissions();
       onRefresh?.();
     } catch (error) {
       console.error("Failed to mark as paid:", error);
       handleApiError(error, {
-        forbiddenMessage: "Bạn không có quyền đánh dấu thanh toán",
-        defaultMessage: "Không thể đánh dấu thanh toán",
+        forbiddenMessage: t("messages.markPaidForbidden"),
+        defaultMessage: t("messages.markPaidError"),
       });
       throw error; // Re-throw để dialog biết có lỗi
     } finally {
@@ -158,13 +172,19 @@ export function CommissionTable({
   /** Lấy columns phù hợp với role */
   const getColumns = () => {
     if (showMarkAsPaid && onMarkAsPaid) {
-      return createAdminCommissionColumns({
-        onViewDetail: handleOpenDetailDialog,
-        onMarkAsPaid: handleOpenPayDialog,
-        markingPaid,
-      });
+      return createAdminCommissionColumns(
+        {
+          onViewDetail: handleOpenDetailDialog,
+          onMarkAsPaid: handleOpenPayDialog,
+          markingPaid,
+        },
+        columnTranslations,
+      );
     }
-    return createEmployeeCommissionColumns(handleOpenDetailDialog);
+    return createEmployeeCommissionColumns(
+      handleOpenDetailDialog,
+      columnTranslations,
+    );
   };
 
   // Loading skeleton
@@ -214,14 +234,14 @@ export function CommissionTable({
       {/* Table */}
       {commissions.length === 0 ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
-          Không có hoa hồng nào
+          {tCommon("noData")}
         </div>
       ) : (
         <BaseTable
           columns={getColumns()}
           data={commissions}
           showPagination={false}
-          noResultsText="Không có hoa hồng nào"
+          noResultsText={tCommon("noData")}
         />
       )}
 

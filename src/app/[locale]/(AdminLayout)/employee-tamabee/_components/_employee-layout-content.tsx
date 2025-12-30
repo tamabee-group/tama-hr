@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AdminLayoutWrapper } from "../../_components/_admin-layout-wrapper";
-import { employeeTamabeeSidebarGroups } from "./_employee-sidebar-items";
+import { useEmployeeTamabeeSidebarGroups } from "./_employee-sidebar-items";
 import type { SidebarHeaderConfig } from "@/types/sidebar";
 import { SidebarLogo } from "@/app/[locale]/_components/_logo";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,6 +38,7 @@ export function EmployeeLayoutContent({
 }: EmployeeLayoutContentProps) {
   const router = useRouter();
   const { user, status } = useAuth();
+  const sidebarGroups = useEmployeeTamabeeSidebarGroups();
 
   // Lấy thông tin để hiển thị header
   const userName = user?.profile?.name || user?.email?.split("@")[0];
@@ -77,7 +78,7 @@ export function EmployeeLayoutContent({
 
   return (
     <AdminLayoutWrapper
-      sidebarGroups={employeeTamabeeSidebarGroups}
+      sidebarGroups={sidebarGroups}
       headerConfig={headerConfig}
       userRole={user.role}
     >

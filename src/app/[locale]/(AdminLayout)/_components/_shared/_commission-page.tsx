@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, BarChart3, List } from "lucide-react";
@@ -34,6 +35,8 @@ export function CommissionPage({
   onRefresh,
 }: CommissionPageProps) {
   const [activeTab, setActiveTab] = useState("list");
+  const t = useTranslations("commissions");
+  const tCommon = useTranslations("common");
 
   return (
     <div className="space-y-6">
@@ -44,7 +47,7 @@ export function CommissionPage({
         actions={
           <Button variant="outline" size="sm" onClick={onRefresh}>
             <RefreshCw className="h-4 w-4 mr-2" />
-            Làm mới
+            {tCommon("refresh")}
           </Button>
         }
       />
@@ -54,11 +57,11 @@ export function CommissionPage({
         <TabsList>
           <TabsTrigger value="list" className="flex items-center gap-2">
             <List className="h-4 w-4" />
-            Danh sách
+            {t("viewTabs.list")}
           </TabsTrigger>
           <TabsTrigger value="summary" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Tổng hợp
+            {t("viewTabs.summary")}
           </TabsTrigger>
         </TabsList>
 

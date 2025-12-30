@@ -5,39 +5,47 @@
 ```
 src/
 ├── app/[locale]/
-│   ├── (landing)/          # Public marketing pages
-│   ├── (auth)/             # Login, register, verify
-│   ├── (tamabee-admin)/    # Tamabee admin layout
-│   ├── (company-admin)/    # Company admin layout
-│   └── (employee)/         # Employee layout
+│   ├── (HomeLayout)/       # Public marketing pages (landing, about)
+│   ├── (NotFooter)/        # Auth pages (login, register, forgot-password)
+│   ├── (AdminLayout)/
+│   │   ├── tamabee/        # Tamabee admin pages
+│   │   ├── company/        # Company admin pages
+│   │   └── employee/       # Employee pages
+│   └── _components/        # Shared components trong locale
+│       └── _base/          # Base components (BaseTable, BaseSidebar)
 ├── components/
-│   ├── _shared/            # Shared across all layouts
-│   ├── ui/                 # Shadcn/ui components
-│   └── [layout]/           # Layout-specific components
+│   └── ui/                 # Shadcn/ui components
 ├── lib/
 │   ├── apis/               # API client functions
 │   ├── auth/               # Auth utilities
 │   └── utils/              # Utility functions
+│       ├── format-date.ts      # Date formatting (locale-aware)
+│       ├── format-currency.ts  # Currency formatting
+│       ├── get-error-message.ts # Error translation utility
+│       └── get-enum-label.ts   # Enum translation utility
 ├── types/                  # TypeScript types
 ├── hooks/                  # Custom React hooks
-└── messages/               # i18n translations (vi, en, ja)
+└── messages/               # i18n translations
+    ├── vi.json             # Vietnamese
+    ├── en.json             # English (fallback)
+    └── ja.json             # Japanese
 ```
 
 ## Layout Organization
 
-| Layout        | Path               | Access                         |
-| ------------- | ------------------ | ------------------------------ |
-| Landing       | `/(landing)`       | Public                         |
-| Auth          | `/(auth)`          | Public                         |
-| Tamabee Admin | `/(tamabee-admin)` | ADMIN_TAMABEE, MANAGER_TAMABEE |
-| Company Admin | `/(company-admin)` | ADMIN_COMPANY, MANAGER_COMPANY |
-| Employee      | `/(employee)`      | EMPLOYEE_COMPANY               |
+| Layout      | Path                      | Access                         |
+| ----------- | ------------------------- | ------------------------------ |
+| HomeLayout  | `/(HomeLayout)`           | Public                         |
+| NotFooter   | `/(NotFooter)`            | Public (auth pages)            |
+| AdminLayout | `/(AdminLayout)/tamabee`  | ADMIN_TAMABEE, MANAGER_TAMABEE |
+| AdminLayout | `/(AdminLayout)/company`  | ADMIN_COMPANY, MANAGER_COMPANY |
+| AdminLayout | `/(AdminLayout)/employee` | EMPLOYEE_COMPANY               |
 
 ## Component Conventions
 
 - Internal components: prefix với `_` (e.g., `_company-table.tsx`)
-- Shared components: đặt trong `components/_shared/`
-- Max 200 lines per component
+- Shared components: đặt trong `app/[locale]/_components/`
+- Max 250 lines per component
 - Extract sub-components khi cần
 
 ## Component Reusability
@@ -52,53 +60,56 @@ src/
 
 ```
 # ✅ ĐÚNG: Component ở cấp con
-app/[locale]/(tamabee-admin)/companies/
+app/[locale]/(AdminLayout)/tamabee/deposits/
 ├── page.tsx
-├── _company-table.tsx      # Chỉ page này dùng
-└── _company-dialog.tsx
+├── _deposit-table.tsx      # Chỉ page này dùng
+└── _deposit-dialog.tsx
 
 # ✅ ĐÚNG: Move lên khi 2+ pages cùng layout cần dùng
-app/[locale]/(tamabee-admin)/
+app/[locale]/(AdminLayout)/tamabee/
 ├── _components/
-│   └── _stats-card.tsx     # companies/ và dashboard/ đều dùng
-├── companies/
+│   └── _stats-card.tsx     # deposits/ và dashboard/ đều dùng
+├── deposits/
 │   └── page.tsx
 └── dashboard/
     └── page.tsx
 
 # ❌ SAI: Đặt ở cấp cao không cần thiết
 app/[locale]/_components/
-└── _company-table.tsx      # Chỉ 1 page dùng, không nên ở đây
+└── _deposit-table.tsx      # Chỉ 1 page dùng, không nên ở đây
 ```
 
 ### Khi nào tách component
 
-- Component được dùng ở **2+ màn hình** → chuyển vào `components/_shared/`
+- Component được dùng ở **2+ màn hình** → chuyển vào `app/[locale]/_components/`
 - Component chỉ dùng trong 1 layout → giữ trong `app/[locale]/(layout)/_components/`
 - Component chỉ dùng trong 1 page → đặt cùng folder với page, prefix `_`
 
 ### Cấu trúc components
 
 ```
-components/
-├── _shared/                    # Dùng chung toàn app
-│   ├── _base/                  # Base components (BaseTable, BaseDialog, BaseSidebar)
-│   ├── _form/                  # Form components (FormInput, FormSelect, FormDatePicker)
-│   └── _layout/                # Layout components (Header, Footer, Breadcrumb)
-└── ui/                         # Shadcn/ui components
-
 app/[locale]/
 ├── _components/                # Shared trong locale
-│   └── _base/                  # BaseTable, BaseSidebar...
-├── (tamabee-admin)/
-│   └── _components/            # Shared trong tamabee-admin layout
-│       ├── _sidebar-nav.tsx
-│       └── _header.tsx
-└── (company-admin)/
-    └── companies/
+│   └── _base/                  # BaseTable, BaseSidebar, BaseCreateUserForm...
+├── (AdminLayout)/
+│   ├── tamabee/
+│   │   ├── _components/        # Shared trong tamabee layout
+│   │   │   └── _sidebar-nav.tsx
+│   │   └── deposits/
+│   │       ├── page.tsx
+│   │       ├── _deposit-table.tsx  # Chỉ dùng trong page này
+│   │       └── _deposit-dialog.tsx
+│   └── company/
+│       └── wallet/
+│           ├── page.tsx
+│           └── _wallet-table.tsx
+└── (NotFooter)/
+    └── register/
         ├── page.tsx
-        ├── _company-table.tsx  # Chỉ dùng trong page này
-        └── _company-dialog.tsx
+        ├── _step-1.tsx
+        ├── _step-2.tsx
+        ├── _step-3.tsx
+        └── _step-4.tsx
 ```
 
 ## File Naming Conventions
@@ -111,7 +122,7 @@ app/[locale]/
 | Layout             | `layout.tsx`        | `layout.tsx`         |
 | Loading            | `loading.tsx`       | `loading.tsx`        |
 | Error              | `error.tsx`         | `error.tsx`          |
-| Internal component | `_kebab-case.tsx`   | `_company-table.tsx` |
+| Internal component | `_kebab-case.tsx`   | `_deposit-table.tsx` |
 | Shared component   | `kebab-case.tsx`    | `base-table.tsx`     |
 | Hook               | `use-kebab-case.ts` | `use-auth.ts`        |
 | Utility            | `kebab-case.ts`     | `format-date.ts`     |
@@ -122,14 +133,16 @@ app/[locale]/
 
 ```
 # Internal (chỉ dùng trong folder hiện tại)
-_company-table.tsx
+_deposit-table.tsx
 _user-dialog.tsx
 _filter-form.tsx
+_step-1.tsx
 
 # Shared (dùng nhiều nơi)
 base-table.tsx
 base-dialog.tsx
 base-sidebar.tsx
+base-create-user-form.tsx
 
 # UI (Shadcn)
 button.tsx
@@ -153,19 +166,23 @@ dialog.tsx
 
 ```tsx
 // ✅ ĐÚNG: Page là Server Component
-// app/[locale]/(admin)/users/page.tsx
-export default async function UsersPage() {
-  const users = await getUsers(); // Server-side fetch
-  return <UserTable data={users} />; // Client component nhận data
+// app/[locale]/(AdminLayout)/tamabee/deposits/page.tsx
+import { getTranslations } from "next-intl/server";
+
+export default async function DepositsPage() {
+  const t = await getTranslations("deposits");
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+      <DepositTable /> {/* Client component */}
+    </div>
+  );
 }
 
 // ❌ SAI: Page là Client Component
 ("use client");
-export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+export default function DepositsPage() {
+  const [deposits, setDeposits] = useState([]);
   // ...
 }
 ```
@@ -177,12 +194,54 @@ export default function UsersPage() {
 - Tách thành internal component (`_component-name.tsx`)
 
 ```tsx
-// _user-table.tsx
+// _deposit-table.tsx
 "use client";
-export function UserTable({ data }: { data: User[] }) {
-  const [selected, setSelected] = useState<User | null>(null);
+import { useTranslations } from "next-intl";
+
+export function DepositTable() {
+  const t = useTranslations("deposits");
+  const tEnums = useTranslations("enums");
+  const [selected, setSelected] = useState<Deposit | null>(null);
   // Interactive logic here
 }
+```
+
+## i18n Architecture
+
+### Message File Structure
+
+```
+messages/
+├── vi.json     # Vietnamese translations
+├── en.json     # English translations (fallback)
+└── ja.json     # Japanese translations
+```
+
+### Namespaces
+
+| Namespace     | Mô tả                                |
+| ------------- | ------------------------------------ |
+| `common`      | Shared UI elements (buttons, labels) |
+| `auth`        | Authentication (login, register)     |
+| `header`      | Header navigation                    |
+| `deposits`    | Deposit management                   |
+| `plans`       | Plan management                      |
+| `companies`   | Company management                   |
+| `wallet`      | Wallet & transactions                |
+| `users`       | User management                      |
+| `settings`    | Settings pages                       |
+| `enums`       | Enum translations                    |
+| `errors`      | Error messages                       |
+| `validation`  | Form validation messages             |
+| `dialogs`     | Dialog content                       |
+| `commissions` | Commission management                |
+
+### Translation Flow
+
+```
+User Request → Middleware (detect locale) → next-intl → Component
+                                                ↓
+                                        messages/{locale}.json
 ```
 
 ## File Naming

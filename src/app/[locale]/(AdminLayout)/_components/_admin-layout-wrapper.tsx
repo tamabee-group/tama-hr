@@ -5,6 +5,10 @@ import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
 import { BreadcrumbRouter } from "./_breadcrumb-router";
+import {
+  MobileBottomNav,
+  type MobileNavItem,
+} from "@/app/[locale]/_components/_shared/_mobile-bottom-nav";
 import type { SidebarGroup, SidebarHeaderConfig } from "@/types/sidebar";
 
 interface AdminLayoutWrapperProps {
@@ -14,6 +18,8 @@ interface AdminLayoutWrapperProps {
   badgeCounts?: Record<string, number>;
   /** Role của user hiện tại, dùng để hiển thị visual indicators */
   userRole?: string;
+  /** Items cho mobile bottom navigation (optional) */
+  mobileNavItems?: MobileNavItem[];
 }
 
 /**
@@ -26,6 +32,7 @@ export function AdminLayoutWrapper({
   headerConfig,
   badgeCounts = {},
   userRole,
+  mobileNavItems,
 }: AdminLayoutWrapperProps) {
   const headerHeight = 50;
 
@@ -41,7 +48,7 @@ export function AdminLayoutWrapper({
           userRole={userRole}
         />
         <main className="w-full">
-          <div className="flex items-center justify-between w-full bg-primary-foreground border-b border-primary/20 h-[50px] px-4">
+          <div className="sticky top-0 z-10 flex items-center justify-between w-full bg-primary-foreground border-b border-primary/20 h-[50px] px-4">
             <div className="flex items-center">
               <SidebarTrigger size={"icon-lg"} className="relative right-2" />
               <Separator
@@ -54,9 +61,15 @@ export function AdminLayoutWrapper({
               <ToggleTheme />
             </div>
           </div>
-          <div className="p-4">{children}</div>
+          {/* Main content với padding bottom cho mobile nav */}
+          <div className="p-4 pb-20 md:pb-4">{children}</div>
         </main>
       </SidebarProvider>
+
+      {/* Mobile Bottom Navigation */}
+      {mobileNavItems && mobileNavItems.length > 0 && (
+        <MobileBottomNav items={mobileNavItems} />
+      )}
     </div>
   );
 }

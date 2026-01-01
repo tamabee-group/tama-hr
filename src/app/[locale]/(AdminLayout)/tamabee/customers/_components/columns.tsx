@@ -18,6 +18,7 @@ import { formatDate } from "@/lib/utils/format-date";
 import { useParams } from "next/navigation";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import { getLocaleLabel } from "@/lib/utils/get-enum-label";
+import { normalizeLocale, LocaleCode } from "@/types/enums";
 
 export function useColumns(): ColumnDef<Company>[] {
   const t = useTranslations("companies");
@@ -96,9 +97,10 @@ export function useColumns(): ColumnDef<Company>[] {
       header: t("form.locale") || "Locale",
       cell: ({ row }) => {
         const localeValue = row.getValue("locale") as string;
-        return localeValue
-          ? getLocaleLabel(localeValue as "vi" | "ja", tEnums)
-          : localeValue;
+        if (!localeValue) return localeValue;
+        // Normalize timezone (Asia/Tokyo) về locale code (ja)
+        const normalizedLocale = normalizeLocale(localeValue) as LocaleCode;
+        return getLocaleLabel(normalizedLocale, tEnums);
       },
     },
     {

@@ -13,7 +13,6 @@ interface DataTableProps {
 }
 
 export function DataTable({ data }: DataTableProps) {
-  const t = useTranslations("companies");
   const tCommon = useTranslations("common");
   const { isMobile, isMd, isLg } = useBreakpoint();
   const columns = useColumns();

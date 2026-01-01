@@ -35,6 +35,10 @@ interface SharedDepositTableProps {
   locale?: SupportedLocale;
   /** Callback khi xem ảnh chứng minh */
   onViewImage?: (imageUrl: string) => void;
+  /** Callback khi hủy yêu cầu PENDING */
+  onCancel?: (deposit: DepositRequestResponse) => void;
+  /** Callback khi sửa yêu cầu REJECTED */
+  onEdit?: (deposit: DepositRequestResponse) => void;
   /** Trigger refresh data */
   refreshTrigger?: number;
 }
@@ -48,6 +52,8 @@ export function SharedDepositTable({
   fetchDeposits,
   locale = "vi",
   onViewImage,
+  onCancel,
+  onEdit,
   refreshTrigger,
 }: SharedDepositTableProps) {
   const t = useTranslations("deposits");
@@ -70,15 +76,27 @@ export function SharedDepositTable({
       status: t("table.status"),
       transferProof: t("table.transferProof"),
       rejectionReason: t("table.rejectionReason"),
-      viewImage: t("actions.viewProof"),
+      actions: tCommon("actions"),
+      cancel: tCommon("cancel"),
+      edit: tCommon("edit"),
     }),
-    [t],
+    [t, tCommon],
+  );
+
+  // Callbacks cho columns
+  const columnCallbacks = useMemo(
+    () => ({
+      onViewImage,
+      onCancel,
+      onEdit,
+    }),
+    [onViewImage, onCancel, onEdit],
   );
 
   // Memoize columns để tránh re-render không cần thiết
   const columns = useMemo(
-    () => createDepositColumns(locale, columnLabels, onViewImage),
-    [locale, columnLabels, onViewImage],
+    () => createDepositColumns(locale, columnLabels, columnCallbacks),
+    [locale, columnLabels, columnCallbacks],
   );
 
   // Fetch deposits data
@@ -169,7 +187,13 @@ export function SharedDepositTable({
       />
 
       {/* Pagination */}
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        previousText={tCommon("previous")}
+        nextText={tCommon("next")}
+      />
     </div>
   );
 }

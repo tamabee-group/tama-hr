@@ -10,6 +10,7 @@ import type { SidebarHeaderConfig } from "@/types/sidebar";
  * Layout cho Company Admin
  * Hiển thị logo và tên company trong sidebar header
  * companyName lấy từ user auth, logo lấy từ API company
+ * userRole được truyền để filter sidebar items theo permission
  */
 export default function CompanyAdminLayout({
   children,
@@ -31,6 +32,7 @@ export default function CompanyAdminLayout({
     <AdminLayoutWrapper
       sidebarGroups={sidebarGroups}
       headerConfig={headerConfig}
+      userRole={user?.role}
     >
       {children}
     </AdminLayoutWrapper>

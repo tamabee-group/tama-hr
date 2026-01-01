@@ -49,6 +49,7 @@ import type {
   SidebarGroup as SidebarGroupType,
   SidebarHeaderConfig,
   SidebarItem,
+  SidebarSubItem,
 } from "@/types/sidebar";
 import Link from "next/link";
 import Image from "next/image";
@@ -56,20 +57,70 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { isAdminTamabee } from "@/types/permissions";
+import { isAdminTamabee, hasPermission } from "@/types/permissions";
+import { hasCompanyPermission } from "@/types/company-permissions";
 
 /**
  * Kiểm tra item có yêu cầu Admin-only permission không
  * Các permission chỉ Admin mới có: DIRECT_WALLET_MANIPULATION, SYSTEM_SETTINGS, MANAGE_USERS
  */
 function isAdminOnlyItem(item: SidebarItem): boolean {
-  if (!item.requiredPermission) return false;
-  const adminOnlyPermissions = [
+  if (!item.requiredPermission && !item.requiredCompanyPermission) return false;
+
+  // Tamabee admin-only permissions
+  const tamabeeAdminOnlyPermissions = [
     "DIRECT_WALLET_MANIPULATION",
     "SYSTEM_SETTINGS",
     "MANAGE_USERS",
   ];
-  return adminOnlyPermissions.includes(item.requiredPermission);
+
+  // Company admin-only permissions
+  const companyAdminOnlyPermissions = [
+    "MANAGE_SETTINGS",
+    "MANAGE_DEPOSITS",
+    "MANAGE_PAYROLL",
+    "EDIT_COMPANY_PROFILE",
+  ];
+
+  if (item.requiredPermission) {
+    return tamabeeAdminOnlyPermissions.includes(item.requiredPermission);
+  }
+
+  if (item.requiredCompanyPermission) {
+    return companyAdminOnlyPermissions.includes(item.requiredCompanyPermission);
+  }
+
+  return false;
+}
+
+/**
+ * Kiểm tra user có quyền truy cập item không
+ */
+function canAccessItem(
+  item: SidebarItem | SidebarSubItem,
+  userRole?: string,
+): boolean {
+  if (!userRole) return true;
+
+  // Nếu không có yêu cầu permission, cho phép truy cập
+  if (
+    !item.requiredPermission &&
+    !("requiredCompanyPermission" in item && item.requiredCompanyPermission)
+  ) {
+    return true;
+  }
+
+  // Kiểm tra Tamabee permission
+  if (item.requiredPermission) {
+    return hasPermission(userRole, item.requiredPermission);
+  }
+
+  // Kiểm tra Company permission
+  if ("requiredCompanyPermission" in item && item.requiredCompanyPermission) {
+    return hasCompanyPermission(userRole, item.requiredCompanyPermission);
+  }
+
+  return true;
 }
 
 /**
@@ -173,76 +224,99 @@ export function BaseSidebar({
       </SidebarHeader>
 
       <SidebarContent>
-        {groups.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu
-                className={className}
-                style={{ top: headerHeight || 0 }}
-              >
-                {group.items.map((item) =>
-                  item.items ? (
-                    <Collapsible
-                      key={item.title}
-                      defaultOpen
-                      className="group/collapsible"
-                    >
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton>
+        {groups.map((group) => {
+          // Filter items dựa trên permission
+          const filteredItems = group.items.filter((item) =>
+            canAccessItem(item, userRole),
+          );
+
+          // Không hiển thị group nếu không có items nào
+          if (filteredItems.length === 0) return null;
+
+          return (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu
+                  className={className}
+                  style={{ top: headerHeight || 0 }}
+                >
+                  {filteredItems.map((item) => {
+                    // Filter sub-items nếu có
+                    const filteredSubItems = item.items?.filter((subItem) =>
+                      canAccessItem(subItem, userRole),
+                    );
+
+                    // Nếu có sub-items nhưng tất cả đều bị filter, không hiển thị item
+                    if (
+                      item.items &&
+                      (!filteredSubItems || filteredSubItems.length === 0)
+                    ) {
+                      return null;
+                    }
+
+                    return filteredSubItems && filteredSubItems.length > 0 ? (
+                      <Collapsible
+                        key={item.title}
+                        defaultOpen
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton>
+                              {item.icon}
+                              <span>{item.title}</span>
+                              {showAdminBadge && isAdminOnlyItem(item) && (
+                                <AdminBadge tooltip={t("adminOnly")} />
+                              )}
+                              <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {filteredSubItems.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    isActive={pathname === subItem.url}
+                                  >
+                                    <Link href={subItem.url}>
+                                      <span>{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === item.url}
+                        >
+                          <Link href={item.url}>
                             {item.icon}
                             <span>{item.title}</span>
                             {showAdminBadge && isAdminOnlyItem(item) && (
                               <AdminBadge tooltip={t("adminOnly")} />
                             )}
-                            <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  isActive={pathname === subItem.url}
-                                >
-                                  <Link href={subItem.url}>
-                                    <span>{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
+                          </Link>
+                        </SidebarMenuButton>
+                        {item.badgeKey && badgeCounts[item.badgeKey] > 0 && (
+                          <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
+                            {badgeCounts[item.badgeKey]}
+                          </SidebarMenuBadge>
+                        )}
                       </SidebarMenuItem>
-                    </Collapsible>
-                  ) : (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.url}
-                      >
-                        <Link href={item.url}>
-                          {item.icon}
-                          <span>{item.title}</span>
-                          {showAdminBadge && isAdminOnlyItem(item) && (
-                            <AdminBadge tooltip={t("adminOnly")} />
-                          )}
-                        </Link>
-                      </SidebarMenuButton>
-                      {item.badgeKey && badgeCounts[item.badgeKey] > 0 && (
-                        <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
-                          {badgeCounts[item.badgeKey]}
-                        </SidebarMenuBadge>
-                      )}
-                    </SidebarMenuItem>
-                  ),
-                )}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
 
       <SidebarFooter className="mb-20">

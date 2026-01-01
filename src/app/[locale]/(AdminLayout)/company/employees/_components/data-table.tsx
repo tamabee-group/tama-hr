@@ -35,6 +35,8 @@ export function DataTable<TData extends User, TValue>({
       createdAt: t("table.createdAt"),
       profile: t("table.profile"),
       viewDetail: tCommon("details"),
+      viewAttendance: t("viewAttendance"),
+      viewPayroll: t("viewPayroll"),
       active: tCommon("active"),
       inactive: tCommon("inactive"),
       roleLabels: {

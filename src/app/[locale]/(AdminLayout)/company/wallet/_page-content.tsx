@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { WalletResponse } from "@/types/wallet";
+import { DepositRequestResponse } from "@/types/deposit";
 import { getMyWallet } from "@/lib/apis/wallet-api";
+import { depositApi } from "@/lib/apis/deposit-api";
 import { useAuth } from "@/lib/auth";
-import { WalletCard } from "./_wallet-card";
+import { WalletCard, SharedWalletData } from "./_wallet-card";
 import { TransactionChart } from "./_transaction-chart";
 import { TransactionTable } from "./_transaction-table";
 import { DepositTable } from "./_deposit-table";
@@ -14,6 +16,17 @@ import { ImageModal } from "./_image-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SupportedLocale } from "@/lib/utils/format-currency";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 interface PageContentProps {
   locale: SupportedLocale;
@@ -27,11 +40,18 @@ export function PageContent({ locale }: PageContentProps) {
   const { user } = useAuth();
   const t = useTranslations("wallet");
   const tDeposits = useTranslations("deposits");
+  const tCommon = useTranslations("common");
+  const tDialogs = useTranslations("dialogs");
   const tErrors = useTranslations("errors");
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [depositFormOpen, setDepositFormOpen] = useState(false);
+  const [editDeposit, setEditDeposit] = useState<DepositRequestResponse | null>(
+    null,
+  );
+  const [cancelDeposit, setCancelDeposit] =
+    useState<DepositRequestResponse | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
 
@@ -56,6 +76,7 @@ export function PageContent({ locale }: PageContentProps) {
 
   /** Mở form nạp tiền */
   const handleDeposit = () => {
+    setEditDeposit(null);
     setDepositFormOpen(true);
   };
 
@@ -68,6 +89,33 @@ export function PageContent({ locale }: PageContentProps) {
   /** Xem ảnh chứng minh chuyển khoản */
   const handleViewImage = (imageUrl: string) => {
     setImageModalUrl(imageUrl);
+  };
+
+  /** Mở dialog xác nhận hủy */
+  const handleCancelRequest = (deposit: DepositRequestResponse) => {
+    setCancelDeposit(deposit);
+  };
+
+  /** Xác nhận hủy yêu cầu */
+  const confirmCancel = async () => {
+    if (!cancelDeposit) return;
+
+    try {
+      await depositApi.cancel(cancelDeposit.id);
+      toast.success(tDeposits("messages.cancelSuccess"));
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to cancel deposit:", error);
+      toast.error(tDeposits("messages.cancelError"));
+    } finally {
+      setCancelDeposit(null);
+    }
+  };
+
+  /** Mở form edit yêu cầu bị từ chối */
+  const handleEditRequest = (deposit: DepositRequestResponse) => {
+    setEditDeposit(deposit);
+    setDepositFormOpen(true);
   };
 
   return (
@@ -97,7 +145,12 @@ export function PageContent({ locale }: PageContentProps) {
             </div>
           ) : wallet ? (
             <WalletCard
-              wallet={wallet}
+              wallet={
+                {
+                  ...wallet,
+                  companyName: user?.companyName || "",
+                } as SharedWalletData
+              }
               locale={locale}
               showActions={true}
               onDeposit={handleDeposit}
@@ -126,6 +179,8 @@ export function PageContent({ locale }: PageContentProps) {
           <DepositTable
             locale={locale}
             onViewImage={handleViewImage}
+            onCancel={handleCancelRequest}
+            onEdit={handleEditRequest}
             refreshTrigger={refreshTrigger}
           />
         </TabsContent>
@@ -136,7 +191,7 @@ export function PageContent({ locale }: PageContentProps) {
         open={depositFormOpen}
         onOpenChange={setDepositFormOpen}
         onSuccess={handleDepositSuccess}
-        locale={locale}
+        editDeposit={editDeposit}
       />
 
       {/* Image Modal */}
@@ -144,8 +199,28 @@ export function PageContent({ locale }: PageContentProps) {
         open={!!imageModalUrl}
         onOpenChange={(open) => !open && setImageModalUrl(null)}
         imageUrl={imageModalUrl || ""}
-        locale={locale}
       />
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog
+        open={!!cancelDeposit}
+        onOpenChange={(open) => !open && setCancelDeposit(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tDialogs("confirmCancel")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {tDeposits("messages.cancelConfirm")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCancel}>
+              {tCommon("confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

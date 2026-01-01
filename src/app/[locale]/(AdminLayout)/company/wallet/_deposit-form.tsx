@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -15,9 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/app/[locale]/_components/_image-upload";
 import { depositApi } from "@/lib/apis/deposit-api";
+import { DepositRequestResponse } from "@/types/deposit";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { SupportedLocale } from "@/lib/utils/format-currency";
 
 export interface DepositFormData {
   amount: number;
@@ -43,20 +43,22 @@ interface DepositFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
-  locale?: SupportedLocale;
+  /** Deposit để edit (nếu có) - chỉ cho phép edit khi status = REJECTED */
+  editDeposit?: DepositRequestResponse | null;
 }
 
 /**
- * Component form tạo yêu cầu nạp tiền
+ * Component form tạo/sửa yêu cầu nạp tiền
  * - Fields: amount (number input), transferProofUrl (image upload)
  * - Validation: amount > 0, transferProofUrl required
  * - Preview ảnh trước khi submit
+ * - Hỗ trợ edit yêu cầu bị từ chối
  */
 export function DepositForm({
   open,
   onOpenChange,
   onSuccess,
-  locale = "vi",
+  editDeposit,
 }: DepositFormProps) {
   const t = useTranslations("deposits");
   const tCommon = useTranslations("common");
@@ -68,6 +70,16 @@ export function DepositForm({
     amount?: string;
     transferProofUrl?: string;
   }>({});
+
+  const isEditMode = !!editDeposit;
+
+  // Populate form khi edit
+  useEffect(() => {
+    if (editDeposit && open) {
+      setAmount(editDeposit.amount.toString());
+      setTransferProofUrl(editDeposit.transferProofUrl || "");
+    }
+  }, [editDeposit, open]);
 
   // Validate form
   const validateForm = (): boolean => {
@@ -99,17 +111,27 @@ export function DepositForm({
 
     setIsSubmitting(true);
     try {
-      await depositApi.create({
+      const data = {
         amount: parseFloat(amount),
         transferProofUrl: transferProofUrl,
-      });
-      toast.success(t("messages.createSuccess"));
+      };
+
+      if (isEditMode && editDeposit) {
+        await depositApi.update(editDeposit.id, data);
+        toast.success(t("messages.updateSuccess"));
+      } else {
+        await depositApi.create(data);
+        toast.success(t("messages.createSuccess"));
+      }
+
       resetForm();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
-      console.error("Failed to create deposit request:", error);
-      toast.error(t("messages.createError"));
+      console.error("Failed to save deposit request:", error);
+      toast.error(
+        isEditMode ? t("messages.updateError") : t("messages.createError"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -148,7 +170,9 @@ export function DepositForm({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("createRequest")}</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? t("editRequest") : t("createRequest")}
+          </DialogTitle>
           <DialogDescription>{t("form.transferProofHint")}</DialogDescription>
         </DialogHeader>
 

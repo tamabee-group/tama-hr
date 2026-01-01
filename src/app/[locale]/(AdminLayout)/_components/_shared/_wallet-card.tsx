@@ -3,7 +3,7 @@
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDate } from "@/lib/utils/format-date";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard, Gift } from "lucide-react";
+import { CreditCard, Gift } from "lucide-react";
 
 /**
  * Interface chung cho wallet data
@@ -86,19 +86,16 @@ export function SharedWalletCard({
         <div className="relative h-full flex flex-col justify-between">
           {/* Header: Company name + Trial badge */}
           <div className="flex items-start justify-between">
-            <div>
-              <p className="text-white/70 text-xs uppercase tracking-wider">
-                Ví tiền
-              </p>
-              <p className="text-white font-bold text-lg truncate max-w-[200px]">
-                {wallet.companyName || "-"}
-              </p>
-            </div>
-            {wallet.isFreeTrialActive && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/20 text-white text-xs font-medium">
+            <p className="text-white font-bold text-md truncate max-w-[200px]">
+              {wallet.companyName || "-"}
+            </p>
+            {wallet.isFreeTrialActive ? (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/20 text-amber-200 text-xs font-medium">
                 <Gift className="h-3 w-3" />
                 Dùng thử
               </div>
+            ) : (
+              <p className="font-mono text-yellow-100 opacity-80">TAMABEE</p>
             )}
           </div>
 
@@ -113,7 +110,7 @@ export function SharedWalletCard({
           {/* Footer: Plan + Date */}
           <div className="flex justify-between items-end">
             <div className="flex items-center gap-1.5">
-              <CreditCard className="h-4 w-4 text-white/60" />
+              <CreditCard className="h-9 w-9 text-white/60" />
               <div>
                 <p className="text-white/60 text-[10px] uppercase">Gói</p>
                 <p className="text-white text-sm font-semibold">
@@ -132,7 +129,6 @@ export function SharedWalletCard({
                     : formatDate(wallet.nextBillingDate, locale)}
                 </p>
               </div>
-              <Calendar className="h-4 w-4 text-white/60" />
             </div>
           </div>
         </div>

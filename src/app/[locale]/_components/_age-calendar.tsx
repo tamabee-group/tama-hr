@@ -18,12 +18,14 @@ interface AgeCalendarProps {
   value?: Date;
   onChange?: (date: Date | undefined) => void;
   defaultValue?: Date;
+  placeholder?: string;
 }
 
 export function AgeCalendar({
   value,
   onChange,
   defaultValue,
+  placeholder,
 }: AgeCalendarProps) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(defaultValue);
@@ -39,7 +41,9 @@ export function AgeCalendar({
             id="date"
             className="w-full h-9 justify-between font-normal"
           >
-            {selectedDate ? formatDate(selectedDate, locale) : "Select date"}
+            {selectedDate
+              ? formatDate(selectedDate, locale)
+              : placeholder || "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>

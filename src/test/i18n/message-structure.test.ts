@@ -12,6 +12,22 @@ import {
   TAMABEE_USER_ROLES,
   COMPANY_USER_ROLES,
 } from "@/types/enums";
+import {
+  ROUNDING_INTERVALS,
+  ROUNDING_DIRECTIONS,
+  SALARY_TYPES,
+  ATTENDANCE_STATUSES,
+  PAYROLL_STATUSES,
+  PAYMENT_STATUSES,
+  ADJUSTMENT_STATUSES,
+  SELECTION_STATUSES,
+  SCHEDULE_TYPES,
+  ALLOWANCE_TYPES,
+  DEDUCTION_TYPES,
+  LEAVE_TYPES,
+  LEAVE_STATUSES,
+  BREAK_TYPES,
+} from "@/types/attendance-enums";
 
 type MessageObject = Record<string, unknown>;
 
@@ -234,6 +250,52 @@ describe("Message File Structure Properties", () => {
   });
 
   /**
+   * Property 4: i18n Translation Completeness
+   * For any supported locale (vi, en, ja), all translation keys used in the application
+   * SHALL have corresponding translations in the message file.
+   * Feature: attendance-payroll-frontend, Property 4: i18n Translation Completeness
+   * Validates: Requirements 14.1, 14.2
+   */
+  it("Property 4: all attendance/payroll namespaces should exist in all locales", () => {
+    // Các namespace mới cho attendance/payroll system
+    const requiredNamespaces = ["attendance", "payroll", "schedules", "leave"];
+
+    const allMessages = [
+      { name: "en", messages: enMessages },
+      { name: "vi", messages: viMessages },
+      { name: "ja", messages: jaMessages },
+    ];
+
+    // Kiểm tra mỗi namespace tồn tại trong mỗi locale
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...allMessages),
+        fc.constantFrom(...requiredNamespaces),
+        ({ name, messages }, namespace) => {
+          const hasNamespace = namespace in (messages as MessageObject);
+          expect(
+            hasNamespace,
+            `Namespace "${namespace}" is missing in ${name}.json`,
+          ).toBe(true);
+
+          // Kiểm tra namespace không rỗng
+          if (hasNamespace) {
+            const namespaceContent = (messages as MessageObject)[namespace];
+            const keys = Object.keys(namespaceContent as object);
+            expect(
+              keys.length,
+              `Namespace "${namespace}" in ${name}.json should not be empty`,
+            ).toBeGreaterThan(0);
+          }
+
+          return hasNamespace;
+        },
+      ),
+      { numRuns: allMessages.length * requiredNamespaces.length },
+    );
+  });
+
+  /**
    * Property 8: Enum Translation Completeness
    * For any enum type defined in types/enums.ts, all enum values SHALL have
    * corresponding translations in the enums namespace following the pattern enums.{enumName}.{enumValue}.
@@ -250,6 +312,21 @@ describe("Message File Structure Properties", () => {
         name: "userRole",
         values: [...TAMABEE_USER_ROLES, ...COMPANY_USER_ROLES],
       },
+      // Attendance/Payroll enums
+      { name: "roundingInterval", values: ROUNDING_INTERVALS },
+      { name: "roundingDirection", values: ROUNDING_DIRECTIONS },
+      { name: "salaryType", values: SALARY_TYPES },
+      { name: "attendanceStatus", values: ATTENDANCE_STATUSES },
+      { name: "payrollStatus", values: PAYROLL_STATUSES },
+      { name: "paymentStatus", values: PAYMENT_STATUSES },
+      { name: "adjustmentStatus", values: ADJUSTMENT_STATUSES },
+      { name: "selectionStatus", values: SELECTION_STATUSES },
+      { name: "scheduleType", values: SCHEDULE_TYPES },
+      { name: "allowanceType", values: ALLOWANCE_TYPES },
+      { name: "deductionType", values: DEDUCTION_TYPES },
+      { name: "leaveType", values: LEAVE_TYPES },
+      { name: "leaveStatus", values: LEAVE_STATUSES },
+      { name: "breakType", values: BREAK_TYPES },
     ];
 
     // Tạo danh sách tất cả enum value cần kiểm tra

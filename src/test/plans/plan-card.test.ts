@@ -4,7 +4,6 @@ import {
   getPlanName,
   getPlanDescription,
   getFeatureText,
-  PlanResponse,
   PlanFeatureResponse,
   LocaleKey,
 } from "@/types/plan";

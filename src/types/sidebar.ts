@@ -1,4 +1,5 @@
 import type { PermissionKey } from "./permissions";
+import type { CompanyPermissionKey } from "./company-permissions";
 
 /**
  * Type định nghĩa cho sub-item trong sidebar navigation
@@ -8,8 +9,10 @@ export interface SidebarSubItem {
   title: string;
   /** URL điều hướng */
   url: string;
-  /** Permission key yêu cầu để hiển thị item này */
+  /** Permission key yêu cầu để hiển thị item này (Tamabee) */
   requiredPermission?: PermissionKey;
+  /** Permission key yêu cầu để hiển thị item này (Company) */
+  requiredCompanyPermission?: CompanyPermissionKey;
 }
 
 /**
@@ -27,8 +30,10 @@ export interface SidebarItem {
   items?: SidebarSubItem[];
   /** Key để lấy badge count từ context */
   badgeKey?: string;
-  /** Permission key yêu cầu để hiển thị item này */
+  /** Permission key yêu cầu để hiển thị item này (Tamabee) */
   requiredPermission?: PermissionKey;
+  /** Permission key yêu cầu để hiển thị item này (Company) */
+  requiredCompanyPermission?: CompanyPermissionKey;
 }
 
 /**

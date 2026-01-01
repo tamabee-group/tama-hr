@@ -41,6 +41,13 @@
   - Tách UI sections thành internal components (`_component-name.tsx`)
   - Mỗi component chỉ nên có 1 responsibility chính
 
+## Shadcn/UI Components
+
+- Khi thiếu component từ shadcn/ui, thêm bằng lệnh: `npx shadcn@latest add <component>`
+- **KHÔNG** dùng flag `-y` (auto-confirm) vì có thể ghi đè lên component đã được customize
+- Kiểm tra kỹ diff trước khi confirm để tránh mất code custom
+- Components shadcn nằm trong `components/ui/`
+
 ## Statistics Cards
 
 - KHÔNG sử dụng icons trong statistics cards - giữ giao diện gọn gàng, tránh "AI-generated" look
@@ -189,3 +196,68 @@ const dateStr = formatDate(date, locale);
 - Sử dụng `compressImageToWebP()` từ `@/lib/utils/compress-image-to-webp`
 - Áp dụng cho: avatar, transfer proof, và tất cả ảnh upload khác
 - Giảm dung lượng file đáng kể, cải thiện performance
+
+## Settings Forms & Labels
+
+- **Dùng từ ngắn gọn**: Khi Card/Section title đã cung cấp ngữ cảnh, labels trong form chỉ cần từ ngắn gọn
+  - ✅ Card "Cấu hình giờ nghỉ" → labels: "Mặc định", "Tối thiểu", "Tối đa"
+  - ❌ Card "Cấu hình giờ nghỉ" → labels: "Thời gian nghỉ mặc định", "Thời gian nghỉ tối thiểu"
+- **Tránh lặp từ**: Không lặp lại từ đã có trong tiêu đề section/card
+- **InputGroup cho đơn vị**: Sử dụng `InputGroup` từ shadcn/ui cho TẤT CẢ inputs có đơn vị (phút, giờ, %, ¥, mét, lần...)
+- **Switch trước Label**: Đặt Switch trước Label, không dùng layout justify-between
+
+```tsx
+// ✅ ĐÚNG - InputGroup với đơn vị
+<InputGroup>
+  <InputGroupInput type="number" value={value} onChange={...} />
+  <InputGroupAddon align="inline-end">
+    <InputGroupText>{tCommon("minutes")}</InputGroupText>
+  </InputGroupAddon>
+</InputGroup>
+
+// ❌ SAI - Input không có đơn vị
+<Input type="number" value={value} onChange={...} />
+
+// ✅ ĐÚNG - Switch trước Label
+<div className="flex items-center gap-3">
+  <Switch checked={value} onCheckedChange={onChange} />
+  <Label className="cursor-pointer">{label}</Label>
+</div>
+
+// ❌ SAI - Label trước Switch với justify-between
+<div className="flex items-center justify-between">
+  <Label>{label}</Label>
+  <Switch checked={value} onCheckedChange={onChange} />
+</div>
+```
+
+## Forms
+
+- **KHÔNG** sử dụng `react-hook-form` - quản lý form state bằng `useState`
+- Sử dụng controlled components với `value` và `onChange`
+- Validation thực hiện trong `onSubmit` handler hoặc inline
+- Error state quản lý bằng `useState<Record<string, string>>({})`
+
+```tsx
+// Ví dụ chuẩn
+const [formData, setFormData] = useState({ name: "", email: "" });
+const [errors, setErrors] = useState<Record<string, string>>({});
+
+const handleChange = (field: string, value: string) => {
+  setFormData((prev) => ({ ...prev, [field]: value }));
+  // Clear error khi user sửa
+  if (errors[field]) {
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+  }
+};
+
+const handleSubmit = () => {
+  const newErrors: Record<string, string> = {};
+  if (!formData.name) newErrors.name = t("validation.required");
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+  // Submit logic
+};
+```

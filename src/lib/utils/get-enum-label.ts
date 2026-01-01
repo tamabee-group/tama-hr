@@ -32,7 +32,19 @@ export type EnumName =
   | "commissionStatus"
   | "gender"
   | "language"
-  | "locale";
+  | "locale"
+  | "scheduleType"
+  | "attendanceStatus"
+  | "payrollStatus"
+  | "paymentStatus"
+  | "adjustmentStatus"
+  | "selectionStatus"
+  | "allowanceType"
+  | "deductionType"
+  | "leaveType"
+  | "leaveStatus"
+  | "breakType"
+  | "salaryType";
 
 /**
  * Lấy translated label cho enum value

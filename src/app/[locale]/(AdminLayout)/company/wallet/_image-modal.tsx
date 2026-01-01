@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { SupportedLocale } from "@/lib/utils/format-currency";
 import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
 
 interface ImageModalProps {
@@ -18,7 +17,6 @@ interface ImageModalProps {
   onOpenChange: (open: boolean) => void;
   imageUrl: string;
   title?: string;
-  locale?: SupportedLocale;
 }
 
 /**
@@ -31,7 +29,6 @@ export function ImageModal({
   onOpenChange,
   imageUrl,
   title,
-  locale = "vi",
 }: ImageModalProps) {
   const t = useTranslations("deposits");
   const tCommon = useTranslations("common");

@@ -71,6 +71,7 @@ export function getErrorMessage(
 ): string {
   // Extract errorCode từ error object nếu cần
   let errorCode: string | undefined | null;
+  let originalMessage: string | undefined;
 
   if (typeof errorCodeOrError === "string") {
     errorCode = errorCodeOrError;
@@ -78,10 +79,23 @@ export function getErrorMessage(
     // Check if it's an API error with errorCode
     const apiError = errorCodeOrError as ApiErrorWithCode;
     errorCode = apiError.errorCode;
+    originalMessage = apiError.message;
   }
 
+  // Nếu không có errorCode, trả về message gốc hoặc fallback
   if (!errorCode) {
-    return fallbackMessage || t("generic");
+    return originalMessage || fallbackMessage || t("generic");
+  }
+
+  // Nếu errorCode chứa khoảng trắng hoặc tiếng Việt, đó là message không phải code
+  // Trả về message gốc thay vì cố translate
+  if (
+    errorCode.includes(" ") ||
+    /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
+      errorCode,
+    )
+  ) {
+    return errorCode;
   }
 
   // Thử lấy translation cho error code cụ thể
@@ -90,12 +104,12 @@ export function getErrorMessage(
     // next-intl trả về key nếu không tìm thấy translation
     // Kiểm tra xem kết quả có phải là key gốc không
     if (translated === errorCode || translated === `errors.${errorCode}`) {
-      return fallbackMessage || t("generic");
+      return originalMessage || fallbackMessage || t("generic");
     }
     return translated;
   } catch {
     // Fallback to generic nếu có lỗi
-    return fallbackMessage || t("generic");
+    return originalMessage || fallbackMessage || t("generic");
   }
 }
 

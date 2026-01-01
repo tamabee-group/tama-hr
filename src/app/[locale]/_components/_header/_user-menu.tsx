@@ -9,31 +9,125 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ChevronDown,
   LogOut,
-  ShieldUser,
+  LayoutDashboard,
   User as UserIcon,
+  Settings,
+  Users,
+  Building2,
+  Wallet,
+  Clock,
+  FileText,
+  CalendarDays,
+  Bell,
+  HelpCircle,
 } from "lucide-react";
 import type { User, UserRole } from "@/types/user";
-import { ADMIN_ROLES } from "@/types/user";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { useTranslations } from "next-intl";
+import { LucideIcon } from "lucide-react";
 
 interface UserMenuProps {
   user: User;
   onLogout: () => void;
 }
 
-// Mapping role -> admin dashboard URL
-const ADMIN_DASHBOARD_URLS: Partial<Record<UserRole, string>> = {
-  ADMIN_TAMABEE: "/tamabee/users",
-  MANAGER_TAMABEE: "/tamabee/users",
-  EMPLOYEE_TAMABEE: "/employee/support",
-  ADMIN_COMPANY: "/company/employees",
-  MANAGER_COMPANY: "/company/employees",
+interface MenuItem {
+  href: string;
+  labelKey: string;
+  icon: LucideIcon;
+}
+
+interface MenuConfig {
+  dashboard?: MenuItem;
+  items: MenuItem[];
+}
+
+// Cấu hình menu cho từng role
+const MENU_CONFIG: Record<UserRole, MenuConfig> = {
+  // Tamabee Admin - Quản lý toàn hệ thống
+  ADMIN_TAMABEE: {
+    dashboard: {
+      href: "/tamabee/dashboard",
+      labelKey: "dashboard",
+      icon: LayoutDashboard,
+    },
+    items: [
+      { href: "/tamabee/companies", labelKey: "companies", icon: Building2 },
+      { href: "/tamabee/users", labelKey: "users", icon: Users },
+      { href: "/tamabee/deposits", labelKey: "deposits", icon: Wallet },
+      { href: "/tamabee/settings", labelKey: "settings", icon: Settings },
+    ],
+  },
+  // Tamabee Manager - Quản lý công ty và deposits
+  MANAGER_TAMABEE: {
+    dashboard: {
+      href: "/tamabee/dashboard",
+      labelKey: "dashboard",
+      icon: LayoutDashboard,
+    },
+    items: [
+      { href: "/tamabee/companies", labelKey: "companies", icon: Building2 },
+      { href: "/tamabee/deposits", labelKey: "deposits", icon: Wallet },
+    ],
+  },
+  // Tamabee Employee - Hỗ trợ khách hàng
+  EMPLOYEE_TAMABEE: {
+    dashboard: {
+      href: "/employee/support",
+      labelKey: "support",
+      icon: HelpCircle,
+    },
+    items: [],
+  },
+  // Company Admin - Quản lý công ty
+  ADMIN_COMPANY: {
+    dashboard: {
+      href: "/company/dashboard",
+      labelKey: "dashboard",
+      icon: LayoutDashboard,
+    },
+    items: [
+      { href: "/company/employees", labelKey: "employees", icon: Users },
+      { href: "/company/attendance", labelKey: "attendance", icon: Clock },
+      { href: "/company/wallet", labelKey: "wallet", icon: Wallet },
+      { href: "/company/reports", labelKey: "reports", icon: FileText },
+      {
+        href: "/company/settings",
+        labelKey: "companySettings",
+        icon: Settings,
+      },
+    ],
+  },
+  // Company Manager - Quản lý nhân viên
+  MANAGER_COMPANY: {
+    dashboard: {
+      href: "/company/dashboard",
+      labelKey: "dashboard",
+      icon: LayoutDashboard,
+    },
+    items: [
+      { href: "/company/employees", labelKey: "employees", icon: Users },
+      { href: "/company/attendance", labelKey: "attendance", icon: Clock },
+      { href: "/company/reports", labelKey: "reports", icon: FileText },
+    ],
+  },
+  // Company Employee - Nhân viên
+  EMPLOYEE_COMPANY: {
+    dashboard: {
+      href: "/employee/attendance",
+      labelKey: "myAttendance",
+      icon: Clock,
+    },
+    items: [
+      { href: "/employee/leave", labelKey: "myLeave", icon: CalendarDays },
+    ],
+  },
 };
 
 /**
@@ -46,8 +140,8 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
 
   if (!user) return null;
 
-  const isAdmin = ADMIN_ROLES.includes(user.role);
-  const adminDashboardUrl = ADMIN_DASHBOARD_URLS[user.role] || "/tamabee/users";
+  const menuConfig = MENU_CONFIG[user.role];
+  const hasMenuItems = menuConfig.dashboard || menuConfig.items.length > 0;
 
   return (
     <DropdownMenu>
@@ -66,15 +160,14 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
           <ChevronDown className="absolute -bottom-1 right-1/2 translate-x-1/2 bg-secondary/80 rounded-full shadow-2xl" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="z-222">
+      <DropdownMenuContent align="end" className="w-56 z-222">
+        {/* User info */}
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{user.email}</p>
-            {user.profile?.name && (
-              <p className="text-xs text-muted-foreground">
-                {user.profile?.name}
-              </p>
-            )}
+            <p className="text-sm font-medium leading-none">
+              {user.profile?.name || user.email}
+            </p>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
             <p className="text-xs text-muted-foreground">
               {tEnums(`userRole.${user.role}`)}
             </p>
@@ -82,26 +175,49 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {isAdmin && (
+        {/* Dashboard & Role-specific items */}
+        {hasMenuItems && (
           <>
-            <Link href={adminDashboardUrl}>
-              <DropdownMenuItem>
-                <ShieldUser className="mr-2 h-4 w-4" />
-                {t("adminDashboard")}
-              </DropdownMenuItem>
-            </Link>
+            <DropdownMenuGroup>
+              {menuConfig.dashboard && (
+                <Link href={menuConfig.dashboard.href}>
+                  <DropdownMenuItem>
+                    <menuConfig.dashboard.icon className="mr-2 h-4 w-4" />
+                    {t(`menu.${menuConfig.dashboard.labelKey}`)}
+                  </DropdownMenuItem>
+                </Link>
+              )}
+              {menuConfig.items.map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <DropdownMenuItem>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {t(`menu.${item.labelKey}`)}
+                  </DropdownMenuItem>
+                </Link>
+              ))}
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
           </>
         )}
 
-        <Link href="/profile">
-          <DropdownMenuItem>
-            <UserIcon className="mr-2 h-4 w-4" />
-            {t("userProfile")}
-          </DropdownMenuItem>
-        </Link>
+        {/* Common items */}
+        <DropdownMenuGroup>
+          <Link href="/profile">
+            <DropdownMenuItem>
+              <UserIcon className="mr-2 h-4 w-4" />
+              {t("menu.profile")}
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/notifications">
+            <DropdownMenuItem>
+              <Bell className="mr-2 h-4 w-4" />
+              {t("menu.notifications")}
+            </DropdownMenuItem>
+          </Link>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
 
+        {/* Logout */}
         <DropdownMenuItem onClick={onLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           {t("logout")}

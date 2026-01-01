@@ -20,7 +20,7 @@ const LOCALE_STRING_MAP: Record<SupportedLocale, string> = {
  */
 export function formatDate(
   date: Date | string | null | undefined,
-  locale: SupportedLocale = "en",
+  locale: SupportedLocale = "vi",
 ): string {
   if (!date) return "-";
 
@@ -50,7 +50,7 @@ export function formatDate(
  */
 export function formatDateTime(
   date: Date | string | null | undefined,
-  locale: SupportedLocale = "en",
+  locale: SupportedLocale = "vi",
 ): string {
   if (!date) return "-";
 
@@ -74,7 +74,7 @@ export function formatDateTime(
  */
 export function formatRelativeTime(
   date: Date | string,
-  locale: SupportedLocale = "en",
+  locale: SupportedLocale = "vi",
 ): string {
   const d = typeof date === "string" ? new Date(date) : date;
   if (isNaN(d.getTime())) return "-";
@@ -125,6 +125,25 @@ export function formatMonth(
   } catch {
     return "-";
   }
+}
+
+/**
+ * Format thời gian theo locale
+ * Format: HH:mm
+ *
+ * @param time - Date object, chuỗi thời gian ISO, hoặc null/undefined
+ * @returns Chuỗi thời gian đã format hoặc "-" nếu invalid
+ */
+export function formatTime(time: Date | string | null | undefined): string {
+  if (!time) return "-";
+
+  const d = typeof time === "string" ? new Date(time) : time;
+  if (isNaN(d.getTime())) return "-";
+
+  const hours = d.getHours().toString().padStart(2, "0");
+  const minutes = d.getMinutes().toString().padStart(2, "0");
+
+  return `${hours}:${minutes}`;
 }
 
 /**

@@ -30,6 +30,13 @@ export interface UpdateCompanyEmployeeRequest {
   emergencyContactAddress?: string;
 }
 
+// Response type cho approvers
+export interface ApproverInfo {
+  id: number;
+  name: string;
+  role: string;
+}
+
 /**
  * Tạo nhân viên công ty mới
  * @client-only
@@ -65,4 +72,12 @@ export async function uploadCompanyEmployeeAvatar(
     `/api/company/employees/${employeeId}/avatar`,
     formData,
   );
+}
+
+/**
+ * Lấy danh sách người có quyền duyệt (admin và manager)
+ * @client-only
+ */
+export async function getApprovers(): Promise<ApproverInfo[]> {
+  return apiClient.get<ApproverInfo[]>("/api/company/employees/approvers");
 }

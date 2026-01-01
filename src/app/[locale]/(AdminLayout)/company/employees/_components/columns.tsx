@@ -1,13 +1,14 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, EllipsisVertical } from "lucide-react";
+import { Eye, EllipsisVertical, Calendar, Wallet } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,6 +27,8 @@ interface ColumnLabels {
   createdAt: string;
   profile: string;
   viewDetail: string;
+  viewAttendance: string;
+  viewPayroll: string;
   active: string;
   inactive: string;
   roleLabels: Record<string, string>;
@@ -50,6 +53,19 @@ export function createColumns(labels: ColumnLabels): ColumnDef<User>[] {
               <DropdownMenuItem>
                 <Eye className="h-4 w-4" />
                 {labels.viewDetail}
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
+            <Link href={`/company/employees/${row.original.id}/attendance`}>
+              <DropdownMenuItem>
+                <Calendar className="h-4 w-4" />
+                {labels.viewAttendance}
+              </DropdownMenuItem>
+            </Link>
+            <Link href={`/company/employees/${row.original.id}/payroll`}>
+              <DropdownMenuItem>
+                <Wallet className="h-4 w-4" />
+                {labels.viewPayroll}
               </DropdownMenuItem>
             </Link>
           </DropdownMenuContent>

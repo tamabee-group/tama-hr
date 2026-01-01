@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,7 +28,7 @@ export function CommissionSummaryCard({
   const [loading, setLoading] = useState(true);
 
   // Fetch summary data
-  const loadSummary = async () => {
+  const loadSummary = useCallback(async () => {
     setLoading(true);
     try {
       const data = await referralApi.getCommissionSummary();
@@ -41,11 +41,11 @@ export function CommissionSummaryCard({
     } finally {
       setLoading(false);
     }
-  };
+  }, [tErrors]);
 
   useEffect(() => {
     loadSummary();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, loadSummary]);
 
   // Loading skeleton
   if (loading) {

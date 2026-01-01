@@ -28,7 +28,14 @@ import {
   Languages,
   UserCog,
   Users,
+  HelpCircle,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { LANGUAGES, GENDERS } from "@/types/enums";
 import {
   getLanguageLabel,
@@ -247,9 +254,21 @@ export function BaseCreateUserForm({
           </div>
 
           <div>
-            <Label htmlFor="dateOfBirth">{t("form.dateOfBirth")}</Label>
+            <Label htmlFor="dateOfBirth" className="flex items-center gap-1">
+              {t("form.dateOfBirth")}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">{t("form.dateOfBirthTooltip")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </Label>
             <AgeCalendar
-              defaultValue={new Date("1998-05-31")}
+              placeholder={t("form.birthDatePlaceholder")}
               onChange={(date) => {
                 setFormData({
                   ...formData,

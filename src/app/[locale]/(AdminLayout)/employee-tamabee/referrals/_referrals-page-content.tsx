@@ -16,7 +16,7 @@ export function ReferralsPageContent() {
   const t = useTranslations("referrals");
   const [selectedCompany, setSelectedCompany] =
     useState<ReferredCompany | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [refreshTrigger] = useState(0);
 
   // Xử lý khi click vào row để xem chi tiết
   const handleRowClick = (company: ReferredCompany) => {

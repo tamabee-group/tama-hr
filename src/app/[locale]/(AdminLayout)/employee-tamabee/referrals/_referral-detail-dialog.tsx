@@ -22,7 +22,6 @@ import { ReferredCompany } from "@/types/referral";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDateTime } from "@/lib/utils/format-date";
 import { COMMISSION_STATUS_COLORS, CommissionStatus } from "@/types/enums";
-import { vi, ja, enUS } from "date-fns/locale";
 import { useLocale } from "next-intl";
 
 interface ReferralDetailDialogProps {
@@ -46,18 +45,6 @@ export function ReferralDetailDialog({
   const locale = useLocale() as SupportedLocale;
 
   if (!company) return null;
-
-  // Get date-fns locale
-  const getDateLocale = () => {
-    switch (locale) {
-      case "vi":
-        return vi;
-      case "ja":
-        return ja;
-      default:
-        return enUS;
-    }
-  };
 
   // Lấy className cho commission status badge
   const getCommissionBadgeClassName = (status: CommissionStatus): string => {

@@ -225,6 +225,7 @@ export function ImageUpload({
           </div>
         ) : previewUrl ? (
           <div className="relative p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={previewUrl}
               alt="Preview"

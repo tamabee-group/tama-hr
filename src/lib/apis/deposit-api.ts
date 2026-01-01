@@ -125,9 +125,39 @@ export const depositApi = {
   // Company APIs
   create,
   getMyRequests,
+  cancel,
+  update,
 
   // Admin APIs
   getAll,
   approve,
   reject,
 };
+
+// ============================================
+// Company Self-Service APIs
+// ============================================
+
+/**
+ * Hủy yêu cầu nạp tiền đang chờ duyệt
+ * @client-only
+ */
+export async function cancel(id: number): Promise<DepositRequestResponse> {
+  return apiClient.delete<DepositRequestResponse>(
+    `/api/company/deposits/${id}`,
+  );
+}
+
+/**
+ * Cập nhật yêu cầu nạp tiền bị từ chối
+ * @client-only
+ */
+export async function update(
+  id: number,
+  data: DepositRequestCreateRequest,
+): Promise<DepositRequestResponse> {
+  return apiClient.put<DepositRequestResponse>(
+    `/api/company/deposits/${id}`,
+    data,
+  );
+}

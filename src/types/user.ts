@@ -1,8 +1,4 @@
 import {
-  TAMABEE_USER_ROLES,
-  COMPANY_USER_ROLES,
-  USER_STATUSES,
-  GENDERS,
   type TamabeeUserRole,
   type CompanyUserRole,
   type UserStatus as UserStatusType,

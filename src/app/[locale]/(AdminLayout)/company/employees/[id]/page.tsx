@@ -1,13 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmployeeProfileForm } from "./_employee-profile-form";
-import { EmployeeActivity } from "./_employee-activity";
+import { EmployeeDetail } from "../_employee-detail";
 import { User } from "@/types/user";
 import { apiServer } from "@/lib/utils/fetch-server";
 import { getTranslations } from "next-intl/server";
 
+/**
+ * Lấy thông tin nhân viên từ API
+ * @server-only
+ */
 async function getEmployee(id: string): Promise<User | null> {
   try {
     return await apiServer.get<User>(`/api/company/employees/${id}`, {
@@ -27,6 +31,7 @@ export default async function EmployeeDetailPage({
   const { id } = await params;
   const employee = await getEmployee(id);
   const t = await getTranslations("users");
+  const tCommon = await getTranslations("common");
 
   if (!employee) {
     notFound();
@@ -34,33 +39,34 @@ export default async function EmployeeDetailPage({
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/company/employees" className="hover:opacity-70">
           <ArrowLeft className="h-6 w-6" />
         </Link>
-        <h1 className="text-2xl font-bold">{t("userDetail")}</h1>
+        <div>
+          <h1 className="text-2xl font-bold">{t("userDetail")}</h1>
+          <p className="text-sm text-muted-foreground">
+            {employee.profile?.name || employee.email}
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6">
-        <div className="2xl:col-span-2">
+      {/* Tabs */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList>
+          <TabsTrigger value="overview">{tCommon("overview")}</TabsTrigger>
+          <TabsTrigger value="profile">{t("personalInfo")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="mt-6">
+          <EmployeeDetail employee={employee} />
+        </TabsContent>
+
+        <TabsContent value="profile" className="mt-6">
           <EmployeeProfileForm employee={employee} />
-        </div>
-
-        <div className="space-y-6">
-          <EmployeeActivity employeeId={employee.id} />
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("payroll")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("featureUpdating")}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -47,9 +47,14 @@ export const SidebarLogo = ({ size = 32 }: { size?: number }) => {
   );
 };
 
-const LogoText = () => {
+const LogoText = ({ className }: { className?: string }) => {
   return (
-    <span className="text-xl md:text-2xl font-bold text-primary dark:text-[#69ebff] font-mono">
+    <span
+      className={cn(
+        "text-xl md:text-2xl font-bold text-primary dark:text-[#69ebff] font-mono",
+        className,
+      )}
+    >
       Tamabee
     </span>
   );
@@ -59,7 +64,7 @@ export const LogoFull = () => {
   return (
     <div className="flex items-center gap-2">
       <Logo />
-      <LogoText />
+      <LogoText className="hidden sm:inline-block" />
     </div>
   );
 };

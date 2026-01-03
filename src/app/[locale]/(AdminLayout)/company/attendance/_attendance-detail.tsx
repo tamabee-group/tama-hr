@@ -200,7 +200,7 @@ export function AttendanceDetail({
             </div>
 
             {/* Giờ đêm */}
-            {record.nightMinutes > 0 && (
+            {(record.nightMinutes ?? 0) > 0 && (
               <div>
                 <p className="text-sm text-muted-foreground">Giờ đêm</p>
                 <p className="text-lg font-medium text-purple-600">
@@ -210,7 +210,7 @@ export function AttendanceDetail({
             )}
 
             {/* Tăng ca đêm */}
-            {record.nightOvertimeMinutes > 0 && (
+            {(record.nightOvertimeMinutes ?? 0) > 0 && (
               <div>
                 <p className="text-sm text-muted-foreground">Tăng ca đêm</p>
                 <p className="text-lg font-medium text-purple-600">
@@ -298,7 +298,9 @@ export function AttendanceDetail({
                 totalBreakMinutes={record.totalBreakMinutes}
                 minimumRequired={minimumBreakRequired}
                 maxBreaksPerDay={maxBreaksPerDay}
-                isCompliant={record.isBreakCompliant}
+                isCompliant={
+                  record.isBreakCompliant ?? record.breakCompliant ?? true
+                }
               />
             </div>
           )}

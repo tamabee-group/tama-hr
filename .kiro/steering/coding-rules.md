@@ -83,8 +83,45 @@
 
 - Locales: `vi`, `en`, `ja`
 - Translation files: `messages/{locale}.json`
-- Namespaces: `common`, `auth`, `header`, `deposits`, `plans`, `companies`, `wallet`, `users`, `settings`, `enums`, `errors`, `validation`, `dialogs`, `commissions`
-- Key naming: camelCase, max 3 levels depth (e.g., `deposits.table.companyName`)
+- Namespaces: `common`, `auth`, `header`, `deposits`, `plans`, `companies`, `wallet`, `users`, `settings`, `enums`, `errors`, `validation`, `dialogs`, `commissions`, `shifts`, `salaryConfig`, `contracts`, `allowances`, `deductions`, `payroll`
+- Key naming: camelCase, **TỐI ĐA 3 cấp** (namespace.group.key)
+
+### Quy tắc độ sâu i18n keys (Max 3 Levels)
+
+- **Tối đa 3 cấp**: `namespace.group.key` - KHÔNG được sâu hơn
+- Cấp 1: Namespace (e.g., `shifts`, `payroll`, `contracts`)
+- Cấp 2: Group hoặc key trực tiếp (e.g., `table`, `messages`, hoặc `title`)
+- Cấp 3: Key cuối cùng (e.g., `employee`, `createSuccess`)
+
+```json
+// ✅ ĐÚNG - Tối đa 3 cấp
+{
+  "shifts": {
+    "title": "Quản lý ca",                    // 2 cấp: shifts.title
+    "templatesTitle": "Mẫu ca làm việc",      // 2 cấp: shifts.templatesTitle
+    "templateCreateSuccess": "Tạo thành công", // 2 cấp: shifts.templateCreateSuccess
+    "table": {
+      "employee": "Nhân viên",                // 3 cấp: shifts.table.employee
+      "status": "Trạng thái"                  // 3 cấp: shifts.table.status
+    }
+  }
+}
+
+// ❌ SAI - Quá 3 cấp (4 cấp)
+{
+  "shifts": {
+    "templates": {
+      "form": {
+        "name": "Tên ca"                      // 4 cấp: shifts.templates.form.name
+      }
+    }
+  }
+}
+```
+
+- **Flatten nested keys**: Thay vì `shifts.templates.form.name`, dùng `shifts.templateName`
+- **Group chỉ cho table columns**: Chỉ dùng group (cấp 2) cho `table`, `messages` khi cần thiết
+- **Prefix cho context**: Dùng prefix thay vì nesting (e.g., `templateCreateSuccess` thay vì `templates.messages.createSuccess`)
 
 ### Sử dụng Translations
 
@@ -163,6 +200,31 @@ import { useLocale } from "next-intl";
 
 const locale = useLocale();
 const dateStr = formatDate(date, locale);
+```
+
+### Duration Formatting (Thời lượng)
+
+- Format thời lượng (phút, giờ) theo locale:
+  - **Vietnamese/English**: `HH:MM` (e.g., `01:30`, `00:45`)
+  - **Japanese**: `X時YY分` (e.g., `1時30分`, `45分`)
+- Không có dữ liệu hoặc giá trị âm: `--:--`
+- Sử dụng `formatMinutesToTime()` từ `@/lib/utils/format-date` cho hiển thị chung
+- Khi cần format inline trong component:
+
+```tsx
+function formatDurationByLocale(minutes: number, locale: string): string {
+  if (minutes <= 0) return "--:--";
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+
+  if (locale === "ja") {
+    return hours > 0
+      ? `${hours}時${mins.toString().padStart(2, "0")}分`
+      : `${mins}分`;
+  }
+  // vi, en: format HH:MM
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+}
 ```
 
 ### Toast Messages

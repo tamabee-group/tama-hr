@@ -147,6 +147,48 @@ export function formatTime(time: Date | string | null | undefined): string {
 }
 
 /**
+ * Format số phút thành chuỗi thời lượng theo locale
+ * - Vietnamese/English: HH:mm (e.g., 01:30, 00:45)
+ * - Japanese: X時YY分 (e.g., 1時30分, 45分)
+ * Nếu không có dữ liệu hoặc giá trị âm -> "--:--"
+ *
+ * @param minutes - Số phút
+ * @param options - Tùy chọn format
+ * @param options.zeroAsEmpty - Nếu true, giá trị 0 sẽ hiển thị "--:--"
+ * @param options.locale - Locale code (vi, en, ja). Mặc định "vi"
+ * @returns Chuỗi thời gian dạng HH:mm hoặc X時YY分 hoặc "--:--" nếu invalid/âm
+ */
+export function formatMinutesToTime(
+  minutes: number | undefined | null,
+  options?: { zeroAsEmpty?: boolean; locale?: SupportedLocale },
+): string {
+  if (
+    minutes === undefined ||
+    minutes === null ||
+    isNaN(minutes) ||
+    minutes < 0
+  ) {
+    return "--:--";
+  }
+  if (options?.zeroAsEmpty && minutes === 0) {
+    return "--:--";
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const locale = options?.locale || "vi";
+
+  if (locale === "ja") {
+    return hours > 0
+      ? `${hours}時${mins.toString().padStart(2, "0")}分`
+      : `${mins}分`;
+  }
+
+  // Vietnamese và English dùng format HH:mm
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+}
+
+/**
  * Format ngày cho API request (ISO format: yyyy-MM-dd)
  * Dùng khi gửi date filter đến backend
  *
@@ -164,4 +206,58 @@ export function formatDateForApi(
   const day = date.getDate().toString().padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Lấy tên ngày trong tuần theo locale
+ * - Vietnamese: T2, T3, T4, T5, T6, T7, CN
+ * - English: Mon, Tue, Wed, Thu, Fri, Sat, Sun
+ * - Japanese: 月, 火, 水, 木, 金, 土, 日
+ *
+ * @param date - Date object hoặc chuỗi ngày ISO
+ * @param locale - Locale code (vi, en, ja)
+ * @returns Tên ngày trong tuần viết tắt
+ */
+export function getDayOfWeek(
+  date: Date | string | null | undefined,
+  locale: SupportedLocale = "vi",
+): string {
+  if (!date) return "-";
+
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "-";
+
+  const dayIndex = d.getDay(); // 0 = Sunday, 1 = Monday, ...
+
+  const dayNames: Record<SupportedLocale, string[]> = {
+    vi: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+    en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    ja: ["日", "月", "火", "水", "木", "金", "土"],
+  };
+
+  return dayNames[locale][dayIndex];
+}
+
+/**
+ * Format ngày với ngày trong tuần
+ * - Vietnamese: T2, 31/12/2025
+ * - English: Mon, 31/12/2025
+ * - Japanese: 月, 2025年12月31日
+ *
+ * @param date - Date object hoặc chuỗi ngày ISO
+ * @param locale - Locale code (vi, en, ja)
+ * @returns Chuỗi ngày với ngày trong tuần
+ */
+export function formatDateWithDayOfWeek(
+  date: Date | string | null | undefined,
+  locale: SupportedLocale = "vi",
+): string {
+  if (!date) return "-";
+
+  const dayOfWeek = getDayOfWeek(date, locale);
+  const dateStr = formatDate(date, locale);
+
+  if (dayOfWeek === "-" || dateStr === "-") return "-";
+
+  return `${dayOfWeek}, ${dateStr}`;
 }

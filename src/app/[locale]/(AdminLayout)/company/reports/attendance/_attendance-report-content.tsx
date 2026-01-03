@@ -24,7 +24,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Spinner } from "@/components/ui/spinner";
 import { ReportChart } from "../_report-chart";
-import { reportApi, exportCsv, exportPdf } from "@/lib/apis/report-api";
+import { ReportExportButtons } from "../_report-export-buttons";
+import { reportApi } from "@/lib/apis/report-api";
 import {
   ReportData,
   ReportFilters,
@@ -50,7 +51,6 @@ export function AttendanceReportContent() {
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
 
   // Tạo filters từ state
   const getFilters = (): ReportFilters => ({
@@ -79,58 +79,6 @@ export function AttendanceReportContent() {
       toast.error(t("messages.generateError"));
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Xuất CSV
-  const handleExportCsv = async () => {
-    if (!reportData || reportData.rows.length === 0) {
-      toast.error(t("messages.noDataToExport"));
-      return;
-    }
-
-    setIsExporting(true);
-    try {
-      const blob = await exportCsv("attendance", getFilters());
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `attendance-report-${new Date().toISOString().split("T")[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success(t("messages.exportSuccess"));
-    } catch {
-      toast.error(t("messages.exportError"));
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  // Xuất PDF
-  const handleExportPdf = async () => {
-    if (!reportData || reportData.rows.length === 0) {
-      toast.error(t("messages.noDataToExport"));
-      return;
-    }
-
-    setIsExporting(true);
-    try {
-      const blob = await exportPdf("attendance", getFilters());
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `attendance-report-${new Date().toISOString().split("T")[0]}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success(t("messages.exportSuccess"));
-    } catch {
-      toast.error(t("messages.exportError"));
-    } finally {
-      setIsExporting(false);
     }
   };
 
@@ -232,22 +180,11 @@ export function AttendanceReportContent() {
 
           {/* Export Buttons */}
           {reportData && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handleExportCsv}
-                disabled={isExporting}
-              >
-                {isExporting ? t("actions.exporting") : t("actions.exportCsv")}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleExportPdf}
-                disabled={isExporting}
-              >
-                {isExporting ? t("actions.exporting") : t("actions.exportPdf")}
-              </Button>
-            </div>
+            <ReportExportButtons
+              reportType="attendance"
+              filters={getFilters()}
+              disabled={!reportData || reportData.rows.length === 0}
+            />
           )}
         </CardContent>
       </Card>

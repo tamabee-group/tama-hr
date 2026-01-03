@@ -12,13 +12,117 @@ import {
   LeaveType,
   LeaveStatus,
   BreakType,
+  ShiftAssignmentStatus,
+  SwapRequestStatus,
+  PayrollPeriodStatus,
+  PayrollItemStatus,
+  ContractType,
+  ContractStatus,
+  AllowanceType,
+  DeductionType,
 } from "./attendance-enums";
+
+// ============================================
+// Applied Settings Snapshot (Cấu hình áp dụng tại thời điểm chấm công)
+// ============================================
+
+export interface RoundingConfig {
+  interval: string;
+  direction: string;
+}
+
+export interface BreakConfigSnapshot {
+  breakType: BreakType;
+  minimumBreakMinutes: number;
+  maximumBreakMinutes: number;
+  maxBreaksPerDay: number;
+  legalMinimumBreakMinutes: number;
+}
+
+export interface AppliedSettingsSnapshot {
+  checkInRounding: RoundingConfig;
+  checkOutRounding: RoundingConfig;
+  lateGraceMinutes: number;
+  earlyLeaveGraceMinutes: number;
+  breakConfig: BreakConfigSnapshot;
+}
+
+// ============================================
+// Shift Info (Thông tin ca làm việc)
+// ============================================
+
+export interface ShiftInfo {
+  shiftTemplateId?: number;
+  shiftId?: number;
+  shiftName: string;
+  scheduledStart?: string;
+  scheduledEnd?: string;
+  startTime?: string;
+  endTime?: string;
+  breakMinutes?: number;
+  multiplier?: number;
+}
+
+// ============================================
+// Break Record
+// ============================================
+
+export interface BreakRecord {
+  id: number;
+  attendanceRecordId?: number;
+  employeeId?: number;
+  workDate?: string;
+  breakNumber: number;
+  breakStart?: string;
+  breakEnd?: string;
+  actualBreakMinutes?: number;
+  effectiveBreakMinutes?: number;
+  notes?: string;
+  isActive?: boolean;
+}
 
 // ============================================
 // Attendance Record
 // ============================================
 
 export interface AttendanceRecord {
+  id: number;
+  employeeId: number;
+  employeeName: string;
+  companyId?: number;
+  workDate: string;
+  originalCheckIn?: string;
+  originalCheckOut?: string;
+  roundedCheckIn?: string;
+  roundedCheckOut?: string;
+  workingMinutes: number;
+  overtimeMinutes: number;
+  nightMinutes?: number;
+  nightOvertimeMinutes?: number;
+  lateMinutes: number;
+  earlyLeaveMinutes: number;
+  netWorkingMinutes?: number;
+  totalBreakMinutes: number;
+  effectiveBreakMinutes?: number;
+  breakType?: BreakType;
+  breakCompliant?: boolean;
+  isBreakCompliant?: boolean;
+  status: AttendanceStatus;
+  breakRecords?: BreakRecord[];
+  shiftInfo?: ShiftInfo;
+  appliedSettings?: AppliedSettingsSnapshot;
+  adjustmentReason?: string;
+  adjustedBy?: number;
+  adjustedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// ============================================
+// Unified Attendance Record (Alias for AttendanceRecord with full data)
+// ============================================
+
+export interface UnifiedAttendanceRecord {
   id: number;
   employeeId: number;
   employeeName: string;
@@ -33,28 +137,15 @@ export interface AttendanceRecord {
   nightOvertimeMinutes: number;
   lateMinutes: number;
   earlyLeaveMinutes: number;
-  totalBreakMinutes: number;
-  breakType?: BreakType;
-  isBreakCompliant: boolean;
   netWorkingMinutes: number;
-  status: AttendanceStatus;
-}
-
-// ============================================
-// Break Record
-// ============================================
-
-export interface BreakRecord {
-  id: number;
-  attendanceRecordId: number;
-  employeeId: number;
-  workDate: string;
-  breakNumber: number; // 1, 2, 3... cho multiple breaks
-  breakStart?: string;
-  breakEnd?: string;
-  actualBreakMinutes: number;
+  totalBreakMinutes: number;
   effectiveBreakMinutes: number;
-  notes?: string;
+  breakType: BreakType;
+  breakCompliant: boolean;
+  breakRecords: BreakRecord[];
+  status: AttendanceStatus;
+  appliedSettings: AppliedSettingsSnapshot;
+  shiftInfo?: ShiftInfo;
 }
 
 // ============================================
@@ -86,6 +177,8 @@ export interface PayrollRecord {
   month: number;
   salaryType: SalaryType;
   baseSalary: number;
+  workingDays?: number;
+  workingHours?: number;
   // Overtime breakdown
   regularMinutes: number;
   regularOvertimeMinutes: number;
@@ -381,4 +474,302 @@ export interface YearMonth {
 export interface DateRange {
   startDate: string;
   endDate: string;
+}
+
+// ============================================
+// Shift Template (Mẫu ca làm việc)
+// ============================================
+
+export interface ShiftTemplate {
+  id: number;
+  companyId: number;
+  name: string;
+  startTime: string;
+  endTime: string;
+  breakMinutes: number;
+  multiplier: number;
+  description?: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ShiftTemplateInput {
+  name: string;
+  startTime: string;
+  endTime: string;
+  breakMinutes: number;
+  multiplier: number;
+  description?: string;
+  isActive?: boolean;
+}
+
+// ============================================
+// Shift Assignment (Phân công ca làm việc)
+// ============================================
+
+export interface ShiftAssignment {
+  id: number;
+  employeeId: number;
+  employeeName: string;
+  shiftTemplateId: number;
+  shiftTemplate?: ShiftTemplate;
+  shiftName?: string;
+  shiftStartTime?: string;
+  shiftEndTime?: string;
+  workDate: string;
+  status: ShiftAssignmentStatus;
+  swappedWithEmployeeId?: number;
+  swappedWithEmployeeName?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ShiftAssignmentInput {
+  employeeId: number;
+  shiftTemplateId: number;
+  workDate: string;
+}
+
+// ============================================
+// Shift Swap Request (Yêu cầu đổi ca)
+// ============================================
+
+export interface ShiftSwapRequest {
+  id: number;
+  requesterId: number;
+  requesterName: string;
+  requesterShift: ShiftAssignment;
+  targetEmployeeId: number;
+  targetEmployeeName: string;
+  targetShift: ShiftAssignment;
+  reason?: string;
+  status: SwapRequestStatus;
+  approvedBy?: number;
+  approverName?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ShiftSwapRequestInput {
+  requesterShiftId: number;
+  targetShiftId: number;
+  reason?: string;
+}
+
+// ============================================
+// Employee Salary Config (Cấu hình lương nhân viên)
+// ============================================
+
+export interface EmployeeSalaryConfig {
+  id: number;
+  employeeId: number;
+  employeeName?: string;
+  salaryType: SalaryType;
+  monthlySalary?: number;
+  dailyRate?: number;
+  hourlyRate?: number;
+  shiftRate?: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  note?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmployeeSalaryConfigInput {
+  salaryType: SalaryType;
+  monthlySalary?: number;
+  dailyRate?: number;
+  hourlyRate?: number;
+  shiftRate?: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  note?: string;
+}
+
+// ============================================
+// Employee Allowance (Phụ cấp cá nhân)
+// ============================================
+
+export interface EmployeeAllowance {
+  id: number;
+  employeeId: number;
+  employeeName?: string;
+  allowanceCode: string;
+  allowanceName: string;
+  allowanceType: AllowanceType;
+  amount: number;
+  taxable: boolean;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  isActive: boolean;
+  isOverride: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmployeeAllowanceInput {
+  allowanceCode: string;
+  allowanceName: string;
+  allowanceType: AllowanceType;
+  amount: number;
+  taxable: boolean;
+  effectiveFrom: string;
+  effectiveTo?: string;
+}
+
+// ============================================
+// Employee Deduction (Khấu trừ cá nhân)
+// ============================================
+
+export interface EmployeeDeduction {
+  id: number;
+  employeeId: number;
+  employeeName?: string;
+  deductionCode: string;
+  deductionName: string;
+  deductionType: DeductionType;
+  amount?: number;
+  percentage?: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  isActive: boolean;
+  isOverride: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmployeeDeductionInput {
+  deductionCode: string;
+  deductionName: string;
+  deductionType: DeductionType;
+  amount?: number;
+  percentage?: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+}
+
+// ============================================
+// Payroll Period (Kỳ lương)
+// ============================================
+
+export interface PayrollPeriod {
+  id: number;
+  companyId: number;
+  periodStart: string;
+  periodEnd: string;
+  year: number;
+  month: number;
+  status: PayrollPeriodStatus;
+  totalGrossSalary: number;
+  totalNetSalary: number;
+  totalEmployees: number;
+  createdAt: string;
+  submittedAt?: string;
+  approvedAt?: string;
+  approvedBy?: number;
+  approverName?: string;
+  paidAt?: string;
+  paymentReference?: string;
+}
+
+export interface PayrollPeriodInput {
+  periodStart: string;
+  periodEnd: string;
+}
+
+// ============================================
+// Payroll Item (Chi tiết lương nhân viên trong kỳ)
+// ============================================
+
+export interface PayrollItem {
+  id: number;
+  payrollPeriodId: number;
+  employeeId: number;
+  employeeName: string;
+  salaryType: SalaryType;
+  baseSalary: number;
+  calculatedBaseSalary: number;
+  workingDays: number;
+  workingHours: number;
+  // Overtime breakdown
+  regularOvertimeMinutes: number;
+  nightOvertimeMinutes: number;
+  holidayOvertimeMinutes: number;
+  weekendOvertimeMinutes: number;
+  regularOvertimePay: number;
+  nightOvertimePay: number;
+  holidayOvertimePay: number;
+  weekendOvertimePay: number;
+  totalOvertimePay: number;
+  // Break
+  totalBreakMinutes: number;
+  breakType: BreakType;
+  breakDeductionAmount: number;
+  // Allowances & Deductions
+  allowanceDetails: AllowanceItem[];
+  totalAllowances: number;
+  deductionDetails: DeductionItem[];
+  totalDeductions: number;
+  // Totals
+  grossSalary: number;
+  netSalary: number;
+  // Adjustment
+  adjustmentAmount?: number;
+  adjustmentReason?: string;
+  status: PayrollItemStatus;
+}
+
+// ============================================
+// Payroll Adjustment (Điều chỉnh lương)
+// ============================================
+
+export interface PayrollAdjustment {
+  id: number;
+  payrollItemId: number;
+  amount: number;
+  reason: string;
+  adjustedBy: number;
+  adjusterName: string;
+  adjustedAt: string;
+}
+
+export interface PayrollAdjustmentInput {
+  amount: number;
+  reason: string;
+}
+
+// ============================================
+// Employment Contract (Hợp đồng lao động)
+// ============================================
+
+export interface EmploymentContract {
+  id: number;
+  employeeId: number;
+  employeeName: string;
+  contractType: ContractType;
+  contractNumber: string;
+  startDate: string;
+  endDate: string;
+  salaryConfigId?: number;
+  status: ContractStatus;
+  terminationReason?: string;
+  terminatedAt?: string;
+  terminatedBy?: number;
+  terminatorName?: string;
+  notes?: string;
+  daysUntilExpiry?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmploymentContractInput {
+  contractType: ContractType;
+  startDate: string;
+  endDate: string;
+  salaryConfigId?: number;
+  notes?: string;
 }

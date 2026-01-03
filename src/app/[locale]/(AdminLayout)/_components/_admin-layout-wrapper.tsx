@@ -20,6 +20,8 @@ interface AdminLayoutWrapperProps {
   userRole?: string;
   /** Items cho mobile bottom navigation (optional) */
   mobileNavItems?: MobileNavItem[];
+  /** Extra content hiển thị dưới sidebar header (ví dụ: work mode indicator) */
+  sidebarHeaderExtra?: React.ReactNode;
 }
 
 /**
@@ -33,6 +35,7 @@ export function AdminLayoutWrapper({
   badgeCounts = {},
   userRole,
   mobileNavItems,
+  sidebarHeaderExtra,
 }: AdminLayoutWrapperProps) {
   const headerHeight = 50;
 
@@ -46,6 +49,7 @@ export function AdminLayoutWrapper({
           headerHeight={headerHeight}
           badgeCounts={badgeCounts}
           userRole={userRole}
+          headerExtra={sidebarHeaderExtra}
         />
         <main className="w-full">
           <div className="sticky top-0 z-10 flex items-center justify-between w-full bg-primary-foreground border-b border-primary/20 h-[50px] px-4">

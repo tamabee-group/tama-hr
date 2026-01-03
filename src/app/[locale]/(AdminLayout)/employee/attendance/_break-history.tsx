@@ -1,14 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Coffee, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatTime } from "@/lib/utils/format-date";
 import type { BreakRecord } from "@/types/attendance-records";
-import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 // ============================================
 // Types
@@ -44,7 +43,6 @@ export function BreakHistory({
   isCompliant,
 }: BreakHistoryProps) {
   const t = useTranslations("break.history");
-  const locale = useLocale() as SupportedLocale;
 
   // Sắp xếp theo breakNumber tăng dần
   const sortedRecords = [...breakRecords].sort(
@@ -68,12 +66,7 @@ export function BreakHistory({
         ) : (
           <div className="space-y-3">
             {sortedRecords.map((record) => (
-              <BreakRecordItem
-                key={record.id}
-                record={record}
-                locale={locale}
-                t={t}
-              />
+              <BreakRecordItem key={record.id} record={record} t={t} />
             ))}
           </div>
         )}
@@ -119,11 +112,10 @@ export function BreakHistory({
 
 interface BreakRecordItemProps {
   record: BreakRecord;
-  locale: SupportedLocale;
   t: ReturnType<typeof useTranslations<"break.history">>;
 }
 
-function BreakRecordItem({ record, locale, t }: BreakRecordItemProps) {
+function BreakRecordItem({ record, t }: BreakRecordItemProps) {
   const isInProgress = !record.breakEnd;
 
   return (

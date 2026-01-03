@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ export function LoginDialog({
   onLoginSuccess,
 }: LoginDialogProps) {
   const router = useRouter();
+  const locale = useLocale();
   const { login: setAuthUser } = useAuth();
   const t = useTranslations("auth");
   const tDialog = useTranslations("auth.loginDialog");
@@ -82,7 +84,7 @@ export function LoginDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+        <DialogHeader className="mb-6">
           <DialogTitle className="text-center text-2xl">
             {tDialog("title")}
           </DialogTitle>
@@ -126,7 +128,7 @@ export function LoginDialog({
             </InputGroup>
             <div className="flex justify-end mt-2">
               <Link
-                href="/forgot-password"
+                href={`/${locale}/forgot-password`}
                 className="text-sm text-primary hover:underline"
                 onClick={() => onOpenChange(false)}
               >
@@ -140,7 +142,7 @@ export function LoginDialog({
           <div className="text-center text-sm">
             {tDialog("noAccount")}{" "}
             <Link
-              href="/register"
+              href={`/${locale}/register`}
               className="text-primary dark:text-(--blue-light) hover:underline font-medium"
               onClick={() => onOpenChange(false)}
             >

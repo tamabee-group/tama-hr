@@ -4,6 +4,7 @@ import { AdminLayoutWrapper } from "../_components/_admin-layout-wrapper";
 import { useCompanySidebarGroups } from "./_components/_company-sidebar-items";
 import { useMyCompany } from "@/hooks/use-my-company";
 import { useAuth } from "@/lib/auth";
+import { WorkModeIndicator } from "./_components/_work-mode-indicator";
 import type { SidebarHeaderConfig } from "@/types/sidebar";
 
 /**
@@ -33,6 +34,7 @@ export default function CompanyAdminLayout({
       sidebarGroups={sidebarGroups}
       headerConfig={headerConfig}
       userRole={user?.role}
+      sidebarHeaderExtra={<WorkModeIndicator />}
     >
       {children}
     </AdminLayoutWrapper>

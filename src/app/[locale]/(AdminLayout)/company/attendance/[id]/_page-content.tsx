@@ -1,106 +1,140 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { ArrowLeft, Coffee } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { AttendanceDetail } from "@/app/[locale]/(AdminLayout)/company/attendance/_attendance-detail";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AttendanceDayDetail } from "@/app/[locale]/_components/_shared/attendance-day-detail";
+import { BreakTimeline } from "@/app/[locale]/(AdminLayout)/employee/attendance/_break-timeline";
+import { EditAttendanceDialog } from "./_edit-attendance-dialog";
 
-import { attendanceApi } from "@/lib/apis/attendance-api";
-import { adjustmentApi } from "@/lib/apis/adjustment-api";
-import {
-  AttendanceRecord,
-  AdjustmentRequest,
-} from "@/types/attendance-records";
+import { apiClient } from "@/lib/utils/fetch-client";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import type { UnifiedAttendanceRecord } from "@/types/attendance-records";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface AttendanceDetailContentProps {
   attendanceId: number;
 }
 
-/**
- * Client component cho trang chi tiết attendance
- * Fetch data và render AttendanceDetail
- */
 export function AttendanceDetailContent({
   attendanceId,
 }: AttendanceDetailContentProps) {
   const tCommon = useTranslations("common");
+  const tBreak = useTranslations("break");
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
   const router = useRouter();
 
-  // State
-  const [record, setRecord] = useState<AttendanceRecord | null>(null);
-  const [adjustmentHistory, setAdjustmentHistory] = useState<
-    AdjustmentRequest[]
-  >([]);
-  const [loading, setLoading] = useState(true);
+  const [record, setRecord] = React.useState<UnifiedAttendanceRecord | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
-  // Fetch attendance record và adjustment history
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  // Fetch attendance record by ID
+  const fetchData = React.useCallback(async () => {
     try {
-      const [attendanceData, adjustmentsData] = await Promise.all([
-        attendanceApi.getAttendanceById(attendanceId),
-        adjustmentApi.getAllAdjustments(0, 100, {}),
-      ]);
-
-      setRecord(attendanceData);
-
-      // Filter adjustments cho attendance record này
-      const relatedAdjustments = adjustmentsData.content.filter(
-        (adj) => adj.attendanceRecordId === attendanceId,
+      setIsLoading(true);
+      const data = await apiClient.get<UnifiedAttendanceRecord>(
+        `/api/company/attendance/${attendanceId}`,
       );
-      setAdjustmentHistory(relatedAdjustments);
+      setRecord(data);
     } catch (error) {
+      console.error("Error fetching attendance:", error);
       toast.error(getErrorMessage((error as Error).message, tErrors));
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [attendanceId, tErrors]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Handle back
-  const handleBack = () => {
-    router.push(`/${locale}/company/attendance`);
+  // Handle edit action
+  const handleEdit = () => {
+    setIsEditDialogOpen(true);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <span className="text-muted-foreground">{tCommon("loading")}</span>
-      </div>
-    );
-  }
+  // Handle edit success
+  const handleEditSuccess = () => {
+    setIsEditDialogOpen(false);
+    fetchData();
+  };
 
-  if (!record) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 space-y-4">
-        <span className="text-muted-foreground">{tCommon("noData")}</span>
-        <Button variant="outline" onClick={handleBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {tCommon("back")}
-        </Button>
-      </div>
-    );
-  }
+  // Lấy minimumBreakRequired từ appliedSettings
+  const minimumBreakRequired =
+    record?.appliedSettings?.breakConfig?.legalMinimumBreakMinutes ?? 0;
 
   return (
-    <div className="space-y-6">
-      <Button variant="outline" onClick={handleBack}>
+    <div className="space-y-4">
+      {/* Back button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push(`/${locale}/company/attendance`)}
+        className="touch-manipulation"
+      >
         <ArrowLeft className="h-4 w-4 mr-2" />
         {tCommon("back")}
       </Button>
 
-      <AttendanceDetail record={record} adjustmentHistory={adjustmentHistory} />
+      {/* 2 columns layout on wide screens */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Left column - Day detail (2/3 width on lg) */}
+        <div className="lg:col-span-2">
+          <AttendanceDayDetail
+            date={record?.workDate || ""}
+            record={record}
+            isLoading={isLoading}
+            mode="manager"
+            onAction={handleEdit}
+            employeeName={record?.employeeName}
+          />
+        </div>
+
+        {/* Right column - Break history (1/3 width on lg) */}
+        <div className="lg:col-span-1">
+          {record && record.breakRecords && record.breakRecords.length > 0 ? (
+            <BreakTimeline
+              breakRecords={record.breakRecords}
+              totalBreakMinutes={record.totalBreakMinutes}
+              minimumRequired={minimumBreakRequired}
+              maxBreaksPerDay={
+                record.appliedSettings?.breakConfig?.maxBreaksPerDay ?? 3
+              }
+              isCompliant={record.breakCompliant}
+            />
+          ) : (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Coffee className="h-4 w-4" />
+                  {tBreak("history.title")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Coffee className="h-10 w-10 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">{tBreak("history.noRecords")}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Edit Dialog */}
+      <EditAttendanceDialog
+        record={record}
+        open={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 }

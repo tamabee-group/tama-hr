@@ -9,45 +9,50 @@ import { usePathname } from "next/navigation";
 
 const NavLinks: NextPage = () => {
   const path = usePathname();
-  console.log("path-repace: ", pathReplace(path));
   const t = useTranslations("header");
+  const isHomePage = pathReplace(path) === "/";
+
+  const handleSmoothScroll = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string,
+  ) => {
+    // Chỉ smooth scroll khi đang ở trang chủ
+    if (isHomePage) {
+      e.preventDefault();
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      } else if (targetId === "hero") {
+        // Scroll to top nếu không tìm thấy element hero
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <nav className="hidden md:flex gap-12">
       <Link
-        href={"/"}
+        href={isHomePage ? "#hero" : "/#hero"}
+        onClick={(e) => handleSmoothScroll(e, "hero")}
         className={cn(
-          "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/" && "border-b-2 border-primary",
+          "dark:hover:text-(--blue-light) border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary",
         )}
       >
         {t("home")}
       </Link>
       <Link
-        href={"/about"}
-        className={cn(
-          "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/about" && "border-b-2 border-primary",
-        )}
+        href={isHomePage ? "#features" : "/#features"}
+        onClick={(e) => handleSmoothScroll(e, "features")}
+        className="dark:hover:text-(--blue-light) border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary"
       >
-        {t("about")}
+        {t("features")}
       </Link>
       <Link
-        href={"/pricing"}
-        className={cn(
-          "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/pricing" && "border-b-2 border-primary",
-        )}
+        href={isHomePage ? "#pricing" : "/#pricing"}
+        onClick={(e) => handleSmoothScroll(e, "pricing")}
+        className="dark:hover:text-(--blue-light) border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary"
       >
         {t("pricing")}
-      </Link>
-      <Link
-        href={"/contact"}
-        className={cn(
-          "border-b-2 border-transparent transition flex-1 text-nowrap",
-          pathReplace(path) === "/contact" && "border-b-2 border-primary",
-        )}
-      >
-        {t("contact")}
       </Link>
     </nav>
   );

@@ -354,19 +354,19 @@ function CalendarDay({ calendarDate, onClick }: CalendarDayProps) {
   if (isCurrentMonth && data?.status) {
     if (data.isLate) {
       statusLabel = t("legend.late");
-      statusClass = "text-orange-600 dark:text-orange-400";
+      statusClass = "text-orange-400 dark:text-orange-400";
     } else if (data.isEarlyLeave) {
       statusLabel = t("legend.earlyLeave");
-      statusClass = "text-yellow-600 dark:text-yellow-400";
+      statusClass = "text-yellow-400 dark:text-yellow-400";
     } else if (data.status === "present") {
       statusLabel = t("legend.present");
-      statusClass = "text-green-600 dark:text-green-400";
+      statusClass = "text-green-400 dark:text-green-400";
     } else if (data.status === "absent") {
       statusLabel = t("legend.absent");
-      statusClass = "text-red-600 dark:text-red-400";
+      statusClass = "text-red-400 dark:text-red-400";
     } else if (data.status === "leave") {
       statusLabel = t("legend.leave");
-      statusClass = "text-purple-600 dark:text-purple-400";
+      statusClass = "text-purple-400 dark:text-purple-400";
     } else if (data.status === "holiday") {
       statusLabel = t("legend.holiday");
       statusClass = "text-blue-600 dark:text-blue-400";
@@ -380,7 +380,7 @@ function CalendarDay({ calendarDate, onClick }: CalendarDayProps) {
       disabled={!isCurrentMonth}
       className={cn(
         "relative aspect-square p-1 rounded-md transition-colors flex flex-col items-center justify-center gap-0.5",
-        "hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
+        "hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
         "disabled:cursor-default disabled:hover:bg-transparent",
         isCurrentMonth && "cursor-pointer",
         bgClass,

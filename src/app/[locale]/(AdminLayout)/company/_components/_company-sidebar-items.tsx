@@ -7,23 +7,27 @@ import {
   Settings,
   LayoutDashboard,
   Clock,
-  Calendar,
   DollarSign,
   CalendarDays,
   FileText,
   ClipboardList,
   ClipboardEdit,
+  CalendarClock,
+  FileSignature,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { SidebarGroup } from "@/types/sidebar";
+import { useWorkMode } from "@/hooks/use-work-mode";
+import { filterSidebarByWorkMode } from "@/lib/utils/sidebar-work-mode-filter";
+import { WorkMode } from "@/types/attendance-config";
 
 /**
- * Hook để lấy danh sách menu sidebar cho Company Admin
+ * Lấy danh sách menu sidebar gốc cho Company Admin
  * Cấu trúc đơn giản: Group → Items (không có nested items)
  */
-export function useCompanySidebarGroups(): SidebarGroup[] {
-  const t = useTranslations("sidebar");
-
+function getBaseSidebarGroups(
+  t: ReturnType<typeof useTranslations>,
+): SidebarGroup[] {
   return [
     {
       label: t("groups.overview"),
@@ -46,10 +50,16 @@ export function useCompanySidebarGroups(): SidebarGroup[] {
           requiredCompanyPermission: "VIEW_EMPLOYEES",
         },
         {
-          title: t("items.schedules"),
-          url: "/company/schedules",
-          icon: <Calendar />,
-          requiredCompanyPermission: "VIEW_SCHEDULES",
+          title: t("items.contracts"),
+          url: "/company/contracts",
+          icon: <FileSignature />,
+          requiredCompanyPermission: "MANAGE_CONTRACTS",
+        },
+        {
+          title: t("items.shifts"),
+          url: "/company/shifts",
+          icon: <CalendarClock />,
+          requiredCompanyPermission: "MANAGE_SHIFTS",
         },
         {
           title: t("items.leaveRequests"),
@@ -123,4 +133,37 @@ export function useCompanySidebarGroups(): SidebarGroup[] {
       ],
     },
   ];
+}
+
+/**
+ * Hook để lấy danh sách menu sidebar cho Company Admin
+ * Tự động filter dựa trên work mode của company
+ */
+export function useCompanySidebarGroups(): SidebarGroup[] {
+  const t = useTranslations("sidebar");
+  const { workMode, loading } = useWorkMode();
+
+  const baseGroups = getBaseSidebarGroups(t);
+
+  // Khi đang loading hoặc chưa có work mode, hiển thị tất cả (default FLEXIBLE_SHIFT)
+  if (loading || !workMode) {
+    return baseGroups;
+  }
+
+  // Filter sidebar dựa trên work mode
+  return filterSidebarByWorkMode(baseGroups, workMode);
+}
+
+/**
+ * Hook để lấy work mode hiện tại
+ * Export để các component khác có thể sử dụng
+ */
+export function useCurrentWorkMode(): {
+  workMode: WorkMode | null;
+  loading: boolean;
+  isFixedHours: boolean;
+  isFlexibleShift: boolean;
+} {
+  const { workMode, loading, isFixedHours, isFlexibleShift } = useWorkMode();
+  return { workMode, loading, isFixedHours, isFlexibleShift };
 }

@@ -1,16 +1,17 @@
-import { useTranslations } from "next-intl";
-import { ToggleTheme } from "../_components/_toggle-theme";
+import { HeroSection } from "./_components/_hero-section";
+import { FeaturesSection } from "./_components/_features-section";
+import { WhySection } from "./_components/_why-section";
 import { PricingSection } from "./_components/_pricing-section";
+import { CtaSection } from "./_components/_cta-section";
 
 const LandingPage = () => {
-  const t = useTranslations("landing");
-
   return (
     <div>
-      <h1>{t("content")}</h1>
-      <ToggleTheme />
-
+      <HeroSection />
+      <FeaturesSection />
+      <WhySection />
       <PricingSection />
+      <CtaSection />
     </div>
   );
 };

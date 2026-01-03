@@ -1,13 +1,21 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
-import { Plus, Pencil, Trash2, MoreHorizontal, Star } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  MoreHorizontal,
+  Star,
+  Search,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,21 +34,24 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { WorkSchedule } from "@/types/attendance-records";
-import { ScheduleType } from "@/types/attendance-enums";
 import { getSchedules, deleteSchedule } from "@/lib/apis/work-schedule-api";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { formatMinutesToTime } from "@/lib/utils/format-date";
+
+type SupportedLocale = "vi" | "en" | "ja";
 import { ScheduleForm } from "./_schedule-form";
 
 /**
  * Component hiển thị bảng danh sách lịch làm việc
- * Hỗ trợ CRUD operations và hiển thị thông tin schedule
+ * Gọn gàng với 1 bảng duy nhất
  */
 export function ScheduleTable() {
   const t = useTranslations("schedules");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
   const tErrors = useTranslations("errors");
+  const locale = useLocale();
 
   const [schedules, setSchedules] = useState<WorkSchedule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,9 +63,10 @@ export function ScheduleTable() {
   const [scheduleToDelete, setScheduleToDelete] = useState<WorkSchedule | null>(
     null,
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch schedules
-  const fetchSchedules = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getSchedules(0, 100);
@@ -68,8 +80,15 @@ export function ScheduleTable() {
   }, [tCommon]);
 
   useEffect(() => {
-    fetchSchedules();
-  }, [fetchSchedules]);
+    fetchData();
+  }, [fetchData]);
+
+  // Filter schedules by search query
+  const filteredSchedules = useMemo(() => {
+    if (!searchQuery.trim()) return schedules;
+    const query = searchQuery.toLowerCase();
+    return schedules.filter((s) => s.name.toLowerCase().includes(query));
+  }, [schedules, searchQuery]);
 
   // Handle delete
   const handleDelete = async () => {
@@ -78,7 +97,7 @@ export function ScheduleTable() {
     try {
       await deleteSchedule(scheduleToDelete.id);
       toast.success(t("messages.deleteSuccess"));
-      fetchSchedules();
+      fetchData();
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -92,7 +111,7 @@ export function ScheduleTable() {
   const handleFormSuccess = () => {
     setShowForm(false);
     setEditingSchedule(null);
-    fetchSchedules();
+    fetchData();
   };
 
   // Columns definition
@@ -112,50 +131,44 @@ export function ScheduleTable() {
     {
       accessorKey: "type",
       header: t("table.type"),
+      cell: ({ row }) => (
+        <Badge variant="outline" className="text-xs">
+          {getEnumLabel("scheduleType", row.original.type, tEnums)}
+        </Badge>
+      ),
+    },
+    {
+      id: "workHours",
+      header: t("table.workHours"),
       cell: ({ row }) => {
-        const type = row.original.type as ScheduleType;
-        return (
-          <Badge variant="secondary">
-            {getEnumLabel("scheduleType", type, tEnums)}
-          </Badge>
-        );
+        const start = row.original.scheduleData?.workStartTime || "--:--";
+        const end = row.original.scheduleData?.workEndTime || "--:--";
+        return `${start} - ${end}`;
       },
     },
     {
-      accessorKey: "scheduleData.workStartTime",
-      header: t("table.workStart"),
-      cell: ({ row }) => row.original.scheduleData.workStartTime,
-    },
-    {
-      accessorKey: "scheduleData.workEndTime",
-      header: t("table.workEnd"),
-      cell: ({ row }) => row.original.scheduleData.workEndTime,
-    },
-    {
-      accessorKey: "scheduleData.breakMinutes",
+      id: "breakTime",
       header: t("table.breakTime"),
-      cell: ({ row }) =>
-        `${row.original.scheduleData.breakMinutes} ${tCommon("time")}`,
-    },
-    {
-      accessorKey: "isDefault",
-      header: t("table.isDefault"),
-      cell: ({ row }) => (
-        <span>{row.original.isDefault ? tCommon("yes") : tCommon("no")}</span>
-      ),
+      cell: ({ row }) => {
+        const minutes = row.original.scheduleData?.breakMinutes;
+        if (minutes === undefined || minutes === null) return "--";
+        return formatMinutesToTime(minutes, {
+          locale: locale as SupportedLocale,
+        });
+      },
     },
     {
       accessorKey: "assignmentCount",
       header: t("table.assignmentCount"),
-      cell: ({ row }) => row.original.assignmentCount,
+      cell: ({ row }) => row.original.assignmentCount || 0,
     },
     {
       id: "actions",
-      header: tCommon("actions"),
+      header: "",
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="h-8 w-8">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -191,23 +204,32 @@ export function ScheduleTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={() => setShowForm(true)}>
+      {/* Toolbar: Search + Create Button */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={`${tCommon("search")}...`}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Button onClick={() => setShowForm(true)} size="sm">
           <Plus className="mr-2 h-4 w-4" />
           {t("createSchedule")}
         </Button>
       </div>
 
-      {schedules.length === 0 ? (
+      {/* Table */}
+      {filteredSchedules.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">
-          {t("messages.noSchedules")}
+          {searchQuery ? tCommon("noResults") : t("messages.noSchedules")}
         </div>
       ) : (
         <BaseTable
           columns={columns}
-          data={schedules}
-          filterColumn="name"
-          filterPlaceholder={`${tCommon("search")}...`}
+          data={filteredSchedules}
           noResultsText={tCommon("noResults")}
           previousText={tCommon("previous")}
           nextText={tCommon("next")}
@@ -232,11 +254,20 @@ export function ScheduleTable() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("deleteSchedule")}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="space-y-2">
               {scheduleToDelete?.assignmentCount &&
-              scheduleToDelete.assignmentCount > 0
-                ? t("messages.hasAssignments")
-                : t("messages.confirmDelete")}
+              scheduleToDelete.assignmentCount > 0 ? (
+                <>
+                  <p className="text-destructive font-medium">
+                    {t("messages.hasAssignmentsWarning", {
+                      count: scheduleToDelete.assignmentCount,
+                    })}
+                  </p>
+                  <p>{t("messages.deleteWithAssignmentsConfirm")}</p>
+                </>
+              ) : (
+                <p>{t("messages.confirmDelete")}</p>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

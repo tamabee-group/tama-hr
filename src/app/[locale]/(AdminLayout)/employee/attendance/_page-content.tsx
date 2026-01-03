@@ -16,12 +16,14 @@ import {
   Loader2,
   Calendar,
 } from "lucide-react";
-import { attendanceApi } from "@/lib/apis/attendance-api";
-import { breakApi, type BreakSummaryResponse } from "@/lib/apis/break-api";
+import { unifiedAttendanceApi } from "@/lib/apis/unified-attendance-api";
 import { formatTime, formatDate } from "@/lib/utils/format-date";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { AttendanceCalendar } from "./_attendance-calendar";
-import type { AttendanceRecord, BreakRecord } from "@/types/attendance-records";
+import type {
+  UnifiedAttendanceRecord,
+  BreakRecord,
+} from "@/types/attendance-records";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 // ============================================
@@ -45,10 +47,7 @@ interface TimelineEvent {
  * Active = có breakStart và chưa có breakEnd
  */
 function isBreakActive(breakRecord: BreakRecord): boolean {
-  // Phải có breakStart
   if (!breakRecord.breakStart) return false;
-
-  // breakEnd phải là null/undefined/empty để được coi là active
   const breakEnd = breakRecord.breakEnd;
   return breakEnd === null || breakEnd === undefined || breakEnd === "";
 }
@@ -62,11 +61,9 @@ export function EmployeeAttendancePageContent() {
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
 
-  const [todayRecord, setTodayRecord] = React.useState<AttendanceRecord | null>(
-    null,
-  );
-  const [breakSummary, setBreakSummary] =
-    React.useState<BreakSummaryResponse | null>(null);
+  // Sử dụng UnifiedAttendanceRecord thay vì AttendanceRecord riêng
+  const [todayRecord, setTodayRecord] =
+    React.useState<UnifiedAttendanceRecord | null>(null);
   const [currentBreak, setCurrentBreak] = React.useState<BreakRecord | null>(
     null,
   );
@@ -74,6 +71,7 @@ export function EmployeeAttendancePageContent() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentTime, setCurrentTime] = React.useState(new Date());
   const [selectedMonth, setSelectedMonth] = React.useState(new Date());
+  const [calendarRefreshKey, setCalendarRefreshKey] = React.useState(0);
 
   // Cập nhật thời gian mỗi giây
   React.useEffect(() => {
@@ -81,35 +79,20 @@ export function EmployeeAttendancePageContent() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch trạng thái hôm nay
+  // Fetch trạng thái hôm nay sử dụng unified API
   const fetchTodayStatus = React.useCallback(async () => {
     try {
       setIsLoading(true);
 
-      // Fetch attendance record
-      const record = await attendanceApi.getTodayStatus();
+      // Fetch unified attendance record (bao gồm cả break records)
+      const record = await unifiedAttendanceApi.getTodayAttendance();
       setTodayRecord(record);
 
-      // Fetch break records - chỉ khi đã check-in
-      if (record?.originalCheckIn) {
-        try {
-          const breaks = await breakApi.getTodayBreaks();
-          setBreakSummary(breaks);
-
-          // Tìm break đang active sử dụng helper function
-          if (breaks?.breakRecords && breaks.breakRecords.length > 0) {
-            const activeBreak = breaks.breakRecords.find(isBreakActive);
-            setCurrentBreak(activeBreak || null);
-          } else {
-            setCurrentBreak(null);
-          }
-        } catch (breakError) {
-          console.error("Error fetching breaks:", breakError);
-          setBreakSummary(null);
-          setCurrentBreak(null);
-        }
+      // Tìm break đang active từ unified response
+      if (record?.breakRecords && record.breakRecords.length > 0) {
+        const activeBreak = record.breakRecords.find(isBreakActive);
+        setCurrentBreak(activeBreak || null);
       } else {
-        setBreakSummary(null);
         setCurrentBreak(null);
       }
     } catch (error) {
@@ -142,7 +125,7 @@ export function EmployeeAttendancePageContent() {
       checkIn: { active: !hasCheckedIn, completed: hasCheckedIn },
       breakStart: {
         active: hasCheckedIn && !hasCheckedOut && !isOnBreak,
-        completed: false, // Luôn cho phép bắt đầu break mới
+        completed: false,
       },
       breakEnd: { active: isOnBreak, completed: false },
       checkOut: {
@@ -154,13 +137,14 @@ export function EmployeeAttendancePageContent() {
 
   const buttonStates = getButtonStates();
 
-  // Handlers
+  // Handlers sử dụng unified API
   const handleCheckIn = async () => {
     try {
       setIsSubmitting(true);
-      await attendanceApi.checkIn({});
+      await unifiedAttendanceApi.checkIn({});
       toast.success(t("messages.checkInSuccess"));
       await fetchTodayStatus();
+      setCalendarRefreshKey((prev) => prev + 1);
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -170,12 +154,12 @@ export function EmployeeAttendancePageContent() {
   };
 
   const handleBreakStart = async () => {
-    if (!todayRecord) return;
     try {
       setIsSubmitting(true);
-      await breakApi.startBreak({ attendanceRecordId: todayRecord.id });
+      await unifiedAttendanceApi.startBreak();
       toast.success(t("messages.breakStartSuccess"));
       await fetchTodayStatus();
+      setCalendarRefreshKey((prev) => prev + 1);
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -188,9 +172,10 @@ export function EmployeeAttendancePageContent() {
     if (!currentBreak) return;
     try {
       setIsSubmitting(true);
-      await breakApi.endBreak(currentBreak.id);
+      await unifiedAttendanceApi.endBreak(currentBreak.id);
       toast.success(t("messages.breakEndSuccess"));
       await fetchTodayStatus();
+      setCalendarRefreshKey((prev) => prev + 1);
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -202,9 +187,10 @@ export function EmployeeAttendancePageContent() {
   const handleCheckOut = async () => {
     try {
       setIsSubmitting(true);
-      await attendanceApi.checkOut();
+      await unifiedAttendanceApi.checkOut({});
       toast.success(t("messages.checkOutSuccess"));
       await fetchTodayStatus();
+      setCalendarRefreshKey((prev) => prev + 1);
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -213,7 +199,7 @@ export function EmployeeAttendancePageContent() {
     }
   };
 
-  // Tạo timeline events
+  // Tạo timeline events từ unified data
   const getTimelineEvents = (): TimelineEvent[] => {
     const events: TimelineEvent[] = [];
 
@@ -225,21 +211,25 @@ export function EmployeeAttendancePageContent() {
       });
     }
 
-    // Thêm break events
-    if (breakSummary?.breakRecords) {
-      for (const br of breakSummary.breakRecords) {
+    // Thêm break events từ unified breakRecords
+    if (todayRecord?.breakRecords) {
+      const breakCount = todayRecord.breakRecords.length;
+      const showNumber = breakCount > 1;
+
+      for (const br of todayRecord.breakRecords) {
+        const suffix = showNumber ? ` #${br.breakNumber}` : "";
         if (br.breakStart) {
           events.push({
             type: "break_start",
             time: br.breakStart,
-            label: t("breakStart"),
+            label: t("breakStart") + suffix,
           });
         }
         if (br.breakEnd) {
           events.push({
             type: "break_end",
             time: br.breakEnd,
-            label: t("breakEnd"),
+            label: t("breakEnd") + suffix,
           });
         }
       }
@@ -259,6 +249,26 @@ export function EmployeeAttendancePageContent() {
     );
 
     return events;
+  };
+
+  // Lấy break gần nhất đã hoàn thành
+  const getLastCompletedBreak = (): BreakRecord | undefined => {
+    return todayRecord?.breakRecords
+      ?.filter((b) => b.breakStart && b.breakEnd)
+      .sort(
+        (a, b) =>
+          new Date(b.breakStart!).getTime() - new Date(a.breakStart!).getTime(),
+      )[0];
+  };
+
+  // Lấy break end gần nhất
+  const getLastBreakEnd = (): string | undefined => {
+    return todayRecord?.breakRecords
+      ?.filter((b) => b.breakEnd)
+      .sort(
+        (a, b) =>
+          new Date(b.breakEnd!).getTime() - new Date(a.breakEnd!).getTime(),
+      )[0]?.breakEnd;
   };
 
   if (isLoading) {
@@ -309,21 +319,13 @@ export function EmployeeAttendancePageContent() {
                 variant="success"
               />
 
-              {/* Break Start - hiển thị thời gian bắt đầu của break gần nhất đã hoàn thành */}
+              {/* Break Start */}
               <ActionButton
                 icon={<Coffee className="h-5 w-5" />}
                 label={t("breakStart")}
                 time={
-                  // Nếu đang có break active, hiển thị thời gian bắt đầu của nó
-                  // Nếu không, hiển thị thời gian bắt đầu của break hoàn thành gần nhất
                   currentBreak?.breakStart ||
-                  breakSummary?.breakRecords
-                    ?.filter((b) => b.breakStart && b.breakEnd)
-                    .sort(
-                      (a, b) =>
-                        new Date(b.breakStart!).getTime() -
-                        new Date(a.breakStart!).getTime(),
-                    )[0]?.breakStart
+                  getLastCompletedBreak()?.breakStart
                 }
                 state={buttonStates.breakStart}
                 onClick={handleBreakStart}
@@ -331,19 +333,11 @@ export function EmployeeAttendancePageContent() {
                 variant="warning"
               />
 
-              {/* Break End - hiển thị thời gian kết thúc của break gần nhất đã hoàn thành */}
+              {/* Break End */}
               <ActionButton
                 icon={<Play className="h-5 w-5" />}
                 label={t("breakEnd")}
-                time={
-                  breakSummary?.breakRecords
-                    ?.filter((b) => b.breakEnd)
-                    .sort(
-                      (a, b) =>
-                        new Date(b.breakEnd!).getTime() -
-                        new Date(a.breakEnd!).getTime(),
-                    )[0]?.breakEnd
-                }
+                time={getLastBreakEnd()}
                 state={buttonStates.breakEnd}
                 onClick={handleBreakEnd}
                 isSubmitting={isSubmitting}
@@ -388,6 +382,7 @@ export function EmployeeAttendancePageContent() {
                 month={selectedMonth}
                 onMonthChange={setSelectedMonth}
                 hideCard
+                refreshKey={calendarRefreshKey}
               />
             </CardContent>
           </Card>
@@ -422,7 +417,6 @@ function ActionButton({
 }: ActionButtonProps) {
   const { active, completed } = state;
 
-  // Màu sắc theo variant
   const variantStyles = {
     success: {
       active: "bg-green-600 hover:bg-green-700 text-white",

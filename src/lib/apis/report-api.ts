@@ -16,11 +16,120 @@ import {
 // Types
 // ============================================
 
-export type ReportType = "attendance" | "payroll" | "leave" | "break";
+export type ReportType =
+  | "attendance"
+  | "payroll"
+  | "leave"
+  | "break"
+  | "overtime"
+  | "break-compliance"
+  | "payroll-summary"
+  | "cost-analysis"
+  | "shift-utilization";
 
 export interface GenerateReportRequest {
   reportType: ReportType;
   filters: ReportFilters;
+}
+
+export interface OvertimeReportData {
+  employees: {
+    employeeId: number;
+    employeeName: string;
+    regularOvertimeMinutes: number;
+    nightOvertimeMinutes: number;
+    holidayOvertimeMinutes: number;
+    weekendOvertimeMinutes: number;
+    totalOvertimeMinutes: number;
+    totalOvertimePay: number;
+  }[];
+  summary: {
+    totalEmployees: number;
+    totalRegularOvertime: number;
+    totalNightOvertime: number;
+    totalHolidayOvertime: number;
+    totalWeekendOvertime: number;
+    totalOvertimeMinutes: number;
+    totalOvertimePay: number;
+  };
+}
+
+export interface BreakComplianceReportData {
+  employees: {
+    employeeId: number;
+    employeeName: string;
+    totalDays: number;
+    compliantDays: number;
+    nonCompliantDays: number;
+    complianceRate: number;
+    averageBreakMinutes: number;
+  }[];
+  summary: {
+    totalEmployees: number;
+    overallComplianceRate: number;
+    totalCompliantDays: number;
+    totalNonCompliantDays: number;
+  };
+}
+
+export interface PayrollSummaryReportData {
+  periods: {
+    year: number;
+    month: number;
+    totalEmployees: number;
+    totalBaseSalary: number;
+    totalOvertimePay: number;
+    totalAllowances: number;
+    totalDeductions: number;
+    totalGrossSalary: number;
+    totalNetSalary: number;
+    status: string;
+  }[];
+  summary: {
+    totalPeriods: number;
+    grandTotalGross: number;
+    grandTotalNet: number;
+    averagePerEmployee: number;
+  };
+}
+
+export interface CostAnalysisReportData {
+  breakdown: {
+    category: string;
+    amount: number;
+    percentage: number;
+  }[];
+  trends: {
+    period: string;
+    baseSalary: number;
+    overtime: number;
+    allowances: number;
+    total: number;
+  }[];
+  summary: {
+    totalCost: number;
+    baseSalaryPercentage: number;
+    overtimePercentage: number;
+    allowancesPercentage: number;
+    costPerEmployee: number;
+  };
+}
+
+export interface ShiftUtilizationReportData {
+  shifts: {
+    shiftId: number;
+    shiftName: string;
+    totalSlots: number;
+    filledSlots: number;
+    utilizationRate: number;
+    averageAttendanceRate: number;
+  }[];
+  summary: {
+    totalShifts: number;
+    overallUtilizationRate: number;
+    mostUtilizedShift: string;
+    leastUtilizedShift: string;
+  };
 }
 
 // ============================================
@@ -266,6 +375,140 @@ export async function exportBreakReportCsv(
 }
 
 // ============================================
+// New Report APIs (Flexible Workforce Management)
+// ============================================
+
+/**
+ * Lấy báo cáo overtime breakdown
+ * @client-only
+ */
+export async function getOvertimeReport(
+  filters: ReportFilters,
+): Promise<OvertimeReportData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+  if (filters.employeeId)
+    params.append("employeeId", filters.employeeId.toString());
+
+  return apiClient.get<OvertimeReportData>(
+    `/api/company/reports/overtime?${params.toString()}`,
+  );
+}
+
+/**
+ * Lấy báo cáo break compliance
+ * @client-only
+ */
+export async function getBreakComplianceReport(
+  filters: ReportFilters,
+): Promise<BreakComplianceReportData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+  if (filters.employeeId)
+    params.append("employeeId", filters.employeeId.toString());
+
+  return apiClient.get<BreakComplianceReportData>(
+    `/api/company/reports/break-compliance?${params.toString()}`,
+  );
+}
+
+/**
+ * Lấy báo cáo payroll summary
+ * @client-only
+ */
+export async function getPayrollSummaryReport(
+  filters: ReportFilters,
+): Promise<PayrollSummaryReportData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+
+  return apiClient.get<PayrollSummaryReportData>(
+    `/api/company/reports/payroll-summary?${params.toString()}`,
+  );
+}
+
+/**
+ * Lấy báo cáo cost analysis
+ * @client-only
+ */
+export async function getCostAnalysisReport(
+  filters: ReportFilters,
+): Promise<CostAnalysisReportData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+
+  return apiClient.get<CostAnalysisReportData>(
+    `/api/company/reports/cost-analysis?${params.toString()}`,
+  );
+}
+
+/**
+ * Lấy báo cáo shift utilization
+ * @client-only
+ */
+export async function getShiftUtilizationReport(
+  filters: ReportFilters,
+): Promise<ShiftUtilizationReportData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+
+  return apiClient.get<ShiftUtilizationReportData>(
+    `/api/company/reports/shift-utilization?${params.toString()}`,
+  );
+}
+
+/**
+ * Lấy dữ liệu biểu đồ overtime
+ * @client-only
+ */
+export async function getOvertimeChartData(
+  filters: ReportFilters,
+): Promise<ChartData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+
+  return apiClient.get<ChartData>(
+    `/api/company/reports/overtime/chart?${params.toString()}`,
+  );
+}
+
+/**
+ * Lấy dữ liệu biểu đồ cost analysis
+ * @client-only
+ */
+export async function getCostAnalysisChartData(
+  filters: ReportFilters,
+): Promise<ChartData> {
+  const params = new URLSearchParams();
+  params.append("startDate", filters.startDate);
+  params.append("endDate", filters.endDate);
+  if (filters.departmentId)
+    params.append("departmentId", filters.departmentId.toString());
+
+  return apiClient.get<ChartData>(
+    `/api/company/reports/cost-analysis/chart?${params.toString()}`,
+  );
+}
+
+// ============================================
 // Export API object
 // ============================================
 
@@ -281,4 +524,12 @@ export const reportApi = {
   exportCsv,
   exportPdf,
   exportBreakReportCsv,
+  // New reports
+  getOvertimeReport,
+  getBreakComplianceReport,
+  getPayrollSummaryReport,
+  getCostAnalysisReport,
+  getShiftUtilizationReport,
+  getOvertimeChartData,
+  getCostAnalysisChartData,
 };

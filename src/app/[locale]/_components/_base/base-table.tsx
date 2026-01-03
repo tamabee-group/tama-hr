@@ -47,6 +47,13 @@ interface BaseTableProps<TData, TValue> {
   initialColumnVisibility?: VisibilityState;
   // Cấu hình pagination - mặc định 20 theo Requirements 1.6, 3.3
   pageSize?: number;
+  // Server-side pagination
+  serverPagination?: {
+    page: number;
+    totalPages: number;
+    totalElements: number;
+    onPageChange: (page: number) => void;
+  };
   // Text tùy chỉnh
   noResultsText?: string;
   selectedText?: string;
@@ -67,6 +74,7 @@ export function BaseTable<TData, TValue>({
   showRowSelection = false,
   initialColumnVisibility = {},
   pageSize = DEFAULT_PAGE_SIZE,
+  serverPagination,
   noResultsText = "No results.",
   selectedText = "row(s) selected.",
   previousText = "Previous",
@@ -242,32 +250,70 @@ export function BaseTable<TData, TValue>({
 
       {/* Footer: Row Selection + Pagination */}
       {(showRowSelection || showPagination) && (
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center justify-between py-4">
           {showRowSelection && (
-            <div className="text-muted-foreground flex-1 text-sm">
+            <div className="text-muted-foreground text-sm">
               {table.getFilteredSelectedRowModel().rows.length} of{" "}
               {table.getFilteredRowModel().rows.length} {selectedText}
             </div>
           )}
           {showPagination && (
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                {previousText}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                {nextText}
-              </Button>
-            </div>
+            <>
+              {serverPagination ? (
+                // Server-side pagination - ẩn khi không có data
+                serverPagination.totalElements > 0 ? (
+                  <div className="flex items-center justify-end w-full text-sm gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        serverPagination.onPageChange(serverPagination.page - 1)
+                      }
+                      disabled={serverPagination.page === 0}
+                    >
+                      {previousText}
+                    </Button>
+                    <span className="text-muted-foreground">
+                      {serverPagination.page + 1} /{" "}
+                      {serverPagination.totalPages || 1}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        serverPagination.onPageChange(serverPagination.page + 1)
+                      }
+                      disabled={
+                        serverPagination.totalPages <= 1 ||
+                        serverPagination.page >= serverPagination.totalPages - 1
+                      }
+                    >
+                      {nextText}
+                    </Button>
+                  </div>
+                ) : null
+              ) : (
+                // Client-side pagination
+                <div className="space-x-2 ml-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                  >
+                    {previousText}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                  >
+                    {nextText}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

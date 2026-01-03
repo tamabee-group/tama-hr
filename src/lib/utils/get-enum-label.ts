@@ -44,7 +44,13 @@ export type EnumName =
   | "leaveType"
   | "leaveStatus"
   | "breakType"
-  | "salaryType";
+  | "salaryType"
+  | "shiftAssignmentStatus"
+  | "swapRequestStatus"
+  | "payrollPeriodStatus"
+  | "payrollItemStatus"
+  | "contractType"
+  | "contractStatus";
 
 /**
  * Lấy translated label cho enum value

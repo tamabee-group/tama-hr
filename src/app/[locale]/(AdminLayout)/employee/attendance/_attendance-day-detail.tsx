@@ -9,19 +9,28 @@ import {
   Timer,
   AlertTriangle,
   Coffee,
-  Edit,
+  FileEdit,
+  Moon,
+  TrendingUp,
+  Briefcase,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { AttendanceStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
 import { BreakTimeline } from "./_break-timeline";
-import { BreakTimer } from "./_break-timer";
-import { BreakAdjustmentDialog } from "./_break-adjustment-dialog";
-import { formatDate, formatTime } from "@/lib/utils/format-date";
-import type { AttendanceRecord, BreakRecord } from "@/types/attendance-records";
+import {
+  formatDate,
+  formatTime,
+  formatMinutesToTime,
+} from "@/lib/utils/format-date";
+import type {
+  UnifiedAttendanceRecord,
+  BreakRecord,
+} from "@/types/attendance-records";
 import type { BreakConfig } from "@/types/attendance-config";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
@@ -31,33 +40,82 @@ import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface AttendanceDayDetailProps {
   date: string;
-  record: AttendanceRecord | null;
+  record: UnifiedAttendanceRecord | null;
   isLoading: boolean;
   onRequestAdjustment: () => void;
   breakRecords?: BreakRecord[];
   minimumBreakRequired?: number;
-  // Props mới cho multiple breaks
   breakConfig?: BreakConfig;
-  onStartBreak?: () => Promise<void>;
-  onEndBreak?: (breakRecordId: number) => Promise<void>;
-  onBreakAdjustmentSuccess?: () => void;
-  // Kiểm tra có yêu cầu pending không
   hasPendingRequest?: boolean;
+  hideBreakTimeline?: boolean;
+  /** Navigation props */
+  onPreviousDay?: () => void;
+  onNextDay?: () => void;
+  canGoPrevious?: boolean;
+  canGoNext?: boolean;
+  isToday?: boolean;
 }
 
-// ============================================
-// Utilities
-// ============================================
+// Navigation Header - extracted outside to avoid creating during render
+interface NavigationHeaderProps {
+  date: string;
+  locale: SupportedLocale;
+  isToday: boolean;
+  onPreviousDay?: () => void;
+  onNextDay?: () => void;
+  canGoPrevious: boolean;
+  canGoNext: boolean;
+  todayLabel: string;
+}
 
-function formatMinutesToHours(minutes: number | undefined | null): string {
-  if (minutes === undefined || minutes === null || isNaN(minutes)) {
-    return "-";
-  }
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (hours === 0) return `${mins}m`;
-  if (mins === 0) return `${hours}h`;
-  return `${hours}h ${mins}m`;
+function NavigationHeader({
+  date,
+  locale,
+  isToday,
+  onPreviousDay,
+  onNextDay,
+  canGoPrevious,
+  canGoNext,
+  todayLabel,
+}: NavigationHeaderProps) {
+  return (
+    <div className="flex items-center justify-between p-4 border-b bg-muted/30">
+      {onPreviousDay ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onPreviousDay}
+          disabled={!canGoPrevious}
+          className="h-8 w-8 touch-manipulation"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+      ) : (
+        <div className="w-8" />
+      )}
+
+      <div className="flex-1 text-center">
+        <p className="font-semibold">{formatDate(date, locale)}</p>
+        {isToday && (
+          <p className="text-xs text-muted-foreground">{todayLabel}</p>
+        )}
+      </div>
+
+      {onNextDay ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onNextDay}
+          disabled={!canGoNext}
+          className="h-8 w-8 touch-manipulation"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      ) : (
+        <div className="w-8" />
+      )}
+    </div>
+  );
 }
 
 // ============================================
@@ -72,78 +130,75 @@ export function AttendanceDayDetail({
   breakRecords = [],
   minimumBreakRequired = 0,
   breakConfig,
-  onStartBreak,
-  onEndBreak,
-  onBreakAdjustmentSuccess,
   hasPendingRequest = false,
+  hideBreakTimeline = false,
+  onPreviousDay,
+  onNextDay,
+  canGoPrevious = true,
+  canGoNext = true,
+  isToday = false,
 }: AttendanceDayDetailProps) {
   const t = useTranslations("attendance");
+  const tCommon = useTranslations("common");
   const locale = useLocale() as SupportedLocale;
 
-  // State cho break adjustment dialog
-  const [selectedBreakForAdjustment, setSelectedBreakForAdjustment] =
-    React.useState<BreakRecord | null>(null);
-
-  // Tìm break đang active (chưa có breakEnd)
-  const activeBreak = breakRecords.find((br) => !br.breakEnd);
-
-  // Xử lý khi click vào break card trong timeline
-  const handleBreakClick = (breakRecord: BreakRecord) => {
-    // Chỉ cho phép điều chỉnh break đã hoàn thành
-    if (breakRecord.breakEnd) {
-      setSelectedBreakForAdjustment(breakRecord);
-    }
-  };
-
-  // Xử lý khi adjustment thành công
-  const handleAdjustmentSuccess = () => {
-    setSelectedBreakForAdjustment(null);
-    onBreakAdjustmentSuccess?.();
+  // Navigation header props
+  const navHeaderProps: NavigationHeaderProps = {
+    date,
+    locale,
+    isToday,
+    onPreviousDay,
+    onNextDay,
+    canGoPrevious,
+    canGoNext,
+    todayLabel: tCommon("today"),
   };
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-        </CardContent>
-      </Card>
-    );
+    return <DetailSkeleton showNavigation={!!onPreviousDay || !!onNextDay} />;
   }
 
   if (!record) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            {formatDate(date, locale)}
-          </CardTitle>
-        </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            {t("messages.noRecords")}
-          </div>
-          {/* Cho phép yêu cầu điều chỉnh ngay cả khi không có record */}
-          <div className="flex flex-col items-center gap-2 mt-4">
-            <Button
-              variant="outline"
-              onClick={onRequestAdjustment}
-              disabled={hasPendingRequest}
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              {t("requestAdjustment")}
-            </Button>
-            {hasPendingRequest && (
-              <p className="text-sm text-muted-foreground">
-                {t("adjustment.hasPendingRequest")}
-              </p>
+          {/* Navigation header */}
+          {(onPreviousDay || onNextDay) && (
+            <NavigationHeader {...navHeaderProps} />
+          )}
+
+          {/* Empty state */}
+          <div className="p-6">
+            {!(onPreviousDay || onNextDay) && (
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Clock className="h-5 w-5" />
+                  <span className="font-medium">
+                    {formatDate(date, locale)}
+                  </span>
+                </div>
+              </div>
             )}
+
+            <div className="text-center py-12 text-muted-foreground">
+              <Clock className="h-12 w-12 mx-auto mb-4 opacity-30" />
+              <p>{t("messages.noRecords")}</p>
+            </div>
+
+            <div className="flex flex-col items-center gap-2 mt-6">
+              <Button
+                onClick={onRequestAdjustment}
+                disabled={hasPendingRequest}
+              >
+                <FileEdit className="h-4 w-4 mr-2" />
+                {t("requestAdjustment")}
+              </Button>
+              {hasPendingRequest && (
+                <p className="text-sm text-muted-foreground">
+                  {t("adjustment.hasPendingRequest")}
+                </p>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -152,238 +207,210 @@ export function AttendanceDayDetail({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
-          {formatDate(date, locale)}
-        </CardTitle>
-        <AttendanceStatusBadge status={record.status} />
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Check-in/out times */}
-        <div className="grid grid-cols-2 gap-4">
-          <TimeCard
-            icon={<LogIn className="h-5 w-5 text-green-600" />}
-            label={t("table.checkInTime")}
-            time={record.originalCheckIn}
-            roundedTime={record.roundedCheckIn}
-            roundedTimeLabel={t("roundedTime")}
-            warning={
-              record.lateMinutes > 0
-                ? `${t("lateMinutes")}: ${record.lateMinutes}m`
-                : undefined
-            }
-            warningType="late"
-          />
-          <TimeCard
-            icon={<LogOut className="h-5 w-5 text-red-600" />}
-            label={t("table.checkOutTime")}
-            time={record.originalCheckOut}
-            roundedTime={record.roundedCheckOut}
-            roundedTimeLabel={t("roundedTime")}
-            warning={
-              record.earlyLeaveMinutes > 0
-                ? `${t("earlyLeaveMinutes")}: ${record.earlyLeaveMinutes}m`
-                : undefined
-            }
-            warningType="early"
-          />
-        </div>
+      <CardContent className="p-0">
+        {/* Navigation header hoặc simple header */}
+        {onPreviousDay || onNextDay ? (
+          <NavigationHeader {...navHeaderProps} />
+        ) : (
+          <div className="flex items-center justify-between p-4 border-b bg-muted/30">
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-muted-foreground" />
+              <span className="font-semibold">{formatDate(date, locale)}</span>
+            </div>
+            <AttendanceStatusBadge status={record.status} />
+          </div>
+        )}
 
-        <Separator />
+        {/* Status badge - hiển thị riêng khi có navigation */}
+        {(onPreviousDay || onNextDay) && (
+          <div className="flex justify-end px-4 pt-3">
+            <AttendanceStatusBadge status={record.status} />
+          </div>
+        )}
 
-        {/* Working hours summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            icon={<Timer className="h-4 w-4" />}
-            label={t("workingHours")}
-            value={formatMinutesToHours(record.workingMinutes)}
-          />
-          <StatCard
-            icon={<Clock className="h-4 w-4" />}
-            label={t("overtime")}
-            value={
-              record.overtimeMinutes > 0
-                ? formatMinutesToHours(record.overtimeMinutes)
-                : "-"
-            }
-            highlight={record.overtimeMinutes > 0}
-          />
-          <StatCard
-            icon={<Coffee className="h-4 w-4" />}
-            label={t("breakTime")}
-            value={formatMinutesToHours(record.totalBreakMinutes)}
-          />
-          <StatCard
-            icon={<Timer className="h-4 w-4" />}
-            label={t("netWorkingHours")}
-            value={formatMinutesToHours(record.netWorkingMinutes)}
-          />
-        </div>
-
-        {/* Night hours if any */}
-        {(record.nightMinutes > 0 || record.nightOvertimeMinutes > 0) && (
-          <>
-            <Separator />
-            <div className="grid grid-cols-2 gap-4">
-              {record.nightMinutes > 0 && (
-                <StatCard
-                  icon={<Clock className="h-4 w-4" />}
-                  label={t("table.nightHours")}
-                  value={formatMinutesToHours(record.nightMinutes)}
-                />
-              )}
-              {record.nightOvertimeMinutes > 0 && (
-                <StatCard
-                  icon={<Clock className="h-4 w-4" />}
-                  label={t("table.nightOvertimeHours")}
-                  value={formatMinutesToHours(record.nightOvertimeMinutes)}
-                  highlight
-                />
+        {/* Check-in/out - Modern card style */}
+        <div className="p-4 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Check-in */}
+            <div className="rounded-lg border bg-green-50/50 dark:bg-green-950/20 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-full bg-green-100 dark:bg-green-900/50">
+                  <LogIn className="h-3.5 w-3.5 text-green-600" />
+                </div>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t("checkIn")}
+                </span>
+              </div>
+              <p className="text-2xl font-bold tabular-nums">
+                {record.originalCheckIn
+                  ? formatTime(record.originalCheckIn)
+                  : "-"}
+              </p>
+              {record.roundedCheckIn &&
+                record.originalCheckIn !== record.roundedCheckIn && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    → {formatTime(record.roundedCheckIn)}
+                  </p>
+                )}
+              {record.lateMinutes > 0 && (
+                <div className="flex items-center gap-1 mt-2 text-xs text-orange-600">
+                  <AlertTriangle className="h-3 w-3" />
+                  <span>
+                    {t("table.lateMinutes")}:{" "}
+                    {formatMinutesToTime(record.lateMinutes, { locale })}
+                  </span>
+                </div>
               )}
             </div>
-          </>
+
+            {/* Check-out */}
+            <div className="rounded-lg border bg-red-50/50 dark:bg-red-950/20 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/50">
+                  <LogOut className="h-3.5 w-3.5 text-red-600" />
+                </div>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t("checkOut")}
+                </span>
+              </div>
+              <p className="text-2xl font-bold tabular-nums">
+                {record.originalCheckOut
+                  ? formatTime(record.originalCheckOut)
+                  : "-"}
+              </p>
+              {record.roundedCheckOut &&
+                record.originalCheckOut !== record.roundedCheckOut && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    → {formatTime(record.roundedCheckOut)}
+                  </p>
+                )}
+              {record.earlyLeaveMinutes > 0 && (
+                <div className="flex items-center gap-1 mt-2 text-xs text-yellow-600">
+                  <AlertTriangle className="h-3 w-3" />
+                  <span>
+                    {t("table.earlyLeaveMinutes")}:{" "}
+                    {formatMinutesToTime(record.earlyLeaveMinutes, { locale })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats - Clean grid */}
+        <div className="px-4 pb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <StatCard
+              icon={<Briefcase className="h-4 w-4" />}
+              label={t("workingHours")}
+              value={formatMinutesToTime(record.workingMinutes, { locale })}
+            />
+            <StatCard
+              icon={<TrendingUp className="h-4 w-4" />}
+              label={t("overtime")}
+              value={formatMinutesToTime(record.overtimeMinutes, {
+                zeroAsEmpty: true,
+                locale,
+              })}
+              valueColor={
+                record.overtimeMinutes > 0 ? "text-blue-600" : undefined
+              }
+            />
+            <StatCard
+              icon={<Coffee className="h-4 w-4" />}
+              label={t("breakTime")}
+              value={formatMinutesToTime(record.totalBreakMinutes, { locale })}
+            />
+            <StatCard
+              icon={<Timer className="h-4 w-4" />}
+              label={t("netWorkingHours")}
+              value={formatMinutesToTime(record.netWorkingMinutes, { locale })}
+              valueColor={
+                record.netWorkingMinutes < 0 ? "text-red-600" : "text-green-600"
+              }
+            />
+          </div>
+        </div>
+
+        {/* Night hours */}
+        {(record.nightMinutes > 0 || record.nightOvertimeMinutes > 0) && (
+          <div className="px-4 pb-4">
+            <div className="grid grid-cols-2 gap-2">
+              <StatCard
+                icon={<Moon className="h-4 w-4" />}
+                label={t("table.nightHours")}
+                value={formatMinutesToTime(record.nightMinutes, { locale })}
+                valueColor="text-indigo-600"
+                variant="dark"
+              />
+              <StatCard
+                icon={<Moon className="h-4 w-4" />}
+                label={t("table.nightOvertimeHours")}
+                value={formatMinutesToTime(record.nightOvertimeMinutes, {
+                  locale,
+                })}
+                valueColor="text-purple-600"
+                variant="dark"
+              />
+            </div>
+          </div>
         )}
 
         {/* Break compliance */}
         {record.totalBreakMinutes > 0 && (
-          <>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                {t("breakStatus")}
-              </span>
-              {record.isBreakCompliant ? (
-                <Badge
-                  variant="outline"
-                  className="text-green-600 border-green-600"
-                >
-                  {t("breakCompliant")}
-                </Badge>
-              ) : (
-                <Badge
-                  variant="outline"
-                  className="text-orange-600 border-orange-600"
-                >
-                  {t("breakNonCompliant")}
-                </Badge>
-              )}
-            </div>
-          </>
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
+            <span className="text-sm text-muted-foreground">
+              {t("breakStatus")}
+            </span>
+            {record.breakCompliant ? (
+              <Badge
+                variant="outline"
+                className="text-green-600 border-green-300 bg-green-50"
+              >
+                {t("breakCompliant")}
+              </Badge>
+            ) : (
+              <Badge
+                variant="outline"
+                className="text-orange-600 border-orange-300 bg-orange-50"
+              >
+                {t("breakNonCompliant")}
+              </Badge>
+            )}
+          </div>
         )}
 
-        {/* Break Timer - Hiển thị khi có breakConfig và đã check-in */}
-        {breakConfig && record && onStartBreak && onEndBreak && (
-          <>
-            <Separator />
-            <BreakTimer
-              attendanceRecordId={record.id}
-              breakConfig={breakConfig}
-              currentBreak={activeBreak}
-              breakRecords={breakRecords}
-              onStartBreak={onStartBreak}
-              onEndBreak={onEndBreak}
-            />
-          </>
-        )}
-
-        {/* Break Timeline - Thay thế BreakHistory */}
-        {breakRecords.length > 0 && (
-          <>
-            <Separator />
+        {/* Break Timeline - chỉ hiển thị khi không ẩn */}
+        {!hideBreakTimeline && breakRecords.length > 0 && (
+          <div className="p-4 border-t">
             <BreakTimeline
               breakRecords={breakRecords}
               totalBreakMinutes={record.totalBreakMinutes}
               minimumRequired={minimumBreakRequired}
               maxBreaksPerDay={breakConfig?.maxBreaksPerDay ?? 3}
-              isCompliant={record.isBreakCompliant}
-              onBreakClick={handleBreakClick}
+              isCompliant={record.breakCompliant}
             />
-          </>
+          </div>
         )}
 
-        {/* Break Adjustment Dialog */}
-        {selectedBreakForAdjustment && (
-          <BreakAdjustmentDialog
-            breakRecord={selectedBreakForAdjustment}
-            otherBreaks={breakRecords.filter(
-              (br) => br.id !== selectedBreakForAdjustment.id,
-            )}
-            open={!!selectedBreakForAdjustment}
-            onClose={() => setSelectedBreakForAdjustment(null)}
-            onSuccess={handleAdjustmentSuccess}
-          />
-        )}
-
-        <Separator />
-
-        {/* Request adjustment button */}
-        <div className="flex flex-col items-end gap-2">
+        {/* Action button */}
+        <div className="flex items-center justify-end gap-2 p-4 border-t bg-muted/20">
+          {hasPendingRequest && (
+            <span className="text-sm text-muted-foreground mr-2">
+              {t("adjustment.hasPendingRequest")}
+            </span>
+          )}
           <Button
             variant="outline"
             onClick={onRequestAdjustment}
             disabled={hasPendingRequest}
           >
-            <Edit className="h-4 w-4 mr-2" />
+            <FileEdit className="h-4 w-4 mr-2" />
             {t("requestAdjustment")}
           </Button>
-          {hasPendingRequest && (
-            <p className="text-sm text-muted-foreground">
-              {t("adjustment.hasPendingRequest")}
-            </p>
-          )}
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-// ============================================
-// TimeCard Component
-// ============================================
-
-interface TimeCardProps {
-  icon: React.ReactNode;
-  label: string;
-  time?: string;
-  roundedTime?: string;
-  roundedTimeLabel: string;
-  warning?: string;
-  warningType?: "late" | "early";
-}
-
-function TimeCard({
-  icon,
-  label,
-  time,
-  roundedTime,
-  roundedTimeLabel,
-  warning,
-  warningType,
-}: TimeCardProps) {
-  return (
-    <div className="p-4 rounded-lg border bg-card">
-      <div className="flex items-center gap-2 mb-2">
-        {icon}
-        <span className="text-sm text-muted-foreground">{label}</span>
-      </div>
-      <p className="text-2xl font-bold">{time ? formatTime(time) : "-"}</p>
-      {roundedTime && time !== roundedTime && (
-        <p className="text-xs text-muted-foreground">
-          {roundedTimeLabel}: {formatTime(roundedTime)}
-        </p>
-      )}
-      {warning && (
-        <div
-          className={`flex items-center gap-1 mt-2 text-xs ${
-            warningType === "late" ? "text-orange-600" : "text-yellow-600"
-          }`}
-        >
-          <AlertTriangle className="h-3 w-3" />
-          {warning}
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -395,21 +422,74 @@ interface StatCardProps {
   icon: React.ReactNode;
   label: string;
   value: string;
-  highlight?: boolean;
+  valueColor?: string;
+  variant?: "default" | "dark";
 }
 
-function StatCard({ icon, label, value, highlight }: StatCardProps) {
+function StatCard({
+  icon,
+  label,
+  value,
+  valueColor,
+  variant = "default",
+}: StatCardProps) {
   return (
-    <div className="text-center">
-      <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+    <div
+      className={`rounded-lg border p-3 ${
+        variant === "dark"
+          ? "bg-slate-50 dark:bg-slate-900/50"
+          : "bg-background"
+      }`}
+    >
+      <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
         {icon}
         <span className="text-xs">{label}</span>
       </div>
-      <p
-        className={`text-lg font-semibold ${highlight ? "text-blue-600" : ""}`}
-      >
+      <p className={`text-lg font-semibold tabular-nums ${valueColor || ""}`}>
         {value}
       </p>
     </div>
+  );
+}
+
+// ============================================
+// Skeleton
+// ============================================
+
+function DetailSkeleton({
+  showNavigation = false,
+}: {
+  showNavigation?: boolean;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-0">
+        {showNavigation ? (
+          <div className="flex items-center justify-between p-4 border-b">
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-8 w-8" />
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-4 border-b">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+        )}
+        <div className="p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <Skeleton className="h-24 rounded-lg" />
+            <Skeleton className="h-24 rounded-lg" />
+          </div>
+        </div>
+        <div className="px-4 pb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-16 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

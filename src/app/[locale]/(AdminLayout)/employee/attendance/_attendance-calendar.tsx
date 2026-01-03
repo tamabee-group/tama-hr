@@ -9,9 +9,12 @@ import {
   CalendarView,
   type CalendarDayData,
 } from "@/app/[locale]/_components/_shared/_calendar-view";
-import { attendanceApi } from "@/lib/apis/attendance-api";
+import { unifiedAttendanceApi } from "@/lib/apis/unified-attendance-api";
 import { holidayApi } from "@/lib/apis/holiday-api";
-import type { AttendanceRecord, Holiday } from "@/types/attendance-records";
+import type {
+  UnifiedAttendanceRecord,
+  Holiday,
+} from "@/types/attendance-records";
 
 // ============================================
 // Types
@@ -21,6 +24,8 @@ interface AttendanceCalendarProps {
   month: Date;
   onMonthChange: (month: Date) => void;
   hideCard?: boolean;
+  /** Key để trigger refresh calendar khi có thay đổi */
+  refreshKey?: number;
 }
 
 // ============================================
@@ -35,9 +40,13 @@ function formatDateKey(date: Date): string {
 }
 
 function mapAttendanceToCalendarData(
-  records: AttendanceRecord[],
+  records: UnifiedAttendanceRecord[],
 ): Record<string, CalendarDayData> {
   const data: Record<string, CalendarDayData> = {};
+
+  if (!Array.isArray(records)) {
+    return data;
+  }
 
   for (const record of records) {
     const dateKey = record.workDate;
@@ -85,17 +94,18 @@ export function AttendanceCalendar({
   month,
   onMonthChange,
   hideCard = false,
+  refreshKey = 0,
 }: AttendanceCalendarProps) {
   const t = useTranslations("attendance");
   const locale = useLocale();
   const router = useRouter();
 
-  const [records, setRecords] = React.useState<AttendanceRecord[]>([]);
+  const [records, setRecords] = React.useState<UnifiedAttendanceRecord[]>([]);
   const [holidays, setHolidays] = React.useState<Holiday[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
 
-  // Fetch attendance records và holidays khi tháng thay đổi
+  // Fetch attendance records và holidays
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -103,14 +113,10 @@ export function AttendanceCalendar({
         const year = month.getFullYear();
         const monthNum = month.getMonth() + 1;
 
-        // Fetch attendance records
-        const attendanceRecords = await attendanceApi.getMyAttendanceByMonth(
-          year,
-          monthNum,
-        );
-        setRecords(attendanceRecords);
+        const attendanceRecords =
+          await unifiedAttendanceApi.getAttendanceByMonth(year, monthNum);
+        setRecords(Array.isArray(attendanceRecords) ? attendanceRecords : []);
 
-        // Fetch holidays - bỏ qua nếu không có quyền
         try {
           const holidayList = await holidayApi.getHolidaysByDateRange(
             `${year}-${monthNum.toString().padStart(2, "0")}-01`,
@@ -118,7 +124,6 @@ export function AttendanceCalendar({
           );
           setHolidays(holidayList);
         } catch {
-          // Employee có thể không có quyền xem holidays
           setHolidays([]);
         }
       } catch (error) {
@@ -129,9 +134,8 @@ export function AttendanceCalendar({
     };
 
     fetchData();
-  }, [month]);
+  }, [month, refreshKey]);
 
-  // Chuyển đổi dữ liệu cho CalendarView
   const dayData = React.useMemo(
     () => mapAttendanceToCalendarData(records),
     [records],
@@ -142,7 +146,7 @@ export function AttendanceCalendar({
     [holidays],
   );
 
-  // Xử lý khi click vào ngày
+  // Navigate đến page chi tiết khi click vào ngày
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     const dateStr = formatDateKey(date);
@@ -150,58 +154,34 @@ export function AttendanceCalendar({
   };
 
   if (isLoading) {
-    if (hideCard) {
-      return (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-8 w-8" />
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-8 w-8" />
-          </div>
-          <div className="grid grid-cols-7 gap-1">
-            {Array.from({ length: 42 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-square" />
-            ))}
-          </div>
-        </div>
-      );
-    }
-    return (
+    return hideCard ? (
+      <CalendarSkeleton />
+    ) : (
       <Card>
         <CardHeader>
           <CardTitle>{t("calendar")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-8 w-8" />
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-8 w-8" />
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {Array.from({ length: 42 }).map((_, i) => (
-                <Skeleton key={i} className="aspect-square" />
-              ))}
-            </div>
-          </div>
+          <CalendarSkeleton />
         </CardContent>
       </Card>
     );
   }
 
-  // Nếu hideCard, chỉ render CalendarView
+  const calendarContent = (
+    <CalendarView
+      month={month}
+      selectedDate={selectedDate}
+      onDateClick={handleDateClick}
+      onMonthChange={onMonthChange}
+      holidays={calendarHolidays}
+      dayData={dayData}
+      showLegend={true}
+    />
+  );
+
   if (hideCard) {
-    return (
-      <CalendarView
-        month={month}
-        selectedDate={selectedDate}
-        onDateClick={handleDateClick}
-        onMonthChange={onMonthChange}
-        holidays={calendarHolidays}
-        dayData={dayData}
-        showLegend={true}
-      />
-    );
+    return calendarContent;
   }
 
   return (
@@ -209,17 +189,28 @@ export function AttendanceCalendar({
       <CardHeader>
         <CardTitle>{t("calendar")}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <CalendarView
-          month={month}
-          selectedDate={selectedDate}
-          onDateClick={handleDateClick}
-          onMonthChange={onMonthChange}
-          holidays={calendarHolidays}
-          dayData={dayData}
-          showLegend={true}
-        />
-      </CardContent>
+      <CardContent>{calendarContent}</CardContent>
     </Card>
+  );
+}
+
+// ============================================
+// Skeleton
+// ============================================
+
+function CalendarSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-8 w-8" />
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-8 w-8" />
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {Array.from({ length: 42 }).map((_, i) => (
+          <Skeleton key={i} className="aspect-square" />
+        ))}
+      </div>
+    </div>
   );
 }

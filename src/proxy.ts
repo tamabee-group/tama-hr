@@ -9,6 +9,8 @@ import {
 import { refreshAccessTokenWithCookie } from "@/lib/auth/token";
 import { parseAcceptLanguage } from "@/lib/utils/locale";
 
+console.log("[Proxy] File loaded");
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -136,8 +138,42 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
   const targetUrl = `${API_URL}/api${apiPath}${request.nextUrl.search}`;
   const locale = getLocale(request);
 
+  console.log("[Proxy] API request:", request.method, targetUrl);
+  console.log(
+    "[Proxy] Cookies:",
+    request.cookies
+      .getAll()
+      .map((c) => c.name)
+      .join(", "),
+  );
+
   const cookies = request.cookies.getAll();
-  const cookieString = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  let cookieString = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+
+  // Nếu không có accessToken nhưng có refreshToken, thử refresh trước
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
+  let refreshedCookies: string[] | undefined;
+
+  if (!accessToken && refreshToken) {
+    console.log("[Proxy] No accessToken, attempting refresh...");
+    const refreshResult = await refreshAccessTokenWithCookie(
+      refreshToken,
+      locale,
+    );
+
+    if (refreshResult.success && refreshResult.cookies) {
+      console.log("[Proxy] Refresh successful, got new cookies");
+      refreshedCookies = refreshResult.cookies;
+      const newAccessToken = parseAccessTokenFromCookies(refreshResult.cookies);
+
+      if (newAccessToken) {
+        cookieString = updateCookieString(cookieString, newAccessToken);
+      }
+    } else {
+      console.log("[Proxy] Refresh failed");
+    }
+  }
 
   // Kiểm tra có phải multipart/form-data không (file upload)
   const contentType = request.headers.get("content-type") || "";
@@ -178,11 +214,18 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
     // Nếu 401, thử refresh token
     if (response.status === 401) {
       const refreshToken = request.cookies.get("refreshToken")?.value;
+      console.log("[Proxy] 401 received, refreshToken exists:", !!refreshToken);
 
       if (refreshToken) {
         const refreshResult = await refreshAccessTokenWithCookie(
           refreshToken,
           locale,
+        );
+        console.log(
+          "[Proxy] Refresh result:",
+          refreshResult.success,
+          "cookies:",
+          refreshResult.cookies?.length,
         );
 
         if (refreshResult.success && refreshResult.cookies) {
@@ -224,13 +267,72 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
     }
 
     // Response bình thường
-    const body = await response.text();
-    const status = parseStatusFromBody(body, response.status);
+    // Kiểm tra Content-Type để xử lý binary response (PDF, images, etc.)
+    const responseContentType = response.headers.get("content-type") || "";
+    const isBinaryResponse =
+      responseContentType.includes("application/pdf") ||
+      responseContentType.includes("application/octet-stream") ||
+      responseContentType.includes("image/");
 
-    return new NextResponse(body, {
+    let responseBody: BodyInit;
+    let status: number;
+
+    if (isBinaryResponse) {
+      // Binary response: giữ nguyên ArrayBuffer
+      responseBody = await response.arrayBuffer();
+      status = response.status;
+      console.log(
+        "[Proxy] Binary response, size:",
+        (responseBody as ArrayBuffer).byteLength,
+      );
+    } else {
+      // Text/JSON response
+      const body = await response.text();
+      status = parseStatusFromBody(body, response.status);
+      responseBody = body;
+    }
+
+    console.log("[Proxy] Response status:", status, "for", targetUrl);
+
+    // Forward response với Set-Cookie headers
+    const responseHeaders = new Headers();
+
+    // Copy tất cả headers từ backend response
+    response.headers.forEach((value, key) => {
+      // Bỏ qua một số headers không cần thiết
+      if (
+        !["content-encoding", "transfer-encoding", "content-length"].includes(
+          key.toLowerCase(),
+        )
+      ) {
+        responseHeaders.append(key, value);
+      }
+    });
+
+    // Đảm bảo Set-Cookie được forward (getSetCookie trả về array)
+    const setCookies = response.headers.getSetCookie();
+    if (setCookies && setCookies.length > 0) {
+      console.log("[Proxy] Forwarding Set-Cookie headers:", setCookies.length);
+      setCookies.forEach((cookie) => {
+        responseHeaders.append("Set-Cookie", cookie);
+      });
+    }
+
+    // Forward cookies từ refresh token (nếu có)
+    if (refreshedCookies && refreshedCookies.length > 0) {
+      console.log(
+        "[Proxy] Forwarding refreshed cookies:",
+        refreshedCookies.length,
+      );
+      refreshedCookies.forEach((cookie) => {
+        responseHeaders.append("Set-Cookie", cookie);
+      });
+    }
+
+    return new NextResponse(responseBody, {
       status,
       statusText: response.statusText,
-      headers: new Headers(response.headers),
+      headers: responseHeaders,
     });
   } catch {
     return NextResponse.json(

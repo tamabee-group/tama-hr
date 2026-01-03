@@ -100,10 +100,10 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-6">
-      <div className="text-center space-y-2">
+    <div className="w-full max-w-sm flex flex-col gap-6 mt-8">
+      <div className="text-center space-y-4">
         <CardTitle className="text-2xl">{tForgot("title")}</CardTitle>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mb-10">
           {step === "email" && tForgot("emailStep")}
           {step === "verify" && tForgot("verifyStep")}
           {step === "password" && tForgot("passwordStep")}
@@ -125,7 +125,7 @@ export function ForgotPasswordForm() {
               required
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full mt-4" disabled={loading}>
             {loading ? tForgot("sending") : tForgot("sendCode")}
           </Button>
           <div className="text-center text-sm">

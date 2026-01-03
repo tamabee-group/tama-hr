@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
@@ -18,13 +18,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { companySettingsApi } from "@/lib/apis/company-settings-api";
-import { CompanySettings, BreakConfig } from "@/types/attendance-config";
+import {
+  CompanySettings,
+  BreakConfig,
+  WorkMode,
+  WorkModeConfig,
+} from "@/types/attendance-config";
 import { toast } from "sonner";
 import { AttendanceConfigForm } from "./_attendance-config-form";
 import { PayrollConfigForm } from "./_payroll-config-form";
 import { OvertimeConfigForm } from "./_overtime-config-form";
 import { AllowanceConfigForm } from "./_allowance-config-form";
 import { DeductionConfigForm } from "./_deduction-config-form";
+import { WorkModeSelector } from "../_components/_work-mode-selector";
+import { ExplanationPanel } from "../_components/_explanation-panel";
+import { ConfigurationSummaryCard } from "./_configuration-summary-card";
 import {
   Clock,
   Wallet,
@@ -34,9 +42,14 @@ import {
   LucideIcon,
   Loader2,
   Save,
+  Settings2,
 } from "lucide-react";
+import {
+  getVisibleSettingsTabs,
+  SettingsTabKey,
+} from "@/lib/utils/settings-visibility";
 
-type TabKey = "attendance" | "payroll" | "overtime" | "allowance" | "deduction";
+type TabKey = SettingsTabKey;
 
 interface TabItem {
   key: TabKey;
@@ -44,12 +57,61 @@ interface TabItem {
 }
 
 const TAB_ITEMS: TabItem[] = [
+  { key: "workMode", icon: Settings2 },
   { key: "attendance", icon: Clock },
   { key: "payroll", icon: Wallet },
   { key: "overtime", icon: Timer },
   { key: "allowance", icon: Gift },
   { key: "deduction", icon: MinusCircle },
 ];
+
+/**
+ * Cấu hình explanation panel cho mỗi tab
+ */
+interface TabExplanation {
+  titleKey: string;
+  descKey: string;
+  tipsKeys?: string[];
+  workModeNoteKey?: string;
+}
+
+const TAB_EXPLANATIONS: Record<TabKey, TabExplanation> = {
+  workMode: {
+    titleKey: "explanations.workMode.title",
+    descKey: "explanations.workMode.desc",
+    tipsKeys: [
+      "explanations.workMode.tip1",
+      "explanations.workMode.tip2",
+      "explanations.workMode.tip3",
+    ],
+  },
+  attendance: {
+    titleKey: "explanations.attendance.title",
+    descKey: "explanations.attendance.desc",
+    tipsKeys: ["explanations.attendance.tip1", "explanations.attendance.tip2"],
+    workModeNoteKey: "explanations.attendance.workModeNote",
+  },
+  payroll: {
+    titleKey: "explanations.payroll.title",
+    descKey: "explanations.payroll.desc",
+    tipsKeys: ["explanations.payroll.tip1", "explanations.payroll.tip2"],
+  },
+  overtime: {
+    titleKey: "explanations.overtime.title",
+    descKey: "explanations.overtime.desc",
+    tipsKeys: ["explanations.overtime.tip1", "explanations.overtime.tip2"],
+  },
+  allowance: {
+    titleKey: "explanations.allowance.title",
+    descKey: "explanations.allowance.desc",
+    tipsKeys: ["explanations.allowance.tip1"],
+  },
+  deduction: {
+    titleKey: "explanations.deduction.title",
+    descKey: "explanations.deduction.desc",
+    tipsKeys: ["explanations.deduction.tip1"],
+  },
+};
 
 /**
  * Tạo default break config khi API chưa trả về
@@ -92,8 +154,11 @@ export function SettingsTabs() {
   const tCommon = useTranslations("common");
 
   const [settings, setSettings] = useState<CompanySettings | null>(null);
+  const [workModeConfig, setWorkModeConfig] = useState<WorkModeConfig | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabKey>("attendance");
+  const [activeTab, setActiveTab] = useState<TabKey>("workMode");
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -104,8 +169,12 @@ export function SettingsTabs() {
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await companySettingsApi.getSettings();
-      setSettings(data);
+      const [settingsData, workModeData] = await Promise.all([
+        companySettingsApi.getSettings(),
+        companySettingsApi.getWorkModeConfig(),
+      ]);
+      setSettings(settingsData);
+      setWorkModeConfig(workModeData);
     } catch (error) {
       console.error("Failed to load settings:", error);
       toast.error(tCommon("errorLoading"));
@@ -140,6 +209,78 @@ export function SettingsTabs() {
     }
   };
 
+  /**
+   * Xử lý thay đổi work mode
+   * Khi chuyển sang FIXED_HOURS, sử dụng default hours từ attendance config nếu chưa có
+   */
+  const handleWorkModeChange = async (newMode: WorkMode) => {
+    try {
+      // Nếu chuyển sang FIXED_HOURS và chưa có default hours, lấy từ attendance config
+      let defaultWorkStartTime = workModeConfig?.defaultWorkStartTime;
+      let defaultWorkEndTime = workModeConfig?.defaultWorkEndTime;
+      let defaultBreakMinutes = workModeConfig?.defaultBreakMinutes;
+
+      if (newMode === "FIXED_HOURS") {
+        if (
+          !defaultWorkStartTime &&
+          settings?.attendanceConfig?.defaultWorkStartTime
+        ) {
+          defaultWorkStartTime = settings.attendanceConfig.defaultWorkStartTime;
+        }
+        if (
+          !defaultWorkEndTime &&
+          settings?.attendanceConfig?.defaultWorkEndTime
+        ) {
+          defaultWorkEndTime = settings.attendanceConfig.defaultWorkEndTime;
+        }
+        if (defaultBreakMinutes === null || defaultBreakMinutes === undefined) {
+          defaultBreakMinutes =
+            settings?.attendanceConfig?.defaultBreakMinutes ?? 60;
+        }
+      }
+
+      const updated = await companySettingsApi.updateWorkModeConfig({
+        mode: newMode,
+        defaultWorkStartTime,
+        defaultWorkEndTime,
+        defaultBreakMinutes,
+      });
+      setWorkModeConfig(updated);
+      toast.success(tCommon("saveSuccess"));
+      // Reload settings để cập nhật các config liên quan
+      loadSettings();
+    } catch (error) {
+      console.error("Failed to update work mode:", error);
+      toast.error(tCommon("errorSaving"));
+      throw error;
+    }
+  };
+
+  /**
+   * Render explanation panel cho tab hiện tại
+   */
+  const renderExplanationPanel = () => {
+    const explanation = TAB_EXPLANATIONS[activeTab];
+    if (!explanation) return null;
+
+    const tips = explanation.tipsKeys?.map((key) => t(key));
+    const workModeNote =
+      explanation.workModeNoteKey && workModeConfig?.mode === "FIXED_HOURS"
+        ? t(explanation.workModeNoteKey)
+        : undefined;
+
+    return (
+      <ExplanationPanel
+        title={t(explanation.titleKey)}
+        description={t(explanation.descKey)}
+        tips={tips}
+        workModeNote={workModeNote}
+        defaultCollapsed={false}
+        className="mb-6"
+      />
+    );
+  };
+
   if (isLoading) {
     return <SettingsTabsSkeleton />;
   }
@@ -151,6 +292,11 @@ export function SettingsTabs() {
       </div>
     );
   }
+
+  // Lọc các tabs hiển thị dựa trên work mode
+  const visibleTabs = workModeConfig
+    ? getVisibleSettingsTabs(TAB_ITEMS, workModeConfig.mode)
+    : TAB_ITEMS;
 
   return (
     <div className="space-y-6">
@@ -171,7 +317,7 @@ export function SettingsTabs() {
       <div className="md:hidden">
         <ScrollArea className="w-full">
           <div className="flex gap-2 pb-3">
-            {TAB_ITEMS.map((item) => (
+            {visibleTabs.map((item) => (
               <Button
                 key={item.key}
                 variant={activeTab === item.key ? "default" : "outline"}
@@ -198,6 +344,24 @@ export function SettingsTabs() {
       <div className="flex gap-6">
         {/* Content area */}
         <div className="flex-1 min-w-0">
+          {/* Explanation Panel cho tab hiện tại */}
+          {renderExplanationPanel()}
+
+          {/* Work Mode Tab */}
+          {activeTab === "workMode" && workModeConfig && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("workMode.title")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <WorkModeSelector
+                  currentMode={workModeConfig.mode}
+                  onModeChange={handleWorkModeChange}
+                />
+              </CardContent>
+            </Card>
+          )}
+
           {activeTab === "attendance" && (
             <AttendanceConfigForm
               config={settings.attendanceConfig}
@@ -252,28 +416,37 @@ export function SettingsTabs() {
         </div>
 
         {/* Desktop: Sidebar navigation - bên phải, sticky dưới title */}
-        <Card className="hidden md:block w-56 shrink-0 h-fit sticky top-[120px]">
-          <CardContent className="p-3">
-            <nav className="flex flex-col gap-1">
-              {TAB_ITEMS.map((item) => (
-                <Button
-                  key={item.key}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "justify-start gap-3 h-10",
-                    activeTab === item.key &&
-                      "bg-primary/10 text-primary font-medium",
-                  )}
-                  onClick={() => setActiveTab(item.key)}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {t(`tabs.${item.key}`)}
-                </Button>
-              ))}
-            </nav>
-          </CardContent>
-        </Card>
+        <div className="hidden md:flex flex-col gap-4 w-56 shrink-0 sticky top-[120px] h-fit">
+          {/* Navigation Card */}
+          <Card>
+            <CardContent className="p-3">
+              <nav className="flex flex-col gap-1">
+                {visibleTabs.map((item) => (
+                  <Button
+                    key={item.key}
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      "justify-start gap-3 h-10",
+                      activeTab === item.key &&
+                        "bg-primary/10 text-primary font-medium",
+                    )}
+                    onClick={() => setActiveTab(item.key)}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {t(`tabs.${item.key}`)}
+                  </Button>
+                ))}
+              </nav>
+            </CardContent>
+          </Card>
+
+          {/* Configuration Summary Card */}
+          <ConfigurationSummaryCard
+            settings={settings}
+            workModeConfig={workModeConfig}
+          />
+        </div>
       </div>
 
       {/* Dialog xác nhận */}

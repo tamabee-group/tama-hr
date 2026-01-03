@@ -31,6 +31,7 @@ import {
   BreakPeriodData,
   calculateTotalBreakMinutes,
 } from "./_break-period-form";
+import { ScheduleTimeline } from "../_components/_schedule-timeline";
 
 interface ScheduleFormProps {
   schedule?: WorkSchedule | null;
@@ -554,6 +555,24 @@ export function ScheduleForm({
               isOvernight={isOvernight}
               maxPeriods={5}
               errors={errors}
+            />
+          </div>
+
+          {/* Timeline Preview */}
+          <div className="border-t pt-4">
+            <Label className="mb-2 block">{t("timeline")}</Label>
+            <ScheduleTimeline
+              workStartTime={formData.workStartTime}
+              workEndTime={formData.workEndTime}
+              breakPeriods={formData.breakPeriods.map((bp) => ({
+                name: bp.name,
+                startTime: bp.startTime,
+                endTime: bp.endTime,
+                durationMinutes: calculateTotalBreakMinutes([bp], isOvernight),
+                isFlexible: bp.isFlexible,
+                order: 0,
+              }))}
+              isOvernight={isOvernight}
             />
           </div>
 

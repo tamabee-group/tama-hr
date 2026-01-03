@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 
@@ -16,11 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DatePicker } from "@/components/ui/date-picker";
 import { WorkSchedule } from "@/types/attendance-records";
 import { assignSchedule } from "@/lib/apis/work-schedule-api";
 import { apiClient } from "@/lib/utils/fetch-client";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { formatDateForApi } from "@/lib/utils/format-date";
 import { PaginatedResponse } from "@/types/api";
+import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface Employee {
   id: number;
@@ -49,13 +52,14 @@ export function ScheduleAssignmentDialog({
   const t = useTranslations("schedules");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
+  const locale = useLocale() as SupportedLocale;
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [effectiveFrom, setEffectiveFrom] = useState(
-    new Date().toISOString().split("T")[0],
+  const [effectiveFrom, setEffectiveFrom] = useState<Date | undefined>(
+    new Date(),
   );
-  const [effectiveTo, setEffectiveTo] = useState("");
+  const [effectiveTo, setEffectiveTo] = useState<Date | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [fetchingEmployees, setFetchingEmployees] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,8 +129,8 @@ export function ScheduleAssignmentDialog({
       await assignSchedule(
         schedule.id,
         selectedIds,
-        effectiveFrom,
-        effectiveTo || undefined,
+        formatDateForApi(effectiveFrom) || "",
+        formatDateForApi(effectiveTo),
       );
       toast.success(t("messages.assignSuccess"));
       onSuccess();
@@ -156,20 +160,22 @@ export function ScheduleAssignmentDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="effectiveFrom">{t("form.effectiveFrom")}</Label>
-              <Input
-                id="effectiveFrom"
-                type="date"
+              <DatePicker
                 value={effectiveFrom}
-                onChange={(e) => setEffectiveFrom(e.target.value)}
+                onChange={setEffectiveFrom}
+                locale={locale}
+                placeholder={t("form.effectiveFrom")}
+                className="w-full"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="effectiveTo">{t("form.effectiveTo")}</Label>
-              <Input
-                id="effectiveTo"
-                type="date"
+              <DatePicker
                 value={effectiveTo}
-                onChange={(e) => setEffectiveTo(e.target.value)}
+                onChange={setEffectiveTo}
+                locale={locale}
+                placeholder={t("form.effectiveTo")}
+                className="w-full"
               />
             </div>
           </div>

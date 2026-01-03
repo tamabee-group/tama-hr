@@ -213,11 +213,10 @@ export async function getEmployeeAttendanceByMonth(
  */
 export async function getEmployeeAttendanceSummary(
   employeeId: number,
-  dateRange?: DateRange,
+  period?: string, // format: yyyy-MM
 ): Promise<AttendanceSummary> {
   const params = new URLSearchParams();
-  if (dateRange?.startDate) params.append("startDate", dateRange.startDate);
-  if (dateRange?.endDate) params.append("endDate", dateRange.endDate);
+  if (period) params.append("period", period);
   const queryString = params.toString() ? `?${params.toString()}` : "";
   return apiClient.get<AttendanceSummary>(
     `/api/company/employees/${employeeId}/attendance/summary${queryString}`,

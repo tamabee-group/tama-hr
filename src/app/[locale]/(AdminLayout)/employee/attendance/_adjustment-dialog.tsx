@@ -6,7 +6,6 @@ import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -28,7 +28,11 @@ import { getApprovers, ApproverInfo } from "@/lib/apis/company-employees";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
-import type { AttendanceRecord } from "@/types/attendance-records";
+import type {
+  AttendanceRecord,
+  UnifiedAttendanceRecord,
+  BreakRecord,
+} from "@/types/attendance-records";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 // ============================================
@@ -36,27 +40,33 @@ import type { SupportedLocale } from "@/lib/utils/format-currency";
 // ============================================
 
 interface AdjustmentDialogProps {
-  record: AttendanceRecord | null;
-  date?: string; // Ngày cần điều chỉnh (khi không có record)
+  record: AttendanceRecord | UnifiedAttendanceRecord | null;
+  date?: string;
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
+interface BreakFormData {
+  breakRecordId: number;
+  breakNumber: number;
+  originalStart: string;
+  originalEnd: string;
+  newStart: string;
+  newEnd: string;
+  isEditing: boolean;
+}
+
 interface FormData {
   requestedCheckIn: string;
   requestedCheckOut: string;
-  requestedBreakStart: string;
-  requestedBreakEnd: string;
+  breaks: BreakFormData[];
   reason: string;
   assignedTo: string;
 }
 
 interface FormErrors {
   requestedCheckIn?: string;
-  requestedCheckOut?: string;
-  requestedBreakStart?: string;
-  requestedBreakEnd?: string;
   reason?: string;
   assignedTo?: string;
 }
@@ -67,17 +77,47 @@ interface FormErrors {
 
 function extractTimeFromDateTime(dateTime?: string): string {
   if (!dateTime) return "";
-  // Nếu là ISO string, lấy phần time
   if (dateTime.includes("T")) {
     return dateTime.split("T")[1]?.substring(0, 5) || "";
   }
-  // Nếu đã là time format
   return dateTime.substring(0, 5);
 }
 
 function combineDateTime(date: string, time: string): string {
   if (!time) return "";
   return `${date}T${time}:00`;
+}
+
+function calculateBreakMinutes(start: string, end: string): number {
+  if (!start || !end) return 0;
+  const [startH, startM] = start.split(":").map(Number);
+  const [endH, endM] = end.split(":").map(Number);
+  return endH * 60 + endM - (startH * 60 + startM);
+}
+
+function formatDurationByLocale(minutes: number, locale: string): string {
+  if (minutes <= 0) return "--:--";
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+
+  if (locale === "ja") {
+    return hours > 0
+      ? `${hours}時${mins.toString().padStart(2, "0")}分`
+      : `${mins}分`;
+  }
+  // vi, en: format HH:MM
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+}
+
+function formatTotalBreakMinutes(
+  breaks: BreakFormData[],
+  locale: string,
+): string {
+  const totalMinutes = breaks.reduce((sum, br) => {
+    const minutes = calculateBreakMinutes(br.newStart, br.newEnd);
+    return sum + (minutes > 0 ? minutes : 0);
+  }, 0);
+  return formatDurationByLocale(totalMinutes, locale);
 }
 
 // ============================================
@@ -94,16 +134,15 @@ export function AdjustmentDialog({
   const t = useTranslations("attendance");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
+  const tEnums = useTranslations("enums");
   const locale = useLocale() as SupportedLocale;
 
-  // Xác định ngày làm việc (từ record hoặc prop date)
   const workDate = record?.workDate || date || "";
 
   const [formData, setFormData] = React.useState<FormData>({
     requestedCheckIn: "",
     requestedCheckOut: "",
-    requestedBreakStart: "",
-    requestedBreakEnd: "",
+    breaks: [],
     reason: "",
     assignedTo: "",
   });
@@ -111,24 +150,24 @@ export function AdjustmentDialog({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [approvers, setApprovers] = React.useState<ApproverInfo[]>([]);
   const [isLoadingApprovers, setIsLoadingApprovers] = React.useState(false);
-  const tEnums = useTranslations("enums");
 
   // Fetch approvers khi dialog mở
   React.useEffect(() => {
     if (open) {
       setIsLoadingApprovers(true);
       getApprovers()
-        .then((data) => {
-          setApprovers(data);
-        })
+        .then((data) => setApprovers(data))
         .catch((err) => console.error("Error fetching approvers:", err))
         .finally(() => setIsLoadingApprovers(false));
     }
   }, [open]);
 
-  // Reset form khi dialog mở
+  // Reset form khi dialog mở hoặc record thay đổi
   React.useEffect(() => {
     if (open) {
+      const breakRecords: BreakRecord[] =
+        (record as UnifiedAttendanceRecord)?.breakRecords || [];
+
       setFormData({
         requestedCheckIn: record
           ? extractTimeFromDateTime(record.originalCheckIn)
@@ -136,8 +175,15 @@ export function AdjustmentDialog({
         requestedCheckOut: record
           ? extractTimeFromDateTime(record.originalCheckOut)
           : "",
-        requestedBreakStart: "",
-        requestedBreakEnd: "",
+        breaks: breakRecords.map((br) => ({
+          breakRecordId: br.id,
+          breakNumber: br.breakNumber,
+          originalStart: extractTimeFromDateTime(br.breakStart),
+          originalEnd: extractTimeFromDateTime(br.breakEnd),
+          newStart: extractTimeFromDateTime(br.breakStart),
+          newEnd: extractTimeFromDateTime(br.breakEnd),
+          isEditing: false,
+        })),
         reason: "",
         assignedTo: "",
       });
@@ -145,16 +191,60 @@ export function AdjustmentDialog({
     }
   }, [open, record]);
 
-  // Xử lý thay đổi input
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error khi user sửa
-    if (errors[field]) {
+    if (errors[field as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
-  // Validate form
+  const handleBreakToggle = (index: number, checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      breaks: prev.breaks.map((br, i) =>
+        i === index ? { ...br, isEditing: checked } : br,
+      ),
+    }));
+  };
+
+  const handleBreakChange = (
+    index: number,
+    field: "newStart" | "newEnd",
+    value: string,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      breaks: prev.breaks.map((br, i) =>
+        i === index ? { ...br, [field]: value } : br,
+      ),
+    }));
+  };
+
+  // Kiểm tra có thay đổi gì không
+  const hasChanges = React.useMemo(() => {
+    if (!record) {
+      // Không có record → cho phép tạo mới nếu có nhập thời gian
+      return (
+        !!formData.requestedCheckIn ||
+        !!formData.requestedCheckOut ||
+        formData.breaks.some((br) => br.isEditing)
+      );
+    }
+
+    const originalCheckIn = extractTimeFromDateTime(record.originalCheckIn);
+    const originalCheckOut = extractTimeFromDateTime(record.originalCheckOut);
+
+    const checkInChanged = formData.requestedCheckIn !== originalCheckIn;
+    const checkOutChanged = formData.requestedCheckOut !== originalCheckOut;
+    const hasBreakChanges = formData.breaks.some(
+      (br) =>
+        br.isEditing &&
+        (br.newStart !== br.originalStart || br.newEnd !== br.originalEnd),
+    );
+
+    return checkInChanged || checkOutChanged || hasBreakChanges;
+  }, [record, formData]);
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -166,54 +256,28 @@ export function AdjustmentDialog({
       newErrors.assignedTo = t("adjustment.assignedToRequired");
     }
 
-    // Nếu có record, kiểm tra ít nhất một thời gian được thay đổi
-    if (record) {
-      const originalCheckIn = extractTimeFromDateTime(record.originalCheckIn);
-      const originalCheckOut = extractTimeFromDateTime(record.originalCheckOut);
-
-      const checkInChanged = formData.requestedCheckIn !== originalCheckIn;
-      const checkOutChanged = formData.requestedCheckOut !== originalCheckOut;
-      const breakStartChanged = !!formData.requestedBreakStart;
-      const breakEndChanged = !!formData.requestedBreakEnd;
-
-      if (
-        !checkInChanged &&
-        !checkOutChanged &&
-        !breakStartChanged &&
-        !breakEndChanged
-      ) {
-        newErrors.requestedCheckIn = t("adjustment.timeChangeRequired");
-      }
-    } else {
-      // Nếu không có record, yêu cầu ít nhất một thời gian
-      if (
-        !formData.requestedCheckIn &&
-        !formData.requestedCheckOut &&
-        !formData.requestedBreakStart &&
-        !formData.requestedBreakEnd
-      ) {
-        newErrors.requestedCheckIn = t("adjustment.timeRequired");
-      }
-    }
-
-    // Validate break times: nếu có một thì phải có cả hai
-    if (
-      (formData.requestedBreakStart && !formData.requestedBreakEnd) ||
-      (!formData.requestedBreakStart && formData.requestedBreakEnd)
-    ) {
-      newErrors.requestedBreakStart = t("adjustment.breakTimeBothRequired");
+    if (!hasChanges) {
+      newErrors.requestedCheckIn = record
+        ? t("adjustment.timeChangeRequired")
+        : t("adjustment.timeRequired");
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Xử lý submit
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
       setIsSubmitting(true);
+
+      // Tìm break đầu tiên được chỉnh sửa (API hiện tại chỉ hỗ trợ 1 break)
+      const editedBreak = formData.breaks.find(
+        (br) =>
+          br.isEditing &&
+          (br.newStart !== br.originalStart || br.newEnd !== br.originalEnd),
+      );
 
       await adjustmentApi.createAdjustmentRequest({
         attendanceRecordId: record?.id,
@@ -224,12 +288,15 @@ export function AdjustmentDialog({
         requestedCheckOut: formData.requestedCheckOut
           ? combineDateTime(workDate, formData.requestedCheckOut)
           : undefined,
-        requestedBreakStart: formData.requestedBreakStart
-          ? combineDateTime(workDate, formData.requestedBreakStart)
-          : undefined,
-        requestedBreakEnd: formData.requestedBreakEnd
-          ? combineDateTime(workDate, formData.requestedBreakEnd)
-          : undefined,
+        breakRecordId: editedBreak?.breakRecordId,
+        requestedBreakStart:
+          editedBreak && editedBreak.newStart !== editedBreak.originalStart
+            ? combineDateTime(workDate, editedBreak.newStart)
+            : undefined,
+        requestedBreakEnd:
+          editedBreak && editedBreak.newEnd !== editedBreak.originalEnd
+            ? combineDateTime(workDate, editedBreak.newEnd)
+            : undefined,
         reason: formData.reason.trim(),
         assignedTo: parseInt(formData.assignedTo),
       });
@@ -246,57 +313,46 @@ export function AdjustmentDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-base sm:text-lg">
-            {t("adjustment.title")}
-          </DialogTitle>
-          <DialogDescription className="text-sm">
+          <DialogTitle>{t("adjustment.title")}</DialogTitle>
+          <p className="text-sm text-muted-foreground">
             {formatDate(workDate, locale)}
-          </DialogDescription>
+          </p>
         </DialogHeader>
 
-        <div className="space-y-4 py-2 sm:py-4">
-          {/* Original times - Chỉ hiển thị khi có record */}
+        <div className="space-y-4 py-2">
+          {/* Thời gian gốc */}
           {record && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 p-3 sm:p-4 bg-muted rounded-lg">
+            <div className="grid grid-cols-2 gap-4 p-3 bg-muted/50 rounded-lg">
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {t("adjustment.originalTime")} - {t("checkIn")}
+                <p className="text-xs text-muted-foreground mb-1">
+                  {t("checkIn")} ({t("adjustment.original")})
                 </p>
-                <p className="font-medium text-sm sm:text-base">
+                <p className="text-lg font-semibold">
                   {record.originalCheckIn
                     ? formatTime(record.originalCheckIn)
-                    : "-"}
+                    : "--:--"}
                 </p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {t("adjustment.originalTime")} - {t("checkOut")}
+                <p className="text-xs text-muted-foreground mb-1">
+                  {t("checkOut")} ({t("adjustment.original")})
                 </p>
-                <p className="font-medium text-sm sm:text-base">
+                <p className="text-lg font-semibold">
                   {record.originalCheckOut
                     ? formatTime(record.originalCheckOut)
-                    : "-"}
+                    : "--:--"}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Thông báo khi không có record */}
-          {!record && (
-            <div className="p-3 sm:p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                {t("adjustment.noRecordNote")}
-              </p>
-            </div>
-          )}
-
-          {/* Requested times - Responsive grid, stack on mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5 sm:space-y-2">
+          {/* Check in/out inputs */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
               <Label htmlFor="requestedCheckIn" className="text-sm">
-                {t("adjustment.requestedTime")} - {t("checkIn")}
+                {t("checkIn")}
               </Label>
               <Input
                 id="requestedCheckIn"
@@ -305,17 +361,16 @@ export function AdjustmentDialog({
                 onChange={(e) =>
                   handleChange("requestedCheckIn", e.target.value)
                 }
-                className="w-full h-10 sm:h-9"
               />
               {errors.requestedCheckIn && (
-                <p className="text-xs sm:text-sm text-destructive">
+                <p className="text-xs text-destructive">
                   {errors.requestedCheckIn}
                 </p>
               )}
             </div>
-            <div className="space-y-1.5 sm:space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="requestedCheckOut" className="text-sm">
-                {t("adjustment.requestedTime")} - {t("checkOut")}
+                {t("checkOut")}
               </Label>
               <Input
                 id="requestedCheckOut"
@@ -324,60 +379,78 @@ export function AdjustmentDialog({
                 onChange={(e) =>
                   handleChange("requestedCheckOut", e.target.value)
                 }
-                className="w-full h-10 sm:h-9"
               />
-              {errors.requestedCheckOut && (
-                <p className="text-xs sm:text-sm text-destructive">
-                  {errors.requestedCheckOut}
-                </p>
-              )}
             </div>
           </div>
 
-          {/* Break times - Responsive grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label htmlFor="requestedBreakStart" className="text-sm">
-                {t("adjustment.requestedTime")} - {t("breakStart")}
-              </Label>
-              <Input
-                id="requestedBreakStart"
-                type="time"
-                value={formData.requestedBreakStart}
-                onChange={(e) =>
-                  handleChange("requestedBreakStart", e.target.value)
-                }
-                className="w-full h-10 sm:h-9"
-              />
-              {errors.requestedBreakStart && (
-                <p className="text-xs sm:text-sm text-destructive">
-                  {errors.requestedBreakStart}
-                </p>
-              )}
-            </div>
-            <div className="space-y-1.5 sm:space-y-2">
-              <Label htmlFor="requestedBreakEnd" className="text-sm">
-                {t("adjustment.requestedTime")} - {t("breakEnd")}
-              </Label>
-              <Input
-                id="requestedBreakEnd"
-                type="time"
-                value={formData.requestedBreakEnd}
-                onChange={(e) =>
-                  handleChange("requestedBreakEnd", e.target.value)
-                }
-                className="w-full h-10 sm:h-9"
-              />
-              {errors.requestedBreakEnd && (
-                <p className="text-xs sm:text-sm text-destructive">
-                  {errors.requestedBreakEnd}
-                </p>
-              )}
-            </div>
-          </div>
+          {/* Multiple break records */}
+          {formData.breaks.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">
+                  {t("editDialog.breakRecords")}
+                </Label>
+                <span className="text-sm text-muted-foreground">
+                  {t("editDialog.totalBreak")}:{" "}
+                  {formatTotalBreakMinutes(formData.breaks, locale)}
+                </span>
+              </div>
+              {formData.breaks.map((br, index) => (
+                <div
+                  key={br.breakRecordId}
+                  className="p-3 border rounded-lg space-y-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`break-${br.breakRecordId}`}
+                      checked={br.isEditing}
+                      onCheckedChange={(checked) =>
+                        handleBreakToggle(index, checked as boolean)
+                      }
+                    />
+                    <Label
+                      htmlFor={`break-${br.breakRecordId}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {t("adjustment.breakLabel", {
+                        number: br.breakNumber,
+                        start: br.originalStart || "--:--",
+                        end: br.originalEnd || "--:--",
+                      })}
+                    </Label>
+                  </div>
 
-          {/* Reason - Full width */}
-          <div className="space-y-1.5 sm:space-y-2">
+                  {br.isEditing && (
+                    <div className="grid grid-cols-2 gap-3 pl-6">
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("breakStart")}</Label>
+                        <Input
+                          type="time"
+                          value={br.newStart}
+                          onChange={(e) =>
+                            handleBreakChange(index, "newStart", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("breakEnd")}</Label>
+                        <Input
+                          type="time"
+                          value={br.newEnd}
+                          onChange={(e) =>
+                            handleBreakChange(index, "newEnd", e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Lý do */}
+          <div className="space-y-1.5">
             <Label htmlFor="reason" className="text-sm">
               {t("adjustment.reason")}
             </Label>
@@ -386,26 +459,24 @@ export function AdjustmentDialog({
               placeholder={t("adjustment.reasonPlaceholder")}
               value={formData.reason}
               onChange={(e) => handleChange("reason", e.target.value)}
-              rows={3}
-              className="w-full resize-none"
+              rows={2}
+              className="resize-none"
             />
             {errors.reason && (
-              <p className="text-xs sm:text-sm text-destructive">
-                {errors.reason}
-              </p>
+              <p className="text-xs text-destructive">{errors.reason}</p>
             )}
           </div>
 
-          {/* Assigned To - Select approver */}
-          <div className="space-y-1.5 sm:space-y-2">
+          {/* Người duyệt */}
+          <div className="space-y-1.5">
             <Label htmlFor="assignedTo" className="text-sm">
               {t("adjustment.assignedTo")}
             </Label>
             {isLoadingApprovers ? (
-              <div className="flex items-center gap-2 h-10 px-3 border rounded-md">
+              <div className="flex items-center gap-2 h-9 px-3 border rounded-md">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-sm text-muted-foreground">
-                  Loading...
+                  {tCommon("loading")}
                 </span>
               </div>
             ) : (
@@ -413,7 +484,7 @@ export function AdjustmentDialog({
                 value={formData.assignedTo}
                 onValueChange={(value) => handleChange("assignedTo", value)}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue placeholder={t("adjustment.selectApprover")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -427,28 +498,16 @@ export function AdjustmentDialog({
               </Select>
             )}
             {errors.assignedTo && (
-              <p className="text-xs sm:text-sm text-destructive">
-                {errors.assignedTo}
-              </p>
+              <p className="text-xs text-destructive">{errors.assignedTo}</p>
             )}
           </div>
         </div>
 
-        {/* Footer - Responsive buttons */}
-        <DialogFooter className="flex-col-reverse sm:flex-row gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="w-full sm:w-auto"
-          >
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             {tCommon("cancel")}
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="w-full sm:w-auto"
-          >
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {t("adjustment.submit")}
           </Button>

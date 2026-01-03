@@ -414,7 +414,7 @@ export function AttendanceConfigForm({
                   }
                 />
                 <Label htmlFor="enableRounding" className="cursor-pointer">
-                  {t("attendance.enableRounding")}
+                  {t("attendance.rounding")}
                 </Label>
               </div>
 

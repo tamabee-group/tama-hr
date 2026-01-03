@@ -1,13 +1,14 @@
 "use client";
 
 import {
-  ChevronUp,
-  LogOut,
-  UserRoundPen,
-  Wallet,
-  ShieldCheck,
-} from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  startTransition,
+} from "react";
+import { ShieldCheck } from "lucide-react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import {
@@ -28,12 +29,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -44,7 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
 import type {
   SidebarGroup as SidebarGroupType,
   SidebarHeaderConfig,
@@ -56,25 +51,23 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { useAuth } from "@/hooks/use-auth";
-import { toast } from "sonner";
 import { isAdminTamabee, hasPermission } from "@/types/permissions";
 import { hasCompanyPermission } from "@/types/company-permissions";
+import { cn } from "@/lib/utils";
+import { SidebarSettingsDialog } from "./_sidebar-settings-dialog";
 
 /**
  * Kiểm tra item có yêu cầu Admin-only permission không
- * Các permission chỉ Admin mới có: DIRECT_WALLET_MANIPULATION, SYSTEM_SETTINGS, MANAGE_USERS
  */
 function isAdminOnlyItem(item: SidebarItem): boolean {
   if (!item.requiredPermission && !item.requiredCompanyPermission) return false;
 
-  // Tamabee admin-only permissions
   const tamabeeAdminOnlyPermissions = [
     "DIRECT_WALLET_MANIPULATION",
     "SYSTEM_SETTINGS",
     "MANAGE_USERS",
   ];
 
-  // Company admin-only permissions
   const companyAdminOnlyPermissions = [
     "MANAGE_SETTINGS",
     "MANAGE_DEPOSITS",
@@ -102,7 +95,6 @@ function canAccessItem(
 ): boolean {
   if (!userRole) return true;
 
-  // Nếu không có yêu cầu permission, cho phép truy cập
   if (
     !item.requiredPermission &&
     !("requiredCompanyPermission" in item && item.requiredCompanyPermission)
@@ -110,12 +102,10 @@ function canAccessItem(
     return true;
   }
 
-  // Kiểm tra Tamabee permission
   if (item.requiredPermission) {
     return hasPermission(userRole, item.requiredPermission);
   }
 
-  // Kiểm tra Company permission
   if ("requiredCompanyPermission" in item && item.requiredCompanyPermission) {
     return hasCompanyPermission(userRole, item.requiredCompanyPermission);
   }
@@ -124,7 +114,7 @@ function canAccessItem(
 }
 
 /**
- * Component hiển thị Admin badge cho các features chỉ Admin mới có
+ * Component hiển thị Admin badge
  */
 function AdminBadge({ tooltip }: { tooltip: string }) {
   return (
@@ -149,8 +139,9 @@ interface BaseSidebarProps {
   className?: string;
   headerHeight?: number;
   badgeCounts?: Record<string, number>;
-  /** Role của user hiện tại, dùng để hiển thị visual indicators */
   userRole?: string;
+  /** Extra content hiển thị dưới header (ví dụ: work mode indicator) */
+  headerExtra?: React.ReactNode;
 }
 
 export function BaseSidebar({
@@ -160,214 +151,251 @@ export function BaseSidebar({
   headerHeight,
   badgeCounts = {},
   userRole,
+  headerExtra,
 }: BaseSidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const t = useTranslations("common");
-  const tHeader = useTranslations("header");
   const tEnums = useTranslations("enums");
-  const tAuth = useTranslations("auth");
 
-  // Chỉ hiển thị Admin badge khi user không phải Admin
+  // Settings dialog state - mở từ query param nếu có
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Kiểm tra query param để mở dialog sau khi chuyển ngôn ngữ
+  useEffect(() => {
+    if (searchParams.get("settings") === "open") {
+      startTransition(() => {
+        setSettingsOpen(true);
+      });
+      // Xóa query param khỏi URL
+      router.replace(pathname, { scroll: false });
+    }
+  }, [searchParams, pathname, router]);
+
+  // Scroll shadow state
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [showHeaderShadow, setShowHeaderShadow] = useState(false);
+  const [showFooterShadow, setShowFooterShadow] = useState(false);
+
+  const handleScroll = useCallback(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    setShowHeaderShadow(scrollTop > 0);
+    setShowFooterShadow(scrollTop + clientHeight < scrollHeight - 1);
+  }, []);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    handleScroll();
+
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
   const showAdminBadge = userRole ? !isAdminTamabee(userRole) : false;
 
-  const handleLogout = async () => {
-    await logout();
-    router.push("/");
-    toast.success(tAuth("logoutSuccess"));
-  };
-
   return (
-    <Sidebar collapsible="icon">
-      {/* Header với logo và tên */}
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              className="flex items-center cursor-default hover:bg-transparent"
-            >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-xs overflow-hidden">
-                {headerConfig.logo ? (
-                  typeof headerConfig.logo === "string" ? (
-                    <Image
-                      src={getFileUrl(headerConfig.logo) || headerConfig.logo}
-                      alt={headerConfig.name}
-                      width={32}
-                      height={32}
-                      className="size-8 object-cover"
-                    />
+    <>
+      <Sidebar collapsible="icon">
+        {/* Header với shadow khi scroll */}
+        <SidebarHeader
+          className={cn(
+            "transition-shadow duration-200",
+            showHeaderShadow && "shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)]",
+          )}
+        >
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                className="flex items-center cursor-default hover:bg-transparent"
+              >
+                <div className="flex aspect-square size-8 items-center justify-center rounded-xs overflow-hidden shrink-0">
+                  {headerConfig.logo ? (
+                    typeof headerConfig.logo === "string" ? (
+                      <Image
+                        src={getFileUrl(headerConfig.logo) || headerConfig.logo}
+                        alt={headerConfig.name}
+                        width={32}
+                        height={32}
+                        className="size-8 object-cover"
+                      />
+                    ) : (
+                      headerConfig.logo
+                    )
                   ) : (
-                    headerConfig.logo
-                  )
-                ) : (
-                  <div className="size-8 bg-muted flex items-center justify-center">
-                    <span className="text-[8px] font-medium text-muted-foreground">
-                      LOGO
-                    </span>
-                  </div>
-                )}
-              </div>
-              {!isCollapsed && (
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="text-xl truncate max-w-[170px] font-kanit">
+                    <div className="size-8 bg-muted flex items-center justify-center">
+                      <span className="text-[8px] font-medium text-muted-foreground">
+                        LOGO
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div
+                  className={cn(
+                    "flex flex-col gap-0.5 leading-none overflow-hidden transition-all duration-200",
+                    isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
+                  )}
+                >
+                  <span className="text-xl truncate max-w-[170px] font-kanit whitespace-nowrap">
                     {headerConfig.name}
                   </span>
                 </div>
-              )}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          {/* Extra content dưới header (work mode indicator, etc.) */}
+          {headerExtra && !isCollapsed && (
+            <div className="px-2 pb-2">{headerExtra}</div>
+          )}
+        </SidebarHeader>
 
-      <SidebarContent>
-        {groups.map((group) => {
-          // Filter items dựa trên permission
-          const filteredItems = group.items.filter((item) =>
-            canAccessItem(item, userRole),
-          );
+        <SidebarContent ref={contentRef}>
+          {groups.map((group) => {
+            const filteredItems = group.items.filter((item) =>
+              canAccessItem(item, userRole),
+            );
 
-          // Không hiển thị group nếu không có items nào
-          if (filteredItems.length === 0) return null;
+            if (filteredItems.length === 0) return null;
 
-          return (
-            <SidebarGroup key={group.label}>
-              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu
-                  className={className}
-                  style={{ top: headerHeight || 0 }}
-                >
-                  {filteredItems.map((item) => {
-                    // Filter sub-items nếu có
-                    const filteredSubItems = item.items?.filter((subItem) =>
-                      canAccessItem(subItem, userRole),
-                    );
+            return (
+              <SidebarGroup key={group.label}>
+                <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu
+                    className={className}
+                    style={{ top: headerHeight || 0 }}
+                  >
+                    {filteredItems.map((item) => {
+                      const filteredSubItems = item.items?.filter((subItem) =>
+                        canAccessItem(subItem, userRole),
+                      );
 
-                    // Nếu có sub-items nhưng tất cả đều bị filter, không hiển thị item
-                    if (
-                      item.items &&
-                      (!filteredSubItems || filteredSubItems.length === 0)
-                    ) {
-                      return null;
-                    }
+                      if (
+                        item.items &&
+                        (!filteredSubItems || filteredSubItems.length === 0)
+                      ) {
+                        return null;
+                      }
 
-                    return filteredSubItems && filteredSubItems.length > 0 ? (
-                      <Collapsible
-                        key={item.title}
-                        defaultOpen
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton>
+                      return filteredSubItems && filteredSubItems.length > 0 ? (
+                        <Collapsible
+                          key={item.title}
+                          defaultOpen
+                          className="group/collapsible"
+                        >
+                          <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                              <SidebarMenuButton>
+                                {item.icon}
+                                <span>{item.title}</span>
+                                {showAdminBadge && isAdminOnlyItem(item) && (
+                                  <AdminBadge tooltip={t("adminOnly")} />
+                                )}
+                                <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                              </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <SidebarMenuSub>
+                                {filteredSubItems.map((subItem) => (
+                                  <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={pathname === subItem.url}
+                                    >
+                                      <Link href={subItem.url}>
+                                        <span>{subItem.title}</span>
+                                      </Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                ))}
+                              </SidebarMenuSub>
+                            </CollapsibleContent>
+                          </SidebarMenuItem>
+                        </Collapsible>
+                      ) : (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={pathname === item.url}
+                          >
+                            <Link href={item.url}>
                               {item.icon}
                               <span>{item.title}</span>
                               {showAdminBadge && isAdminOnlyItem(item) && (
                                 <AdminBadge tooltip={t("adminOnly")} />
                               )}
-                              <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {filteredSubItems.map((subItem) => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuSubButton
-                                    asChild
-                                    isActive={pathname === subItem.url}
-                                  >
-                                    <Link href={subItem.url}>
-                                      <span>{subItem.title}</span>
-                                    </Link>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
+                            </Link>
+                          </SidebarMenuButton>
+                          {item.badgeKey && badgeCounts[item.badgeKey] > 0 && (
+                            <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
+                              {badgeCounts[item.badgeKey]}
+                            </SidebarMenuBadge>
+                          )}
                         </SidebarMenuItem>
-                      </Collapsible>
-                    ) : (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={pathname === item.url}
-                        >
-                          <Link href={item.url}>
-                            {item.icon}
-                            <span>{item.title}</span>
-                            {showAdminBadge && isAdminOnlyItem(item) && (
-                              <AdminBadge tooltip={t("adminOnly")} />
-                            )}
-                          </Link>
-                        </SidebarMenuButton>
-                        {item.badgeKey && badgeCounts[item.badgeKey] > 0 && (
-                          <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
-                            {badgeCounts[item.badgeKey]}
-                          </SidebarMenuBadge>
-                        )}
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          );
-        })}
-      </SidebarContent>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            );
+          })}
+        </SidebarContent>
 
-      <SidebarFooter className="mb-20">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="cursor-pointer border rounded-full"
-                  tooltip={user?.email || ""}
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={getFileUrl(user?.profile?.avatar)}
-                      alt="Profile"
-                    />
-                    <AvatarFallback />
-                  </Avatar>
-                  <div className="flex flex-col items-start text-left flex-1 min-w-0">
-                    <span className="text-sm font-medium truncate w-full">
-                      {user?.email}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate w-full">
-                      {user?.role ? tEnums(`userRole.${user.role}`) : ""}
-                    </span>
-                  </div>
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
+        {/* Footer với shadow khi scroll - ChatGPT style */}
+        <SidebarFooter
+          className={cn(
+            "mb-20 transition-shadow duration-200",
+            showFooterShadow && "shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]",
+          )}
+        >
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                className="cursor-pointer"
+                onClick={() => setSettingsOpen(true)}
+                tooltip={user?.email || ""}
               >
-                <DropdownMenuItem>
-                  <UserRoundPen />
-                  <span>{tHeader("profile")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Wallet />
-                  <span>{tHeader("wallet")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut />
-                  <span>{tHeader("logout")}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={getFileUrl(user?.profile?.avatar)}
+                    alt="Profile"
+                  />
+                  <AvatarFallback className="text-sm">
+                    {user?.profile?.name?.[0] ||
+                      user?.email?.[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col items-start text-left flex-1 min-w-0">
+                  <span className="text-sm font-medium truncate w-full">
+                    {user?.profile?.name || user?.email}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate w-full">
+                    {user?.role ? tEnums(`userRole.${user.role}`) : ""}
+                  </span>
+                </div>
+                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+
+      {/* Settings Dialog */}
+      <SidebarSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        user={user}
+      />
+    </>
   );
 }

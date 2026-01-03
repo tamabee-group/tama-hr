@@ -1,15 +1,15 @@
 import { getTranslations } from "next-intl/server";
-import { PayrollPeriodDetail } from "../_payroll-period-detail";
+import { PayrollPeriodDetailContent } from "./_page-content";
 
 interface PayrollPeriodPageProps {
   params: Promise<{
-    period: string; // Format: YYYY-MM
+    period: string; // Period ID
   }>;
 }
 
 /**
- * Trang chi tiết bảng lương theo kỳ
- * Server Component - fetch translations và render PayrollPeriodDetail
+ * Trang chi tiết kỳ lương
+ * Server Component - hiển thị payroll items với summary
  */
 export default async function PayrollPeriodPage({
   params,
@@ -17,19 +17,16 @@ export default async function PayrollPeriodPage({
   const { period } = await params;
   const t = await getTranslations("payroll");
 
-  // Parse period string (YYYY-MM)
-  const [year, month] = period.split("-").map(Number);
+  // Parse period ID
+  const periodId = parseInt(period);
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {t("period")}: {month}/{year}
-        </p>
+        <h1 className="text-2xl font-bold">{t("itemDetailTitle")}</h1>
       </div>
 
-      <PayrollPeriodDetail period={{ year, month }} />
+      <PayrollPeriodDetailContent periodId={periodId} />
     </div>
   );
 }

@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -156,4 +161,42 @@
   #nprogress .spinner {
     display: none !important;
   }
+}
+
+/* Animated border glow effect - single light rotating clockwise */
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes glow-rotate {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+.glow-card {
+  --glow-size: 1.5px;
+  position: relative;
+  border-radius: 1rem;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0deg,
+    transparent 300deg,
+    #00b1ce 330deg,
+    #00ddff 345deg,
+    #00b1ce 360deg
+  );
+  padding: var(--glow-size);
+  animation: glow-rotate 5s linear infinite;
+}
+
+.glow-card > * {
+  background: white;
+  border-radius: calc(1rem - var(--glow-size));
+}
+
+:is(.dark .glow-card) > * {
+  background: rgb(31 41 55);
 }

@@ -11,6 +11,49 @@ import {
 } from "./attendance-enums";
 
 // ============================================
+// Work Mode Types
+// ============================================
+
+/**
+ * Chế độ làm việc của công ty
+ * - FIXED_HOURS: Giờ cố định - nhân viên làm việc theo giờ cố định hàng ngày
+ * - FLEXIBLE_SHIFT: Linh hoạt/Theo ca - nhân viên có thể được phân vào các ca làm việc khác nhau
+ */
+export const WorkMode = {
+  FIXED_HOURS: "FIXED_HOURS",
+  FLEXIBLE_SHIFT: "FLEXIBLE_SHIFT",
+} as const;
+
+export type WorkMode = (typeof WorkMode)[keyof typeof WorkMode];
+
+/**
+ * Cấu hình chế độ làm việc của công ty
+ */
+export interface WorkModeConfig {
+  mode: WorkMode;
+  // Chỉ dùng khi mode = FIXED_HOURS
+  defaultWorkStartTime: string | null; // "09:00"
+  defaultWorkEndTime: string | null; // "18:00"
+  defaultBreakMinutes: number | null;
+  // Metadata
+  lastModeChangeAt?: string;
+  lastModeChangeBy?: string;
+}
+
+/**
+ * Audit log khi work mode thay đổi
+ */
+export interface WorkModeChangeLog {
+  id: number;
+  companyId: number;
+  previousMode: WorkMode;
+  newMode: WorkMode;
+  changedBy: string;
+  changedAt: string;
+  reason?: string;
+}
+
+// ============================================
 // Rounding Configuration
 // ============================================
 
@@ -181,6 +224,7 @@ export interface DeductionConfig {
 // ============================================
 
 export interface CompanySettings {
+  workModeConfig: WorkModeConfig;
   attendanceConfig: AttendanceConfig;
   payrollConfig: PayrollConfig;
   overtimeConfig: OvertimeConfig;

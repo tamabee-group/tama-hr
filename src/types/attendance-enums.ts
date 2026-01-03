@@ -25,7 +25,12 @@ export type RoundingDirection = (typeof ROUNDING_DIRECTIONS)[number];
 // Salary Enums (Loại lương)
 // ============================================
 
-export const SALARY_TYPES = ["MONTHLY", "DAILY", "HOURLY"] as const;
+export const SALARY_TYPES = [
+  "MONTHLY",
+  "DAILY",
+  "HOURLY",
+  "SHIFT_BASED",
+] as const;
 
 export type SalaryType = (typeof SALARY_TYPES)[number];
 
@@ -220,3 +225,131 @@ export const LEAVE_STATUS_COLORS: Record<
 export const BREAK_TYPES = ["PAID", "UNPAID"] as const;
 
 export type BreakType = (typeof BREAK_TYPES)[number];
+
+// ============================================
+// Shift Assignment Status Enums (Trạng thái phân công ca)
+// ============================================
+
+export const SHIFT_ASSIGNMENT_STATUSES = [
+  "SCHEDULED",
+  "COMPLETED",
+  "SWAPPED",
+  "CANCELLED",
+] as const;
+
+export type ShiftAssignmentStatus = (typeof SHIFT_ASSIGNMENT_STATUSES)[number];
+
+export const SHIFT_ASSIGNMENT_STATUS_COLORS: Record<
+  ShiftAssignmentStatus,
+  "info" | "success" | "warning" | "destructive"
+> = {
+  SCHEDULED: "info",
+  COMPLETED: "success",
+  SWAPPED: "warning",
+  CANCELLED: "destructive",
+};
+
+// ============================================
+// Swap Request Status Enums (Trạng thái yêu cầu đổi ca)
+// ============================================
+
+export const SWAP_REQUEST_STATUSES = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+] as const;
+
+export type SwapRequestStatus = (typeof SWAP_REQUEST_STATUSES)[number];
+
+export const SWAP_REQUEST_STATUS_COLORS: Record<
+  SwapRequestStatus,
+  "warning" | "success" | "destructive"
+> = {
+  PENDING: "warning",
+  APPROVED: "success",
+  REJECTED: "destructive",
+};
+
+// ============================================
+// Payroll Period Status Enums (Trạng thái kỳ lương)
+// ============================================
+
+export const PAYROLL_PERIOD_STATUSES = [
+  "DRAFT",
+  "REVIEWING",
+  "APPROVED",
+  "PAID",
+] as const;
+
+export type PayrollPeriodStatus = (typeof PAYROLL_PERIOD_STATUSES)[number];
+
+export const PAYROLL_PERIOD_STATUS_COLORS: Record<
+  PayrollPeriodStatus,
+  "secondary" | "warning" | "info" | "success"
+> = {
+  DRAFT: "secondary",
+  REVIEWING: "warning",
+  APPROVED: "info",
+  PAID: "success",
+};
+
+// ============================================
+// Payroll Item Status Enums (Trạng thái chi tiết lương)
+// ============================================
+
+export const PAYROLL_ITEM_STATUSES = [
+  "CALCULATED",
+  "ADJUSTED",
+  "CONFIRMED",
+] as const;
+
+export type PayrollItemStatus = (typeof PAYROLL_ITEM_STATUSES)[number];
+
+export const PAYROLL_ITEM_STATUS_COLORS: Record<
+  PayrollItemStatus,
+  "info" | "warning" | "success"
+> = {
+  CALCULATED: "info",
+  ADJUSTED: "warning",
+  CONFIRMED: "success",
+};
+
+// ============================================
+// Contract Type Enums (Loại hợp đồng)
+// ============================================
+
+export const CONTRACT_TYPES = [
+  "FULL_TIME",
+  "PART_TIME",
+  "SEASONAL",
+  "CONTRACT",
+] as const;
+
+export type ContractType = (typeof CONTRACT_TYPES)[number];
+
+export const CONTRACT_TYPE_COLORS: Record<
+  ContractType,
+  "info" | "success" | "warning" | "secondary"
+> = {
+  FULL_TIME: "info",
+  PART_TIME: "success",
+  SEASONAL: "warning",
+  CONTRACT: "secondary",
+};
+
+// ============================================
+// Contract Status Enums (Trạng thái hợp đồng)
+// ============================================
+
+export const CONTRACT_STATUSES = ["ACTIVE", "EXPIRED", "TERMINATED"] as const;
+
+export type ContractStatus = (typeof CONTRACT_STATUSES)[number];
+
+export const CONTRACT_STATUS_COLORS: Record<
+  ContractStatus,
+  "success" | "secondary" | "destructive"
+> = {
+  ACTIVE: "success",
+  EXPIRED: "secondary",
+  TERMINATED: "destructive",
+};

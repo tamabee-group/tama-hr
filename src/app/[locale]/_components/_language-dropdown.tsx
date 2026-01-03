@@ -23,7 +23,10 @@ const Languages: NextPage = () => {
 
   return (
     <Select value={locale} onValueChange={handleLanguageChange}>
-      <SelectTrigger size="sm" className="border-none shadow-none">
+      <SelectTrigger
+        size="sm"
+        className="border-none shadow-none bg-transparent dark:bg-transparent"
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent className="z-222">

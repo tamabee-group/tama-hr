@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Check, X, Loader2, ArrowRight } from "lucide-react";
 
@@ -15,16 +14,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 import { AdjustmentRequest } from "@/types/attendance-records";
 import { formatDate, formatDateTime } from "@/lib/utils/format-date";
@@ -34,7 +23,7 @@ interface AdjustmentDetailDialogProps {
   request: AdjustmentRequest | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onApprove: (id: number) => void;
+  onApprove: (id: number) => Promise<void>;
   onReject: () => void;
   isProcessing: boolean;
 }
@@ -53,11 +42,7 @@ export function AdjustmentDetailDialog({
 }: AdjustmentDetailDialogProps) {
   const t = useTranslations("attendance");
   const tCommon = useTranslations("common");
-  const tDialogs = useTranslations("dialogs");
   const locale = useLocale() as SupportedLocale;
-
-  // State cho confirm dialog
-  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
 
   if (!request) return null;
 
@@ -73,213 +58,179 @@ export function AdjustmentDetailDialog({
     request.originalBreakEnd !== request.requestedBreakEnd;
   const hasBreakChange = hasBreakStartChange || hasBreakEndChange;
 
-  // Xử lý click approve - mở confirm dialog
+  // Xử lý click approve - gọi trực tiếp không cần confirm dialog
   const handleApproveClick = () => {
-    setConfirmApproveOpen(true);
-  };
-
-  // Xác nhận approve
-  const handleConfirmApprove = () => {
-    setConfirmApproveOpen(false);
     onApprove(request.id);
   };
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="md:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{t("adjustment.detail")}</DialogTitle>
-            <DialogDescription>
-              {request.employeeName} - {formatDate(request.workDate, locale)}
-            </DialogDescription>
-          </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="md:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{t("adjustment.detail")}</DialogTitle>
+          <DialogDescription>
+            {request.employeeName} - {formatDate(request.workDate, locale)}
+          </DialogDescription>
+        </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            {/* Status & Request time */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <span className="text-sm text-muted-foreground">
-                {tCommon("status")}
-              </span>
-              <AdjustmentStatusBadge status={request.status} />
-            </div>
+        <div className="space-y-4 py-4">
+          {/* Status & Request time */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+            <span className="text-sm text-muted-foreground">
+              {tCommon("status")}
+            </span>
+            <AdjustmentStatusBadge status={request.status} />
+          </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <span className="text-sm text-muted-foreground">
-                {t("adjustment.requestedAt")}
-              </span>
-              <span className="text-sm">
-                {formatDateTime(request.createdAt, locale)}
-              </span>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+            <span className="text-sm text-muted-foreground">
+              {t("adjustment.requestedAt")}
+            </span>
+            <span className="text-sm">
+              {formatDateTime(request.createdAt, locale)}
+            </span>
+          </div>
 
-            {/* Time changes - format: old -> new */}
-            <div className="space-y-3">
-              <span className="text-sm font-medium">
-                {t("adjustment.comparison")}
-              </span>
+          {/* Time changes - format: old -> new */}
+          <div className="space-y-3">
+            <span className="text-sm font-medium">
+              {t("adjustment.comparison")}
+            </span>
 
-              {/* Check In */}
-              {hasCheckInChange && (
-                <TimeChangeRow
-                  label={t("checkIn")}
-                  oldTime={request.originalCheckIn}
-                  newTime={request.requestedCheckIn}
-                />
-              )}
-
-              {/* Check Out */}
-              {hasCheckOutChange && (
-                <TimeChangeRow
-                  label={t("checkOut")}
-                  oldTime={request.originalCheckOut}
-                  newTime={request.requestedCheckOut}
-                />
-              )}
-
-              {/* Break Start */}
-              {hasBreakChange && hasBreakStartChange && (
-                <TimeChangeRow
-                  label={t("breakStart")}
-                  oldTime={request.originalBreakStart}
-                  newTime={request.requestedBreakStart}
-                />
-              )}
-
-              {/* Break End */}
-              {hasBreakChange && hasBreakEndChange && (
-                <TimeChangeRow
-                  label={t("breakEnd")}
-                  oldTime={request.originalBreakEnd}
-                  newTime={request.requestedBreakEnd}
-                />
-              )}
-
-              {/* Không có thay đổi */}
-              {!hasCheckInChange && !hasCheckOutChange && !hasBreakChange && (
-                <p className="text-sm text-muted-foreground italic">
-                  {t("adjustment.noChanges")}
-                </p>
-              )}
-            </div>
-
-            {/* Reason */}
-            <div className="space-y-2">
-              <span className="text-sm font-medium">
-                {t("adjustment.reason")}
-              </span>
-              <p className="text-sm p-3 bg-muted rounded-md">
-                {request.reason}
-              </p>
-            </div>
-
-            {/* Rejection reason if rejected */}
-            {request.status === "REJECTED" && request.rejectionReason && (
-              <div className="space-y-2">
-                <span className="text-sm font-medium text-red-600">
-                  {t("adjustment.rejectionReason")}
-                </span>
-                <p className="text-sm p-3 bg-red-50 dark:bg-red-950 rounded-md text-red-600">
-                  {request.rejectionReason}
-                </p>
-              </div>
+            {/* Check In */}
+            {hasCheckInChange && (
+              <TimeChangeRow
+                label={t("checkIn")}
+                oldTime={request.originalCheckIn}
+                newTime={request.requestedCheckIn}
+              />
             )}
 
-            {/* Approver info if approved */}
-            {request.status === "APPROVED" && request.approverName && (
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
-                  <span className="text-muted-foreground">
-                    {t("adjustment.approvedBy")}
-                  </span>
-                  <span>{request.approverName}</span>
-                </div>
-                {request.approvedAt && (
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
-                    <span className="text-muted-foreground">
-                      {t("adjustment.approvedAt")}
-                    </span>
-                    <span>{formatDateTime(request.approvedAt, locale)}</span>
-                  </div>
-                )}
-                {request.approverComment && (
-                  <p className="text-sm p-3 bg-green-50 dark:bg-green-950 rounded-md text-green-600">
-                    {request.approverComment}
-                  </p>
-                )}
-              </div>
+            {/* Check Out */}
+            {hasCheckOutChange && (
+              <TimeChangeRow
+                label={t("checkOut")}
+                oldTime={request.originalCheckOut}
+                newTime={request.requestedCheckOut}
+              />
+            )}
+
+            {/* Break Start */}
+            {hasBreakChange && hasBreakStartChange && (
+              <TimeChangeRow
+                label={t("breakStart")}
+                oldTime={request.originalBreakStart}
+                newTime={request.requestedBreakStart}
+              />
+            )}
+
+            {/* Break End */}
+            {hasBreakChange && hasBreakEndChange && (
+              <TimeChangeRow
+                label={t("breakEnd")}
+                oldTime={request.originalBreakEnd}
+                newTime={request.requestedBreakEnd}
+              />
+            )}
+
+            {/* Không có thay đổi */}
+            {!hasCheckInChange && !hasCheckOutChange && !hasBreakChange && (
+              <p className="text-sm text-muted-foreground italic">
+                {t("adjustment.noChanges")}
+              </p>
             )}
           </div>
 
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            {request.status === "PENDING" ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  className="w-full sm:w-auto"
-                >
-                  {tCommon("cancel")}
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={onReject}
-                  disabled={isProcessing}
-                  className="w-full sm:w-auto"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  {t("adjustment.reject")}
-                </Button>
-                <Button
-                  onClick={handleApproveClick}
-                  disabled={isProcessing}
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
-                >
-                  {isProcessing ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                  ) : (
-                    <Check className="h-4 w-4 mr-1" />
-                  )}
-                  {t("adjustment.approve")}
-                </Button>
-              </>
-            ) : (
+          {/* Reason */}
+          <div className="space-y-2">
+            <span className="text-sm font-medium">
+              {t("adjustment.reason")}
+            </span>
+            <p className="text-sm p-3 bg-muted rounded-md">{request.reason}</p>
+          </div>
+
+          {/* Rejection reason if rejected */}
+          {request.status === "REJECTED" && request.rejectionReason && (
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-red-600">
+                {t("adjustment.rejectionReason")}
+              </span>
+              <p className="text-sm p-3 bg-red-50 dark:bg-red-950 rounded-md text-red-600">
+                {request.rejectionReason}
+              </p>
+            </div>
+          )}
+
+          {/* Approver info if approved */}
+          {request.status === "APPROVED" && request.approverName && (
+            <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
+                <span className="text-muted-foreground">
+                  {t("adjustment.approvedBy")}
+                </span>
+                <span>{request.approverName}</span>
+              </div>
+              {request.approvedAt && (
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
+                  <span className="text-muted-foreground">
+                    {t("adjustment.approvedAt")}
+                  </span>
+                  <span>{formatDateTime(request.approvedAt, locale)}</span>
+                </div>
+              )}
+              {request.approverComment && (
+                <p className="text-sm p-3 bg-green-50 dark:bg-green-950 rounded-md text-green-600">
+                  {request.approverComment}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          {request.status === "PENDING" ? (
+            <>
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 className="w-full sm:w-auto"
               >
-                {tCommon("close")}
+                {tCommon("cancel")}
               </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Confirm Approve Dialog */}
-      <AlertDialog
-        open={confirmApproveOpen}
-        onOpenChange={setConfirmApproveOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tDialogs("confirmApprove")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("adjustment.approveConfirm")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmApprove}
-              className="bg-green-600 hover:bg-green-700"
+              <Button
+                variant="destructive"
+                onClick={onReject}
+                disabled={isProcessing}
+                className="w-full sm:w-auto"
+              >
+                <X className="h-4 w-4 mr-1" />
+                {t("adjustment.reject")}
+              </Button>
+              <Button
+                onClick={handleApproveClick}
+                disabled={isProcessing}
+                className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
+              >
+                {isProcessing ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                ) : (
+                  <Check className="h-4 w-4 mr-1" />
+                )}
+                {t("adjustment.approve")}
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
-              {tCommon("confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+              {tCommon("close")}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

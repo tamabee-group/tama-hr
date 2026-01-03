@@ -8,6 +8,9 @@ import {
   AllowanceConfig,
   DeductionConfig,
   LegalOvertimeMinimums,
+  WorkModeConfig,
+  WorkModeChangeLog,
+  WorkMode,
 } from "@/types/attendance-config";
 
 /**
@@ -15,6 +18,52 @@ import {
  * Quản lý cấu hình chấm công và tính lương của công ty
  * @client-only - Chỉ sử dụng được ở client side
  */
+
+// ============================================
+// Work Mode Config
+// ============================================
+
+/**
+ * Request cập nhật cấu hình work mode
+ */
+export interface WorkModeConfigRequest {
+  mode: WorkMode;
+  defaultWorkStartTime?: string | null;
+  defaultWorkEndTime?: string | null;
+  defaultBreakMinutes?: number | null;
+  reason?: string;
+}
+
+/**
+ * Lấy cấu hình work mode của công ty
+ * @client-only
+ */
+export async function getWorkModeConfig(): Promise<WorkModeConfig> {
+  return apiClient.get<WorkModeConfig>("/api/company/settings/work-mode");
+}
+
+/**
+ * Cập nhật cấu hình work mode của công ty
+ * @client-only
+ */
+export async function updateWorkModeConfig(
+  request: WorkModeConfigRequest,
+): Promise<WorkModeConfig> {
+  return apiClient.put<WorkModeConfig>(
+    "/api/company/settings/work-mode",
+    request,
+  );
+}
+
+/**
+ * Lấy lịch sử thay đổi work mode của công ty
+ * @client-only
+ */
+export async function getWorkModeChangeLogs(): Promise<WorkModeChangeLog[]> {
+  return apiClient.get<WorkModeChangeLog[]>(
+    "/api/company/settings/work-mode/logs",
+  );
+}
 
 // ============================================
 // Get Settings
@@ -152,6 +201,11 @@ export async function updateDeductionConfig(
 // ============================================
 
 export const companySettingsApi = {
+  // Work Mode
+  getWorkModeConfig,
+  updateWorkModeConfig,
+  getWorkModeChangeLogs,
+  // Settings
   getSettings,
   getAttendanceConfig,
   getPayrollConfig,

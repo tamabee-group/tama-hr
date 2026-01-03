@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { PayrollDashboard } from "./_payroll-dashboard";
+import { PayrollPeriodTable } from "./_payroll-period-table";
 
 /**
- * Trang tổng quan bảng lương
- * Server Component - fetch translations và render PayrollDashboard
+ * Trang quản lý kỳ lương
+ * Server Component - hiển thị danh sách payroll periods với status
  */
 export default async function CompanyPayrollPage() {
   const t = await getTranslations("payroll");
@@ -11,11 +11,11 @@ export default async function CompanyPayrollPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <h1 className="text-2xl font-bold">{t("periodsTitle")}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
       </div>
 
-      <PayrollDashboard />
+      <PayrollPeriodTable />
     </div>
   );
 }

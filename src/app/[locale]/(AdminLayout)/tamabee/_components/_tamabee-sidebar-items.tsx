@@ -39,16 +39,9 @@ export function useTamabeeSidebarGroups(): SidebarGroup[] {
       items: [
         {
           title: t("items.users"),
-          url: "#",
+          url: "/tamabee/users",
           icon: <UsersRound />,
           requiredPermission: "VIEW_USERS",
-          items: [
-            {
-              title: t("items.employees"),
-              url: "/tamabee/users",
-              requiredPermission: "VIEW_USERS",
-            },
-          ],
         },
         {
           title: t("items.customers"),

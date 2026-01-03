@@ -56,8 +56,7 @@ export function MyAdjustments() {
   const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
-      // Backend hiện không hỗ trợ filter theo status
-      // TODO: Thêm filter vào backend
+      // Backend hiện không hỗ trợ filter theo status, filter client-side
       const response = await adjustmentApi.getMyAdjustments(
         page,
         DEFAULT_LIMIT,

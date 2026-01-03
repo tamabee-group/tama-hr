@@ -181,6 +181,21 @@ export async function getEmployeePayroll(
   );
 }
 
+/**
+ * Lấy lịch sử bảng lương của nhân viên (phân trang)
+ * GET /api/company/employees/{id}/payroll
+ * @client-only
+ */
+export async function getEmployeePayrollHistory(
+  employeeId: number,
+  page: number = DEFAULT_PAGE,
+  size: number = DEFAULT_LIMIT,
+): Promise<PaginatedResponse<PayrollRecord>> {
+  return apiClient.get<PaginatedResponse<PayrollRecord>>(
+    `/api/company/employees/${employeeId}/payroll?page=${page}&size=${size}`,
+  );
+}
+
 // ============================================
 // Payment APIs
 // ============================================
@@ -313,7 +328,7 @@ export async function getMyPayslips(
   size: number = DEFAULT_LIMIT,
 ): Promise<PaginatedResponse<PayrollRecord>> {
   return apiClient.get<PaginatedResponse<PayrollRecord>>(
-    `/api/employee/payslips?page=${page}&size=${size}`,
+    `/api/employee/payroll?page=${page}&size=${size}`,
   );
 }
 
@@ -324,8 +339,9 @@ export async function getMyPayslips(
 export async function getMyPayslipByPeriod(
   period: YearMonth,
 ): Promise<PayrollRecord | null> {
+  const periodStr = `${period.year}-${String(period.month).padStart(2, "0")}`;
   return apiClient.get<PayrollRecord | null>(
-    `/api/employee/payslips/${period.year}/${period.month}`,
+    `/api/employee/payroll/${periodStr}`,
   );
 }
 
@@ -333,14 +349,30 @@ export async function getMyPayslipByPeriod(
  * Tải phiếu lương PDF
  * @client-only
  */
-export async function downloadPayslipPdf(period: YearMonth): Promise<Blob> {
-  const response = await fetch(
-    `/api/employee/payslips/${period.year}/${period.month}/pdf`,
-    {
-      method: "GET",
-      credentials: "include",
-    },
-  );
+export async function downloadPayslipPdf(recordId: number): Promise<Blob> {
+  const response = await fetch(`/api/employee/payroll/${recordId}/download`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to download payslip PDF");
+  }
+
+  return response.blob();
+}
+
+/**
+ * Tải phiếu lương PDF cho company (dùng recordId)
+ * @client-only
+ */
+export async function downloadCompanyPayslipPdf(
+  recordId: number,
+): Promise<Blob> {
+  const response = await fetch(`/api/company/payroll/${recordId}/download`, {
+    method: "GET",
+    credentials: "include",
+  });
 
   if (!response.ok) {
     throw new Error("Failed to download payslip PDF");
@@ -361,6 +393,7 @@ export const payrollApi = {
   getPayrollRecords,
   getPayrollById,
   getEmployeePayroll,
+  getEmployeePayrollHistory,
   // Payment
   markAsPaid,
   payAll,
@@ -371,6 +404,7 @@ export const payrollApi = {
   // Export
   exportCsv,
   exportPdf,
+  downloadCompanyPayslipPdf,
   // Employee
   getMyPayslips,
   getMyPayslipByPeriod,

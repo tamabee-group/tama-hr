@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { vi, enUS, ja } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { formatDate } from "@/lib/utils/format-date";
@@ -7,11 +9,6 @@ import { formatDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 type SupportedLocale = "vi" | "en" | "ja";
 
@@ -38,16 +35,23 @@ export function DatePicker({
   className,
   disabled = false,
 }: DatePickerProps) {
+  const [open, setOpen] = useState(false);
   const dateLocale = localeMap[locale];
 
+  const handleSelect = (date: Date | undefined) => {
+    onChange?.(date);
+    setOpen(false);
+  };
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+      <PopoverPrimitive.Trigger asChild>
         <Button
+          type="button"
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-40 justify-start text-left font-normal",
+            "h-9 justify-start text-left font-normal",
             !value && "text-muted-foreground",
             className,
           )}
@@ -57,16 +61,25 @@ export function DatePicker({
             {value ? formatDate(value, locale) : placeholder}
           </span>
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="single"
-          selected={value}
-          onSelect={onChange}
-          locale={dateLocale}
-          autoFocus
-        />
-      </PopoverContent>
-    </Popover>
+      </PopoverPrimitive.Trigger>
+      <PopoverPrimitive.Portal>
+        <PopoverPrimitive.Content
+          align="start"
+          sideOffset={4}
+          className={cn(
+            "bg-popover text-popover-foreground z-9999 w-auto rounded-md border p-0 shadow-md outline-hidden",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          )}
+        >
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={handleSelect}
+            locale={dateLocale}
+            autoFocus
+          />
+        </PopoverPrimitive.Content>
+      </PopoverPrimitive.Portal>
+    </PopoverPrimitive.Root>
   );
 }

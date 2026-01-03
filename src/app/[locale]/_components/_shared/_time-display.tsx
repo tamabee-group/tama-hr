@@ -12,6 +12,7 @@ import type { SupportedLocale } from "@/lib/utils/format-currency";
  * Format time string (HH:mm) theo locale
  * - Vietnamese/English: HH:mm (24h format)
  * - Japanese: HH時mm分
+ * Hỗ trợ cả datetime string (ISO format) - sẽ extract phần time
  */
 export function formatTime(
   time: string | null | undefined,
@@ -19,12 +20,22 @@ export function formatTime(
 ): string {
   if (!time) return "-";
 
-  // Xử lý cả format "HH:mm" và "HH:mm:ss"
-  const parts = time.split(":");
-  if (parts.length < 2) return "-";
+  let hours: string;
+  let minutes: string;
 
-  const hours = parts[0];
-  const minutes = parts[1];
+  // Kiểm tra nếu là ISO datetime string (có chứa "T")
+  if (time.includes("T")) {
+    const date = new Date(time);
+    if (isNaN(date.getTime())) return "-";
+    hours = date.getHours().toString().padStart(2, "0");
+    minutes = date.getMinutes().toString().padStart(2, "0");
+  } else {
+    // Xử lý format "HH:mm" hoặc "HH:mm:ss"
+    const parts = time.split(":");
+    if (parts.length < 2) return "-";
+    hours = parts[0];
+    minutes = parts[1];
+  }
 
   if (locale === "ja") {
     return `${hours}時${minutes}分`;
@@ -53,6 +64,8 @@ export function formatTimeFromDate(
 
 /**
  * Format duration từ phút sang chuỗi dễ đọc
+ * - null/undefined: "00:00"
+ * - Số âm: "--:--"
  * - Vietnamese: 2 giờ 30 phút
  * - English: 2h 30m
  * - Japanese: 2時間30分
@@ -61,7 +74,11 @@ export function formatDuration(
   minutes: number | null | undefined,
   locale: SupportedLocale = "en",
 ): string {
-  if (minutes === null || minutes === undefined) return "-";
+  // Không có dữ liệu -> 00:00
+  if (minutes === null || minutes === undefined) return "00:00";
+
+  // Số âm -> --:--
+  if (minutes < 0) return "--:--";
 
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -169,7 +186,7 @@ export function DurationDisplay({
 
   const displayDuration = formatDuration(minutes, locale);
 
-  if (displayDuration === "-" && !showPlaceholder) return null;
+  if (displayDuration === "00:00" && !showPlaceholder) return null;
 
   return (
     <span className={cn("tabular-nums", className)}>{displayDuration}</span>

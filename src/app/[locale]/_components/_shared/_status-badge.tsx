@@ -187,7 +187,7 @@ export function CommissionStatusBadge({
 // ============================================
 
 interface AttendanceStatusBadgeProps {
-  status: AttendanceStatus;
+  status: AttendanceStatus | null | undefined;
   className?: string;
 }
 
@@ -196,6 +196,12 @@ export function AttendanceStatusBadge({
   className,
 }: AttendanceStatusBadgeProps) {
   const tEnums = useTranslations("enums");
+
+  // Handle null/undefined status
+  if (!status) {
+    return null;
+  }
+
   const variant = getAttendanceStatusVariant(status);
   const label = tEnums(`attendanceStatus.${status}`);
 

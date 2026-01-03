@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarIcon, Search, X } from "lucide-react";
+import { CalendarIcon, Search, X, Users } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -21,17 +20,20 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/utils/fetch-client";
 
-import { AttendanceFilters as AttendanceFilterParams } from "@/lib/apis/attendance-api";
+import { UnifiedAttendanceFilters } from "@/lib/apis/unified-attendance-api";
 import { ATTENDANCE_STATUSES } from "@/types/attendance-enums";
+import { User } from "@/types/user";
+import { PaginatedResponse } from "@/types/api";
 
 interface AttendanceFiltersProps {
-  onFilterChange: (filters: AttendanceFilterParams) => void;
+  onFilterChange: (filters: UnifiedAttendanceFilters) => void;
 }
 
 /**
  * Component filters cho bảng chấm công
- * Bao gồm: date range, employee search, status filter
+ * Bao gồm: date range, employee select, status filter
  */
 export function AttendanceFilters({ onFilterChange }: AttendanceFiltersProps) {
   const t = useTranslations("attendance");
@@ -41,18 +43,43 @@ export function AttendanceFilters({ onFilterChange }: AttendanceFiltersProps) {
   // Filter states
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
-  const [employeeSearch, setEmployeeSearch] = useState("");
+  const [employeeId, setEmployeeId] = useState<string>("");
   const [status, setStatus] = useState<string>("");
+
+  // Employee list for dropdown
+  const [employees, setEmployees] = useState<User[]>([]);
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
+
+  // Fetch employees for filter dropdown
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      setLoadingEmployees(true);
+      try {
+        const response = await apiClient.get<PaginatedResponse<User>>(
+          "/api/company/employees?page=0&size=100",
+        );
+        setEmployees(response.content);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      } finally {
+        setLoadingEmployees(false);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
   // Apply filters
   const applyFilters = () => {
-    const filters: AttendanceFilterParams = {};
+    const filters: UnifiedAttendanceFilters = {};
 
     if (startDate) {
       filters.startDate = format(startDate, "yyyy-MM-dd");
     }
     if (endDate) {
       filters.endDate = format(endDate, "yyyy-MM-dd");
+    }
+    if (employeeId && employeeId !== "ALL") {
+      filters.employeeId = parseInt(employeeId);
     }
     if (status && status !== "ALL") {
       filters.status = status;
@@ -65,13 +92,13 @@ export function AttendanceFilters({ onFilterChange }: AttendanceFiltersProps) {
   const clearFilters = () => {
     setStartDate(undefined);
     setEndDate(undefined);
-    setEmployeeSearch("");
+    setEmployeeId("");
     setStatus("");
     onFilterChange({});
   };
 
   // Check if any filter is active
-  const hasActiveFilters = startDate || endDate || employeeSearch || status;
+  const hasActiveFilters = startDate || endDate || employeeId || status;
 
   return (
     <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg">
@@ -123,16 +150,27 @@ export function AttendanceFilters({ onFilterChange }: AttendanceFiltersProps) {
         </PopoverContent>
       </Popover>
 
-      {/* Employee Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder={t("filter.employee")}
-          value={employeeSearch}
-          onChange={(e) => setEmployeeSearch(e.target.value)}
-          className="pl-9 w-[200px]"
-        />
-      </div>
+      {/* Employee Filter */}
+      <Select value={employeeId} onValueChange={setEmployeeId}>
+        <SelectTrigger className="w-[200px]">
+          <Users className="mr-2 h-4 w-4" />
+          <SelectValue placeholder={t("filter.employee")} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="ALL">{tCommon("all")}</SelectItem>
+          {loadingEmployees ? (
+            <SelectItem value="__loading__" disabled>
+              {tCommon("loading")}
+            </SelectItem>
+          ) : (
+            employees.map((emp) => (
+              <SelectItem key={emp.id} value={emp.id.toString()}>
+                {emp.profile?.name || emp.email}
+              </SelectItem>
+            ))
+          )}
+        </SelectContent>
+      </Select>
 
       {/* Status Filter */}
       <Select value={status} onValueChange={setStatus}>

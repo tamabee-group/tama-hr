@@ -121,7 +121,7 @@ export function ApprovalList() {
   };
 
   // Handle approve single
-  const handleApprove = async (id: number) => {
+  const handleApprove = async (id: number): Promise<void> => {
     try {
       setIsProcessing(true);
       await adjustmentApi.approveAdjustment(id);

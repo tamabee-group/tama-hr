@@ -2,7 +2,7 @@
   "title": "Commission Management",
   "description": "View and manage referral commissions",
   "myCommissions": "My Commissions",
-  "myDescription": "View commissions from companies you referred",
+  "myDescription": "Commissions from companies you referred",
   "totalEarned": "Total Earned",
   "pendingAmount": "Pending Amount",
   "paidAmount": "Paid Amount",
@@ -35,7 +35,7 @@
   },
   "payDialog": {
     "title": "Confirm Commission Payment",
-    "description": "Please review the information before confirming payment",
+    "description": "Review information before confirming payment",
     "employee": "Employee",
     "commissionAmount": "Commission Amount",
     "referredCompanyInfo": "Referred Company Information",
@@ -43,7 +43,7 @@
     "billingAtCreation": "Billing at Creation",
     "createdAt": "Commission Created At",
     "notEligibleTitle": "Not Eligible for Payment",
-    "notEligibleDescription": "This commission is not yet eligible for payment. The company needs to reach the minimum billing threshold before the commission can be paid.",
+    "notEligibleDescription": "Company needs to reach minimum billing threshold.",
     "confirmPayment": "Confirm Payment"
   },
   "messages": {

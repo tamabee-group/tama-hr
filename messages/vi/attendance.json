@@ -124,7 +124,7 @@
     "timeChangeRequired": "Vui lòng thay đổi ít nhất một thời gian",
     "timeRequired": "Vui lòng nhập ít nhất một thời gian",
     "breakTimeBothRequired": "Vui lòng nhập cả giờ bắt đầu và kết thúc nghỉ",
-    "noRecordNote": "Ngày này chưa có dữ liệu chấm công. Bạn có thể yêu cầu thêm giờ chấm công.",
+    "noRecordNote": "Chưa có dữ liệu chấm công. Có thể yêu cầu thêm giờ.",
     "submit": "Gửi yêu cầu",
     "approve": "Duyệt",
     "reject": "Từ chối",
@@ -158,7 +158,7 @@
     "cancelConfirm": "Bạn có chắc chắn muốn hủy yêu cầu này?",
     "viewDetail": "Xem chi tiết",
     "noChanges": "Không có thay đổi",
-    "approveConfirm": "Bạn có chắc chắn muốn duyệt yêu cầu điều chỉnh này?",
+    "approveConfirm": "Duyệt yêu cầu điều chỉnh này?",
     "requestHistory": "Lịch sử yêu cầu điều chỉnh",
     "approverComment": "Ghi chú người duyệt",
     "hasPendingRequest": "Đã có yêu cầu đang chờ duyệt"

@@ -9,7 +9,7 @@
   "approve": "Duyệt",
   "reject": "Từ chối",
   "rejectionReason": "Lý do từ chối",
-  "approveConfirm": "Bạn có chắc chắn muốn duyệt yêu cầu nghỉ phép này?",
+  "approveConfirm": "Duyệt yêu cầu nghỉ phép này?",
   "table": {
     "employee": "Nhân viên",
     "type": "Loại nghỉ",

@@ -74,9 +74,9 @@
   },
   "dialog": {
     "deleteTitle": "Delete User",
-    "deleteDescription": "Are you sure you want to delete this user? This action cannot be undone.",
+    "deleteDescription": "Delete this user? Cannot be undone.",
     "deactivateTitle": "Deactivate User",
-    "deactivateDescription": "Are you sure you want to deactivate this user?"
+    "deactivateDescription": "Deactivate this user?"
   },
   "emergencyContact": {
     "title": "Emergency Contact",
@@ -116,7 +116,7 @@
     "accountHolderJP": "Account Holder (口座名義)",
     "kigou": "記号 (Kigou)",
     "bangou": "番号 (Bangou)",
-    "salaryAccountNote": "※ This is the salary receiving account, please verify the information carefully."
+    "salaryAccountNote": "※ Salary account, please verify carefully."
   },
   "profile": {
     "name": "Full Name",

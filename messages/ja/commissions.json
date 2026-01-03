@@ -35,7 +35,7 @@
   },
   "payDialog": {
     "title": "コミッション支払いの確認",
-    "description": "支払いを確認する前に情報をご確認ください",
+    "description": "支払い前に情報をご確認ください",
     "employee": "従業員",
     "commissionAmount": "コミッション金額",
     "referredCompanyInfo": "紹介された会社の情報",

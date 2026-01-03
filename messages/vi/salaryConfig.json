@@ -53,7 +53,7 @@
   "statusExpired": "Hết hiệu lực",
   "statusUpcoming": "Sắp áp dụng",
   "deleteTitle": "Xóa cấu hình lương",
-  "deleteDescription": "Bạn có chắc chắn muốn xóa cấu hình lương này? Hành động này không thể hoàn tác.",
+  "deleteDescription": "Xóa cấu hình lương này? Không thể hoàn tác.",
   "confirmTitle": "Xác nhận cấu hình lương",
   "overlappingWarning": "Phát hiện cấu hình trùng lặp",
   "overlappingDescription": "Có {count} cấu hình lương đang hoạt động sẽ bị vô hiệu hóa khi lưu cấu hình mới.",

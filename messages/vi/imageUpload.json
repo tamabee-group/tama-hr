@@ -3,9 +3,9 @@
   "dropHere": "Thả ảnh vào đây",
   "dragOrClick": "Kéo thả ảnh hoặc click để chọn",
   "maxSize": "Tối đa {maxSize}MB",
-  "invalidFormat": "Định dạng file không hợp lệ. Chỉ chấp nhận: {formats}",
+  "invalidFormat": "Định dạng không hợp lệ. Chỉ chấp nhận: {formats}",
   "invalidFile": "File không hợp lệ",
-  "fileTooLarge": "File vượt quá {maxSize}MB. Vui lòng chọn file nhỏ hơn.",
+  "fileTooLarge": "File vượt quá {maxSize}MB",
   "fileTooLargeGeneric": "File quá lớn",
-  "processError": "Không thể xử lý file. Vui lòng thử lại."
+  "processError": "Không thể xử lý file"
 }

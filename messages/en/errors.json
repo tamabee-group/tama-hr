@@ -56,7 +56,7 @@
   "ATTENDANCE_RECORD_NOT_FOUND": "Attendance record not found.",
   "BREAK_RECORD_NOT_FOUND": "Break record not found.",
   "BREAK_RECORD_ID_REQUIRED": "Please select a break record to adjust.",
-  "ADJUSTMENT_PENDING_EXISTS": "There is already a pending adjustment request for this day.",
+  "ADJUSTMENT_PENDING_EXISTS": "A pending adjustment request already exists.",
   "ADJUSTMENT_NOT_FOUND": "Adjustment request not found.",
   "ADJUSTMENT_ALREADY_PROCESSED": "Adjustment request has already been processed.",
   "ADJUSTMENT_NO_CHANGES": "At least one time must be changed."

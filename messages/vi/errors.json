@@ -56,7 +56,7 @@
   "ATTENDANCE_RECORD_NOT_FOUND": "Không tìm thấy bản ghi chấm công.",
   "BREAK_RECORD_NOT_FOUND": "Không tìm thấy bản ghi giờ nghỉ.",
   "BREAK_RECORD_ID_REQUIRED": "Vui lòng chọn bản ghi giờ nghỉ cần điều chỉnh.",
-  "ADJUSTMENT_PENDING_EXISTS": "Đã có yêu cầu điều chỉnh đang chờ duyệt cho ngày này.",
+  "ADJUSTMENT_PENDING_EXISTS": "Đã có yêu cầu điều chỉnh đang chờ duyệt.",
   "ADJUSTMENT_NOT_FOUND": "Không tìm thấy yêu cầu điều chỉnh.",
   "ADJUSTMENT_ALREADY_PROCESSED": "Yêu cầu điều chỉnh đã được xử lý.",
   "ADJUSTMENT_NO_CHANGES": "Phải thay đổi ít nhất một thời gian."

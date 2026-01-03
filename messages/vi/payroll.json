@@ -135,7 +135,7 @@
   "statusApproved": "Đã duyệt",
   "statusPaid": "Đã trả lương",
   "periodDeleteSuccess": "Xóa kỳ lương thành công",
-  "confirmDeletePeriod": "Bạn có chắc chắn muốn xóa kỳ lương này? Hành động này không thể hoàn tác.",
+  "confirmDeletePeriod": "Xóa kỳ lương này? Không thể hoàn tác.",
   "createPeriodDescription": "Tạo kỳ lương mới với ngày bắt đầu và kết thúc",
   "rejectReason": "Lý do từ chối",
   "rejectReasonPlaceholder": "Nhập lý do từ chối...",

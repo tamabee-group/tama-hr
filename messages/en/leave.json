@@ -9,7 +9,7 @@
   "approve": "Approve",
   "reject": "Reject",
   "rejectionReason": "Rejection Reason",
-  "approveConfirm": "Are you sure you want to approve this leave request?",
+  "approveConfirm": "Approve this leave request?",
   "table": {
     "employee": "Employee",
     "type": "Leave Type",

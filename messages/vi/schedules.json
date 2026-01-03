@@ -80,7 +80,7 @@
     "selectError": "Không thể chọn lịch làm việc",
     "hasAssignments": "Lịch này đang được gán cho nhân viên",
     "hasAssignmentsWarning": "Lịch này đang được gán cho {count} nhân viên",
-    "deleteWithAssignmentsConfirm": "Xóa lịch này sẽ hủy tất cả các gán lịch hiện có. Bạn có chắc chắn muốn tiếp tục?",
+    "deleteWithAssignmentsConfirm": "Xóa lịch này sẽ hủy tất cả gán lịch. Tiếp tục?",
     "confirmDelete": "Bạn có chắc chắn muốn xóa lịch này?",
     "noSchedules": "Chưa có lịch làm việc nào",
     "invalidTimeRange": "Giờ bắt đầu phải trước giờ kết thúc"

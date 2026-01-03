@@ -63,7 +63,7 @@
   },
   "dialog": {
     "deleteTitle": "Xóa gói dịch vụ",
-    "deleteDescription": "Bạn có chắc chắn muốn xóa gói dịch vụ này? Hành động này không thể hoàn tác."
+    "deleteDescription": "Xóa gói này? Không thể hoàn tác."
   },
   "validation": {
     "required": "Trường này là bắt buộc",

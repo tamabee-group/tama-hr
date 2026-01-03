@@ -2,7 +2,7 @@
   "title": "Quản lý hoa hồng",
   "description": "Xem và quản lý hoa hồng của nhân viên Tamabee",
   "myCommissions": "Hoa hồng của tôi",
-  "myDescription": "Xem danh sách hoa hồng từ các công ty bạn giới thiệu",
+  "myDescription": "Hoa hồng từ các công ty bạn giới thiệu",
   "totalEarned": "Tổng đã nhận",
   "pendingAmount": "Chờ đủ điều kiện",
   "paidAmount": "Đã thanh toán",
@@ -35,7 +35,7 @@
   },
   "payDialog": {
     "title": "Xác nhận thanh toán hoa hồng",
-    "description": "Vui lòng kiểm tra thông tin trước khi xác nhận thanh toán",
+    "description": "Kiểm tra thông tin trước khi thanh toán",
     "employee": "Nhân viên",
     "commissionAmount": "Số tiền hoa hồng",
     "referredCompanyInfo": "Thông tin công ty được giới thiệu",
@@ -43,7 +43,7 @@
     "billingAtCreation": "Billing tại thời điểm tạo",
     "createdAt": "Ngày tạo commission",
     "notEligibleTitle": "Chưa đủ điều kiện thanh toán",
-    "notEligibleDescription": "Commission này chưa đạt điều kiện thanh toán. Công ty cần đạt mức billing tối thiểu trước khi có thể thanh toán hoa hồng.",
+    "notEligibleDescription": "Công ty cần đạt mức billing tối thiểu để thanh toán hoa hồng.",
     "confirmPayment": "Xác nhận thanh toán"
   },
   "messages": {

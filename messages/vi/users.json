@@ -74,9 +74,9 @@
   },
   "dialog": {
     "deleteTitle": "Xóa người dùng",
-    "deleteDescription": "Bạn có chắc chắn muốn xóa người dùng này? Hành động này không thể hoàn tác.",
+    "deleteDescription": "Xóa người dùng này? Không thể hoàn tác.",
     "deactivateTitle": "Vô hiệu hóa người dùng",
-    "deactivateDescription": "Bạn có chắc chắn muốn vô hiệu hóa người dùng này?"
+    "deactivateDescription": "Vô hiệu hóa người dùng này?"
   },
   "emergencyContact": {
     "title": "Liên lạc khẩn cấp",
@@ -116,7 +116,7 @@
     "accountHolderJP": "Tên chủ tài khoản (口座名義)",
     "kigou": "記号 (Kigou)",
     "bangou": "番号 (Bangou)",
-    "salaryAccountNote": "※ Đây là tài khoản nhận lương, vui lòng kiểm tra kỹ thông tin."
+    "salaryAccountNote": "※ Tài khoản nhận lương, vui lòng kiểm tra kỹ."
   },
   "profile": {
     "name": "Họ & tên",

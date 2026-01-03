@@ -124,7 +124,7 @@
     "timeChangeRequired": "Please change at least one time",
     "timeRequired": "Please enter at least one time",
     "breakTimeBothRequired": "Please enter both break start and end times",
-    "noRecordNote": "No attendance record for this day. You can request to add attendance.",
+    "noRecordNote": "No attendance record. You can request to add.",
     "submit": "Submit Request",
     "approve": "Approve",
     "reject": "Reject",
@@ -158,7 +158,7 @@
     "cancelConfirm": "Are you sure you want to cancel this request?",
     "viewDetail": "View Detail",
     "noChanges": "No changes",
-    "approveConfirm": "Are you sure you want to approve this adjustment request?",
+    "approveConfirm": "Approve this adjustment request?",
     "requestHistory": "Adjustment Request History",
     "approverComment": "Approver Comment",
     "hasPendingRequest": "There is already a pending request"

@@ -170,7 +170,7 @@
   },
   "confirmSave": {
     "title": "Xác nhận lưu thay đổi",
-    "description": "Bạn có chắc chắn muốn lưu các thay đổi cài đặt này?"
+    "description": "Lưu các thay đổi cài đặt này?"
   },
   "workMode": {
     "title": "Chế độ làm việc",

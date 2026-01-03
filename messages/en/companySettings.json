@@ -170,7 +170,7 @@
   },
   "confirmSave": {
     "title": "Confirm Save Changes",
-    "description": "Are you sure you want to save these settings changes?"
+    "description": "Save these settings changes?"
   },
   "workMode": {
     "title": "Work Mode",

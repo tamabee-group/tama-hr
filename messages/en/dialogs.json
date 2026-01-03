@@ -9,19 +9,19 @@
   },
   "delete": {
     "title": "Delete Confirmation",
-    "description": "Are you sure you want to delete this item? This action cannot be undone.",
+    "description": "Delete this item? Cannot be undone.",
     "confirm": "Delete",
     "cancel": "Cancel"
   },
   "unsavedChanges": {
     "title": "Unsaved Changes",
-    "description": "You have unsaved changes. Are you sure you want to leave?",
+    "description": "Unsaved changes. Leave?",
     "confirm": "Leave",
     "cancel": "Stay"
   },
   "imageCrop": {
     "title": "Crop Image",
-    "description": "Adjust the crop area and zoom to crop the image as desired",
+    "description": "Adjust crop area and zoom",
     "zoom": "Zoom",
     "cancel": "Cancel",
     "confirm": "Confirm",

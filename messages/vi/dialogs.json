@@ -9,19 +9,19 @@
   },
   "delete": {
     "title": "Xác nhận xóa",
-    "description": "Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.",
+    "description": "Xóa mục này? Không thể hoàn tác.",
     "confirm": "Xóa",
     "cancel": "Hủy"
   },
   "unsavedChanges": {
     "title": "Thay đổi chưa lưu",
-    "description": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn rời đi?",
+    "description": "Có thay đổi chưa lưu. Rời đi?",
     "confirm": "Rời đi",
     "cancel": "Ở lại"
   },
   "imageCrop": {
     "title": "Cắt ảnh",
-    "description": "Điều chỉnh vùng cắt và zoom để cắt ảnh theo ý muốn",
+    "description": "Điều chỉnh vùng cắt và zoom",
     "zoom": "Zoom",
     "cancel": "Hủy",
     "confirm": "Xác nhận",

@@ -1,0 +1,18 @@
+{
+  "required": "この項目は必須です。",
+  "email": "有効なメールアドレスを入力してください。",
+  "minLength": "{min}文字以上で入力してください。",
+  "maxLength": "{max}文字以内で入力してください。",
+  "min": "{min}以上の値を入力してください。",
+  "max": "{max}以下の値を入力してください。",
+  "passwordMismatch": "パスワードが一致しません。",
+  "invalidPhone": "有効な電話番号を入力してください。",
+  "invalidZipcode": "有効な郵便番号を入力してください。",
+  "invalidUrl": "有効なURLを入力してください。",
+  "invalidNumber": "有効な数値を入力してください。",
+  "positiveNumber": "正の数を入力してください。",
+  "integer": "整数を入力してください。",
+  "pattern": "形式が無効です。",
+  "genderRequired": "性別を選択してください。",
+  "roleRequired": "役割を選択してください。"
+}

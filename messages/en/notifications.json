@@ -1,0 +1,17 @@
+{
+  "title": "Notifications",
+  "empty": "No new notifications",
+  "markAllRead": "Mark all as read",
+  "viewAll": "View all",
+  "markAsRead": "Mark as read",
+  "types": {
+    "adjustmentApproved": "Adjustment request approved",
+    "adjustmentRejected": "Adjustment request rejected",
+    "leaveApproved": "Leave request approved",
+    "leaveRejected": "Leave request rejected",
+    "salaryNotification": "Salary notification",
+    "scheduleApproved": "Schedule approved",
+    "scheduleRejected": "Schedule rejected",
+    "general": "General notification"
+  }
+}

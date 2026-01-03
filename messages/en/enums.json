@@ -1,0 +1,156 @@
+{
+  "depositStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected"
+  },
+  "transactionType": {
+    "DEPOSIT": "Deposit",
+    "BILLING": "Billing",
+    "REFUND": "Refund",
+    "COMMISSION": "Commission"
+  },
+  "userStatus": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "PENDING": "Pending"
+  },
+  "userRole": {
+    "ADMIN_TAMABEE": "Tamabee Admin",
+    "MANAGER_TAMABEE": "Tamabee Manager",
+    "EMPLOYEE_TAMABEE": "Tamabee Employee",
+    "ADMIN_COMPANY": "Company Admin",
+    "MANAGER_COMPANY": "Manager",
+    "EMPLOYEE_COMPANY": "Employee"
+  },
+  "commissionStatus": {
+    "PENDING": "Pending",
+    "ELIGIBLE": "Eligible",
+    "PAID": "Paid"
+  },
+  "gender": {
+    "MALE": "Male",
+    "FEMALE": "Female",
+    "OTHER": "Other"
+  },
+  "language": {
+    "vi": "Vietnamese",
+    "en": "English",
+    "ja": "Japanese"
+  },
+  "locale": {
+    "vi": "Vietnam",
+    "ja": "Japan"
+  },
+  "roundingInterval": {
+    "MINUTES_5": "5 minutes",
+    "MINUTES_10": "10 minutes",
+    "MINUTES_15": "15 minutes",
+    "MINUTES_30": "30 minutes",
+    "MINUTES_60": "60 minutes"
+  },
+  "roundingDirection": {
+    "UP": "Round up",
+    "DOWN": "Round down",
+    "NEAREST": "Round to nearest"
+  },
+  "salaryType": {
+    "MONTHLY": "Monthly",
+    "DAILY": "Daily",
+    "HOURLY": "Hourly",
+    "SHIFT_BASED": "Shift-based"
+  },
+  "attendanceStatus": {
+    "PRESENT": "Present",
+    "ABSENT": "Absent",
+    "LEAVE": "On Leave",
+    "HOLIDAY": "Holiday"
+  },
+  "payrollStatus": {
+    "DRAFT": "Draft",
+    "FINALIZED": "Finalized",
+    "PAID": "Paid"
+  },
+  "paymentStatus": {
+    "PENDING": "Pending",
+    "PAID": "Paid",
+    "FAILED": "Failed"
+  },
+  "adjustmentStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected"
+  },
+  "selectionStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected"
+  },
+  "scheduleType": {
+    "FIXED": "Fixed",
+    "FLEXIBLE": "Flexible",
+    "SHIFT": "Shift"
+  },
+  "allowanceType": {
+    "FIXED": "Fixed",
+    "CONDITIONAL": "Conditional",
+    "ONE_TIME": "One-time"
+  },
+  "deductionType": {
+    "FIXED": "Fixed",
+    "PERCENTAGE": "Percentage"
+  },
+  "leaveType": {
+    "ANNUAL": "Annual Leave",
+    "SICK": "Sick Leave",
+    "MATERNITY": "Maternity Leave",
+    "PATERNITY": "Paternity Leave",
+    "BEREAVEMENT": "Bereavement Leave",
+    "UNPAID": "Unpaid Leave",
+    "OTHER": "Other"
+  },
+  "leaveStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "CANCELLED": "Cancelled"
+  },
+  "breakType": {
+    "label": "Break Type",
+    "PAID": "Paid",
+    "UNPAID": "Unpaid"
+  },
+  "shiftAssignmentStatus": {
+    "SCHEDULED": "Scheduled",
+    "COMPLETED": "Completed",
+    "SWAPPED": "Swapped",
+    "CANCELLED": "Cancelled"
+  },
+  "swapRequestStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected"
+  },
+  "payrollPeriodStatus": {
+    "DRAFT": "Draft",
+    "REVIEWING": "Reviewing",
+    "APPROVED": "Approved",
+    "PAID": "Paid"
+  },
+  "payrollItemStatus": {
+    "CALCULATED": "Calculated",
+    "ADJUSTED": "Adjusted",
+    "CONFIRMED": "Confirmed"
+  },
+  "contractType": {
+    "FULL_TIME": "Full-time",
+    "PART_TIME": "Part-time",
+    "SEASONAL": "Seasonal",
+    "CONTRACT": "Contract"
+  },
+  "contractStatus": {
+    "ACTIVE": "Active",
+    "EXPIRED": "Expired",
+    "TERMINATED": "Terminated"
+  }
+}

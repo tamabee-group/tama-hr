@@ -1,0 +1,73 @@
+{
+  "title": "サブスクリプションプラン",
+  "description": "会社向けサブスクリプションプランを管理",
+  "createPlan": "プランを作成",
+  "editPlan": "プランを編集",
+  "deletePlan": "プランを削除",
+  "addPlan": "プランを追加",
+  "refresh": "更新",
+  "noPlans": "プランがまだありません",
+  "table": {
+    "name": "プラン名",
+    "price": "価格",
+    "billingCycle": "請求サイクル",
+    "maxEmployees": "最大従業員数",
+    "features": "機能",
+    "status": "ステータス",
+    "companiesCount": "会社数"
+  },
+  "form": {
+    "name": "プラン名",
+    "namePlaceholder": "プラン名を入力",
+    "price": "月額料金",
+    "pricePlaceholder": "月額料金を入力",
+    "maxEmployees": "最大従業員数",
+    "maxEmployeesPlaceholder": "最大従業員数を入力",
+    "description": "説明",
+    "descriptionPlaceholder": "プランの説明を入力",
+    "features": "機能",
+    "featuresPlaceholder": "機能を入力（1行に1つ）",
+    "isActive": "有効",
+    "vietnamese": "ベトナム語",
+    "english": "英語",
+    "japanese": "日本語",
+    "saving": "保存中..."
+  },
+  "card": {
+    "perMonth": "/月",
+    "maxEmployees": "最大従業員数",
+    "active": "有効",
+    "inactive": "無効",
+    "select": "このプランを選択"
+  },
+  "feature": {
+    "addFeature": "機能を追加",
+    "featureVi": "ベトナム語",
+    "featureEn": "英語",
+    "featureJa": "日本語",
+    "highlighted": "ハイライト",
+    "remove": "削除",
+    "moveUp": "上に移動",
+    "moveDown": "下に移動",
+    "noFeatures": "機能がまだありません",
+    "featurePlaceholder": "機能を入力..."
+  },
+  "messages": {
+    "createSuccess": "プランを作成しました",
+    "updateSuccess": "プランを更新しました",
+    "deleteSuccess": "プランを削除しました",
+    "createError": "プランの作成に失敗しました",
+    "updateError": "プランの更新に失敗しました",
+    "deleteError": "プランの削除に失敗しました",
+    "planInUse": "プランは使用中のため削除できません"
+  },
+  "dialog": {
+    "deleteTitle": "プランを削除",
+    "deleteDescription": "このプランを削除してもよろしいですか？この操作は取り消せません。"
+  },
+  "validation": {
+    "required": "この項目は必須です",
+    "invalidPrice": "価格は0以上である必要があります",
+    "invalidMaxEmployees": "最大従業員数は0より大きくなければなりません"
+  }
+}

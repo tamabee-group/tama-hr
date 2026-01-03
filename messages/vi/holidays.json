@@ -1,0 +1,42 @@
+{
+  "title": "Ngày nghỉ lễ",
+  "description": "Quản lý ngày nghỉ lễ của công ty",
+  "addHoliday": "Thêm ngày nghỉ",
+  "editHoliday": "Sửa ngày nghỉ",
+  "deleteHoliday": "Xóa ngày nghỉ",
+  "importNational": "Nhập ngày lễ quốc gia",
+  "table": {
+    "name": "Tên ngày nghỉ",
+    "date": "Ngày",
+    "isNational": "Ngày lễ quốc gia",
+    "description": "Mô tả"
+  },
+  "form": {
+    "name": "Tên ngày nghỉ",
+    "namePlaceholder": "VD: Tết Nguyên Đán",
+    "date": "Ngày",
+    "datePlaceholder": "Chọn ngày...",
+    "isNational": "Đây là ngày lễ quốc gia",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Nhập mô tả (không bắt buộc)..."
+  },
+  "messages": {
+    "createSuccess": "Thêm ngày nghỉ thành công",
+    "createError": "Không thể thêm ngày nghỉ",
+    "updateSuccess": "Cập nhật ngày nghỉ thành công",
+    "updateError": "Không thể cập nhật ngày nghỉ",
+    "deleteSuccess": "Xóa ngày nghỉ thành công",
+    "deleteError": "Không thể xóa ngày nghỉ",
+    "importSuccess": "Nhập ngày lễ quốc gia thành công",
+    "importError": "Không thể nhập ngày lễ quốc gia",
+    "noHolidays": "Chưa có ngày nghỉ nào"
+  },
+  "dialog": {
+    "deleteTitle": "Xóa ngày nghỉ",
+    "deleteDescription": "Bạn có chắc chắn muốn xóa ngày nghỉ này?"
+  },
+  "filter": {
+    "year": "Năm",
+    "allYears": "Tất cả các năm"
+  }
+}

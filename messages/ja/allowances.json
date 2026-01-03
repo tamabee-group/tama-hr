@@ -1,0 +1,23 @@
+{
+  "title": "個人手当",
+  "description": "従業員の手当を管理",
+  "create": "手当を追加",
+  "edit": "手当を編集",
+  "noAllowances": "手当がありません",
+  "allowanceType": "手当タイプ",
+  "allowanceTypePlaceholder": "手当タイプを選択...",
+  "amount": "金額",
+  "amountPlaceholder": "金額を入力...",
+  "taxable": "課税対象",
+  "effectiveFrom": "適用開始日",
+  "effectiveTo": "適用終了日",
+  "isOverride": "デフォルトを上書き",
+  "companyDefault": "会社デフォルト",
+  "individualOverride": "個人設定",
+  "createSuccess": "手当を追加しました",
+  "updateSuccess": "手当を更新しました",
+  "deactivateSuccess": "手当を無効化しました",
+  "createError": "手当の追加に失敗しました",
+  "updateError": "手当の更新に失敗しました",
+  "deactivateError": "手当の無効化に失敗しました"
+}

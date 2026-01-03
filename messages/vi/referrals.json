@@ -1,0 +1,47 @@
+{
+  "title": "Công ty đã giới thiệu",
+  "description": "Danh sách các công ty bạn đã giới thiệu và trạng thái hoa hồng",
+  "searchPlaceholder": "Tìm kiếm theo tên công ty...",
+  "noCompanies": "Bạn chưa giới thiệu công ty nào",
+  "summary": {
+    "totalReferrals": "Tổng công ty giới thiệu",
+    "pendingAmount": "Chờ đủ điều kiện",
+    "eligibleAmount": "Đủ điều kiện",
+    "paidAmount": "Đã thanh toán",
+    "commissions": "hoa hồng"
+  },
+  "table": {
+    "companyName": "Tên công ty",
+    "plan": "Gói dịch vụ",
+    "status": "Trạng thái",
+    "balance": "Số dư",
+    "totalDeposits": "Tổng nạp",
+    "totalBilling": "Tổng billing",
+    "commissionStatus": "Trạng thái hoa hồng"
+  },
+  "detail": {
+    "title": "Chi tiết công ty",
+    "companyInfo": "Thông tin công ty",
+    "companyName": "Tên công ty",
+    "owner": "Chủ sở hữu",
+    "plan": "Gói dịch vụ",
+    "status": "Trạng thái",
+    "financialInfo": "Thông tin tài chính",
+    "currentBalance": "Số dư hiện tại",
+    "totalDeposits": "Tổng nạp tiền",
+    "totalBilling": "Tổng billing",
+    "commissionInfo": "Thông tin hoa hồng",
+    "commissionAmount": "Số tiền hoa hồng",
+    "commissionStatus": "Trạng thái",
+    "paidDate": "Ngày thanh toán",
+    "notPaid": "Chưa thanh toán"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động"
+  },
+  "messages": {
+    "loadError": "Không thể tải danh sách công ty đã giới thiệu",
+    "summaryLoadError": "Không thể tải thống kê hoa hồng"
+  }
+}

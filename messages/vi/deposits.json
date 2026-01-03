@@ -1,0 +1,66 @@
+{
+  "title": "Yêu cầu nạp tiền",
+  "description": "Xem và xử lý yêu cầu nạp tiền từ các công ty",
+  "createRequest": "Tạo yêu cầu nạp tiền",
+  "editRequest": "Sửa yêu cầu nạp tiền",
+  "table": {
+    "companyName": "Công ty",
+    "amount": "Số tiền",
+    "transferProof": "Hình ảnh",
+    "status": "Trạng thái",
+    "requestedBy": "Người yêu cầu",
+    "requesterName": "Tên người yêu cầu",
+    "requesterEmail": "Email người yêu cầu",
+    "employeeCode": "Mã nhân viên",
+    "createdAt": "Ngày tạo",
+    "processedAt": "Ngày xử lý",
+    "processedBy": "Người xử lý",
+    "approvedBy": "Người duyệt",
+    "rejectionReason": "Lý do từ chối"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "pending": "Đang chờ",
+    "approved": "Đã duyệt",
+    "rejected": "Đã từ chối"
+  },
+  "actions": {
+    "viewDetail": "Xem chi tiết",
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "viewProof": "Xem chứng từ",
+    "download": "Tải xuống",
+    "approving": "Đang duyệt..."
+  },
+  "dialog": {
+    "detailTitle": "Chi tiết yêu cầu nạp tiền",
+    "detailDescription": "Xem thông tin chi tiết và duyệt yêu cầu",
+    "approveTitle": "Duyệt yêu cầu nạp tiền",
+    "approveDescription": "Bạn có chắc chắn muốn duyệt yêu cầu nạp tiền này?",
+    "rejectTitle": "Từ chối yêu cầu nạp tiền",
+    "rejectDescription": "Vui lòng nhập lý do từ chối",
+    "rejectReason": "Lý do từ chối",
+    "rejectReasonPlaceholder": "Nhập lý do từ chối",
+    "rejecting": "Đang xử lý..."
+  },
+  "messages": {
+    "approveSuccess": "Đã duyệt yêu cầu nạp tiền thành công",
+    "rejectSuccess": "Đã từ chối yêu cầu nạp tiền thành công",
+    "approveError": "Không thể duyệt yêu cầu nạp tiền",
+    "rejectError": "Không thể từ chối yêu cầu nạp tiền",
+    "createSuccess": "Tạo yêu cầu nạp tiền thành công",
+    "createError": "Không thể tạo yêu cầu nạp tiền",
+    "updateSuccess": "Cập nhật yêu cầu nạp tiền thành công",
+    "updateError": "Không thể cập nhật yêu cầu nạp tiền",
+    "cancelSuccess": "Hủy yêu cầu nạp tiền thành công",
+    "cancelError": "Không thể hủy yêu cầu nạp tiền",
+    "cancelConfirm": "Bạn có chắc chắn muốn hủy yêu cầu nạp tiền này?",
+    "required": "Vui lòng nhập lý do từ chối"
+  },
+  "form": {
+    "amount": "Số tiền nạp",
+    "amountPlaceholder": "Nhập số tiền nạp",
+    "transferProof": "Chứng từ chuyển khoản",
+    "transferProofHint": "Tải lên ảnh chụp màn hình chuyển khoản ngân hàng"
+  }
+}

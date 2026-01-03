@@ -1,0 +1,73 @@
+{
+  "confirmCancel": "キャンセルの確認",
+  "confirmApprove": "承認の確認",
+  "confirm": {
+    "title": "操作の確認",
+    "description": "続行してもよろしいですか？",
+    "confirm": "確認",
+    "cancel": "キャンセル"
+  },
+  "delete": {
+    "title": "削除の確認",
+    "description": "この項目を削除してもよろしいですか？この操作は取り消せません。",
+    "confirm": "削除",
+    "cancel": "キャンセル"
+  },
+  "unsavedChanges": {
+    "title": "未保存の変更",
+    "description": "未保存の変更があります。このページを離れてもよろしいですか？",
+    "confirm": "離れる",
+    "cancel": "留まる"
+  },
+  "imageCrop": {
+    "title": "画像を切り抜く",
+    "description": "切り抜き範囲とズームを調整して画像を切り抜きます",
+    "zoom": "ズーム",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "processing": "処理中..."
+  },
+  "confirmChanges": {
+    "title": "変更の確認",
+    "description": "保存する前に変更内容を確認してください",
+    "oldValue": "変更前",
+    "newValue": "変更後",
+    "cancel": "キャンセル",
+    "confirm": "保存を確認",
+    "saving": "保存中...",
+    "groupBasic": "基本情報",
+    "groupEmergency": "緊急連絡先",
+    "groupBank": "銀行情報"
+  },
+  "rejectTitle": "リクエストを拒否",
+  "rejectDescription": "拒否理由を入力してください",
+  "rejectReason": "拒否理由",
+  "rejectReasonPlaceholder": "拒否理由を入力...",
+  "rejectReasonRequired": "拒否理由を入力してください",
+  "reject": "拒否",
+  "approveTitle": "承認確認",
+  "approveDescription": "このリクエストを承認してもよろしいですか？",
+  "swapApproveTitle": "シフト交換を承認",
+  "swapApproveDesc": "このシフト交換リクエストを承認しますか？",
+  "swapRejectTitle": "シフト交換を却下",
+  "swapRejectDesc": "却下理由を入力してください",
+  "payrollSubmitTitle": "給与を承認申請",
+  "payrollSubmitDesc": "この給与を承認申請しますか？",
+  "payrollApproveTitle": "給与を承認",
+  "payrollApproveDesc": "承認後は給与を変更できません",
+  "payrollPayTitle": "支払済みにする",
+  "payrollPayDesc": "この期間の支払いが完了したことを確認",
+  "contractTerminateTitle": "契約を終了",
+  "contractTerminateDesc": "この操作は取り消せません。理由を入力してください",
+  "deactivateAllowanceTitle": "手当を無効化",
+  "deactivateAllowanceDesc": "この手当を無効化しますか？",
+  "deactivateDeductionTitle": "控除を無効化",
+  "deactivateDeductionDesc": "この控除を無効化しますか？",
+  "salaryConfigChangeTitle": "給与設定を変更",
+  "salaryConfigChangeDesc": "この変更は現在の給与期間に影響します",
+  "impactSummary": "影響の概要",
+  "actionSummary": "操作の概要",
+  "reasonRequired": "理由を入力してください",
+  "confirmAction": "操作を確認",
+  "cancelAction": "キャンセル"
+}

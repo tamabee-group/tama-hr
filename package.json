@@ -13,7 +13,8 @@
     "prepare": "husky",
     "test": "vitest",
     "test:run": "vitest --run",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "split-messages": "npx ts-node --esm scripts/split-messages.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -1,0 +1,42 @@
+{
+  "title": "Holidays",
+  "description": "Manage company holidays",
+  "addHoliday": "Add Holiday",
+  "editHoliday": "Edit Holiday",
+  "deleteHoliday": "Delete Holiday",
+  "importNational": "Import National Holidays",
+  "table": {
+    "name": "Holiday Name",
+    "date": "Date",
+    "isNational": "National Holiday",
+    "description": "Description"
+  },
+  "form": {
+    "name": "Holiday Name",
+    "namePlaceholder": "e.g., New Year's Day",
+    "date": "Date",
+    "datePlaceholder": "Select date...",
+    "isNational": "This is a national holiday",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description (optional)..."
+  },
+  "messages": {
+    "createSuccess": "Holiday added successfully",
+    "createError": "Failed to add holiday",
+    "updateSuccess": "Holiday updated successfully",
+    "updateError": "Failed to update holiday",
+    "deleteSuccess": "Holiday deleted successfully",
+    "deleteError": "Failed to delete holiday",
+    "importSuccess": "National holidays imported successfully",
+    "importError": "Failed to import national holidays",
+    "noHolidays": "No holidays found"
+  },
+  "dialog": {
+    "deleteTitle": "Delete Holiday",
+    "deleteDescription": "Are you sure you want to delete this holiday?"
+  },
+  "filter": {
+    "year": "Year",
+    "allYears": "All Years"
+  }
+}

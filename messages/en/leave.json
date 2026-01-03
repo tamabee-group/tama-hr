@@ -1,0 +1,68 @@
+{
+  "title": "Leave",
+  "description": "Manage leave requests",
+  "myLeave": "My Leave",
+  "requestLeave": "Request Leave",
+  "leaveBalance": "Leave Balance",
+  "leaveHistory": "Leave History",
+  "pendingRequests": "Pending Requests",
+  "approve": "Approve",
+  "reject": "Reject",
+  "rejectionReason": "Rejection Reason",
+  "approveConfirm": "Are you sure you want to approve this leave request?",
+  "table": {
+    "employee": "Employee",
+    "type": "Leave Type",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "days": "Days",
+    "reason": "Reason",
+    "status": "Status",
+    "approvedBy": "Approved By",
+    "approvedAt": "Approved At"
+  },
+  "form": {
+    "type": "Leave Type",
+    "typePlaceholder": "Select leave type...",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "reason": "Reason",
+    "reasonPlaceholder": "Enter reason for leave...",
+    "submit": "Submit Request"
+  },
+  "type": {
+    "annual": "Annual Leave",
+    "sick": "Sick Leave",
+    "maternity": "Maternity Leave",
+    "paternity": "Paternity Leave",
+    "bereavement": "Bereavement Leave",
+    "unpaid": "Unpaid Leave",
+    "other": "Other"
+  },
+  "balance": {
+    "title": "Leave Balance",
+    "total": "Total Days",
+    "used": "Used",
+    "remaining": "Remaining",
+    "pending": "Pending"
+  },
+  "messages": {
+    "requestSuccess": "Leave request submitted successfully",
+    "requestError": "Failed to submit leave request",
+    "approveSuccess": "Leave request approved",
+    "approveError": "Failed to approve request",
+    "rejectSuccess": "Leave request rejected",
+    "rejectError": "Failed to reject request",
+    "cancelSuccess": "Leave request cancelled",
+    "cancelError": "Failed to cancel request",
+    "insufficientBalance": "Insufficient leave balance",
+    "invalidDateRange": "End date must be after start date",
+    "noRequests": "No leave requests"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "cancelled": "Cancelled"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "title": "通知",
+  "empty": "新しい通知はありません",
+  "markAllRead": "すべて既読にする",
+  "viewAll": "すべて表示",
+  "markAsRead": "既読にする",
+  "types": {
+    "adjustmentApproved": "修正申請が承認されました",
+    "adjustmentRejected": "修正申請が却下されました",
+    "leaveApproved": "休暇申請が承認されました",
+    "leaveRejected": "休暇申請が却下されました",
+    "salaryNotification": "給与通知",
+    "scheduleApproved": "スケジュールが承認されました",
+    "scheduleRejected": "スケジュールが却下されました",
+    "general": "一般通知"
+  }
+}

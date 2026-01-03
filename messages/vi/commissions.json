@@ -1,0 +1,110 @@
+{
+  "title": "Quản lý hoa hồng",
+  "description": "Xem và quản lý hoa hồng của nhân viên Tamabee",
+  "myCommissions": "Hoa hồng của tôi",
+  "myDescription": "Xem danh sách hoa hồng từ các công ty bạn giới thiệu",
+  "totalEarned": "Tổng đã nhận",
+  "pendingAmount": "Chờ đủ điều kiện",
+  "paidAmount": "Đã thanh toán",
+  "eligibleAmount": "Chờ thanh toán",
+  "totalCommission": "Tổng hoa hồng",
+  "referredCompanies": "công ty giới thiệu",
+  "employeeCode": "Mã nhân viên",
+  "noCompanies": "Chưa có công ty nào được giới thiệu",
+  "referredCompanyList": "Danh sách công ty giới thiệu",
+  "table": {
+    "referredCompany": "Công ty được giới thiệu",
+    "referredBy": "Người giới thiệu",
+    "amount": "Số tiền",
+    "status": "Trạng thái",
+    "eligibleDate": "Ngày đủ điều kiện",
+    "paidDate": "Ngày thanh toán",
+    "createdAt": "Ngày tạo",
+    "company": "Công ty",
+    "commission": "Hoa hồng"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "pending": "Đang chờ",
+    "eligible": "Đủ điều kiện",
+    "paid": "Đã thanh toán"
+  },
+  "actions": {
+    "markPaid": "Đánh dấu đã thanh toán",
+    "viewDetails": "Xem chi tiết"
+  },
+  "payDialog": {
+    "title": "Xác nhận thanh toán hoa hồng",
+    "description": "Vui lòng kiểm tra thông tin trước khi xác nhận thanh toán",
+    "employee": "Nhân viên",
+    "commissionAmount": "Số tiền hoa hồng",
+    "referredCompanyInfo": "Thông tin công ty được giới thiệu",
+    "companyName": "Tên công ty",
+    "billingAtCreation": "Billing tại thời điểm tạo",
+    "createdAt": "Ngày tạo commission",
+    "notEligibleTitle": "Chưa đủ điều kiện thanh toán",
+    "notEligibleDescription": "Commission này chưa đạt điều kiện thanh toán. Công ty cần đạt mức billing tối thiểu trước khi có thể thanh toán hoa hồng.",
+    "confirmPayment": "Xác nhận thanh toán"
+  },
+  "messages": {
+    "markPaidSuccess": "Đã đánh dấu hoa hồng là đã thanh toán",
+    "markPaidError": "Không thể đánh dấu hoa hồng là đã thanh toán",
+    "loadError": "Không thể tải dữ liệu hoa hồng",
+    "loadSummaryError": "Không thể tải thống kê hoa hồng",
+    "loadTransactionsError": "Không thể tải lịch sử giao dịch",
+    "loadCommissionsError": "Không thể tải danh sách hoa hồng",
+    "markPaidForbidden": "Bạn không có quyền đánh dấu thanh toán"
+  },
+  "companyDetail": {
+    "basicInfo": "Thông tin cơ bản",
+    "owner": "Chủ sở hữu",
+    "industry": "Ngành nghề",
+    "email": "Email",
+    "phone": "Điện thoại",
+    "address": "Địa chỉ",
+    "zipcode": "Mã bưu điện",
+    "region": "Khu vực",
+    "billingInfo": "Thông tin thanh toán",
+    "walletBalance": "Số dư ví",
+    "plan": "Gói dịch vụ",
+    "lastBilling": "Billing gần nhất",
+    "nextBilling": "Billing tiếp theo",
+    "freeTrial": "Dùng thử",
+    "freeTrialActive": "Đang dùng thử",
+    "until": "đến",
+    "noWalletInfo": "Không có thông tin ví",
+    "referrer": "Người giới thiệu",
+    "employeeCode": "Mã nhân viên",
+    "employeeName": "Tên nhân viên",
+    "timestamps": "Thời gian",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Cập nhật lần cuối"
+  },
+  "summary": {
+    "byEmployee": "Theo nhân viên",
+    "byMonth": "Theo tháng",
+    "employee": "Nhân viên",
+    "month": "Tháng",
+    "count": "Số lượng"
+  },
+  "filter": {
+    "searchEmployeeCode": "Tìm theo mã nhân viên"
+  },
+  "viewTabs": {
+    "list": "Danh sách",
+    "summary": "Tổng hợp"
+  },
+  "detailDialog": {
+    "title": "Chi tiết hoa hồng",
+    "employeeSection": "Nhân viên nhận hoa hồng",
+    "employeeName": "Tên nhân viên",
+    "employeeCode": "Mã nhân viên",
+    "companySection": "Công ty được giới thiệu",
+    "companyName": "Tên công ty",
+    "billingAtCreation": "Billing tại thời điểm tạo",
+    "commissionSection": "Thông tin hoa hồng",
+    "paymentSection": "Thông tin thanh toán",
+    "paidBy": "Người thanh toán",
+    "paidAt": "Ngày thanh toán"
+  }
+}

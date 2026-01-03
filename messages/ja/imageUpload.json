@@ -1,0 +1,11 @@
+{
+  "processing": "画像を処理中...",
+  "dropHere": "ここに画像をドロップ",
+  "dragOrClick": "ドラッグ＆ドロップまたはクリックして選択",
+  "maxSize": "最大{maxSize}MB",
+  "invalidFormat": "無効なファイル形式です。対応形式: {formats}",
+  "invalidFile": "無効なファイル",
+  "fileTooLarge": "ファイルが{maxSize}MBを超えています。小さいファイルを選択してください。",
+  "fileTooLargeGeneric": "ファイルが大きすぎます",
+  "processError": "ファイルの処理に失敗しました。もう一度お試しください。"
+}

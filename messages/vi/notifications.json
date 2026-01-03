@@ -1,0 +1,17 @@
+{
+  "title": "Thông báo",
+  "empty": "Không có thông báo mới",
+  "markAllRead": "Đánh dấu tất cả đã đọc",
+  "viewAll": "Xem tất cả",
+  "markAsRead": "Đánh dấu đã đọc",
+  "types": {
+    "adjustmentApproved": "Yêu cầu điều chỉnh đã được duyệt",
+    "adjustmentRejected": "Yêu cầu điều chỉnh bị từ chối",
+    "leaveApproved": "Yêu cầu nghỉ phép đã được duyệt",
+    "leaveRejected": "Yêu cầu nghỉ phép bị từ chối",
+    "salaryNotification": "Thông báo lương",
+    "scheduleApproved": "Lịch làm việc đã được duyệt",
+    "scheduleRejected": "Lịch làm việc bị từ chối",
+    "general": "Thông báo chung"
+  }
+}

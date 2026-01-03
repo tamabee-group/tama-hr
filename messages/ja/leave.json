@@ -1,0 +1,68 @@
+{
+  "title": "休暇管理",
+  "description": "従業員の休暇申請を管理",
+  "myLeave": "マイ休暇",
+  "requestLeave": "休暇申請",
+  "leaveBalance": "残日数",
+  "leaveHistory": "休暇履歴",
+  "pendingRequests": "承認待ち申請",
+  "approve": "承認",
+  "reject": "却下",
+  "rejectionReason": "却下理由",
+  "approveConfirm": "この休暇申請を承認してもよろしいですか？",
+  "table": {
+    "employee": "従業員",
+    "type": "休暇種類",
+    "startDate": "開始日",
+    "endDate": "終了日",
+    "days": "日数",
+    "reason": "理由",
+    "status": "ステータス",
+    "approvedBy": "承認者",
+    "approvedAt": "承認日"
+  },
+  "form": {
+    "type": "休暇種類",
+    "typePlaceholder": "休暇種類を選択...",
+    "startDate": "開始日",
+    "endDate": "終了日",
+    "reason": "理由",
+    "reasonPlaceholder": "休暇の理由を入力...",
+    "submit": "申請を送信"
+  },
+  "type": {
+    "annual": "年次有給休暇",
+    "sick": "病気休暇",
+    "maternity": "産休",
+    "paternity": "育休",
+    "bereavement": "忌引休暇",
+    "unpaid": "無給休暇",
+    "other": "その他"
+  },
+  "balance": {
+    "title": "休暇残日数",
+    "total": "合計日数",
+    "used": "使用済み",
+    "remaining": "残り",
+    "pending": "承認待ち"
+  },
+  "messages": {
+    "requestSuccess": "休暇申請を送信しました",
+    "requestError": "休暇申請の送信に失敗しました",
+    "approveSuccess": "休暇申請を承認しました",
+    "approveError": "申請の承認に失敗しました",
+    "rejectSuccess": "休暇申請を却下しました",
+    "rejectError": "申請の却下に失敗しました",
+    "cancelSuccess": "休暇申請をキャンセルしました",
+    "cancelError": "申請のキャンセルに失敗しました",
+    "insufficientBalance": "残日数が不足しています",
+    "invalidDateRange": "終了日は開始日より後である必要があります",
+    "noRequests": "休暇申請がありません"
+  },
+  "status": {
+    "pending": "承認待ち",
+    "approved": "承認済み",
+    "rejected": "却下",
+    "cancelled": "キャンセル"
+  }
+}

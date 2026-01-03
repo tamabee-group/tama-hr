@@ -1,0 +1,58 @@
+{
+  "title": "Giờ giải lao",
+  "elapsedTime": "Thời gian đã nghỉ",
+  "remainingTime": "Thời gian còn lại",
+  "overtimeBy": "Vượt quá",
+  "maxBreakMinutes": "Tối đa {minutes} phút",
+  "breakCount": "Lần nghỉ {current}/{max}",
+  "startBreak": "Bắt đầu nghỉ",
+  "endBreak": "Kết thúc nghỉ",
+  "status": {
+    "onBreak": "Đang nghỉ",
+    "notOnBreak": "Không nghỉ"
+  },
+  "warnings": {
+    "exceededMax": "Đã vượt quá thời gian nghỉ tối đa!"
+  },
+  "messages": {
+    "startBreakSuccess": "Bắt đầu nghỉ thành công",
+    "endBreakSuccess": "Kết thúc nghỉ thành công",
+    "maxBreaksReached": "Đã đạt giới hạn số lần nghỉ trong ngày"
+  },
+  "history": {
+    "title": "Lịch sử giờ nghỉ",
+    "titleShort": "Giờ nghỉ",
+    "breakNumber": "Lần nghỉ {number}",
+    "startTime": "Bắt đầu",
+    "endTime": "Kết thúc",
+    "duration": "Thời lượng",
+    "totalBreakTime": "Tổng thời gian nghỉ",
+    "effectiveBreakTime": "Thời gian nghỉ hiệu quả",
+    "minimumRequired": "Yêu cầu tối thiểu",
+    "maximumAllowed": "Giới hạn tối đa",
+    "progress": "Tiến độ",
+    "appliedConfig": "Cấu hình áp dụng",
+    "breakType": "Loại nghỉ",
+    "defaultMinutes": "Mặc định",
+    "complianceTitle": "Trạng thái",
+    "complianceCompliant": "Đạt yêu cầu",
+    "complianceCompliantShort": "Đạt",
+    "complianceNonCompliant": "Chưa đạt yêu cầu",
+    "complianceNonCompliantShort": "Chưa đạt",
+    "noRecords": "Chưa có lần nghỉ nào",
+    "inProgress": "Đang nghỉ",
+    "minutes": "phút",
+    "requestAdjustment": "Yêu cầu điều chỉnh"
+  },
+  "adjustment": {
+    "title": "Yêu cầu điều chỉnh giờ nghỉ",
+    "originalStart": "Giờ bắt đầu gốc",
+    "originalEnd": "Giờ kết thúc gốc",
+    "requestedStart": "Giờ bắt đầu yêu cầu",
+    "requestedEnd": "Giờ kết thúc yêu cầu",
+    "noChangeError": "Vui lòng thay đổi ít nhất một thời gian",
+    "invalidTimeRange": "Giờ kết thúc phải sau giờ bắt đầu",
+    "overlapError": "Thời gian trùng với lần nghỉ {breakNumber}",
+    "submitSuccess": "Đã gửi yêu cầu điều chỉnh lần nghỉ {breakNumber}"
+  }
+}

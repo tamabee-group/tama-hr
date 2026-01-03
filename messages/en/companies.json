@@ -1,0 +1,71 @@
+{
+  "title": "Company Management",
+  "description": "Manage registered companies",
+  "createCompany": "Create Company",
+  "editCompany": "Edit Company",
+  "viewCompany": "View Company",
+  "customerDetail": "Customer Detail",
+  "companyInfo": "Company Information",
+  "companyWallet": "Company Wallet",
+  "employees": "Employees",
+  "featureUpdating": "Feature is being updated",
+  "table": {
+    "name": "Company Name",
+    "email": "Email",
+    "phone": "Phone",
+    "plan": "Subscription Plan",
+    "employees": "Employees",
+    "walletBalance": "Wallet Balance",
+    "status": "Status",
+    "createdAt": "Registered At",
+    "updatedAt": "Updated At"
+  },
+  "form": {
+    "name": "Company Name",
+    "namePlaceholder": "Enter company name",
+    "ownerName": "Representative",
+    "ownerNamePlaceholder": "Enter representative name",
+    "email": "Email",
+    "emailPlaceholder": "Enter company email",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Enter phone number",
+    "address": "Address",
+    "addressPlaceholder": "Enter company address",
+    "plan": "Subscription Plan",
+    "planPlaceholder": "Select a plan",
+    "referralCode": "Referral Code",
+    "referralCodePlaceholder": "Enter referral code (optional)",
+    "referredBy": "Referred By",
+    "industry": "Industry",
+    "industryPlaceholder": "Select industry",
+    "locale": "Region",
+    "localePlaceholder": "Select region",
+    "language": "Language",
+    "languagePlaceholder": "Select language",
+    "zipcode": "Zipcode",
+    "zipcodePlaceholder": "Enter zipcode",
+    "autoFillAddress": "Auto-filling address...",
+    "logo": "Logo"
+  },
+  "messages": {
+    "createSuccess": "Company created successfully",
+    "updateSuccess": "Company updated successfully",
+    "deleteSuccess": "Company deleted successfully",
+    "createError": "Failed to create company",
+    "updateError": "Failed to update company",
+    "deleteError": "Failed to delete company",
+    "saving": "Saving..."
+  },
+  "tabs": {
+    "info": "Information",
+    "employees": "Employees",
+    "wallet": "Wallet",
+    "transactions": "Transactions"
+  },
+  "validation": {
+    "nameRequired": "Please enter company name",
+    "emailRequired": "Please enter email",
+    "ownerNameRequired": "Please enter representative name",
+    "checkInfo": "Please check the information"
+  }
+}

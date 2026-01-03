@@ -1,0 +1,51 @@
+{
+  "groups": {
+    "overview": "概要",
+    "management": "管理",
+    "finance": "財務",
+    "system": "システム",
+    "work": "業務",
+    "attendance": "勤怠",
+    "hr": "人事",
+    "attendancePayroll": "勤怠・給与"
+  },
+  "items": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "users": "人事",
+    "employees": "社員",
+    "addEmployee": "社員追加",
+    "customers": "顧客",
+    "plans": "プラン",
+    "wallets": "ウォレット",
+    "deposits": "入金",
+    "commissions": "コミッション",
+    "settings": "設定",
+    "company": "会社",
+    "companyInfo": "会社情報",
+    "support": "サポート",
+    "myCommissions": "マイコミッション",
+    "referrals": "紹介会社",
+    "attendance": "勤怠",
+    "attendanceRecords": "勤怠記録",
+    "adjustments": "調整",
+    "schedules": "勤務スケジュール",
+    "payroll": "給与",
+    "payrollRecords": "給与記録",
+    "holidays": "祝日",
+    "leaveRequests": "休暇申請",
+    "leave": "休暇",
+    "reports": "レポート",
+    "myAttendance": "マイ勤怠",
+    "mySchedule": "マイスケジュール",
+    "myPayroll": "マイ給与",
+    "myLeave": "マイ休暇",
+    "shifts": "シフト管理",
+    "contracts": "契約"
+  },
+  "workModeIndicator": {
+    "fixedHours": "固定時間",
+    "flexibleShift": "フレックス/シフト",
+    "tooltip": "会社の現在の勤務モード"
+  }
+}

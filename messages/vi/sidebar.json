@@ -1,0 +1,51 @@
+{
+  "groups": {
+    "overview": "Tổng quan",
+    "management": "Quản lý",
+    "finance": "Tài chính",
+    "system": "Hệ thống",
+    "work": "Công việc",
+    "attendance": "Chấm công",
+    "hr": "Nhân sự",
+    "attendancePayroll": "Chấm công & Lương"
+  },
+  "items": {
+    "home": "Trang chủ",
+    "dashboard": "Bảng điều khiển",
+    "users": "Nhân sự",
+    "employees": "Nhân viên",
+    "addEmployee": "Thêm nhân viên",
+    "customers": "Khách hàng",
+    "plans": "Gói dịch vụ",
+    "wallets": "Ví tiền",
+    "deposits": "Nạp tiền",
+    "commissions": "Hoa hồng",
+    "settings": "Cài đặt",
+    "company": "Công ty",
+    "companyInfo": "Thông tin công ty",
+    "support": "Hỗ trợ",
+    "myCommissions": "Hoa hồng của tôi",
+    "referrals": "Công ty giới thiệu",
+    "attendance": "Chấm công",
+    "attendanceRecords": "Bản ghi chấm công",
+    "adjustments": "Điều chỉnh",
+    "schedules": "Lịch làm việc",
+    "payroll": "Bảng lương",
+    "payrollRecords": "Bản ghi lương",
+    "holidays": "Ngày nghỉ lễ",
+    "leaveRequests": "Yêu cầu nghỉ phép",
+    "leave": "Nghỉ phép",
+    "reports": "Báo cáo",
+    "myAttendance": "Chấm công của tôi",
+    "mySchedule": "Lịch làm việc của tôi",
+    "myPayroll": "Bảng lương của tôi",
+    "myLeave": "Nghỉ phép của tôi",
+    "shifts": "Quản lý ca",
+    "contracts": "Hợp đồng"
+  },
+  "workModeIndicator": {
+    "fixedHours": "Giờ cố định",
+    "flexibleShift": "Linh hoạt/Theo ca",
+    "tooltip": "Chế độ làm việc hiện tại của công ty"
+  }
+}

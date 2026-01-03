@@ -1,0 +1,68 @@
+{
+  "title": "Nghỉ phép",
+  "description": "Quản lý nghỉ phép",
+  "myLeave": "Nghỉ phép của tôi",
+  "requestLeave": "Yêu cầu nghỉ phép",
+  "leaveBalance": "Số ngày phép còn lại",
+  "leaveHistory": "Lịch sử nghỉ phép",
+  "pendingRequests": "Yêu cầu chờ duyệt",
+  "approve": "Duyệt",
+  "reject": "Từ chối",
+  "rejectionReason": "Lý do từ chối",
+  "approveConfirm": "Bạn có chắc chắn muốn duyệt yêu cầu nghỉ phép này?",
+  "table": {
+    "employee": "Nhân viên",
+    "type": "Loại nghỉ",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "days": "Số ngày",
+    "reason": "Lý do",
+    "status": "Trạng thái",
+    "approvedBy": "Người duyệt",
+    "approvedAt": "Ngày duyệt"
+  },
+  "form": {
+    "type": "Loại nghỉ phép",
+    "typePlaceholder": "Chọn loại nghỉ phép...",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "reason": "Lý do",
+    "reasonPlaceholder": "Nhập lý do nghỉ phép...",
+    "submit": "Gửi yêu cầu"
+  },
+  "type": {
+    "annual": "Nghỉ phép năm",
+    "sick": "Nghỉ ốm",
+    "maternity": "Nghỉ thai sản",
+    "paternity": "Nghỉ chăm con",
+    "bereavement": "Nghỉ tang",
+    "unpaid": "Nghỉ không lương",
+    "other": "Khác"
+  },
+  "balance": {
+    "title": "Số ngày phép",
+    "total": "Tổng số ngày",
+    "used": "Đã sử dụng",
+    "remaining": "Còn lại",
+    "pending": "Đang chờ duyệt"
+  },
+  "messages": {
+    "requestSuccess": "Gửi yêu cầu nghỉ phép thành công",
+    "requestError": "Không thể gửi yêu cầu nghỉ phép",
+    "approveSuccess": "Đã duyệt yêu cầu nghỉ phép",
+    "approveError": "Không thể duyệt yêu cầu",
+    "rejectSuccess": "Đã từ chối yêu cầu nghỉ phép",
+    "rejectError": "Không thể từ chối yêu cầu",
+    "cancelSuccess": "Đã hủy yêu cầu nghỉ phép",
+    "cancelError": "Không thể hủy yêu cầu",
+    "insufficientBalance": "Số ngày phép không đủ",
+    "invalidDateRange": "Ngày kết thúc phải sau ngày bắt đầu",
+    "noRequests": "Không có yêu cầu nghỉ phép nào"
+  },
+  "status": {
+    "pending": "Đang chờ duyệt",
+    "approved": "Đã duyệt",
+    "rejected": "Đã từ chối",
+    "cancelled": "Đã hủy"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "title": "入金リクエスト",
+  "description": "会社からの入金リクエストを表示・処理",
+  "createRequest": "入金リクエストを作成",
+  "editRequest": "入金リクエストを編集",
+  "table": {
+    "companyName": "会社名",
+    "amount": "金額",
+    "transferProof": "画像",
+    "status": "ステータス",
+    "requestedBy": "申請者",
+    "requesterName": "申請者名",
+    "requesterEmail": "申請者メール",
+    "employeeCode": "社員コード",
+    "createdAt": "作成日",
+    "processedAt": "処理日",
+    "processedBy": "処理者",
+    "approvedBy": "承認者",
+    "rejectionReason": "却下理由"
+  },
+  "tabs": {
+    "all": "すべて",
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "却下"
+  },
+  "actions": {
+    "viewDetail": "詳細を表示",
+    "approve": "承認",
+    "reject": "却下",
+    "viewProof": "振込証明を表示",
+    "download": "ダウンロード",
+    "approving": "承認中..."
+  },
+  "dialog": {
+    "detailTitle": "入金リクエスト詳細",
+    "detailDescription": "詳細を確認してリクエストを処理",
+    "approveTitle": "入金を承認",
+    "approveDescription": "この入金リクエストを承認してもよろしいですか？",
+    "rejectTitle": "入金を却下",
+    "rejectDescription": "却下理由を入力してください",
+    "rejectReason": "却下理由",
+    "rejectReasonPlaceholder": "却下理由を入力",
+    "rejecting": "処理中..."
+  },
+  "messages": {
+    "approveSuccess": "入金を承認しました",
+    "rejectSuccess": "入金を却下しました",
+    "approveError": "入金の承認に失敗しました",
+    "rejectError": "入金の却下に失敗しました",
+    "createSuccess": "入金リクエストを作成しました",
+    "createError": "入金リクエストの作成に失敗しました",
+    "updateSuccess": "入金リクエストを更新しました",
+    "updateError": "入金リクエストの更新に失敗しました",
+    "cancelSuccess": "入金リクエストをキャンセルしました",
+    "cancelError": "入金リクエストのキャンセルに失敗しました",
+    "cancelConfirm": "この入金リクエストをキャンセルしてもよろしいですか？",
+    "required": "却下理由を入力してください"
+  },
+  "form": {
+    "amount": "入金額",
+    "amountPlaceholder": "入金額を入力",
+    "transferProof": "振込証明",
+    "transferProofHint": "銀行振込のスクリーンショットをアップロード"
+  }
+}

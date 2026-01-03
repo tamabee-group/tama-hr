@@ -1,0 +1,23 @@
+{
+  "title": "Phụ cấp cá nhân",
+  "description": "Quản lý phụ cấp cho nhân viên",
+  "create": "Thêm phụ cấp",
+  "edit": "Sửa phụ cấp",
+  "noAllowances": "Chưa có phụ cấp nào",
+  "allowanceType": "Loại phụ cấp",
+  "allowanceTypePlaceholder": "Chọn loại phụ cấp...",
+  "amount": "Số tiền",
+  "amountPlaceholder": "Nhập số tiền...",
+  "taxable": "Chịu thuế",
+  "effectiveFrom": "Có hiệu lực từ",
+  "effectiveTo": "Có hiệu lực đến",
+  "isOverride": "Ghi đè mặc định",
+  "companyDefault": "Mặc định công ty",
+  "individualOverride": "Ghi đè cá nhân",
+  "createSuccess": "Thêm phụ cấp thành công",
+  "updateSuccess": "Cập nhật phụ cấp thành công",
+  "deactivateSuccess": "Vô hiệu hóa phụ cấp thành công",
+  "createError": "Không thể thêm phụ cấp",
+  "updateError": "Không thể cập nhật phụ cấp",
+  "deactivateError": "Không thể vô hiệu hóa phụ cấp"
+}

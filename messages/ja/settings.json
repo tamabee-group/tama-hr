@@ -1,0 +1,55 @@
+{
+  "title": "システム設定",
+  "description": "システム構成パラメータの管理",
+  "general": "一般設定",
+  "billing": "請求設定",
+  "notifications": "通知設定",
+  "security": "セキュリティ設定",
+  "noSettings": "設定がまだありません",
+  "viewOnly": "閲覧のみ可能です",
+  "table": {
+    "settingKey": "設定キー",
+    "settingValue": "値",
+    "valueType": "型",
+    "description": "説明",
+    "updatedAt": "更新日時",
+    "actions": "操作"
+  },
+  "form": {
+    "title": "設定を編集",
+    "description": "システム設定の値を更新します",
+    "settingKey": "設定キー",
+    "settingValue": "値",
+    "valueType": "値の型",
+    "siteName": "サイト名",
+    "siteNamePlaceholder": "サイト名を入力",
+    "supportEmail": "サポートメール",
+    "supportEmailPlaceholder": "サポートメールを入力",
+    "billingDay": "請求日",
+    "billingDayPlaceholder": "請求日を選択",
+    "currency": "通貨",
+    "currencyPlaceholder": "通貨を選択",
+    "timezone": "タイムゾーン",
+    "timezonePlaceholder": "タイムゾーンを選択"
+  },
+  "messages": {
+    "updateSuccess": "設定が正常に更新されました",
+    "updateError": "設定の更新に失敗しました"
+  },
+  "validation": {
+    "required": "値は必須です",
+    "invalidInteger": "値は整数である必要があります",
+    "invalidDecimal": "値は小数である必要があります",
+    "invalidBoolean": "値はtrueまたはfalseである必要があります"
+  },
+  "overtime": {
+    "regularHours": "通常勤務時間",
+    "noOvertime": "今期の残業はありません",
+    "multiplier": "倍率",
+    "regularOvertimeRate": "通常残業倍率",
+    "nightWorkRate": "夜勤倍率",
+    "nightOvertimeRate": "夜間残業倍率",
+    "holidayOvertimeRate": "休日残業倍率",
+    "holidayNightOvertimeRate": "休日夜間残業倍率"
+  }
+}

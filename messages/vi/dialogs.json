@@ -1,0 +1,73 @@
+{
+  "confirmCancel": "Xác nhận hủy",
+  "confirmApprove": "Xác nhận duyệt",
+  "confirm": {
+    "title": "Xác nhận hành động",
+    "description": "Bạn có chắc chắn muốn tiếp tục?",
+    "confirm": "Xác nhận",
+    "cancel": "Hủy"
+  },
+  "delete": {
+    "title": "Xác nhận xóa",
+    "description": "Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.",
+    "confirm": "Xóa",
+    "cancel": "Hủy"
+  },
+  "unsavedChanges": {
+    "title": "Thay đổi chưa lưu",
+    "description": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn rời đi?",
+    "confirm": "Rời đi",
+    "cancel": "Ở lại"
+  },
+  "imageCrop": {
+    "title": "Cắt ảnh",
+    "description": "Điều chỉnh vùng cắt và zoom để cắt ảnh theo ý muốn",
+    "zoom": "Zoom",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "processing": "Đang xử lý..."
+  },
+  "confirmChanges": {
+    "title": "Xác nhận thay đổi",
+    "description": "Vui lòng kiểm tra lại các thay đổi trước khi lưu",
+    "oldValue": "Giá trị cũ",
+    "newValue": "Giá trị mới",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận lưu",
+    "saving": "Đang lưu...",
+    "groupBasic": "Thông tin cơ bản",
+    "groupEmergency": "Liên hệ khẩn cấp",
+    "groupBank": "Thông tin ngân hàng"
+  },
+  "rejectTitle": "Từ chối yêu cầu",
+  "rejectDescription": "Vui lòng nhập lý do từ chối",
+  "rejectReason": "Lý do từ chối",
+  "rejectReasonPlaceholder": "Nhập lý do từ chối...",
+  "rejectReasonRequired": "Vui lòng nhập lý do từ chối",
+  "reject": "Từ chối",
+  "approveTitle": "Xác nhận duyệt",
+  "approveDescription": "Bạn có chắc chắn muốn duyệt yêu cầu này?",
+  "swapApproveTitle": "Duyệt yêu cầu đổi ca",
+  "swapApproveDesc": "Bạn có chắc chắn muốn duyệt yêu cầu đổi ca này?",
+  "swapRejectTitle": "Từ chối yêu cầu đổi ca",
+  "swapRejectDesc": "Vui lòng nhập lý do từ chối",
+  "payrollSubmitTitle": "Gửi duyệt bảng lương",
+  "payrollSubmitDesc": "Bạn có chắc chắn muốn gửi bảng lương để duyệt?",
+  "payrollApproveTitle": "Duyệt bảng lương",
+  "payrollApproveDesc": "Sau khi duyệt, bạn sẽ không thể chỉnh sửa bảng lương",
+  "payrollPayTitle": "Đánh dấu đã trả lương",
+  "payrollPayDesc": "Xác nhận đã thanh toán lương cho kỳ này",
+  "contractTerminateTitle": "Chấm dứt hợp đồng",
+  "contractTerminateDesc": "Hành động này không thể hoàn tác. Vui lòng nhập lý do",
+  "deactivateAllowanceTitle": "Vô hiệu hóa phụ cấp",
+  "deactivateAllowanceDesc": "Bạn có chắc chắn muốn vô hiệu hóa phụ cấp này?",
+  "deactivateDeductionTitle": "Vô hiệu hóa khấu trừ",
+  "deactivateDeductionDesc": "Bạn có chắc chắn muốn vô hiệu hóa khấu trừ này?",
+  "salaryConfigChangeTitle": "Thay đổi cấu hình lương",
+  "salaryConfigChangeDesc": "Thay đổi này sẽ ảnh hưởng đến kỳ lương hiện tại",
+  "impactSummary": "Tóm tắt ảnh hưởng",
+  "actionSummary": "Tóm tắt hành động",
+  "reasonRequired": "Vui lòng nhập lý do",
+  "confirmAction": "Xác nhận hành động",
+  "cancelAction": "Hủy bỏ"
+}

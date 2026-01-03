@@ -1,0 +1,58 @@
+{
+  "title": "休憩時間",
+  "elapsedTime": "経過時間",
+  "remainingTime": "残り時間",
+  "overtimeBy": "超過",
+  "maxBreakMinutes": "最大{minutes}分",
+  "breakCount": "休憩 {current}/{max}",
+  "startBreak": "休憩開始",
+  "endBreak": "休憩終了",
+  "status": {
+    "onBreak": "休憩中",
+    "notOnBreak": "休憩なし"
+  },
+  "warnings": {
+    "exceededMax": "最大休憩時間を超過しました！"
+  },
+  "messages": {
+    "startBreakSuccess": "休憩を開始しました",
+    "endBreakSuccess": "休憩を終了しました",
+    "maxBreaksReached": "1日の休憩回数上限に達しました"
+  },
+  "history": {
+    "title": "休憩履歴",
+    "titleShort": "休憩",
+    "breakNumber": "休憩 {number}",
+    "startTime": "開始",
+    "endTime": "終了",
+    "duration": "時間",
+    "totalBreakTime": "合計休憩時間",
+    "effectiveBreakTime": "有効休憩時間",
+    "minimumRequired": "最低必要時間",
+    "maximumAllowed": "最大許容時間",
+    "progress": "進捗",
+    "appliedConfig": "適用設定",
+    "breakType": "休憩タイプ",
+    "defaultMinutes": "デフォルト",
+    "complianceTitle": "ステータス",
+    "complianceCompliant": "基準達成",
+    "complianceCompliantShort": "達成",
+    "complianceNonCompliant": "基準未達",
+    "complianceNonCompliantShort": "未達",
+    "noRecords": "休憩記録なし",
+    "inProgress": "休憩中",
+    "minutes": "分",
+    "requestAdjustment": "調整申請"
+  },
+  "adjustment": {
+    "title": "休憩時間調整申請",
+    "originalStart": "元の開始時間",
+    "originalEnd": "元の終了時間",
+    "requestedStart": "申請開始時間",
+    "requestedEnd": "申請終了時間",
+    "noChangeError": "少なくとも1つの時間を変更してください",
+    "invalidTimeRange": "終了時間は開始時間より後である必要があります",
+    "overlapError": "休憩{breakNumber}と時間が重複しています",
+    "submitSuccess": "休憩{breakNumber}の調整申請を送信しました"
+  }
+}

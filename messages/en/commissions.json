@@ -1,0 +1,110 @@
+{
+  "title": "Commission Management",
+  "description": "View and manage referral commissions",
+  "myCommissions": "My Commissions",
+  "myDescription": "View commissions from companies you referred",
+  "totalEarned": "Total Earned",
+  "pendingAmount": "Pending Amount",
+  "paidAmount": "Paid Amount",
+  "eligibleAmount": "Eligible Amount",
+  "totalCommission": "Total Commission",
+  "referredCompanies": "referred companies",
+  "employeeCode": "Employee Code",
+  "noCompanies": "No companies referred yet",
+  "referredCompanyList": "Referred Company List",
+  "table": {
+    "referredCompany": "Referred Company",
+    "referredBy": "Referred By",
+    "amount": "Amount",
+    "status": "Status",
+    "eligibleDate": "Eligible Date",
+    "paidDate": "Paid Date",
+    "createdAt": "Created At",
+    "company": "Company",
+    "commission": "Commission"
+  },
+  "tabs": {
+    "all": "All",
+    "pending": "Pending",
+    "eligible": "Eligible",
+    "paid": "Paid"
+  },
+  "actions": {
+    "markPaid": "Mark as Paid",
+    "viewDetails": "View Details"
+  },
+  "payDialog": {
+    "title": "Confirm Commission Payment",
+    "description": "Please review the information before confirming payment",
+    "employee": "Employee",
+    "commissionAmount": "Commission Amount",
+    "referredCompanyInfo": "Referred Company Information",
+    "companyName": "Company Name",
+    "billingAtCreation": "Billing at Creation",
+    "createdAt": "Commission Created At",
+    "notEligibleTitle": "Not Eligible for Payment",
+    "notEligibleDescription": "This commission is not yet eligible for payment. The company needs to reach the minimum billing threshold before the commission can be paid.",
+    "confirmPayment": "Confirm Payment"
+  },
+  "messages": {
+    "markPaidSuccess": "Commission marked as paid",
+    "markPaidError": "Failed to mark commission as paid",
+    "loadError": "Failed to load commission data",
+    "loadSummaryError": "Failed to load commission summary",
+    "loadTransactionsError": "Failed to load transaction history",
+    "loadCommissionsError": "Failed to load commissions",
+    "markPaidForbidden": "You do not have permission to mark as paid"
+  },
+  "companyDetail": {
+    "basicInfo": "Basic Information",
+    "owner": "Owner",
+    "industry": "Industry",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "zipcode": "Zipcode",
+    "region": "Region",
+    "billingInfo": "Billing Information",
+    "walletBalance": "Wallet Balance",
+    "plan": "Plan",
+    "lastBilling": "Last Billing",
+    "nextBilling": "Next Billing",
+    "freeTrial": "Free Trial",
+    "freeTrialActive": "Free Trial Active",
+    "until": "until",
+    "noWalletInfo": "No wallet information",
+    "referrer": "Referrer",
+    "employeeCode": "Employee Code",
+    "employeeName": "Employee Name",
+    "timestamps": "Timestamps",
+    "createdAt": "Created At",
+    "updatedAt": "Last Updated"
+  },
+  "summary": {
+    "byEmployee": "By Employee",
+    "byMonth": "By Month",
+    "employee": "Employee",
+    "month": "Month",
+    "count": "Count"
+  },
+  "filter": {
+    "searchEmployeeCode": "Search by employee code"
+  },
+  "viewTabs": {
+    "list": "List",
+    "summary": "Summary"
+  },
+  "detailDialog": {
+    "title": "Commission Details",
+    "employeeSection": "Commission Recipient",
+    "employeeName": "Employee Name",
+    "employeeCode": "Employee Code",
+    "companySection": "Referred Company",
+    "companyName": "Company Name",
+    "billingAtCreation": "Billing at Creation",
+    "commissionSection": "Commission Information",
+    "paymentSection": "Payment Information",
+    "paidBy": "Paid By",
+    "paidAt": "Paid At"
+  }
+}

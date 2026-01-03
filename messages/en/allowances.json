@@ -1,0 +1,23 @@
+{
+  "title": "Individual Allowances",
+  "description": "Manage employee allowances",
+  "create": "Add Allowance",
+  "edit": "Edit Allowance",
+  "noAllowances": "No allowances yet",
+  "allowanceType": "Allowance Type",
+  "allowanceTypePlaceholder": "Select allowance type...",
+  "amount": "Amount",
+  "amountPlaceholder": "Enter amount...",
+  "taxable": "Taxable",
+  "effectiveFrom": "Effective From",
+  "effectiveTo": "Effective To",
+  "isOverride": "Override Default",
+  "companyDefault": "Company Default",
+  "individualOverride": "Individual Override",
+  "createSuccess": "Allowance added successfully",
+  "updateSuccess": "Allowance updated successfully",
+  "deactivateSuccess": "Allowance deactivated successfully",
+  "createError": "Failed to add allowance",
+  "updateError": "Failed to update allowance",
+  "deactivateError": "Failed to deactivate allowance"
+}

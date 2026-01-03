@@ -1,0 +1,47 @@
+{
+  "title": "紹介した会社",
+  "description": "紹介した会社一覧とコミッション状況",
+  "searchPlaceholder": "会社名で検索...",
+  "noCompanies": "紹介した会社がまだありません",
+  "summary": {
+    "totalReferrals": "紹介した会社数",
+    "pendingAmount": "条件待ち",
+    "eligibleAmount": "支払い可能",
+    "paidAmount": "支払済み",
+    "commissions": "コミッション"
+  },
+  "table": {
+    "companyName": "会社名",
+    "plan": "プラン",
+    "status": "ステータス",
+    "balance": "残高",
+    "totalDeposits": "入金合計",
+    "totalBilling": "請求合計",
+    "commissionStatus": "コミッション状況"
+  },
+  "detail": {
+    "title": "会社詳細",
+    "companyInfo": "会社情報",
+    "companyName": "会社名",
+    "owner": "オーナー",
+    "plan": "プラン",
+    "status": "ステータス",
+    "financialInfo": "財務情報",
+    "currentBalance": "現在の残高",
+    "totalDeposits": "入金合計",
+    "totalBilling": "請求合計",
+    "commissionInfo": "コミッション情報",
+    "commissionAmount": "コミッション金額",
+    "commissionStatus": "ステータス",
+    "paidDate": "支払日",
+    "notPaid": "未払い"
+  },
+  "status": {
+    "active": "アクティブ",
+    "inactive": "非アクティブ"
+  },
+  "messages": {
+    "loadError": "紹介した会社の読み込みに失敗しました",
+    "summaryLoadError": "コミッション統計の読み込みに失敗しました"
+  }
+}

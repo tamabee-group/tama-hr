@@ -1,0 +1,156 @@
+{
+  "depositStatus": {
+    "PENDING": "Đang chờ",
+    "APPROVED": "Đã duyệt",
+    "REJECTED": "Đã từ chối"
+  },
+  "transactionType": {
+    "DEPOSIT": "Nạp tiền",
+    "BILLING": "Thanh toán",
+    "REFUND": "Hoàn tiền",
+    "COMMISSION": "Hoa hồng"
+  },
+  "userStatus": {
+    "ACTIVE": "Hoạt động",
+    "INACTIVE": "Không hoạt động",
+    "PENDING": "Đang chờ"
+  },
+  "userRole": {
+    "ADMIN_TAMABEE": "Quản trị viên Tamabee",
+    "MANAGER_TAMABEE": "Quản lý",
+    "EMPLOYEE_TAMABEE": "Nhân viên",
+    "ADMIN_COMPANY": "Quản trị viên Công ty",
+    "MANAGER_COMPANY": "Quản lý",
+    "EMPLOYEE_COMPANY": "Nhân viên"
+  },
+  "commissionStatus": {
+    "PENDING": "Đang chờ",
+    "ELIGIBLE": "Đủ điều kiện",
+    "PAID": "Đã thanh toán"
+  },
+  "gender": {
+    "MALE": "Nam",
+    "FEMALE": "Nữ",
+    "OTHER": "Khác"
+  },
+  "language": {
+    "vi": "Tiếng Việt",
+    "en": "English",
+    "ja": "日本語"
+  },
+  "locale": {
+    "vi": "Việt Nam",
+    "ja": "Nhật Bản"
+  },
+  "roundingInterval": {
+    "MINUTES_5": "5 phút",
+    "MINUTES_10": "10 phút",
+    "MINUTES_15": "15 phút",
+    "MINUTES_30": "30 phút",
+    "MINUTES_60": "60 phút"
+  },
+  "roundingDirection": {
+    "UP": "Làm tròn lên",
+    "DOWN": "Làm tròn xuống",
+    "NEAREST": "Làm tròn gần nhất"
+  },
+  "salaryType": {
+    "MONTHLY": "Lương tháng",
+    "DAILY": "Lương ngày",
+    "HOURLY": "Lương giờ",
+    "SHIFT_BASED": "Lương theo ca"
+  },
+  "attendanceStatus": {
+    "PRESENT": "Có mặt",
+    "ABSENT": "Vắng mặt",
+    "LEAVE": "Nghỉ phép",
+    "HOLIDAY": "Ngày lễ"
+  },
+  "payrollStatus": {
+    "DRAFT": "Nháp",
+    "FINALIZED": "Đã chốt",
+    "PAID": "Đã thanh toán"
+  },
+  "paymentStatus": {
+    "PENDING": "Chờ thanh toán",
+    "PAID": "Đã thanh toán",
+    "FAILED": "Thất bại"
+  },
+  "adjustmentStatus": {
+    "PENDING": "Đang chờ",
+    "APPROVED": "Đã duyệt",
+    "REJECTED": "Đã từ chối"
+  },
+  "selectionStatus": {
+    "PENDING": "Đang chờ",
+    "APPROVED": "Đã duyệt",
+    "REJECTED": "Đã từ chối"
+  },
+  "scheduleType": {
+    "FIXED": "Cố định",
+    "FLEXIBLE": "Linh hoạt",
+    "SHIFT": "Ca làm việc"
+  },
+  "allowanceType": {
+    "FIXED": "Cố định",
+    "CONDITIONAL": "Có điều kiện",
+    "ONE_TIME": "Một lần"
+  },
+  "deductionType": {
+    "FIXED": "Cố định",
+    "PERCENTAGE": "Phần trăm"
+  },
+  "leaveType": {
+    "ANNUAL": "Nghỉ phép năm",
+    "SICK": "Nghỉ ốm",
+    "MATERNITY": "Nghỉ thai sản",
+    "PATERNITY": "Nghỉ chăm con",
+    "BEREAVEMENT": "Nghỉ tang",
+    "UNPAID": "Nghỉ không lương",
+    "OTHER": "Khác"
+  },
+  "leaveStatus": {
+    "PENDING": "Đang chờ",
+    "APPROVED": "Đã duyệt",
+    "REJECTED": "Đã từ chối",
+    "CANCELLED": "Đã hủy"
+  },
+  "breakType": {
+    "label": "Loại giờ nghỉ",
+    "PAID": "Có lương",
+    "UNPAID": "Không lương"
+  },
+  "shiftAssignmentStatus": {
+    "SCHEDULED": "Đã lên lịch",
+    "COMPLETED": "Hoàn thành",
+    "SWAPPED": "Đã đổi ca",
+    "CANCELLED": "Đã hủy"
+  },
+  "swapRequestStatus": {
+    "PENDING": "Đang chờ",
+    "APPROVED": "Đã duyệt",
+    "REJECTED": "Đã từ chối"
+  },
+  "payrollPeriodStatus": {
+    "DRAFT": "Nháp",
+    "REVIEWING": "Đang duyệt",
+    "APPROVED": "Đã duyệt",
+    "PAID": "Đã trả lương"
+  },
+  "payrollItemStatus": {
+    "CALCULATED": "Đã tính",
+    "ADJUSTED": "Đã điều chỉnh",
+    "CONFIRMED": "Đã xác nhận"
+  },
+  "contractType": {
+    "FULL_TIME": "Toàn thời gian",
+    "PART_TIME": "Bán thời gian",
+    "SEASONAL": "Thời vụ",
+    "CONTRACT": "Hợp đồng"
+  },
+  "contractStatus": {
+    "ACTIVE": "Đang hiệu lực",
+    "EXPIRED": "Hết hạn",
+    "TERMINATED": "Đã chấm dứt"
+  }
+}

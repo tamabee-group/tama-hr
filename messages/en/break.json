@@ -1,0 +1,58 @@
+{
+  "title": "Break Time",
+  "elapsedTime": "Elapsed Time",
+  "remainingTime": "Remaining Time",
+  "overtimeBy": "Overtime by",
+  "maxBreakMinutes": "Max {minutes} minutes",
+  "breakCount": "Break {current}/{max}",
+  "startBreak": "Start Break",
+  "endBreak": "End Break",
+  "status": {
+    "onBreak": "On Break",
+    "notOnBreak": "Not on Break"
+  },
+  "warnings": {
+    "exceededMax": "Exceeded maximum break time!"
+  },
+  "messages": {
+    "startBreakSuccess": "Break started successfully",
+    "endBreakSuccess": "Break ended successfully",
+    "maxBreaksReached": "Maximum breaks per day reached"
+  },
+  "history": {
+    "title": "Break History",
+    "titleShort": "Breaks",
+    "breakNumber": "Break {number}",
+    "startTime": "Start",
+    "endTime": "End",
+    "duration": "Duration",
+    "totalBreakTime": "Total Break Time",
+    "effectiveBreakTime": "Effective Break Time",
+    "minimumRequired": "Minimum Required",
+    "maximumAllowed": "Maximum Allowed",
+    "progress": "Progress",
+    "appliedConfig": "Applied Configuration",
+    "breakType": "Break Type",
+    "defaultMinutes": "Default",
+    "complianceTitle": "Status",
+    "complianceCompliant": "Compliant",
+    "complianceCompliantShort": "OK",
+    "complianceNonCompliant": "Non-compliant",
+    "complianceNonCompliantShort": "Not OK",
+    "noRecords": "No break records",
+    "inProgress": "In Progress",
+    "minutes": "minutes",
+    "requestAdjustment": "Request Adjustment"
+  },
+  "adjustment": {
+    "title": "Break Time Adjustment Request",
+    "originalStart": "Original Start Time",
+    "originalEnd": "Original End Time",
+    "requestedStart": "Requested Start Time",
+    "requestedEnd": "Requested End Time",
+    "noChangeError": "Please change at least one time",
+    "invalidTimeRange": "End time must be after start time",
+    "overlapError": "Time overlaps with break {breakNumber}",
+    "submitSuccess": "Adjustment request for break {breakNumber} submitted"
+  }
+}

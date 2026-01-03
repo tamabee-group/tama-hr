@@ -1,0 +1,156 @@
+{
+  "depositStatus": {
+    "PENDING": "保留中",
+    "APPROVED": "承認済み",
+    "REJECTED": "却下"
+  },
+  "transactionType": {
+    "DEPOSIT": "入金",
+    "BILLING": "請求",
+    "REFUND": "返金",
+    "COMMISSION": "コミッション"
+  },
+  "userStatus": {
+    "ACTIVE": "有効",
+    "INACTIVE": "無効",
+    "PENDING": "保留中"
+  },
+  "userRole": {
+    "ADMIN_TAMABEE": "Tamabee管理者",
+    "MANAGER_TAMABEE": "Tamabeeマネージャー",
+    "EMPLOYEE_TAMABEE": "Tamabee従業員",
+    "ADMIN_COMPANY": "会社管理者",
+    "MANAGER_COMPANY": "マネージャー",
+    "EMPLOYEE_COMPANY": "従業員"
+  },
+  "commissionStatus": {
+    "PENDING": "保留中",
+    "ELIGIBLE": "支払い可能",
+    "PAID": "支払済み"
+  },
+  "gender": {
+    "MALE": "男性",
+    "FEMALE": "女性",
+    "OTHER": "その他"
+  },
+  "language": {
+    "vi": "ベトナム語",
+    "en": "英語",
+    "ja": "日本語"
+  },
+  "locale": {
+    "vi": "ベトナム",
+    "ja": "日本"
+  },
+  "roundingInterval": {
+    "MINUTES_5": "5分",
+    "MINUTES_10": "10分",
+    "MINUTES_15": "15分",
+    "MINUTES_30": "30分",
+    "MINUTES_60": "60分"
+  },
+  "roundingDirection": {
+    "UP": "切り上げ",
+    "DOWN": "切り捨て",
+    "NEAREST": "四捨五入"
+  },
+  "salaryType": {
+    "MONTHLY": "月給",
+    "DAILY": "日給",
+    "HOURLY": "時給",
+    "SHIFT_BASED": "シフト給"
+  },
+  "attendanceStatus": {
+    "PRESENT": "出勤",
+    "ABSENT": "欠勤",
+    "LEAVE": "休暇",
+    "HOLIDAY": "休日"
+  },
+  "payrollStatus": {
+    "DRAFT": "下書き",
+    "FINALIZED": "確定",
+    "PAID": "支払済み"
+  },
+  "paymentStatus": {
+    "PENDING": "保留中",
+    "PAID": "支払済み",
+    "FAILED": "失敗"
+  },
+  "adjustmentStatus": {
+    "PENDING": "保留中",
+    "APPROVED": "承認済み",
+    "REJECTED": "却下"
+  },
+  "selectionStatus": {
+    "PENDING": "保留中",
+    "APPROVED": "承認済み",
+    "REJECTED": "却下"
+  },
+  "scheduleType": {
+    "FIXED": "固定",
+    "FLEXIBLE": "フレックス",
+    "SHIFT": "シフト"
+  },
+  "allowanceType": {
+    "FIXED": "固定",
+    "CONDITIONAL": "条件付き",
+    "ONE_TIME": "一時"
+  },
+  "deductionType": {
+    "FIXED": "固定",
+    "PERCENTAGE": "割合"
+  },
+  "leaveType": {
+    "ANNUAL": "年次有給休暇",
+    "SICK": "病気休暇",
+    "MATERNITY": "産休",
+    "PATERNITY": "育休",
+    "BEREAVEMENT": "忌引休暇",
+    "UNPAID": "無給休暇",
+    "OTHER": "その他"
+  },
+  "leaveStatus": {
+    "PENDING": "保留中",
+    "APPROVED": "承認済み",
+    "REJECTED": "却下",
+    "CANCELLED": "キャンセル"
+  },
+  "breakType": {
+    "label": "休憩タイプ",
+    "PAID": "有給",
+    "UNPAID": "無給"
+  },
+  "shiftAssignmentStatus": {
+    "SCHEDULED": "予定",
+    "COMPLETED": "完了",
+    "SWAPPED": "交換済み",
+    "CANCELLED": "キャンセル"
+  },
+  "swapRequestStatus": {
+    "PENDING": "保留中",
+    "APPROVED": "承認済み",
+    "REJECTED": "却下"
+  },
+  "payrollPeriodStatus": {
+    "DRAFT": "下書き",
+    "REVIEWING": "承認中",
+    "APPROVED": "承認済み",
+    "PAID": "支払済み"
+  },
+  "payrollItemStatus": {
+    "CALCULATED": "計算済み",
+    "ADJUSTED": "調整済み",
+    "CONFIRMED": "確認済み"
+  },
+  "contractType": {
+    "FULL_TIME": "正社員",
+    "PART_TIME": "パートタイム",
+    "SEASONAL": "季節雇用",
+    "CONTRACT": "契約社員"
+  },
+  "contractStatus": {
+    "ACTIVE": "有効",
+    "EXPIRED": "期限切れ",
+    "TERMINATED": "終了"
+  }
+}

@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import viMessages from "../../../messages/vi.json";
-import enMessages from "../../../messages/en.json";
-import jaMessages from "../../../messages/ja.json";
+import * as fs from "fs";
+import * as path from "path";
 import {
   DEPOSIT_STATUSES,
   TRANSACTION_TYPES,
@@ -30,6 +29,38 @@ import {
 } from "@/types/attendance-enums";
 
 type MessageObject = Record<string, unknown>;
+
+/**
+ * Load và merge tất cả namespace files cho một locale
+ */
+function loadMessagesForLocale(locale: string): MessageObject {
+  const messagesDir = path.join(process.cwd(), "messages", locale);
+  const messages: MessageObject = {};
+
+  if (!fs.existsSync(messagesDir)) {
+    // Fallback to single file nếu chưa migrate
+    const singleFile = path.join(process.cwd(), "messages", `${locale}.json`);
+    if (fs.existsSync(singleFile)) {
+      return JSON.parse(fs.readFileSync(singleFile, "utf-8"));
+    }
+    return {};
+  }
+
+  const files = fs.readdirSync(messagesDir).filter((f) => f.endsWith(".json"));
+  for (const file of files) {
+    const namespace = file.replace(".json", "");
+    const filePath = path.join(messagesDir, file);
+    const content = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    messages[namespace] = content;
+  }
+
+  return messages;
+}
+
+// Load messages từ namespace-based structure
+const viMessages = loadMessagesForLocale("vi");
+const enMessages = loadMessagesForLocale("en");
+const jaMessages = loadMessagesForLocale("ja");
 
 /**
  * Lấy tất cả key paths và depth của chúng từ một object

@@ -1,0 +1,66 @@
+{
+  "title": "Deposit Requests",
+  "description": "View and process deposit requests from companies",
+  "createRequest": "Create Deposit Request",
+  "editRequest": "Edit Deposit Request",
+  "table": {
+    "companyName": "Company",
+    "amount": "Amount",
+    "transferProof": "Image",
+    "status": "Status",
+    "requestedBy": "Requested By",
+    "requesterName": "Requester Name",
+    "requesterEmail": "Requester Email",
+    "employeeCode": "Employee Code",
+    "createdAt": "Created At",
+    "processedAt": "Processed At",
+    "processedBy": "Processed By",
+    "approvedBy": "Approved By",
+    "rejectionReason": "Rejection Reason"
+  },
+  "tabs": {
+    "all": "All",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "actions": {
+    "viewDetail": "View Detail",
+    "approve": "Approve",
+    "reject": "Reject",
+    "viewProof": "View Transfer Proof",
+    "download": "Download",
+    "approving": "Approving..."
+  },
+  "dialog": {
+    "detailTitle": "Deposit Request Detail",
+    "detailDescription": "View details and process request",
+    "approveTitle": "Approve Deposit",
+    "approveDescription": "Are you sure you want to approve this deposit request?",
+    "rejectTitle": "Reject Deposit",
+    "rejectDescription": "Please provide a reason for rejection",
+    "rejectReason": "Rejection Reason",
+    "rejectReasonPlaceholder": "Enter reason for rejection",
+    "rejecting": "Processing..."
+  },
+  "messages": {
+    "approveSuccess": "Deposit approved successfully",
+    "rejectSuccess": "Deposit rejected successfully",
+    "approveError": "Failed to approve deposit",
+    "rejectError": "Failed to reject deposit",
+    "createSuccess": "Deposit request created successfully",
+    "createError": "Failed to create deposit request",
+    "updateSuccess": "Deposit request updated successfully",
+    "updateError": "Failed to update deposit request",
+    "cancelSuccess": "Deposit request cancelled successfully",
+    "cancelError": "Failed to cancel deposit request",
+    "cancelConfirm": "Are you sure you want to cancel this deposit request?",
+    "required": "Please enter rejection reason"
+  },
+  "form": {
+    "amount": "Deposit Amount",
+    "amountPlaceholder": "Enter deposit amount",
+    "transferProof": "Transfer Proof",
+    "transferProofHint": "Upload a screenshot of your bank transfer"
+  }
+}

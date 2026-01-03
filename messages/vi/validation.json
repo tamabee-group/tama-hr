@@ -1,0 +1,18 @@
+{
+  "required": "Trường này là bắt buộc.",
+  "email": "Vui lòng nhập địa chỉ email hợp lệ.",
+  "minLength": "Phải có ít nhất {min} ký tự.",
+  "maxLength": "Không được vượt quá {max} ký tự.",
+  "min": "Phải ít nhất là {min}.",
+  "max": "Không được vượt quá {max}.",
+  "passwordMismatch": "Mật khẩu không khớp.",
+  "invalidPhone": "Vui lòng nhập số điện thoại hợp lệ.",
+  "invalidZipcode": "Vui lòng nhập mã bưu điện hợp lệ.",
+  "invalidUrl": "Vui lòng nhập URL hợp lệ.",
+  "invalidNumber": "Vui lòng nhập số hợp lệ.",
+  "positiveNumber": "Phải là số dương.",
+  "integer": "Phải là số nguyên.",
+  "pattern": "Định dạng không hợp lệ.",
+  "genderRequired": "Vui lòng chọn giới tính.",
+  "roleRequired": "Vui lòng chọn vai trò."
+}

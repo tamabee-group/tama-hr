@@ -1,0 +1,41 @@
+// Danh sách namespaces được hỗ trợ trong hệ thống i18n
+// Mỗi namespace tương ứng với một file JSON trong messages/{locale}/
+
+export const NAMESPACES = [
+  "allowances",
+  "attendance",
+  "auth",
+  "breadcrumb",
+  "break",
+  "commissions",
+  "common",
+  "companies",
+  "companySettings",
+  "contracts",
+  "deductions",
+  "deposits",
+  "dialogs",
+  "enums",
+  "errors",
+  "header",
+  "holidays",
+  "imageUpload",
+  "landing",
+  "leave",
+  "notifications",
+  "payroll",
+  "plans",
+  "referrals",
+  "reports",
+  "salaryConfig",
+  "schedules",
+  "settings",
+  "shifts",
+  "sidebar",
+  "support",
+  "users",
+  "validation",
+  "wallet",
+] as const;
+
+export type Namespace = (typeof NAMESPACES)[number];

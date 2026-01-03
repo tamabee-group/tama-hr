@@ -1,0 +1,16 @@
+{
+  "admin": "管理者",
+  "users": "人事",
+  "detail": "詳細",
+  "companyAdmin": "会社管理",
+  "employees": "従業員",
+  "registerNew": "新規登録",
+  "companyManagement": "会社管理",
+  "depositRequests": "入金リクエスト",
+  "plans": "プラン",
+  "dashboard": "ダッシュボード",
+  "addNew": "新規追加",
+  "wallet": "ウォレット",
+  "companyInfo": "会社情報",
+  "settings": "設定"
+}

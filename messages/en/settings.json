@@ -1,0 +1,55 @@
+{
+  "title": "System Settings",
+  "description": "Manage system configuration parameters",
+  "general": "General Settings",
+  "billing": "Billing Settings",
+  "notifications": "Notification Settings",
+  "security": "Security Settings",
+  "noSettings": "No settings yet",
+  "viewOnly": "You have view-only access",
+  "table": {
+    "settingKey": "Setting Key",
+    "settingValue": "Value",
+    "valueType": "Type",
+    "description": "Description",
+    "updatedAt": "Updated At",
+    "actions": "Actions"
+  },
+  "form": {
+    "title": "Edit Setting",
+    "description": "Update the value for system setting",
+    "settingKey": "Setting Key",
+    "settingValue": "Value",
+    "valueType": "Value Type",
+    "siteName": "Site Name",
+    "siteNamePlaceholder": "Enter site name",
+    "supportEmail": "Support Email",
+    "supportEmailPlaceholder": "Enter support email",
+    "billingDay": "Billing Day",
+    "billingDayPlaceholder": "Select billing day",
+    "currency": "Currency",
+    "currencyPlaceholder": "Select currency",
+    "timezone": "Timezone",
+    "timezonePlaceholder": "Select timezone"
+  },
+  "messages": {
+    "updateSuccess": "Setting updated successfully",
+    "updateError": "Failed to update setting"
+  },
+  "validation": {
+    "required": "Value is required",
+    "invalidInteger": "Value must be an integer",
+    "invalidDecimal": "Value must be a decimal number",
+    "invalidBoolean": "Value must be true or false"
+  },
+  "overtime": {
+    "regularHours": "Regular Working Hours",
+    "noOvertime": "No overtime this period",
+    "multiplier": "multiplier",
+    "regularOvertimeRate": "Regular Overtime Rate",
+    "nightWorkRate": "Night Work Rate",
+    "nightOvertimeRate": "Night Overtime Rate",
+    "holidayOvertimeRate": "Holiday Overtime Rate",
+    "holidayNightOvertimeRate": "Holiday Night Overtime Rate"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "title": "Referred Companies",
+  "description": "List of companies you referred and commission status",
+  "searchPlaceholder": "Search by company name...",
+  "noCompanies": "You haven't referred any companies yet",
+  "summary": {
+    "totalReferrals": "Total Referred Companies",
+    "pendingAmount": "Pending Eligibility",
+    "eligibleAmount": "Eligible",
+    "paidAmount": "Paid",
+    "commissions": "commissions"
+  },
+  "table": {
+    "companyName": "Company Name",
+    "plan": "Plan",
+    "status": "Status",
+    "balance": "Balance",
+    "totalDeposits": "Total Deposits",
+    "totalBilling": "Total Billing",
+    "commissionStatus": "Commission Status"
+  },
+  "detail": {
+    "title": "Company Details",
+    "companyInfo": "Company Information",
+    "companyName": "Company Name",
+    "owner": "Owner",
+    "plan": "Plan",
+    "status": "Status",
+    "financialInfo": "Financial Information",
+    "currentBalance": "Current Balance",
+    "totalDeposits": "Total Deposits",
+    "totalBilling": "Total Billing",
+    "commissionInfo": "Commission Information",
+    "commissionAmount": "Commission Amount",
+    "commissionStatus": "Status",
+    "paidDate": "Paid Date",
+    "notPaid": "Not paid yet"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "messages": {
+    "loadError": "Failed to load referred companies",
+    "summaryLoadError": "Failed to load commission summary"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "title": "Gói dịch vụ",
+  "description": "Quản lý các gói dịch vụ cho công ty",
+  "createPlan": "Tạo gói dịch vụ",
+  "editPlan": "Sửa gói dịch vụ",
+  "deletePlan": "Xóa gói dịch vụ",
+  "addPlan": "Thêm gói",
+  "refresh": "Làm mới",
+  "noPlans": "Chưa có gói dịch vụ nào",
+  "table": {
+    "name": "Tên gói",
+    "price": "Giá",
+    "billingCycle": "Chu kỳ thanh toán",
+    "maxEmployees": "Số nhân viên tối đa",
+    "features": "Tính năng",
+    "status": "Trạng thái",
+    "companiesCount": "Số công ty"
+  },
+  "form": {
+    "name": "Tên gói dịch vụ",
+    "namePlaceholder": "Nhập tên gói dịch vụ",
+    "price": "Giá hàng tháng",
+    "pricePlaceholder": "Nhập giá hàng tháng",
+    "maxEmployees": "Số nhân viên tối đa",
+    "maxEmployeesPlaceholder": "Nhập số nhân viên tối đa",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Nhập mô tả gói dịch vụ",
+    "features": "Tính năng",
+    "featuresPlaceholder": "Nhập các tính năng (mỗi dòng một tính năng)",
+    "isActive": "Đang hoạt động",
+    "vietnamese": "Tiếng Việt",
+    "english": "Tiếng Anh",
+    "japanese": "Tiếng Nhật",
+    "saving": "Đang lưu..."
+  },
+  "card": {
+    "perMonth": "/tháng",
+    "maxEmployees": "Tối đa nhân viên",
+    "active": "Đang hoạt động",
+    "inactive": "Không hoạt động",
+    "select": "Chọn gói này"
+  },
+  "feature": {
+    "addFeature": "Thêm tính năng",
+    "featureVi": "Tiếng Việt",
+    "featureEn": "Tiếng Anh",
+    "featureJa": "Tiếng Nhật",
+    "highlighted": "Nổi bật",
+    "remove": "Xóa",
+    "moveUp": "Di chuyển lên",
+    "moveDown": "Di chuyển xuống",
+    "noFeatures": "Chưa có tính năng nào",
+    "featurePlaceholder": "Nhập tính năng..."
+  },
+  "messages": {
+    "createSuccess": "Tạo gói dịch vụ thành công",
+    "updateSuccess": "Cập nhật gói dịch vụ thành công",
+    "deleteSuccess": "Xóa gói dịch vụ thành công",
+    "createError": "Không thể tạo gói dịch vụ",
+    "updateError": "Không thể cập nhật gói dịch vụ",
+    "deleteError": "Không thể xóa gói dịch vụ",
+    "planInUse": "Gói dịch vụ đang được sử dụng, không thể xóa"
+  },
+  "dialog": {
+    "deleteTitle": "Xóa gói dịch vụ",
+    "deleteDescription": "Bạn có chắc chắn muốn xóa gói dịch vụ này? Hành động này không thể hoàn tác."
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "invalidPrice": "Giá phải lớn hơn hoặc bằng 0",
+    "invalidMaxEmployees": "Số nhân viên phải lớn hơn 0"
+  }
+}

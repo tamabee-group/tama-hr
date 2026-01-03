@@ -1,0 +1,11 @@
+{
+  "processing": "Processing image...",
+  "dropHere": "Drop image here",
+  "dragOrClick": "Drag and drop or click to select",
+  "maxSize": "Max {maxSize}MB",
+  "invalidFormat": "Invalid file format. Only accepted: {formats}",
+  "invalidFile": "Invalid file",
+  "fileTooLarge": "File exceeds {maxSize}MB. Please select a smaller file.",
+  "fileTooLargeGeneric": "File too large",
+  "processError": "Failed to process file. Please try again."
+}

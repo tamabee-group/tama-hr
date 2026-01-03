@@ -1,0 +1,51 @@
+{
+  "groups": {
+    "overview": "Overview",
+    "management": "Management",
+    "finance": "Finance",
+    "system": "System",
+    "work": "Work",
+    "attendance": "Attendance",
+    "hr": "HR",
+    "attendancePayroll": "Attendance & Payroll"
+  },
+  "items": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "employees": "Employees",
+    "addEmployee": "Add Employee",
+    "customers": "Customers",
+    "plans": "Subscription Plans",
+    "wallets": "Wallets",
+    "deposits": "Deposits",
+    "commissions": "Commissions",
+    "settings": "Settings",
+    "company": "Company",
+    "companyInfo": "Company Info",
+    "support": "Support",
+    "myCommissions": "My Commissions",
+    "referrals": "Referred Companies",
+    "attendance": "Attendance",
+    "attendanceRecords": "Attendance Records",
+    "adjustments": "Adjustments",
+    "schedules": "Work Schedules",
+    "payroll": "Payroll",
+    "payrollRecords": "Payroll Records",
+    "holidays": "Holidays",
+    "leaveRequests": "Leave Requests",
+    "leave": "Leave",
+    "reports": "Reports",
+    "myAttendance": "My Attendance",
+    "mySchedule": "My Schedule",
+    "myPayroll": "My Payroll",
+    "myLeave": "My Leave",
+    "shifts": "Shift Management",
+    "contracts": "Contracts"
+  },
+  "workModeIndicator": {
+    "fixedHours": "Fixed Hours",
+    "flexibleShift": "Flexible/Shift",
+    "tooltip": "Current work mode of the company"
+  }
+}

@@ -77,39 +77,39 @@ interface TabExplanation {
 
 const TAB_EXPLANATIONS: Record<TabKey, TabExplanation> = {
   workMode: {
-    titleKey: "explanations.workMode.title",
-    descKey: "explanations.workMode.desc",
+    titleKey: "explanations.workModeTitle",
+    descKey: "explanations.workModeDesc",
     tipsKeys: [
-      "explanations.workMode.tip1",
-      "explanations.workMode.tip2",
-      "explanations.workMode.tip3",
+      "explanations.workModeTip1",
+      "explanations.workModeTip2",
+      "explanations.workModeTip3",
     ],
   },
   attendance: {
-    titleKey: "explanations.attendance.title",
-    descKey: "explanations.attendance.desc",
-    tipsKeys: ["explanations.attendance.tip1", "explanations.attendance.tip2"],
-    workModeNoteKey: "explanations.attendance.workModeNote",
+    titleKey: "explanations.attendanceTitle",
+    descKey: "explanations.attendanceDesc",
+    tipsKeys: ["explanations.attendanceTip1", "explanations.attendanceTip2"],
+    workModeNoteKey: "explanations.attendanceWorkModeNote",
   },
   payroll: {
-    titleKey: "explanations.payroll.title",
-    descKey: "explanations.payroll.desc",
-    tipsKeys: ["explanations.payroll.tip1", "explanations.payroll.tip2"],
+    titleKey: "explanations.payrollTitle",
+    descKey: "explanations.payrollDesc",
+    tipsKeys: ["explanations.payrollTip1", "explanations.payrollTip2"],
   },
   overtime: {
-    titleKey: "explanations.overtime.title",
-    descKey: "explanations.overtime.desc",
-    tipsKeys: ["explanations.overtime.tip1", "explanations.overtime.tip2"],
+    titleKey: "explanations.overtimeTitle",
+    descKey: "explanations.overtimeDesc",
+    tipsKeys: ["explanations.overtimeTip1", "explanations.overtimeTip2"],
   },
   allowance: {
-    titleKey: "explanations.allowance.title",
-    descKey: "explanations.allowance.desc",
-    tipsKeys: ["explanations.allowance.tip1"],
+    titleKey: "explanations.allowanceTitle",
+    descKey: "explanations.allowanceDesc",
+    tipsKeys: ["explanations.allowanceTip1"],
   },
   deduction: {
-    titleKey: "explanations.deduction.title",
-    descKey: "explanations.deduction.desc",
-    tipsKeys: ["explanations.deduction.tip1"],
+    titleKey: "explanations.deductionTitle",
+    descKey: "explanations.deductionDesc",
+    tipsKeys: ["explanations.deductionTip1"],
   },
 };
 

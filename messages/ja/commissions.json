@@ -1,0 +1,110 @@
+{
+  "title": "コミッション管理",
+  "description": "Tamabee従業員の紹介コミッションを表示・管理",
+  "myCommissions": "マイコミッション",
+  "myDescription": "紹介した会社からのコミッションを表示",
+  "totalEarned": "総獲得額",
+  "pendingAmount": "条件待ち",
+  "paidAmount": "支払済み",
+  "eligibleAmount": "支払い待ち",
+  "totalCommission": "総コミッション",
+  "referredCompanies": "紹介した会社",
+  "employeeCode": "社員コード",
+  "noCompanies": "紹介した会社がまだありません",
+  "referredCompanyList": "紹介した会社一覧",
+  "table": {
+    "referredCompany": "紹介した会社",
+    "referredBy": "紹介者",
+    "amount": "金額",
+    "status": "ステータス",
+    "eligibleDate": "支払い可能日",
+    "paidDate": "支払日",
+    "createdAt": "作成日",
+    "company": "会社",
+    "commission": "コミッション"
+  },
+  "tabs": {
+    "all": "すべて",
+    "pending": "保留中",
+    "eligible": "支払い可能",
+    "paid": "支払済み"
+  },
+  "actions": {
+    "markPaid": "支払済みにする",
+    "viewDetails": "詳細を表示"
+  },
+  "payDialog": {
+    "title": "コミッション支払いの確認",
+    "description": "支払いを確認する前に情報をご確認ください",
+    "employee": "従業員",
+    "commissionAmount": "コミッション金額",
+    "referredCompanyInfo": "紹介された会社の情報",
+    "companyName": "会社名",
+    "billingAtCreation": "作成時の請求額",
+    "createdAt": "コミッション作成日",
+    "notEligibleTitle": "支払い条件を満たしていません",
+    "notEligibleDescription": "このコミッションはまだ支払い条件を満たしていません。会社が最低請求額に達する必要があります。",
+    "confirmPayment": "支払いを確認"
+  },
+  "messages": {
+    "markPaidSuccess": "コミッションを支払済みにしました",
+    "markPaidError": "コミッションの支払済み処理に失敗しました",
+    "loadError": "コミッションデータの読み込みに失敗しました",
+    "loadSummaryError": "コミッション統計の読み込みに失敗しました",
+    "loadTransactionsError": "取引履歴の読み込みに失敗しました",
+    "loadCommissionsError": "コミッション一覧の読み込みに失敗しました",
+    "markPaidForbidden": "支払済みにする権限がありません"
+  },
+  "companyDetail": {
+    "basicInfo": "基本情報",
+    "owner": "オーナー",
+    "industry": "業種",
+    "email": "メール",
+    "phone": "電話番号",
+    "address": "住所",
+    "zipcode": "郵便番号",
+    "region": "地域",
+    "billingInfo": "請求情報",
+    "walletBalance": "ウォレット残高",
+    "plan": "プラン",
+    "lastBilling": "前回の請求",
+    "nextBilling": "次回の請求",
+    "freeTrial": "無料トライアル",
+    "freeTrialActive": "トライアル中",
+    "until": "まで",
+    "noWalletInfo": "ウォレット情報がありません",
+    "referrer": "紹介者",
+    "employeeCode": "社員コード",
+    "employeeName": "社員名",
+    "timestamps": "タイムスタンプ",
+    "createdAt": "作成日",
+    "updatedAt": "最終更新"
+  },
+  "summary": {
+    "byEmployee": "従業員別",
+    "byMonth": "月別",
+    "employee": "従業員",
+    "month": "月",
+    "count": "件数"
+  },
+  "filter": {
+    "searchEmployeeCode": "社員コードで検索"
+  },
+  "viewTabs": {
+    "list": "一覧",
+    "summary": "集計"
+  },
+  "detailDialog": {
+    "title": "コミッション詳細",
+    "employeeSection": "コミッション受取者",
+    "employeeName": "従業員名",
+    "employeeCode": "社員コード",
+    "companySection": "紹介された会社",
+    "companyName": "会社名",
+    "billingAtCreation": "作成時の請求額",
+    "commissionSection": "コミッション情報",
+    "paymentSection": "支払い情報",
+    "paidBy": "支払者",
+    "paidAt": "支払日"
+  }
+}

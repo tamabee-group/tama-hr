@@ -1,0 +1,71 @@
+{
+  "title": "Quản lý công ty",
+  "description": "Quản lý các công ty đã đăng ký",
+  "createCompany": "Tạo công ty",
+  "editCompany": "Sửa công ty",
+  "viewCompany": "Xem công ty",
+  "customerDetail": "Chi tiết khách hàng",
+  "companyInfo": "Thông tin công ty",
+  "companyWallet": "Ví công ty",
+  "employees": "Nhân viên",
+  "featureUpdating": "Chức năng đang cập nhật",
+  "table": {
+    "name": "Tên công ty",
+    "email": "Email",
+    "phone": "Điện thoại",
+    "plan": "Gói dịch vụ",
+    "employees": "Nhân viên",
+    "walletBalance": "Số dư ví",
+    "status": "Trạng thái",
+    "createdAt": "Ngày đăng ký",
+    "updatedAt": "Ngày cập nhật"
+  },
+  "form": {
+    "name": "Tên công ty",
+    "namePlaceholder": "Nhập tên công ty",
+    "ownerName": "Người đại diện",
+    "ownerNamePlaceholder": "Nhập tên người đại diện",
+    "email": "Email",
+    "emailPlaceholder": "Nhập email công ty",
+    "phone": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại",
+    "address": "Địa chỉ",
+    "addressPlaceholder": "Nhập địa chỉ công ty",
+    "plan": "Gói dịch vụ",
+    "planPlaceholder": "Chọn gói dịch vụ",
+    "referralCode": "Mã giới thiệu",
+    "referralCodePlaceholder": "Nhập mã giới thiệu (không bắt buộc)",
+    "referredBy": "Nhân viên tư vấn",
+    "industry": "Ngành nghề",
+    "industryPlaceholder": "Chọn ngành nghề",
+    "locale": "Khu vực",
+    "localePlaceholder": "Chọn khu vực",
+    "language": "Ngôn ngữ",
+    "languagePlaceholder": "Chọn ngôn ngữ",
+    "zipcode": "Mã bưu điện",
+    "zipcodePlaceholder": "Nhập mã bưu điện",
+    "autoFillAddress": "Đang tự nhập địa chỉ...",
+    "logo": "Logo"
+  },
+  "messages": {
+    "createSuccess": "Tạo công ty thành công",
+    "updateSuccess": "Cập nhật công ty thành công",
+    "deleteSuccess": "Xóa công ty thành công",
+    "createError": "Không thể tạo công ty",
+    "updateError": "Không thể cập nhật công ty",
+    "deleteError": "Không thể xóa công ty",
+    "saving": "Đang lưu..."
+  },
+  "tabs": {
+    "info": "Thông tin",
+    "employees": "Nhân viên",
+    "wallet": "Ví tiền",
+    "transactions": "Giao dịch"
+  },
+  "validation": {
+    "nameRequired": "Vui lòng nhập tên công ty",
+    "emailRequired": "Vui lòng nhập email",
+    "ownerNameRequired": "Vui lòng nhập tên người đại diện",
+    "checkInfo": "Vui lòng kiểm tra lại thông tin"
+  }
+}

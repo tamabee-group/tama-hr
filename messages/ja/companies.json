@@ -1,0 +1,71 @@
+{
+  "title": "会社管理",
+  "description": "登録済み会社を管理",
+  "createCompany": "会社を作成",
+  "editCompany": "会社を編集",
+  "viewCompany": "会社を表示",
+  "customerDetail": "顧客詳細",
+  "companyInfo": "会社情報",
+  "companyWallet": "会社ウォレット",
+  "employees": "従業員",
+  "featureUpdating": "機能は更新中です",
+  "table": {
+    "name": "会社名",
+    "email": "メール",
+    "phone": "電話番号",
+    "plan": "サブスクリプションプラン",
+    "employees": "従業員",
+    "walletBalance": "ウォレット残高",
+    "status": "ステータス",
+    "createdAt": "登録日",
+    "updatedAt": "更新日"
+  },
+  "form": {
+    "name": "会社名",
+    "namePlaceholder": "会社名を入力",
+    "ownerName": "代表者",
+    "ownerNamePlaceholder": "代表者名を入力",
+    "email": "メール",
+    "emailPlaceholder": "会社のメールを入力",
+    "phone": "電話番号",
+    "phonePlaceholder": "電話番号を入力",
+    "address": "住所",
+    "addressPlaceholder": "会社の住所を入力",
+    "plan": "サブスクリプションプラン",
+    "planPlaceholder": "プランを選択",
+    "referralCode": "紹介コード",
+    "referralCodePlaceholder": "紹介コードを入力（任意）",
+    "referredBy": "紹介者",
+    "industry": "業種",
+    "industryPlaceholder": "業種を選択",
+    "locale": "地域",
+    "localePlaceholder": "地域を選択",
+    "language": "言語",
+    "languagePlaceholder": "言語を選択",
+    "zipcode": "郵便番号",
+    "zipcodePlaceholder": "郵便番号を入力",
+    "autoFillAddress": "住所を自動入力中...",
+    "logo": "ロゴ"
+  },
+  "messages": {
+    "createSuccess": "会社を作成しました",
+    "updateSuccess": "会社を更新しました",
+    "deleteSuccess": "会社を削除しました",
+    "createError": "会社の作成に失敗しました",
+    "updateError": "会社の更新に失敗しました",
+    "deleteError": "会社の削除に失敗しました",
+    "saving": "保存中..."
+  },
+  "tabs": {
+    "info": "情報",
+    "employees": "従業員",
+    "wallet": "ウォレット",
+    "transactions": "取引"
+  },
+  "validation": {
+    "nameRequired": "会社名を入力してください",
+    "emailRequired": "メールを入力してください",
+    "ownerNameRequired": "代表者名を入力してください",
+    "checkInfo": "情報を確認してください"
+  }
+}

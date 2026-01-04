@@ -17,14 +17,14 @@ async function loadMessages(locale: string): Promise<Record<string, unknown>> {
       ).default;
       messages[namespace] = nsMessages;
     } catch {
-      // Fallback to English nếu không tìm thấy
+      // Fallback về tiếng Việt nếu không tìm thấy
       try {
         const fallbackMessages = (
-          await import(`../../messages/en/${namespace}.json`)
+          await import(`../../messages/vi/${namespace}.json`)
         ).default;
         messages[namespace] = fallbackMessages;
         console.warn(
-          `[i18n] Namespace "${namespace}" not found for locale "${locale}", using English fallback`,
+          `[i18n] Namespace "${namespace}" not found for locale "${locale}", using Vietnamese fallback`,
         );
       } catch {
         console.warn(

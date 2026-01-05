@@ -149,7 +149,6 @@ function splitByNamespace(
  */
 function identifyVerboseMessages(
   namespaces: Record<string, unknown>,
-  locale: string,
 ): VerboseMessage[] {
   const verboseMessages: VerboseMessage[] = [];
 
@@ -287,7 +286,7 @@ async function migrateMessages(): Promise<MigrationResult[]> {
       console.log(`📦 Namespaces found: ${Object.keys(namespaces).length}`);
 
       // 4. Identify verbose messages
-      const verboseMessages = identifyVerboseMessages(namespaces, locale);
+      const verboseMessages = identifyVerboseMessages(namespaces);
       console.log(`⚠️  Verbose messages: ${verboseMessages.length}`);
 
       // 5. Create namespace files

@@ -50,9 +50,9 @@ export function CommissionSummaryCard({
   // Loading skeleton
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-xl border p-6 space-y-2">
+          <div key={i} className="rounded-md border p-5 space-y-2">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-8 w-32" />
           </div>
@@ -70,31 +70,31 @@ export function CommissionSummaryCard({
   const summaryCards = [
     {
       title: t("summary.totalReferrals"),
-      value: summary.totalReferrals.toString(),
+      value: (summary.totalReferrals ?? 0).toString(),
       icon: Users,
       iconColor: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
       title: t("summary.pendingAmount"),
-      value: formatCurrency(summary.totalPendingAmount, "vi"),
-      subValue: `${summary.pendingCommissions} ${t("summary.commissions")}`,
+      value: formatCurrency(summary.totalPendingAmount ?? 0, "vi"),
+      subValue: `${summary.pendingCommissions ?? 0} ${t("summary.commissions")}`,
       icon: Clock,
       iconColor: "text-yellow-500",
       bgColor: "bg-yellow-500/10",
     },
     {
       title: t("summary.eligibleAmount"),
-      value: formatCurrency(summary.totalEligibleAmount, "vi"),
-      subValue: `${summary.eligibleCommissions} ${t("summary.commissions")}`,
+      value: formatCurrency(summary.totalEligibleAmount ?? 0, "vi"),
+      subValue: `${summary.eligibleCommissions ?? 0} ${t("summary.commissions")}`,
       icon: CheckCircle,
       iconColor: "text-cyan-500",
       bgColor: "bg-cyan-500/10",
     },
     {
       title: t("summary.paidAmount"),
-      value: formatCurrency(summary.totalPaidAmount, "vi"),
-      subValue: `${summary.paidCommissions} ${t("summary.commissions")}`,
+      value: formatCurrency(summary.totalPaidAmount ?? 0, "vi"),
+      subValue: `${summary.paidCommissions ?? 0} ${t("summary.commissions")}`,
       icon: Wallet,
       iconColor: "text-green-500",
       bgColor: "bg-green-500/10",
@@ -102,22 +102,19 @@ export function CommissionSummaryCard({
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid gap-2 md:gap-4 grid-cols-2 md:grid-cols-4">
       {summaryCards.map((card, index) => (
-        <Card key={index}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card key={index} className="gap-2 py-2 justify-between">
+          <CardHeader className="flex flex-row items-center justify-between px-4">
             <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-            <div className={`p-2 rounded-lg ${card.bgColor}`}>
-              <card.icon className={`h-4 w-4 ${card.iconColor}`} />
-            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{card.value}</div>
+          <CardContent className="px-4">
             {card.subValue && (
               <p className="text-xs text-muted-foreground mt-1">
                 {card.subValue}
               </p>
             )}
+            <div className="text-2xl font-bold">{card.value}</div>
           </CardContent>
         </Card>
       ))}

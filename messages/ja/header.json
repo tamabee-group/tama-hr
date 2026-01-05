@@ -18,10 +18,13 @@
   "menu": {
     "dashboard": "ダッシュボード",
     "companies": "会社管理",
+    "customers": "顧客管理",
     "users": "ユーザー管理",
     "deposits": "入金管理",
     "settings": "システム設定",
     "support": "カスタマーサポート",
+    "referrals": "紹介",
+    "commissions": "コミッション",
     "employees": "従業員管理",
     "attendance": "勤怠管理",
     "wallet": "ウォレット",

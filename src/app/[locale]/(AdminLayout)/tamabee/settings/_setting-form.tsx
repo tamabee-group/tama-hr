@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,8 +19,8 @@ import {
   validateSettingValue,
 } from "@/types/setting";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Spinner } from "@/components/ui/spinner";
 
 interface SettingFormProps {
   open: boolean;
@@ -201,9 +200,8 @@ export function SettingForm({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+        <DialogHeader className="mb-6">
           <DialogTitle>{t("form.title")}</DialogTitle>
-          <DialogDescription>{t("form.description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -233,7 +231,7 @@ export function SettingForm({
           {/* Value Input */}
           {renderInput()}
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="flex gap-4">
             <Button
               type="button"
               variant="outline"
@@ -243,9 +241,7 @@ export function SettingForm({
               {tCommon("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isSubmitting && <Spinner />}
               {isSubmitting ? tCommon("loading") : tCommon("save")}
             </Button>
           </DialogFooter>

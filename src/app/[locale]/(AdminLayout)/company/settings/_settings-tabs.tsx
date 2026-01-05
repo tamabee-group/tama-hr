@@ -40,7 +40,6 @@ import {
   Gift,
   MinusCircle,
   LucideIcon,
-  Loader2,
   Save,
   Settings2,
 } from "lucide-react";
@@ -48,6 +47,7 @@ import {
   getVisibleSettingsTabs,
   SettingsTabKey,
 } from "@/lib/utils/settings-visibility";
+import { Spinner } from "@/components/ui/spinner";
 
 type TabKey = SettingsTabKey;
 
@@ -275,22 +275,18 @@ export function SettingsTabs() {
         description={t(explanation.descKey)}
         tips={tips}
         workModeNote={workModeNote}
-        defaultCollapsed={false}
+        defaultCollapsed={true}
         className="mb-6"
       />
     );
   };
 
-  if (isLoading) {
+  if (isLoading && hasChanges) {
     return <SettingsTabsSkeleton />;
   }
 
   if (!settings) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        {tCommon("errorLoading")}
-      </div>
-    );
+    return <Spinner type="triangle" />;
   }
 
   // Lọc các tabs hiển thị dựa trên work mode
@@ -304,41 +300,33 @@ export function SettingsTabs() {
       <div className="sticky top-[50px] z-10 -mx-4 px-4 py-3 bg-background border-b flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <Button onClick={handleSaveClick} disabled={isSaving || !hasChanges}>
-          {isSaving ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save />
-          )}
+          {isSaving ? <Spinner /> : <Save />}
           {tCommon("save")}
         </Button>
       </div>
 
       {/* Mobile & Tablet: Horizontal scroll tabs */}
-      <div className="md:hidden">
-        <ScrollArea className="w-full">
-          <div className="flex gap-2 pb-3">
-            {visibleTabs.map((item) => (
-              <Button
-                key={item.key}
-                variant={activeTab === item.key ? "default" : "outline"}
-                size="sm"
-                className={cn(
-                  "shrink-0 gap-2",
-                  activeTab === item.key && "shadow-sm",
-                )}
-                onClick={() => setActiveTab(item.key)}
-              >
-                <item.icon className="h-4 w-4" />
-                <span className="hidden sm:inline">
-                  {t(`tabs.${item.key}`)}
-                </span>
-                <span className="sm:hidden">{t(`tabs.${item.key}`)}</span>
-              </Button>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+      <ScrollArea className="md:hidden w-full">
+        <div className="flex gap-2 pb-3">
+          {visibleTabs.map((item) => (
+            <Button
+              key={item.key}
+              variant={activeTab === item.key ? "default" : "outline"}
+              size="sm"
+              className={cn(
+                "shrink-0 gap-2",
+                activeTab === item.key && "shadow-sm",
+              )}
+              onClick={() => setActiveTab(item.key)}
+            >
+              <item.icon className="h-4 w-4" />
+              <span className="hidden sm:inline">{t(`tabs.${item.key}`)}</span>
+              <span className="sm:hidden">{t(`tabs.${item.key}`)}</span>
+            </Button>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       {/* Desktop: Content + Sidebar layout */}
       <div className="flex gap-6">
@@ -395,7 +383,7 @@ export function SettingsTabs() {
           )}
           {activeTab === "allowance" && (
             <AllowanceConfigForm
-              config={settings.allowanceConfig}
+              config={settings.allowanceConfig || { allowances: [] }}
               onSaveSuccess={handleSaveSuccess}
               onChangesUpdate={setHasChanges}
               setSaveHandler={(handler) => {
@@ -405,7 +393,7 @@ export function SettingsTabs() {
           )}
           {activeTab === "deduction" && (
             <DeductionConfigForm
-              config={settings.deductionConfig}
+              config={settings.deductionConfig || { deductions: [] }}
               onSaveSuccess={handleSaveSuccess}
               onChangesUpdate={setHasChanges}
               setSaveHandler={(handler) => {
@@ -416,10 +404,10 @@ export function SettingsTabs() {
         </div>
 
         {/* Desktop: Sidebar navigation - bên phải, sticky dưới title */}
-        <div className="hidden md:flex flex-col gap-4 w-56 shrink-0 sticky top-[120px] h-fit">
+        <div className="hidden md:flex flex-col gap-2 w-56 shrink-0 sticky top-[120px] h-fit">
           {/* Navigation Card */}
-          <Card>
-            <CardContent className="p-3">
+          <Card className="py-3">
+            <CardContent className="px-3">
               <nav className="flex flex-col gap-1">
                 {visibleTabs.map((item) => (
                   <Button

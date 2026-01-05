@@ -24,8 +24,6 @@ import {
   Clock,
   FileText,
   CalendarDays,
-  Bell,
-  HelpCircle,
 } from "lucide-react";
 import type { User, UserRole } from "@/types/user";
 import { getFileUrl } from "@/lib/utils/file-url";
@@ -46,6 +44,7 @@ interface MenuItem {
 interface MenuConfig {
   dashboard?: MenuItem;
   items: MenuItem[];
+  profile?: MenuItem;
 }
 
 // Cấu hình menu cho từng role
@@ -58,7 +57,7 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/tamabee/companies", labelKey: "companies", icon: Building2 },
+      { href: "/tamabee/customers", labelKey: "customers", icon: Building2 },
       { href: "/tamabee/users", labelKey: "users", icon: Users },
       { href: "/tamabee/deposits", labelKey: "deposits", icon: Wallet },
       { href: "/tamabee/settings", labelKey: "settings", icon: Settings },
@@ -72,18 +71,24 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/tamabee/companies", labelKey: "companies", icon: Building2 },
+      { href: "/tamabee/customers", labelKey: "customers", icon: Building2 },
       { href: "/tamabee/deposits", labelKey: "deposits", icon: Wallet },
     ],
   },
   // Tamabee Employee - Hỗ trợ khách hàng
   EMPLOYEE_TAMABEE: {
     dashboard: {
-      href: "/employee/support",
-      labelKey: "support",
-      icon: HelpCircle,
+      href: "/employee-tamabee/referrals",
+      labelKey: "referrals",
+      icon: Users,
     },
-    items: [],
+    items: [
+      {
+        href: "/employee-tamabee/commissions",
+        labelKey: "commissions",
+        icon: Wallet,
+      },
+    ],
   },
   // Company Admin - Quản lý công ty
   ADMIN_COMPANY: {
@@ -103,6 +108,11 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
         icon: Settings,
       },
     ],
+    profile: {
+      href: "/company/profile",
+      labelKey: "profile",
+      icon: UserIcon,
+    },
   },
   // Company Manager - Quản lý nhân viên
   MANAGER_COMPANY: {
@@ -116,6 +126,11 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
       { href: "/company/attendance", labelKey: "attendance", icon: Clock },
       { href: "/company/reports", labelKey: "reports", icon: FileText },
     ],
+    profile: {
+      href: "/company/profile",
+      labelKey: "profile",
+      icon: UserIcon,
+    },
   },
   // Company Employee - Nhân viên
   EMPLOYEE_COMPANY: {
@@ -200,22 +215,20 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
           </>
         )}
 
-        {/* Common items */}
-        <DropdownMenuGroup>
-          <Link href="/profile">
-            <DropdownMenuItem>
-              <UserIcon className="mr-2 h-4 w-4" />
-              {t("menu.profile")}
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/notifications">
-            <DropdownMenuItem>
-              <Bell className="mr-2 h-4 w-4" />
-              {t("menu.notifications")}
-            </DropdownMenuItem>
-          </Link>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
+        {/* Common items - Profile chỉ hiển thị nếu role có config */}
+        {menuConfig.profile && (
+          <>
+            <DropdownMenuGroup>
+              <Link href={menuConfig.profile.href}>
+                <DropdownMenuItem>
+                  <menuConfig.profile.icon className="mr-2 h-4 w-4" />
+                  {t(`menu.${menuConfig.profile.labelKey}`)}
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         {/* Logout */}
         <DropdownMenuItem onClick={onLogout}>

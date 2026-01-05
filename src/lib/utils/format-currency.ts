@@ -30,13 +30,13 @@ const LOCALE_CURRENCY_MAP: Record<
  */
 export function formatCurrency(
   amount: number,
-  locale: SupportedLocale = "vi",
+  locale: SupportedLocale = "ja",
 ): string {
   const config = LOCALE_CURRENCY_MAP[locale];
 
   if (!config) {
     // Fallback to vi if locale not supported
-    return formatCurrency(amount, "vi");
+    return formatCurrency(amount, "ja");
   }
 
   try {
@@ -80,7 +80,7 @@ export function isValidCurrencyFormat(
       // JPY format: "¥1,000,000" hoặc "￥1,000,000"
       return formatted.includes("¥") || formatted.includes("￥");
     default:
-      return false;
+      return formatted.includes("¥") || formatted.includes("￥");
   }
 }
 

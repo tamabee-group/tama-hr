@@ -17,13 +17,84 @@ interface ZipcodeResponse {
   status: number;
 }
 
-export function useZipcode(zipcode: string) {
+// Định nghĩa độ dài zipcode theo region
+export type ZipcodeRegion = "JP" | "VN";
+
+const ZIPCODE_LENGTH: Record<ZipcodeRegion, number> = {
+  JP: 7, // Nhật Bản: 7 số (ví dụ: 1000001)
+  VN: 5, // Việt Nam: 5 số (ví dụ: 63000)
+};
+
+// Mapping locale sang region
+const LOCALE_TO_REGION: Record<string, ZipcodeRegion> = {
+  ja: "JP",
+  vi: "VN",
+};
+
+/**
+ * Chuyển đổi locale code sang region code
+ * @param locale - Locale code (ja, vi)
+ * @returns Region code (JP, VN), mặc định JP
+ */
+export function localeToRegion(locale: string): ZipcodeRegion {
+  return LOCALE_TO_REGION[locale] || "JP";
+}
+
+/**
+ * Validate zipcode theo region
+ * @param zipcode - Mã bưu điện
+ * @param region - Region code (JP, VN)
+ * @returns true nếu hợp lệ
+ */
+export function isValidZipcode(
+  zipcode: string,
+  region: ZipcodeRegion,
+): boolean {
+  if (!zipcode) return false;
+  const expectedLength = ZIPCODE_LENGTH[region];
+  return /^\d+$/.test(zipcode) && zipcode.length === expectedLength;
+}
+
+/**
+ * Lấy độ dài zipcode theo region
+ * @param region - Region code (JP, VN)
+ * @returns Độ dài zipcode
+ */
+export function getZipcodeLength(region: ZipcodeRegion): number {
+  return ZIPCODE_LENGTH[region];
+}
+
+/**
+ * Hook để tự động lookup địa chỉ từ zipcode
+ * Chỉ hỗ trợ lookup cho Nhật Bản (JP)
+ * @param zipcode - Mã bưu điện
+ * @param region - Region code (JP, VN), mặc định là JP
+ */
+export function useZipcode(zipcode: string, region: ZipcodeRegion = "JP") {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
-    if (!zipcode || zipcode.length !== 7) {
+    const expectedLength = ZIPCODE_LENGTH[region];
+
+    // Validate zipcode format
+    if (
+      !zipcode ||
+      zipcode.length !== expectedLength ||
+      !/^\d+$/.test(zipcode)
+    ) {
+      setAddress("");
+      setIsValid(false);
+      setError("");
+      return;
+    }
+
+    setIsValid(true);
+
+    // Chỉ lookup địa chỉ cho Nhật Bản
+    if (region !== "JP") {
       setAddress("");
       return;
     }
@@ -55,7 +126,7 @@ export function useZipcode(zipcode: string) {
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [zipcode]);
+  }, [zipcode, region]);
 
-  return { address, loading, error };
+  return { address, loading, error, isValid };
 }

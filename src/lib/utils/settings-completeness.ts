@@ -5,6 +5,8 @@ import {
   PayrollConfig,
   OvertimeConfig,
   BreakConfig,
+  AllowanceConfig,
+  DeductionConfig,
   WorkMode,
 } from "@/types/attendance-config";
 
@@ -16,7 +18,9 @@ export type IncompleteSettingType =
   | "attendance"
   | "payroll"
   | "overtime"
-  | "break";
+  | "break"
+  | "allowance"
+  | "deduction";
 
 /**
  * Thông tin về cấu hình còn thiếu
@@ -185,6 +189,48 @@ function checkBreakConfig(config: BreakConfig | null): IncompleteSetting[] {
 }
 
 /**
+ * Kiểm tra allowance config có đầy đủ không
+ */
+function checkAllowanceConfig(
+  config: AllowanceConfig | null,
+): IncompleteSetting[] {
+  const issues: IncompleteSetting[] = [];
+
+  if (!config) {
+    issues.push({
+      type: "allowance",
+      fieldKey: "config",
+      severity: "error",
+    });
+    return issues;
+  }
+
+  // Allowance config có thể rỗng (không bắt buộc phải có allowances)
+  return issues;
+}
+
+/**
+ * Kiểm tra deduction config có đầy đủ không
+ */
+function checkDeductionConfig(
+  config: DeductionConfig | null,
+): IncompleteSetting[] {
+  const issues: IncompleteSetting[] = [];
+
+  if (!config) {
+    issues.push({
+      type: "deduction",
+      fieldKey: "config",
+      severity: "error",
+    });
+    return issues;
+  }
+
+  // Deduction config có thể rỗng (không bắt buộc phải có deductions)
+  return issues;
+}
+
+/**
  * Kiểm tra độ hoàn thiện của tất cả settings
  * @param settings - Company settings
  * @param workModeConfig - Work mode config
@@ -213,6 +259,12 @@ export function checkSettingsCompleteness(
 
     // Kiểm tra break
     incompleteSettings.push(...checkBreakConfig(settings.breakConfig));
+
+    // Kiểm tra allowance
+    incompleteSettings.push(...checkAllowanceConfig(settings.allowanceConfig));
+
+    // Kiểm tra deduction
+    incompleteSettings.push(...checkDeductionConfig(settings.deductionConfig));
   } else {
     // Nếu không có settings, tất cả đều thiếu
     incompleteSettings.push(
@@ -220,11 +272,13 @@ export function checkSettingsCompleteness(
       { type: "payroll", fieldKey: "config", severity: "error" },
       { type: "overtime", fieldKey: "config", severity: "error" },
       { type: "break", fieldKey: "config", severity: "error" },
+      { type: "allowance", fieldKey: "config", severity: "error" },
+      { type: "deduction", fieldKey: "config", severity: "error" },
     );
   }
 
   // Tính completion percentage
-  const totalChecks = 5; // workMode, attendance, payroll, overtime, break
+  const totalChecks = 7; // workMode, attendance, payroll, overtime, break, allowance, deduction
   const errorCount = incompleteSettings.filter(
     (s) => s.severity === "error",
   ).length;

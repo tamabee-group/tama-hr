@@ -2,7 +2,7 @@
 
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
-import { useZipcode } from "@/hooks/use-zipcode";
+import { useZipcode, localeToRegion } from "@/hooks/use-zipcode";
 import { login as loginApi, register } from "@/lib/apis/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -45,7 +45,10 @@ const RegisterPage: NextPage = () => {
     referralCode: "",
   });
 
-  const { address, loading } = useZipcode(zipcode);
+  const { address, loading } = useZipcode(
+    zipcode,
+    localeToRegion(formData.locale),
+  );
 
   useEffect(() => {
     if (address) {

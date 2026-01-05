@@ -18,10 +18,13 @@
   "menu": {
     "dashboard": "Dashboard",
     "companies": "Manage Companies",
+    "customers": "Manage Customers",
     "users": "Manage Users",
     "deposits": "Manage Deposits",
     "settings": "System Settings",
     "support": "Customer Support",
+    "referrals": "Referrals",
+    "commissions": "Commissions",
     "employees": "Manage Employees",
     "attendance": "Manage Attendance",
     "wallet": "Wallet",

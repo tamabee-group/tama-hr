@@ -111,15 +111,10 @@ export default function TamabeeSettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-2">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("description")}
-          </p>
-        </div>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
         <div className="flex gap-2 items-center">
           {!canEdit && (
             <Badge variant="secondary" className="mr-2">

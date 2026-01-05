@@ -17,8 +17,8 @@
   },
   "userRole": {
     "ADMIN_TAMABEE": "Tamabee管理者",
-    "MANAGER_TAMABEE": "Tamabeeマネージャー",
-    "EMPLOYEE_TAMABEE": "Tamabee従業員",
+    "MANAGER_TAMABEE": "マネージャー",
+    "EMPLOYEE_TAMABEE": "従業員",
     "ADMIN_COMPANY": "会社管理者",
     "MANAGER_COMPANY": "マネージャー",
     "EMPLOYEE_COMPANY": "従業員"

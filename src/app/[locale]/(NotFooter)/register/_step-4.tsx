@@ -23,6 +23,7 @@ import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/use-key-down";
 import { getIndustryLabel } from "@/constants/industries";
 import { useTranslations } from "next-intl";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Props {
   formData: RegisterFormData;
@@ -195,9 +196,14 @@ const Step4: NextPage<Props> = ({
           {tCommon("back")}
         </Button>
         <Button onClick={handleSubmit} className="flex-1" disabled={submitting}>
-          {submitting
-            ? tRegister("processing")
-            : tRegister("completeRegistration")}
+          {submitting ? (
+            <span>
+              <Spinner />
+              {tRegister("processing")}
+            </span>
+          ) : (
+            tRegister("completeRegistration")
+          )}
         </Button>
       </div>
     </div>

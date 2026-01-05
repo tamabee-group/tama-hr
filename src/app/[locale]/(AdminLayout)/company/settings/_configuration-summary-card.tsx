@@ -11,6 +11,9 @@ import {
   Wallet,
   Timer,
   Settings2,
+  Coffee,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -21,62 +24,12 @@ import {
 import {
   checkSettingsCompleteness,
   hasIncompleteSettings,
-  IncompleteSetting,
 } from "@/lib/utils/settings-completeness";
 
 interface ConfigurationSummaryCardProps {
   settings: CompanySettings | null;
   workModeConfig: WorkModeConfig | null;
   className?: string;
-}
-
-/**
- * Card hiển thị tóm tắt cấu hình hiện tại
- * - Hiển thị work mode
- * - Hiển thị completion percentage
- * - Highlight các cấu hình còn thiếu
- */
-/**
- * Lấy label cho field key
- */
-function getFieldLabel(
-  setting: IncompleteSetting,
-  t: ReturnType<typeof useTranslations>,
-): string {
-  const { type, fieldKey } = setting;
-
-  // Map field keys to translation keys
-  const fieldLabels: Record<string, Record<string, string>> = {
-    workMode: {
-      mode: "workMode.title",
-      defaultWorkStartTime: "workMode.defaultHours",
-      defaultWorkEndTime: "workMode.defaultHours",
-    },
-    attendance: {
-      config: "tabs.attendance",
-      defaultWorkStartTime: "attendance.defaultWorkStartTime",
-      defaultWorkEndTime: "attendance.defaultWorkEndTime",
-    },
-    payroll: {
-      config: "tabs.payroll",
-      payDay: "payroll.payDay",
-      cutoffDay: "payroll.cutoffDay",
-    },
-    overtime: {
-      config: "tabs.overtime",
-    },
-    break: {
-      config: "break.sectionTitle",
-    },
-  };
-
-  const labelKey = fieldLabels[type]?.[fieldKey];
-  if (labelKey) {
-    return t(labelKey);
-  }
-
-  // Fallback: return field key
-  return fieldKey;
 }
 
 export function ConfigurationSummaryCard({
@@ -91,13 +44,8 @@ export function ConfigurationSummaryCard({
     workModeConfig,
   );
 
-  // Lọc các fields thiếu (chỉ lấy unique labels)
-  const missingFieldLabels = completenessResult.incompleteSettings
-    .map((setting) => getFieldLabel(setting, t))
-    .filter((label, index, self) => self.indexOf(label) === index);
-
   return (
-    <Card className={cn("", className)}>
+    <Card className={cn("pt-5 gap-1", className)}>
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <Settings2 className="h-4 w-4" />
@@ -106,7 +54,7 @@ export function ConfigurationSummaryCard({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Work Mode */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-between">
           <span className="text-sm text-muted-foreground">
             {t("workMode.title")}
           </span>
@@ -136,7 +84,7 @@ export function ConfigurationSummaryCard({
                   ? "text-green-600"
                   : completenessResult.completionPercentage >= 80
                     ? "text-yellow-600"
-                    : "text-red-600",
+                    : "text-red-400",
               )}
             >
               {completenessResult.completionPercentage}%
@@ -158,6 +106,11 @@ export function ConfigurationSummaryCard({
             }
           />
           <ConfigStatusItem
+            label={t("tabs.break")}
+            icon={Coffee}
+            isComplete={!hasIncompleteSettings("break", completenessResult)}
+          />
+          <ConfigStatusItem
             label={t("tabs.payroll")}
             icon={Wallet}
             isComplete={!hasIncompleteSettings("payroll", completenessResult)}
@@ -167,24 +120,17 @@ export function ConfigurationSummaryCard({
             icon={Timer}
             isComplete={!hasIncompleteSettings("overtime", completenessResult)}
           />
+          <ConfigStatusItem
+            label={t("tabs.allowance")}
+            icon={Plus}
+            isComplete={!hasIncompleteSettings("allowance", completenessResult)}
+          />
+          <ConfigStatusItem
+            label={t("tabs.deduction")}
+            icon={Minus}
+            isComplete={!hasIncompleteSettings("deduction", completenessResult)}
+          />
         </div>
-
-        {/* Warning message if incomplete - hiển thị chi tiết các fields thiếu */}
-        {!completenessResult.isComplete && (
-          <div className="flex flex-col gap-2 p-3 rounded-md bg-yellow-50 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-200">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-              <p className="text-sm font-medium">
-                {t("summary.missingFields")}
-              </p>
-            </div>
-            <ul className="ml-6 text-xs space-y-1 list-disc">
-              {missingFieldLabels.map((label, index) => (
-                <li key={index}>{label}</li>
-              ))}
-            </ul>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

@@ -102,32 +102,42 @@ export function BreakSection({ config, onUpdate }: BreakSectionProps) {
 
           {/* Row 2: Theo dõi giờ giải lao */}
           {config.breakEnabled && (
-            <div className="flex items-center gap-3">
-              <Switch
-                id="breakTrackingEnabled"
-                checked={config.breakTrackingEnabled}
-                onCheckedChange={(checked) =>
-                  onUpdate("breakTrackingEnabled", checked)
-                }
-              />
-              <Label
-                htmlFor="breakTrackingEnabled"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                {t("break.breakTrackingEnabled")}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">
-                        {t("break.breakTrackingTooltip")}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="breakTrackingEnabled"
+                  checked={config.breakTrackingEnabled}
+                  onCheckedChange={(checked) =>
+                    onUpdate("breakTrackingEnabled", checked)
+                  }
+                />
+                <Label
+                  htmlFor="breakTrackingEnabled"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  {t("break.breakTrackingEnabled")}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="whitespace-pre-line">
+                          {t("break.breakTrackingTooltip")}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Label>
+              </div>
+              {/* Giải thích khi TẮT theo dõi */}
+              {!config.breakTrackingEnabled && (
+                <p className="text-sm text-muted-foreground ml-11">
+                  {t("break.autoDeductInfo", {
+                    minutes: config.defaultBreakMinutes,
+                  })}
+                </p>
+              )}
             </div>
           )}
         </CardContent>

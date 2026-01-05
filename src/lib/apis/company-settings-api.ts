@@ -164,10 +164,8 @@ export async function updateOvertimeConfig(
  * Cập nhật cấu hình giờ giải lao
  * @client-only
  */
-export async function updateBreakConfig(
-  config: BreakConfig,
-): Promise<BreakConfig> {
-  return apiClient.put<BreakConfig>("/api/company/settings/break", config);
+export async function updateBreakConfig(config: BreakConfig): Promise<void> {
+  await apiClient.put<void>("/api/company/settings/break", config);
 }
 
 /**

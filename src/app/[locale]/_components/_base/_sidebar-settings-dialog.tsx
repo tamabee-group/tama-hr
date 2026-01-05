@@ -114,7 +114,7 @@ export function SidebarSettingsDialog({
           </div>
           <button
             onClick={handleClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-muted border"
+            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-muted border cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>

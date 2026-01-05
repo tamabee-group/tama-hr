@@ -81,7 +81,7 @@ export function AllowanceConfigForm({
   };
 
   const [allowances, setAllowances] = useState<AllowanceRule[]>(() =>
-    initializeAllowances(config.allowances || []),
+    initializeAllowances(config?.allowances || []),
   );
 
   // Sensors cho drag-and-drop

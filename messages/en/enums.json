@@ -17,8 +17,8 @@
   },
   "userRole": {
     "ADMIN_TAMABEE": "Tamabee Admin",
-    "MANAGER_TAMABEE": "Tamabee Manager",
-    "EMPLOYEE_TAMABEE": "Tamabee Employee",
+    "MANAGER_TAMABEE": "Manager",
+    "EMPLOYEE_TAMABEE": "Employee",
     "ADMIN_COMPANY": "Company Admin",
     "MANAGER_COMPANY": "Manager",
     "EMPLOYEE_COMPANY": "Employee"

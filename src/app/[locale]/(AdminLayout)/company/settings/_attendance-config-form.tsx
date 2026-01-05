@@ -265,9 +265,9 @@ export function AttendanceConfigForm({
                 {t("attendance.deviceLocation")}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2">
               {/* Row 1: Các toggle chính */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <Switch
                     id="requireDeviceRegistration"
@@ -281,19 +281,19 @@ export function AttendanceConfigForm({
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     {t("attendance.requireDeviceRegistration")}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            {t("attendance.deviceRegistrationTooltip")}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">
+                          {t("attendance.deviceRegistrationTooltip")}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -309,19 +309,19 @@ export function AttendanceConfigForm({
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     {t("attendance.requireGeoLocation")}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            {t("attendance.geoLocationTooltip")}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">
+                          {t("attendance.geoLocationTooltip")}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
 
@@ -349,7 +349,7 @@ export function AttendanceConfigForm({
               )}
 
               {/* Row 2: Cho phép chấm công */}
-              <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="grid md:grid-cols-2 gap-4 pt-2">
                 <div className="flex items-center gap-3">
                   <Switch
                     id="allowMobileCheckIn"

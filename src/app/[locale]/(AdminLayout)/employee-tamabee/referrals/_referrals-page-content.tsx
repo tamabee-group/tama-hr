@@ -31,10 +31,7 @@ export function ReferralsPageContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("description")}</p>
-      </div>
+      <h1 className="text-2xl font-bold">{t("title")}</h1>
 
       {/* Commission Summary Card */}
       <CommissionSummaryCard refreshTrigger={refreshTrigger} />

@@ -18,10 +18,13 @@
   "menu": {
     "dashboard": "Bảng điều khiển",
     "companies": "Quản lý công ty",
+    "customers": "Quản lý khách hàng",
     "users": "Quản lý nhân sự",
     "deposits": "Quản lý nạp tiền",
     "settings": "Cài đặt hệ thống",
     "support": "Hỗ trợ khách hàng",
+    "referrals": "Giới thiệu",
+    "commissions": "Hoa hồng",
     "employees": "Quản lý nhân viên",
     "attendance": "Quản lý chấm công",
     "wallet": "Ví tiền",

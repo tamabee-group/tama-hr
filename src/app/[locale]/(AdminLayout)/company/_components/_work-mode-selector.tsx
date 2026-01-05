@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Clock, CalendarClock, Check, AlertTriangle } from "lucide-react";
+import { Clock, CalendarClock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -101,33 +100,18 @@ export function WorkModeSelector({
             <Card
               key={option.mode}
               className={cn(
-                "cursor-pointer transition-all duration-200 hover:shadow-md",
-                isSelected && "ring-2 ring-primary border-primary",
+                "relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-md",
+                isSelected && "border-3 border-primary",
                 disabled && "opacity-50 cursor-not-allowed",
               )}
               onClick={() => handleModeClick(option.mode)}
             >
-              <CardContent className="p-6">
+              <CardContent className="pb-2">
                 <div className="flex items-start gap-4">
-                  <div
-                    className={cn(
-                      "p-3 rounded-lg",
-                      isSelected
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted",
-                    )}
-                  >
-                    <Icon className="h-6 w-6" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
+                      <Icon className="h-6 w-6" />
                       <h3 className="font-semibold">{t(option.titleKey)}</h3>
-                      {isSelected && (
-                        <Badge variant="default" className="gap-1">
-                          <Check className="h-3 w-3" />
-                          {t("currentMode")}
-                        </Badge>
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {t(option.descKey)}
@@ -135,6 +119,11 @@ export function WorkModeSelector({
                   </div>
                 </div>
               </CardContent>
+              {isSelected && (
+                <CardFooter className="absolute right-0 bottom-0 bg-primary text-primary-foreground rounded-tl-md flex-col gap-2 px-4">
+                  {t("currentMode")}
+                </CardFooter>
+              )}
             </Card>
           );
         })}

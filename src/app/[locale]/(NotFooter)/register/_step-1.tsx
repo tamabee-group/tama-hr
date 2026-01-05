@@ -29,6 +29,7 @@ import { useState } from "react";
 import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/use-key-down";
 import { toast } from "sonner";
+import { getZipcodeLength, localeToRegion } from "@/hooks/use-zipcode";
 import { INDUSTRIES } from "@/constants/industries";
 import { validateEmail, validatePhone } from "@/lib/validation";
 import { Spinner } from "@/components/ui/spinner";
@@ -351,6 +352,8 @@ const Step1: NextPage<Props> = ({
               onValueChange={(value) => {
                 setFormData({ ...formData, locale: value });
                 validateField("locale", value);
+                // Clear zipcode khi đổi locale vì độ dài khác nhau
+                setZipcode("");
               }}
               placeholder={tRegister("localePlaceholder")}
               icon={<Globe />}
@@ -386,11 +389,11 @@ const Step1: NextPage<Props> = ({
             <ClearableInput
               id="zipcode"
               value={zipcode}
-              onChange={(e) => setZipcode(e.target.value)}
+              onChange={(e) => setZipcode(e.target.value.replace(/\D/g, ""))}
               onClear={() => setZipcode("")}
               icon={<Milestone />}
               placeholder={tRegister("zipcodePlaceholder")}
-              maxLength={7}
+              maxLength={getZipcodeLength(localeToRegion(formData.locale))}
             />
           </div>
           <div className="md:col-span-2">

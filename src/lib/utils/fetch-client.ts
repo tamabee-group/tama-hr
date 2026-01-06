@@ -12,6 +12,7 @@ import { getLocaleFromCookie } from "./locale";
  * - Tự động gửi Accept-Language header từ NEXT_LOCALE cookie
  * - Tự động parse JSON response
  * - Xử lý lỗi thống nhất
+ * - Clear token và redirect về login khi 401 (sau khi proxy đã thử refresh)
  */
 
 export interface FetchOptions extends Omit<RequestInit, "body"> {
@@ -37,6 +38,30 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
   }
+}
+
+/**
+ * Clear tất cả auth cookies và redirect về login
+ * Được gọi khi API trả về 401 (sau khi proxy đã thử refresh token)
+ */
+function handleUnauthorized(): void {
+  // Clear cookies
+  document.cookie =
+    "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  document.cookie =
+    "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+  // Clear localStorage
+  localStorage.removeItem("currentUser");
+  localStorage.removeItem("hasSession");
+
+  // Lấy locale hiện tại từ URL hoặc cookie
+  const locale = getLocaleFromCookie() || "en";
+  const currentPath = window.location.pathname;
+
+  // Redirect về login với redirect param
+  const loginUrl = `/${locale}/login?redirect=${encodeURIComponent(currentPath)}`;
+  window.location.href = loginUrl;
 }
 
 /**
@@ -128,6 +153,14 @@ async function fetchClient<T = unknown>(
   const status = result.status || response.status;
 
   if (!result.success || status >= 400) {
+    // Nếu 401, clear token và redirect về login
+    // (Proxy đã thử refresh token rồi mà vẫn 401 nghĩa là session hết hạn hoàn toàn)
+    if (status === 401) {
+      handleUnauthorized();
+      // Throw error để caller biết request failed
+      throw new ApiError("Phiên đăng nhập hết hạn", 401, result.errorCode);
+    }
+
     throw new ApiError(
       result.message || "Có lỗi xảy ra",
       status,
@@ -217,6 +250,12 @@ export const apiClient = {
     const status = result.status || response.status;
 
     if (!result.success || status >= 400) {
+      // Nếu 401, clear token và redirect về login
+      if (status === 401) {
+        handleUnauthorized();
+        throw new ApiError("Phiên đăng nhập hết hạn", 401, result.errorCode);
+      }
+
       throw new ApiError(
         result.message || "Có lỗi xảy ra",
         status,

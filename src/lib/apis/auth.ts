@@ -52,6 +52,7 @@ export async function register(data: {
   password: string;
   zipcode?: string;
   referralCode?: string;
+  tenantDomain: string;
 }) {
   return apiClient.post("/api/auth/register", data);
 }
@@ -78,4 +79,16 @@ export async function resetPassword(
     code,
     newPassword,
   });
+}
+
+/**
+ * API kiểm tra tenant domain có khả dụng không
+ * @client-only - Chỉ sử dụng được ở client side
+ */
+export async function checkTenantDomainAvailability(
+  domain: string,
+): Promise<{ available: boolean }> {
+  return apiClient.get<{ available: boolean }>(
+    `/api/auth/check-domain?domain=${encodeURIComponent(domain)}`,
+  );
 }

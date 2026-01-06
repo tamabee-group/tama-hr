@@ -8,6 +8,13 @@ import {
 } from "@/lib/constants";
 import { refreshAccessTokenWithCookie } from "@/lib/auth/token";
 import { parseAcceptLanguage } from "@/lib/utils/locale";
+import { decodeJwt } from "@/lib/utils/jwt";
+import {
+  isAdminRoute,
+  isDashboardRoute,
+  checkAdminRouteAccess,
+  checkDashboardRouteAccess,
+} from "@/lib/utils/route-protection";
 
 console.log("[Proxy] File loaded");
 
@@ -402,6 +409,40 @@ async function handleAuthentication(
   // Guest-only routes: redirect về dashboard nếu đã đăng nhập
   if (matchRoute(pathname, GUEST_ONLY_ROUTES) && authenticated) {
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
+
+  // ========== ROLE-BASED ROUTE PROTECTION ==========
+  // Chỉ check khi đã authenticated và có accessToken
+  if (authenticated && accessToken) {
+    const decoded = decodeJwt(accessToken);
+
+    if (decoded) {
+      const { role, tenantDomain } = decoded;
+
+      // /admin/* routes - chỉ Tamabee admin (ADMIN_TAMABEE hoặc MANAGER_TAMABEE)
+      if (isAdminRoute(pathname)) {
+        const accessResult = checkAdminRouteAccess(role);
+        if (!accessResult.allowed) {
+          console.log("[Proxy] Unauthorized access to /admin/* - role:", role);
+          return NextResponse.redirect(
+            new URL(`/${locale}/unauthorized`, request.url),
+          );
+        }
+      }
+
+      // /dashboard/* routes - cần tenantDomain (kể cả "tamabee")
+      if (isDashboardRoute(pathname)) {
+        const accessResult = checkDashboardRouteAccess(tenantDomain);
+        if (!accessResult.allowed) {
+          console.log(
+            "[Proxy] Unauthorized access to /dashboard/* - no tenantDomain",
+          );
+          return NextResponse.redirect(
+            new URL(`/${locale}/unauthorized`, request.url),
+          );
+        }
+      }
+    }
   }
 
   return null;

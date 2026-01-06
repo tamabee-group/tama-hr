@@ -55,7 +55,7 @@ export function EmployeeLayoutContent({
 
     // Admin và Manager Tamabee phải dùng layout tamabee
     if (isTamabeeStaff(user.role)) {
-      router.replace("/tamabee/customers");
+      router.replace("/admin/companies");
       return;
     }
 

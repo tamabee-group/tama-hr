@@ -17,6 +17,7 @@ import {
   LocateFixed,
   Languages,
   Edit,
+  Globe,
 } from "lucide-react";
 import { NextPage } from "next";
 import type { RegisterFormData } from "@/types/register";
@@ -94,6 +95,16 @@ const Step4: NextPage<Props> = ({
               <p className="text-xs font-medium">{tRegister("companyName")}</p>
               <p className="text-sm text-muted-foreground truncate">
                 {formData.companyName}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-top gap-2">
+            <Globe className="h-4 w-4 text-primary shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-medium">{tRegister("tenantDomain")}</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {formData.tenantDomain}.tamabee.vn
               </p>
             </div>
           </div>

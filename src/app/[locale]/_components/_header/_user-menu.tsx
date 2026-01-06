@@ -52,27 +52,27 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
   // Tamabee Admin - Quản lý toàn hệ thống
   ADMIN_TAMABEE: {
     dashboard: {
-      href: "/tamabee/dashboard",
+      href: "/admin/companies",
       labelKey: "dashboard",
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/tamabee/customers", labelKey: "customers", icon: Building2 },
+      { href: "/admin/companies", labelKey: "customers", icon: Building2 },
       { href: "/tamabee/users", labelKey: "users", icon: Users },
-      { href: "/tamabee/deposits", labelKey: "deposits", icon: Wallet },
+      { href: "/admin/deposits", labelKey: "deposits", icon: Wallet },
       { href: "/tamabee/settings", labelKey: "settings", icon: Settings },
     ],
   },
   // Tamabee Manager - Quản lý công ty và deposits
   MANAGER_TAMABEE: {
     dashboard: {
-      href: "/tamabee/dashboard",
+      href: "/admin/companies",
       labelKey: "dashboard",
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/tamabee/customers", labelKey: "customers", icon: Building2 },
-      { href: "/tamabee/deposits", labelKey: "deposits", icon: Wallet },
+      { href: "/admin/companies", labelKey: "customers", icon: Building2 },
+      { href: "/admin/deposits", labelKey: "deposits", icon: Wallet },
     ],
   },
   // Tamabee Employee - Hỗ trợ khách hàng
@@ -93,23 +93,23 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
   // Company Admin - Quản lý công ty
   ADMIN_COMPANY: {
     dashboard: {
-      href: "/company/dashboard",
+      href: "/dashboard",
       labelKey: "dashboard",
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/company/employees", labelKey: "employees", icon: Users },
-      { href: "/company/attendance", labelKey: "attendance", icon: Clock },
+      { href: "/dashboard/employees", labelKey: "employees", icon: Users },
+      { href: "/dashboard/attendance", labelKey: "attendance", icon: Clock },
       { href: "/company/wallet", labelKey: "wallet", icon: Wallet },
       { href: "/company/reports", labelKey: "reports", icon: FileText },
       {
-        href: "/company/settings",
+        href: "/dashboard/settings",
         labelKey: "companySettings",
         icon: Settings,
       },
     ],
     profile: {
-      href: "/company/profile",
+      href: "/dashboard/profile",
       labelKey: "profile",
       icon: UserIcon,
     },
@@ -117,17 +117,17 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
   // Company Manager - Quản lý nhân viên
   MANAGER_COMPANY: {
     dashboard: {
-      href: "/company/dashboard",
+      href: "/dashboard",
       labelKey: "dashboard",
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/company/employees", labelKey: "employees", icon: Users },
-      { href: "/company/attendance", labelKey: "attendance", icon: Clock },
+      { href: "/dashboard/employees", labelKey: "employees", icon: Users },
+      { href: "/dashboard/attendance", labelKey: "attendance", icon: Clock },
       { href: "/company/reports", labelKey: "reports", icon: FileText },
     ],
     profile: {
-      href: "/company/profile",
+      href: "/dashboard/profile",
       labelKey: "profile",
       icon: UserIcon,
     },
@@ -135,12 +135,12 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
   // Company Employee - Nhân viên
   EMPLOYEE_COMPANY: {
     dashboard: {
-      href: "/employee/attendance",
+      href: "/dashboard/attendance/me",
       labelKey: "myAttendance",
       icon: Clock,
     },
     items: [
-      { href: "/employee/leave", labelKey: "myLeave", icon: CalendarDays },
+      { href: "/dashboard/leaves", labelKey: "myLeave", icon: CalendarDays },
     ],
   },
 };

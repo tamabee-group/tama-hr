@@ -45,13 +45,13 @@ export function useTamabeeSidebarGroups(): SidebarGroup[] {
         },
         {
           title: t("items.customers"),
-          url: "/tamabee/customers",
+          url: "/admin/companies",
           icon: <LayoutDashboard />,
           requiredPermission: "VIEW_ALL_COMPANIES",
         },
         {
           title: t("items.plans"),
-          url: "/tamabee/plans",
+          url: "/admin/plans",
           icon: <Package />,
           requiredPermission: "SYSTEM_SETTINGS",
         },
@@ -68,7 +68,7 @@ export function useTamabeeSidebarGroups(): SidebarGroup[] {
         },
         {
           title: t("items.deposits"),
-          url: "/tamabee/deposits",
+          url: "/admin/deposits",
           icon: <Receipt />,
           badgeKey: "pendingDeposits",
           requiredPermission: "DEPOSIT_APPROVAL",

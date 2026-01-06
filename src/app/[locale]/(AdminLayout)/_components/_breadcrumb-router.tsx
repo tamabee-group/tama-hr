@@ -43,36 +43,91 @@ function getBreadcrumbs(pathname: string): BreadcrumbConfig[] {
   switch (pathWithoutLocale) {
     case "/tamabee/users":
       return [
-        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "admin", href: "/admin/companies" },
         { labelKey: "users" },
       ];
 
     case "/tamabee/users/register":
       return [
-        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "admin", href: "/admin/companies" },
         { labelKey: "users", href: "/tamabee/users" },
         { labelKey: "registerNew" },
       ];
 
-    case "/tamabee/companies":
+    case "/admin/companies":
       return [
-        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "admin", href: "/admin/companies" },
         { labelKey: "companyManagement" },
       ];
 
-    case "/tamabee/deposits":
+    case "/admin/deposits":
       return [
-        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "admin", href: "/admin/companies" },
         { labelKey: "depositRequests" },
       ];
 
-    case "/tamabee/plans":
+    case "/admin/plans":
       return [
-        { labelKey: "admin", href: "/tamabee/dashboard" },
+        { labelKey: "admin", href: "/admin/companies" },
         { labelKey: "plans" },
       ];
 
-    // Company Admin routes
+    // Dashboard routes (new multi-tenant)
+    case "/dashboard":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "dashboard" },
+      ];
+
+    case "/dashboard/employees":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "employees" },
+      ];
+
+    case "/dashboard/attendance":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "attendance" },
+      ];
+
+    case "/dashboard/attendance/me":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "myAttendance" },
+      ];
+
+    case "/dashboard/payroll":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "payroll" },
+      ];
+
+    case "/dashboard/payroll/payslip":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "myPayslip" },
+      ];
+
+    case "/dashboard/leaves":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "leaves" },
+      ];
+
+    case "/dashboard/settings":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "settings" },
+      ];
+
+    case "/dashboard/profile":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "companyInfo" },
+      ];
+
+    // Legacy Company Admin routes (backward compatibility)
     case "/company/dashboard":
       return [
         { labelKey: "companyAdmin", href: "/company/dashboard" },

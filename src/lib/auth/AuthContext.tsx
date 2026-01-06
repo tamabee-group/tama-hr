@@ -42,6 +42,8 @@ interface AuthProviderProps {
 
 /**
  * Provider quản lý trạng thái xác thực của ứng dụng
+ * User data bao gồm tenantDomain và planId được lấy từ API /me
+ * (backend parse từ JWT và trả về trong response)
  * @client-only
  */
 export function AuthProvider({ children }: AuthProviderProps) {

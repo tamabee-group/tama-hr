@@ -25,7 +25,7 @@ import {
   toUpperCase,
 } from "@/lib/utils/text-format";
 import { sendVerificationCode } from "@/lib/apis/auth";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/use-key-down";
 import { toast } from "sonner";
@@ -34,6 +34,7 @@ import { INDUSTRIES } from "@/constants/industries";
 import { validateEmail, validatePhone } from "@/lib/validation";
 import { Spinner } from "@/components/ui/spinner";
 import { useTranslations } from "next-intl";
+import { TenantDomainInput } from "./_tenant-domain-input";
 
 interface Props {
   formData: RegisterFormData;
@@ -78,6 +79,11 @@ const Step1: NextPage<Props> = ({
   const [sending, setSending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loginOpen, setLoginOpen] = useState(false);
+  const [isDomainValid, setIsDomainValid] = useState(false);
+
+  const handleDomainValidityChange = useCallback((isValid: boolean) => {
+    setIsDomainValid(isValid);
+  }, []);
 
   const isPhoneValid = (phone: string) => {
     const cleaned = phone.replace(/\s/g, "");
@@ -260,6 +266,16 @@ const Step1: NextPage<Props> = ({
             )}
           </div>
           <div>
+            <Label htmlFor="tenantDomain">{tRegister("tenantDomain")}</Label>
+            <TenantDomainInput
+              value={formData.tenantDomain}
+              onChange={(value) =>
+                setFormData({ ...formData, tenantDomain: value })
+              }
+              onValidityChange={handleDomainValidityChange}
+            />
+          </div>
+          <div>
             <Label htmlFor="ownerName">{tRegister("ownerName")}</Label>
             <ClearableInput
               id="ownerName"
@@ -423,7 +439,7 @@ const Step1: NextPage<Props> = ({
         <div className="flex flex-col gap-4">
           <Button
             onClick={handleContinue}
-            disabled={sending}
+            disabled={sending || !isDomainValid}
             className="w-full md:w-auto md:px-12 md:ml-auto md:flex"
           >
             {sending

@@ -118,3 +118,35 @@ export const getFeatureText = (
   };
   return featureMap[locale] || feature.featureVi;
 };
+
+// ============================================
+// Plan Features Context Types
+// ============================================
+
+/**
+ * Feature được bật/tắt theo gói dịch vụ
+ * Dùng cho dynamic sidebar và route protection
+ */
+export interface PlanFeature {
+  code: string; // "ATTENDANCE", "PAYROLL", "LEAVE", etc.
+  enabled: boolean;
+}
+
+/**
+ * Response từ API /api/plans/{planId}/features
+ */
+export interface PlanFeaturesResponse {
+  planId: number;
+  planName: string;
+  features: PlanFeature[];
+}
+
+/**
+ * Context type cho PlanFeatures
+ */
+export interface PlanFeaturesContextType {
+  features: PlanFeature[];
+  isLoading: boolean;
+  hasFeature: (code: string) => boolean;
+  refresh: () => Promise<void>;
+}

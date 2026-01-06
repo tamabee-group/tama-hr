@@ -12,4 +12,5 @@ export interface RegisterFormData {
   confirmPassword: string;
   zipcode: string;
   referralCode: string;
+  tenantDomain: string;
 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { WalletResponse } from "@/types/wallet";
 import { getByCompanyId } from "@/lib/apis/wallet-api";
-import { WalletCard } from "@/app/[locale]/(AdminLayout)/company/wallet/_wallet-card";
+import { SharedWalletCard as WalletCard } from "@/app/[locale]/(AdminLayout)/_components/_shared/_wallet-card";
 import { AdminTransactionTable } from "./_admin-transaction-table";
 import { RefundForm } from "../_refund-form";
 import { DirectWalletForm, DirectWalletOperation } from "./_direct-wallet-form";

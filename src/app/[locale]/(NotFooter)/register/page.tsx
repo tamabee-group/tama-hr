@@ -43,6 +43,7 @@ const RegisterPage: NextPage = () => {
     confirmPassword: "",
     zipcode: "9500911",
     referralCode: "",
+    tenantDomain: "",
   });
 
   const { address, loading } = useZipcode(
@@ -91,6 +92,7 @@ const RegisterPage: NextPage = () => {
         password: formData.password,
         zipcode: zipcode || undefined,
         referralCode: formData.referralCode || undefined,
+        tenantDomain: formData.tenantDomain,
       });
 
       const user = await loginApi(formData.email, formData.password);

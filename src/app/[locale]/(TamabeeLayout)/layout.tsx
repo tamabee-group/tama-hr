@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
-import { BreadcrumbRouter } from "@/app/[locale]/(AdminLayout)/_components/_breadcrumb-router";
 import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { SidebarLogo } from "@/app/[locale]/_components/_logo";
 import { useAuth } from "@/hooks/use-auth";
@@ -14,6 +13,7 @@ import { usePendingDepositsCount } from "@/hooks/use-pending-deposits-count";
 import { ADMIN_MENU_ITEMS, type MenuItem } from "@/constants/menu-items";
 import { filterMenuItems } from "@/lib/utils/filter-menu-items";
 import type { SidebarGroup, SidebarHeaderConfig } from "@/types/sidebar";
+import { BreadcrumbRouter } from "../_components/_shared/_breadcrumb-router";
 
 /**
  * Chuyển đổi MenuItem[] sang SidebarGroup[] format

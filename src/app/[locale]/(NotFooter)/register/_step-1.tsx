@@ -453,7 +453,7 @@ const Step1: NextPage<Props> = ({
             <button
               type="button"
               onClick={() => setLoginOpen(true)}
-              className="text-primary cursor-pointer dark:text-(--blue-light) hover:underline font-medium"
+              className="text-primary cursor-pointer hover:underline font-medium"
             >
               {t("login")}
             </button>

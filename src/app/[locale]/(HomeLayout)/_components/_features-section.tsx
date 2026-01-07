@@ -63,7 +63,7 @@ export async function FeaturesSection() {
                     alt={t(`${feature.key}Title`)}
                     width={120}
                     height={120}
-                    className="object-cover aspect-square rounded-md group-hover:scale-105 transition-transform duration-300"
+                    className="object-cover aspect-square rounded-md border border-primary group-hover:scale-105 transition-transform duration-300"
                   />
 
                   {/* Content */}

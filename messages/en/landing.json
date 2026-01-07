@@ -73,6 +73,7 @@
     "title": "Transparent Pricing",
     "subtitle": "Choose the plan that fits your business size",
     "error": "Unable to load pricing plans",
+    "free": "Free",
     "perMonth": "/month",
     "maxEmployees": "Max employees",
     "features": "Features",

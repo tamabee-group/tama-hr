@@ -73,6 +73,7 @@
     "title": "透明な料金体系",
     "subtitle": "企業規模に合ったプランをお選びください",
     "error": "料金プランを読み込めませんでした",
+    "free": "無料",
     "perMonth": "/月",
     "maxEmployees": "最大従業員数",
     "features": "機能",

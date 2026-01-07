@@ -58,9 +58,9 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
     },
     items: [
       { href: "/admin/companies", labelKey: "customers", icon: Building2 },
-      { href: "/tamabee/users", labelKey: "users", icon: Users },
+      { href: "/admin/users", labelKey: "users", icon: Users },
       { href: "/admin/deposits", labelKey: "deposits", icon: Wallet },
-      { href: "/tamabee/settings", labelKey: "settings", icon: Settings },
+      { href: "/admin/settings", labelKey: "settings", icon: Settings },
     ],
   },
   // Tamabee Manager - Quản lý công ty và deposits

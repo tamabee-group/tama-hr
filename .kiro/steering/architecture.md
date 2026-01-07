@@ -5,34 +5,42 @@
 ```
 src/
 ├── app/[locale]/
-│   ├── (HomeLayout)/       # Public pages (landing)
-│   ├── (NotFooter)/        # Auth pages (login, register)
-│   ├── (AdminLayout)/
-│   │   ├── tamabee/        # Tamabee admin
-│   │   ├── company/        # Company admin
-│   │   └── employee/       # Employee pages
-│   └── _components/        # Shared components
-│       └── _base/          # BaseTable, BaseSidebar
-├── components/ui/          # Shadcn/ui
+│   ├── (HomeLayout)/           # Public pages (landing, pricing)
+│   ├── (NotFooter)/            # Auth pages (login, register)
+│   ├── (TamabeeLayout)/        # Platform management (Tamabee admin only)
+│   │   └── admin/
+│   │       ├── companies/      # Quản lý công ty khách hàng
+│   │       ├── deposits/       # Quản lý nạp tiền
+│   │       ├── plans/          # Quản lý gói dịch vụ
+│   │       └── settings/       # Cấu hình platform
+│   ├── (DashboardLayout)/      # HR features (tất cả users kể cả Tamabee)
+│   │   └── dashboard/
+│   │       ├── attendance/     # Chấm công
+│   │       ├── payroll/        # Bảng lương
+│   │       ├── employees/      # Quản lý nhân viên
+│   │       ├── settings/       # Cấu hình công ty
+│   │       └── ...
+│   └── _components/            # Shared components
+│       └── _base/              # BaseTable, BaseSidebar
+├── components/ui/              # Shadcn/ui
 ├── lib/
-│   ├── apis/               # API functions
-│   ├── auth/               # Auth utilities
-│   └── utils/              # Utilities (format-date, format-currency, get-error-message)
-├── types/                  # TypeScript types
-├── hooks/                  # Custom hooks
-├── constants/              # Constants
-└── messages/               # i18n (vi.json, en.json, ja.json)
+│   ├── apis/                   # API functions
+│   ├── auth/                   # Auth utilities
+│   └── utils/                  # Utilities (format-date, format-currency, get-error-message)
+├── types/                      # TypeScript types
+├── hooks/                      # Custom hooks
+├── constants/                  # Constants
+└── messages/                   # i18n (vi.json, en.json, ja.json)
 ```
 
 ## Layout Access
 
-| Layout      | Path                      | Roles                          |
-| ----------- | ------------------------- | ------------------------------ |
-| HomeLayout  | `/(HomeLayout)`           | Public                         |
-| NotFooter   | `/(NotFooter)`            | Public (auth)                  |
-| AdminLayout | `/(AdminLayout)/tamabee`  | ADMIN_TAMABEE, MANAGER_TAMABEE |
-| AdminLayout | `/(AdminLayout)/company`  | ADMIN_COMPANY, MANAGER_COMPANY |
-| AdminLayout | `/(AdminLayout)/employee` | EMPLOYEE_COMPANY               |
+| Layout          | Path                             | Roles                                   |
+| --------------- | -------------------------------- | --------------------------------------- |
+| HomeLayout      | `/(HomeLayout)`                  | Public                                  |
+| NotFooter       | `/(NotFooter)`                   | Public (auth)                           |
+| TamabeeLayout   | `/(TamabeeLayout)/admin/*`       | ADMIN_TAMABEE, MANAGER_TAMABEE          |
+| DashboardLayout | `/(DashboardLayout)/dashboard/*` | All authenticated users (kể cả Tamabee) |
 
 ## Component Placement
 
@@ -42,18 +50,13 @@ src/
 
 ```
 # Component chỉ 1 page dùng
-app/[locale]/(AdminLayout)/tamabee/deposits/
+app/[locale]/(TamabeeLayout)/admin/deposits/
 ├── page.tsx
 ├── _deposit-table.tsx
 └── _deposit-dialog.tsx
 
 # Component share trong layout
-app/[locale]/(AdminLayout)/tamabee/
-├── _components/
-│   └── _stats-card.tsx
-├── deposits/
-└── dashboard/
-```
+app/[locale]/(DashboardLayout)/da
 
 ## File Naming
 
@@ -70,3 +73,4 @@ app/[locale]/(AdminLayout)/tamabee/
 - Pages (`page.tsx`) PHẢI là Server Components
 - `'use client'` chỉ khi cần: useState, useEffect, event handlers
 - Tách interactive logic thành internal component
+```

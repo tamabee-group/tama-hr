@@ -118,7 +118,7 @@ export function LoginForm() {
             {tDialog("noAccount")}{" "}
             <Link
               href="/register"
-              className="text-primary dark:text-(--blue-light) hover:underline font-medium"
+              className="text-primary hover:underline font-medium"
             >
               {tHeader("register")}
             </Link>

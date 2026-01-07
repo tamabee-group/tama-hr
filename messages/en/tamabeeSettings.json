@@ -1,0 +1,37 @@
+{
+  "title": "System Settings",
+  "description": "Manage Tamabee system configuration",
+  "keys": {
+    "FREE_TRIAL_MONTHS": "Free Trial Months",
+    "REFERRAL_BONUS_MONTHS": "Referral Bonus Months",
+    "DEFAULT_PLAN_ID": "Default Plan",
+    "COMMISSION_AMOUNT": "Commission Amount",
+    "MIN_DEPOSIT_AMOUNT": "Minimum Deposit",
+    "BANK_NAME": "Bank Name",
+    "BANK_ACCOUNT": "Bank Account",
+    "BANK_ACCOUNT_NAME": "Account Holder"
+  },
+  "descriptions": {
+    "FREE_TRIAL_MONTHS": "Free trial months for new companies",
+    "REFERRAL_BONUS_MONTHS": "Additional free months with referral code",
+    "DEFAULT_PLAN_ID": "Default plan for new companies during free trial",
+    "COMMISSION_AMOUNT": "Fixed referral commission amount (JPY)",
+    "MIN_DEPOSIT_AMOUNT": "Minimum deposit amount (JPY)",
+    "BANK_NAME": "Bank name for deposits",
+    "BANK_ACCOUNT": "Bank account number",
+    "BANK_ACCOUNT_NAME": "Account holder name"
+  },
+  "units": {
+    "months": "months",
+    "jpy": "¥"
+  },
+  "messages": {
+    "updateSuccess": "Settings updated successfully",
+    "updateError": "Failed to update settings"
+  },
+  "groups": {
+    "trial": "Trial",
+    "referral": "Referral",
+    "banking": "Banking"
+  }
+}

@@ -55,10 +55,18 @@ export function LandingPlanCard({
 
       <CardContent className="flex-1 space-y-4">
         <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold text-primary">
-            {formatCurrency(plan.monthlyPrice, locale)}
-          </span>
-          <span className="text-muted-foreground">{t("perMonth")}</span>
+          {plan.monthlyPrice === 0 ? (
+            <span className="text-3xl font-bold text-green-600">
+              {t("free")}
+            </span>
+          ) : (
+            <>
+              <span className="text-3xl font-bold text-primary">
+                {formatCurrency(plan.monthlyPrice, locale)}
+              </span>
+              <span className="text-muted-foreground">{t("perMonth")}</span>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

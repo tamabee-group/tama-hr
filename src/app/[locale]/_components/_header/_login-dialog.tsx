@@ -143,7 +143,7 @@ export function LoginDialog({
             {tDialog("noAccount")}{" "}
             <Link
               href={`/${locale}/register`}
-              className="text-primary dark:text-(--blue-light) hover:underline font-medium"
+              className="text-primary hover:underline font-medium"
               onClick={() => onOpenChange(false)}
             >
               {tHeader("register")}

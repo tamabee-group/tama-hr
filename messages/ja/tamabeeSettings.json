@@ -1,0 +1,37 @@
+{
+  "title": "システム設定",
+  "description": "Tamabeeシステム設定の管理",
+  "keys": {
+    "FREE_TRIAL_MONTHS": "無料期間",
+    "REFERRAL_BONUS_MONTHS": "紹介ボーナス期間",
+    "DEFAULT_PLAN_ID": "デフォルトプラン",
+    "COMMISSION_AMOUNT": "紹介手数料",
+    "MIN_DEPOSIT_AMOUNT": "最低入金額",
+    "BANK_NAME": "銀行名",
+    "BANK_ACCOUNT": "口座番号",
+    "BANK_ACCOUNT_NAME": "口座名義"
+  },
+  "descriptions": {
+    "FREE_TRIAL_MONTHS": "新規会社の無料期間（月）",
+    "REFERRAL_BONUS_MONTHS": "紹介コード使用時の追加無料期間（月）",
+    "DEFAULT_PLAN_ID": "無料期間中の新規会社のデフォルトプラン",
+    "COMMISSION_AMOUNT": "紹介手数料の固定金額（円）",
+    "MIN_DEPOSIT_AMOUNT": "最低入金額（円）",
+    "BANK_NAME": "入金先銀行名",
+    "BANK_ACCOUNT": "入金先口座番号",
+    "BANK_ACCOUNT_NAME": "口座名義"
+  },
+  "units": {
+    "months": "ヶ月",
+    "jpy": "¥"
+  },
+  "messages": {
+    "updateSuccess": "設定を更新しました",
+    "updateError": "設定の更新に失敗しました"
+  },
+  "groups": {
+    "trial": "トライアル",
+    "referral": "紹介",
+    "banking": "銀行"
+  }
+}

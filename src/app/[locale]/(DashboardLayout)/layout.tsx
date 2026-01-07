@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
-import { BreadcrumbRouter } from "@/app/[locale]/(AdminLayout)/_components/_breadcrumb-router";
+import { BreadcrumbRouter } from "@/app/[locale]/_components/_shared/_breadcrumb-router";
 import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlanFeatures } from "@/hooks/use-plan-features";

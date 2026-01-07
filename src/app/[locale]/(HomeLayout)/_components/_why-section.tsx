@@ -14,7 +14,7 @@ export async function WhySection() {
   ];
 
   return (
-    <section className="py-20 bg-muted/50 relative z-10">
+    <section className="py-20 bg-background relative z-10">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left - Content */}
@@ -42,19 +42,19 @@ export async function WhySection() {
 
           {/* Right - Stats Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-background rounded-2xl p-6 shadow-lg">
+            <div className="bg-background rounded-2xl p-6 shadow-lg border">
               <div className="text-4xl font-bold text-primary mb-2">80%</div>
               <div className="text-sm text-muted-foreground">{t("stat1")}</div>
             </div>
-            <div className="bg-background rounded-2xl p-6 shadow-lg">
+            <div className="bg-background rounded-2xl p-6 shadow-lg border">
               <div className="text-4xl font-bold text-primary mb-2">50%</div>
               <div className="text-sm text-muted-foreground">{t("stat2")}</div>
             </div>
-            <div className="bg-background rounded-2xl p-6 shadow-lg">
+            <div className="bg-background rounded-2xl p-6 shadow-lg border">
               <div className="text-4xl font-bold text-primary mb-2">24/7</div>
               <div className="text-sm text-muted-foreground">{t("stat3")}</div>
             </div>
-            <div className="bg-background rounded-2xl p-6 shadow-lg">
+            <div className="bg-background rounded-2xl p-6 shadow-lg border">
               <div className="text-4xl font-bold text-primary mb-2">3</div>
               <div className="text-sm text-muted-foreground">{t("stat4")}</div>
             </div>

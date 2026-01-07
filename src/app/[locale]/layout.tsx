@@ -8,6 +8,7 @@ import { ThemeProvider } from "./_components/_theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { setRequestLocale } from "next-intl/server";
 import { AuthProvider } from "@/lib/auth";
+import { PlanFeaturesProvider } from "@/providers/plan-features-provider";
 import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
@@ -63,8 +64,14 @@ export default async function RootLayout({ children, params }: Props) {
           >
             <NextTopLoader />
             <AuthProvider>
-              <Toaster position="top-right" duration={2000} richColors={true} />
-              {children}
+              <PlanFeaturesProvider>
+                <Toaster
+                  position="top-right"
+                  duration={2000}
+                  richColors={true}
+                />
+                {children}
+              </PlanFeaturesProvider>
             </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

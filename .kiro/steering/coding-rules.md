@@ -68,3 +68,4 @@ const t = await getTranslations("deposits");
 
 - Viết bằng tiếng Việt
 - KHÔNG comment "Requirements"
+- Chạy npx tsc --noEmit 2>&1 thay vì npx next lint

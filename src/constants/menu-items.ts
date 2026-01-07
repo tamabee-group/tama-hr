@@ -57,20 +57,20 @@ const ADMIN_ROLES: UserRole[] = ["ADMIN_TAMABEE", "ADMIN_COMPANY"];
 /**
  * ADMIN_MENU_ITEMS - Menu cho platform management (Tamabee admin only)
  * Sử dụng trong TamabeeLayout cho /admin/* routes
+ * Theo spec: companies, deposits, plans + link đến dashboard
  */
 export const ADMIN_MENU_ITEMS: MenuItem[] = [
+  {
+    code: "dashboard",
+    labelKey: "sidebar.items.dashboard",
+    icon: LayoutDashboard,
+    href: "/dashboard",
+  },
   {
     code: "companies",
     labelKey: "sidebar.items.customers",
     icon: Building,
     href: "/admin/companies",
-  },
-  {
-    code: "plans",
-    labelKey: "sidebar.items.plans",
-    icon: Package,
-    href: "/admin/plans",
-    roles: ["ADMIN_TAMABEE"],
   },
   {
     code: "deposits",
@@ -80,28 +80,17 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     badgeKey: "pendingDeposits",
   },
   {
-    code: "wallets",
-    labelKey: "sidebar.items.wallets",
-    icon: Wallet,
-    href: "/tamabee/wallets",
-  },
-  {
-    code: "users",
-    labelKey: "sidebar.items.users",
-    icon: UsersRound,
-    href: "/tamabee/users",
-  },
-  {
-    code: "commissions",
-    labelKey: "sidebar.items.commissions",
-    icon: Coins,
-    href: "/tamabee/commissions",
+    code: "plans",
+    labelKey: "sidebar.items.plans",
+    icon: Package,
+    href: "/admin/plans",
+    roles: ["ADMIN_TAMABEE"],
   },
   {
     code: "settings",
     labelKey: "sidebar.items.settings",
     icon: Settings,
-    href: "/tamabee/settings",
+    href: "/admin/settings",
     roles: ["ADMIN_TAMABEE"],
   },
 ];

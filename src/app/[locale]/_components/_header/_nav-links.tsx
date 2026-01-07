@@ -35,7 +35,7 @@ const NavLinks: NextPage = () => {
         href={isHomePage ? "#hero" : "/#hero"}
         onClick={(e) => handleSmoothScroll(e, "hero")}
         className={cn(
-          "dark:hover:text-(--blue-light) border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary",
+          "border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary",
         )}
       >
         {t("home")}
@@ -43,14 +43,14 @@ const NavLinks: NextPage = () => {
       <Link
         href={isHomePage ? "#features" : "/#features"}
         onClick={(e) => handleSmoothScroll(e, "features")}
-        className="dark:hover:text-(--blue-light) border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary"
+        className="border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary"
       >
         {t("features")}
       </Link>
       <Link
         href={isHomePage ? "#pricing" : "/#pricing"}
         onClick={(e) => handleSmoothScroll(e, "pricing")}
-        className="dark:hover:text-(--blue-light) border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary"
+        className="border-b-2 border-transparent transition flex-1 text-nowrap hover:text-primary"
       >
         {t("pricing")}
       </Link>

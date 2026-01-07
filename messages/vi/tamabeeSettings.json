@@ -1,0 +1,37 @@
+{
+  "title": "Cấu hình hệ thống",
+  "description": "Quản lý các thông số cấu hình của Tamabee",
+  "keys": {
+    "FREE_TRIAL_MONTHS": "Số tháng miễn phí",
+    "REFERRAL_BONUS_MONTHS": "Tháng bonus giới thiệu",
+    "DEFAULT_PLAN_ID": "Plan mặc định",
+    "COMMISSION_AMOUNT": "Hoa hồng giới thiệu",
+    "MIN_DEPOSIT_AMOUNT": "Số tiền nạp tối thiểu",
+    "BANK_NAME": "Tên ngân hàng",
+    "BANK_ACCOUNT": "Số tài khoản",
+    "BANK_ACCOUNT_NAME": "Tên chủ tài khoản"
+  },
+  "descriptions": {
+    "FREE_TRIAL_MONTHS": "Số tháng miễn phí cho company mới đăng ký",
+    "REFERRAL_BONUS_MONTHS": "Số tháng miễn phí thêm khi có mã giới thiệu",
+    "DEFAULT_PLAN_ID": "Plan mặc định cho company mới trong thời gian miễn phí",
+    "COMMISSION_AMOUNT": "Số tiền hoa hồng giới thiệu cố định (JPY)",
+    "MIN_DEPOSIT_AMOUNT": "Số tiền nạp tối thiểu (JPY)",
+    "BANK_NAME": "Tên ngân hàng nhận tiền",
+    "BANK_ACCOUNT": "Số tài khoản nhận tiền",
+    "BANK_ACCOUNT_NAME": "Tên chủ tài khoản"
+  },
+  "units": {
+    "months": "tháng",
+    "jpy": "¥"
+  },
+  "messages": {
+    "updateSuccess": "Cập nhật cấu hình thành công",
+    "updateError": "Cập nhật cấu hình thất bại"
+  },
+  "groups": {
+    "trial": "Dùng thử",
+    "referral": "Giới thiệu",
+    "banking": "Ngân hàng"
+  }
+}

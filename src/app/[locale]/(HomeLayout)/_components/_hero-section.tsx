@@ -9,7 +9,10 @@ export async function HeroSection() {
   const t = await getTranslations("landing.hero");
 
   return (
-    <section id="hero" className="relative min-h-screen overflow-hidden">
+    <section
+      id="hero"
+      className="relative lg:h-screen 2xl:h-auto overflow-hidden flex items-center"
+    >
       {/* Background gradient */}
       <div className="absolute inset-0 bg-linear-to-br from-slate-50 via-white to-cyan-50/30 dark:from-[#0f0f1a] dark:via-[#1a1a2e] dark:to-[#1a1a2e]" />
 

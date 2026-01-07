@@ -33,6 +33,7 @@ export const NAMESPACES = [
   "shifts",
   "sidebar",
   "support",
+  "tamabeeSettings",
   "users",
   "validation",
   "wallet",

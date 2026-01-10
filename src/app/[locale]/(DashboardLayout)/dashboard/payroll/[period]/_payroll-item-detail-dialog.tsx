@@ -148,7 +148,7 @@ export function PayrollItemDetailDialog({
           <Section title={t("breakdown.baseSalary")}>
             <Row
               label={getEnumLabel("salaryType", item.salaryType, tEnums)}
-              value={formatCurrency(item.baseSalary, locale)}
+              value={formatCurrency(item.baseSalary)}
             />
             <Row
               label={t("breakdown.workingDays")}
@@ -161,21 +161,21 @@ export function PayrollItemDetailDialog({
             {/* Hiển thị công thức tính dựa trên salary type */}
             {item.salaryType === "DAILY" && (
               <Row
-                label={`${formatCurrency(item.baseSalary, locale)} × ${item.workingDays}`}
+                label={`${formatCurrency(item.baseSalary)} × ${item.workingDays}`}
                 value=""
                 className="text-muted-foreground text-xs"
               />
             )}
             {item.salaryType === "HOURLY" && (
               <Row
-                label={`${formatCurrency(item.baseSalary, locale)} × ${item.workingHours}h`}
+                label={`${formatCurrency(item.baseSalary)} × ${item.workingHours}h`}
                 value=""
                 className="text-muted-foreground text-xs"
               />
             )}
             <Row
               label={t("breakdown.baseSalary")}
-              value={formatCurrency(item.calculatedBaseSalary, locale)}
+              value={formatCurrency(item.calculatedBaseSalary)}
               highlight
             />
           </Section>
@@ -189,30 +189,30 @@ export function PayrollItemDetailDialog({
                 {item.regularOvertimeMinutes > 0 && (
                   <Row
                     label={t("breakdown.regularOvertime")}
-                    value={`${Math.round(item.regularOvertimeMinutes / 60)}h → ${formatCurrency(item.regularOvertimePay, locale)}`}
+                    value={`${Math.round(item.regularOvertimeMinutes / 60)}h → ${formatCurrency(item.regularOvertimePay)}`}
                   />
                 )}
                 {item.nightOvertimeMinutes > 0 && (
                   <Row
                     label={t("breakdown.nightOvertime")}
-                    value={`${Math.round(item.nightOvertimeMinutes / 60)}h → ${formatCurrency(item.nightOvertimePay, locale)}`}
+                    value={`${Math.round(item.nightOvertimeMinutes / 60)}h → ${formatCurrency(item.nightOvertimePay)}`}
                   />
                 )}
                 {item.holidayOvertimeMinutes > 0 && (
                   <Row
                     label={t("breakdown.holidayOvertime")}
-                    value={`${Math.round(item.holidayOvertimeMinutes / 60)}h → ${formatCurrency(item.holidayOvertimePay, locale)}`}
+                    value={`${Math.round(item.holidayOvertimeMinutes / 60)}h → ${formatCurrency(item.holidayOvertimePay)}`}
                   />
                 )}
                 {item.weekendOvertimeMinutes > 0 && (
                   <Row
                     label={t("breakdown.weekendOvertime")}
-                    value={`${Math.round(item.weekendOvertimeMinutes / 60)}h → ${formatCurrency(item.weekendOvertimePay, locale)}`}
+                    value={`${Math.round(item.weekendOvertimeMinutes / 60)}h → ${formatCurrency(item.weekendOvertimePay)}`}
                   />
                 )}
                 <Row
                   label={t("breakdown.totalOvertime")}
-                  value={formatCurrency(item.totalOvertimePay, locale)}
+                  value={formatCurrency(item.totalOvertimePay)}
                   highlight
                   className="text-blue-600"
                 />
@@ -232,12 +232,12 @@ export function PayrollItemDetailDialog({
                   <Row
                     key={index}
                     label={`${allowance.name}${allowance.taxable ? "" : " *"}`}
-                    value={formatCurrency(allowance.amount, locale)}
+                    value={formatCurrency(allowance.amount)}
                   />
                 ))}
                 <Row
                   label={t("breakdown.totalAllowances")}
-                  value={formatCurrency(item.totalAllowances, locale)}
+                  value={formatCurrency(item.totalAllowances)}
                   highlight
                   className="text-green-600"
                 />
@@ -257,7 +257,7 @@ export function PayrollItemDetailDialog({
                   <Row
                     key={index}
                     label={deduction.name}
-                    value={`-${formatCurrency(deduction.amount, locale)}`}
+                    value={`-${formatCurrency(deduction.amount)}`}
                     className="text-red-600"
                   />
                 ))}
@@ -267,13 +267,13 @@ export function PayrollItemDetailDialog({
             {item.breakDeductionAmount > 0 && (
               <Row
                 label={`${t("breakdown.breakDeduction")} (${item.totalBreakMinutes} ${tCommon("minutes")})`}
-                value={`-${formatCurrency(item.breakDeductionAmount, locale)}`}
+                value={`-${formatCurrency(item.breakDeductionAmount)}`}
                 className="text-red-600"
               />
             )}
             <Row
               label={t("breakdown.totalDeductions")}
-              value={`-${formatCurrency(item.totalDeductions, locale)}`}
+              value={`-${formatCurrency(item.totalDeductions)}`}
               highlight
               className="text-red-600"
             />
@@ -305,7 +305,7 @@ export function PayrollItemDetailDialog({
                             }
                           >
                             {adj.amount >= 0 ? "+" : ""}
-                            {formatCurrency(adj.amount, locale)}
+                            {formatCurrency(adj.amount)}
                           </span>
                           <span className="text-muted-foreground">
                             {formatDateTime(adj.adjustedAt, locale)}
@@ -338,12 +338,12 @@ export function PayrollItemDetailDialog({
                 {t("breakdown.overtime")} + {t("breakdown.allowances")}
               </p>
               <p className="mt-1">
-                = {formatCurrency(item.calculatedBaseSalary, locale)} +{" "}
-                {formatCurrency(item.totalOvertimePay, locale)} +{" "}
-                {formatCurrency(item.totalAllowances, locale)}
+                = {formatCurrency(item.calculatedBaseSalary)} +{" "}
+                {formatCurrency(item.totalOvertimePay)} +{" "}
+                {formatCurrency(item.totalAllowances)}
               </p>
               <p className="mt-1 font-bold">
-                = {formatCurrency(item.grossSalary, locale)}
+                = {formatCurrency(item.grossSalary)}
               </p>
             </div>
             <div className="p-3 bg-muted rounded-md text-sm font-mono mt-2">
@@ -355,14 +355,14 @@ export function PayrollItemDetailDialog({
                   : ""}
               </p>
               <p className="mt-1">
-                = {formatCurrency(item.grossSalary, locale)} -{" "}
-                {formatCurrency(item.totalDeductions, locale)}
+                = {formatCurrency(item.grossSalary)} -{" "}
+                {formatCurrency(item.totalDeductions)}
                 {item.adjustmentAmount
-                  ? ` ${item.adjustmentAmount >= 0 ? "+" : ""} ${formatCurrency(item.adjustmentAmount, locale)}`
+                  ? ` ${item.adjustmentAmount >= 0 ? "+" : ""} ${formatCurrency(item.adjustmentAmount)}`
                   : ""}
               </p>
               <p className="mt-1 font-bold text-green-600">
-                = {formatCurrency(item.netSalary, locale)}
+                = {formatCurrency(item.netSalary)}
               </p>
             </div>
           </Section>

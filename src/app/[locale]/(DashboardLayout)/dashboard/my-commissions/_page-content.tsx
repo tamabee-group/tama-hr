@@ -108,7 +108,7 @@ export function EmployeeCommissionsPageContent() {
       header: t("table.amount"),
       cell: ({ row }) => (
         <span className="font-medium text-green-600">
-          {formatCurrency(row.getValue("amount"), locale)}
+          {formatCurrency(row.getValue("amount"))}
         </span>
       ),
     },
@@ -171,7 +171,7 @@ export function EmployeeCommissionsPageContent() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">
-                {formatCurrency(summary.totalAmount, locale)}
+                {formatCurrency(summary.totalAmount)}
               </p>
               <p className="text-xs text-muted-foreground">
                 {summary.totalCommissions} {t("summary.commissions")}
@@ -187,7 +187,7 @@ export function EmployeeCommissionsPageContent() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold text-yellow-600">
-                {formatCurrency(summary.pendingAmount, locale)}
+                {formatCurrency(summary.pendingAmount)}
               </p>
               <p className="text-xs text-muted-foreground">
                 {summary.pendingCommissions} {t("summary.commissions")}
@@ -203,7 +203,7 @@ export function EmployeeCommissionsPageContent() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(summary.eligibleAmount || 0, locale)}
+                {formatCurrency(summary.eligibleAmount || 0)}
               </p>
               <p className="text-xs text-muted-foreground">
                 {summary.eligibleCommissions || 0} {t("summary.commissions")}
@@ -219,7 +219,7 @@ export function EmployeeCommissionsPageContent() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.paidAmount, locale)}
+                {formatCurrency(summary.paidAmount)}
               </p>
               <p className="text-xs text-muted-foreground">
                 {summary.paidCommissions} {t("summary.commissions")}

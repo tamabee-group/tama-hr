@@ -159,7 +159,7 @@ export function SalaryConfigHistory({
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{getSalaryTypeLabel(config.salaryType)}</TableCell>
                 <TableCell className="font-medium">
-                  {formatCurrency(amount || 0, locale)}
+                  {formatCurrency(amount || 0)}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">

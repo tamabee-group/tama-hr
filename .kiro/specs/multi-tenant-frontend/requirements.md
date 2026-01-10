@@ -6,7 +6,7 @@ Refactor frontend Tamabee HR để hỗ trợ kiến trúc multi-tenant với dy
 
 ## Glossary
 
-- **Tenant_Domain**: Subdomain riêng cho mỗi công ty (ví dụ: `acme` trong `acme.tamabee.com`)
+- **Tenant_Domain**: Subdomain riêng cho mỗi công ty (ví dụ: `acme` trong `acme.tamabee.vn`)
 - **Plan_Feature**: Tính năng được bật/tắt theo gói dịch vụ của công ty
 - **Dynamic_Sidebar**: Sidebar hiển thị menu items dựa trên plan features và user role
 - **TamabeeLayout**: Layout cho Tamabee admin (không cần tenantDomain)
@@ -20,7 +20,7 @@ Refactor frontend Tamabee HR để hỗ trợ kiến trúc multi-tenant với dy
 
 #### Acceptance Criteria
 
-1. WHEN a user is on Step 1 of registration, THE Form SHALL display a tenant domain input field with `.tamabee.com` suffix
+1. WHEN a user is on Step 1 of registration, THE Form SHALL display a tenant domain input field with `.tamabee.vn` suffix
 2. WHEN a user types in tenant domain field, THE System SHALL validate format (lowercase, numbers, hyphens, 3-30 chars) in real-time
 3. WHEN a user stops typing for 500ms, THE System SHALL call API to check domain availability
 4. WHEN domain is available, THE System SHALL display green checkmark with "Domain khả dụng" message

@@ -10,7 +10,8 @@
     "learnMore": "Tìm hiểu thêm",
     "feature1": "Chấm công tự động",
     "feature2": "Tính lương chính xác",
-    "feature3": "Báo cáo nhanh chóng",
+    "freeTrialInfo": "Dùng thử miễn phí {months} tháng",
+    "referralBonus": "+{months} tháng nếu có mã giới thiệu",
     "cardTitle": "Tự động hóa",
     "cardSubtitle": "Tiết kiệm 80% thời gian",
     "ctaSecondary": "XEM BẢNG GIÁ",
@@ -65,19 +66,24 @@
   },
   "cta": {
     "title": "Sẵn sàng nâng cấp quản lý nhân sự?",
-    "description": "Đăng ký ngay hôm nay và trải nghiệm 14 ngày miễn phí. Không cần thẻ tín dụng.",
+    "description": "Đăng ký ngay hôm nay và trải nghiệm {months} tháng miễn phí. Không cần thẻ tín dụng.",
     "button": "Bắt đầu miễn phí",
     "viewPricing": "Xem bảng giá"
   },
   "pricing": {
     "title": "Bảng giá minh bạch",
     "subtitle": "Chọn gói phù hợp với quy mô doanh nghiệp của bạn",
+    "freeTrialNote": "Tất cả gói đều được dùng thử miễn phí {months} tháng với đầy đủ tính năng",
     "error": "Không thể tải danh sách gói dịch vụ",
     "free": "Miễn phí",
     "perMonth": "/tháng",
-    "maxEmployees": "Tối đa nhân viên",
+    "perEmployee": "/người/tháng",
+    "maxEmployees": "Tối đa",
+    "unlimited": "Không giới hạn nhân viên",
     "features": "Tính năng",
-    "registerNow": "Đăng ký ngay"
+    "registerNow": "Đăng ký ngay",
+    "referralBonus": "+{months} tháng nếu có mã giới thiệu",
+    "contactUs": "Liên hệ"
   },
   "footer": {
     "copyright": "© {year} Tamabee. Bảo lưu mọi quyền.",

@@ -1,6 +1,9 @@
 {
   "groups": {
     "overview": "概要",
+    "myWorkspace": "マイワークスペース",
+    "hrManagement": "人事管理",
+    "settings": "設定",
     "management": "管理",
     "finance": "財務",
     "system": "システム",
@@ -12,12 +15,14 @@
   "items": {
     "home": "ホーム",
     "dashboard": "ダッシュボード",
+    "platformAdmin": "プラットフォーム管理",
     "users": "人事",
     "employees": "社員",
     "addEmployee": "社員追加",
     "customers": "顧客",
     "plans": "プラン",
     "wallets": "ウォレット",
+    "wallet": "ウォレット",
     "deposits": "入金",
     "commissions": "コミッション",
     "settings": "設定",
@@ -40,6 +45,7 @@
     "mySchedule": "マイスケジュール",
     "myPayroll": "マイ給与",
     "myLeave": "マイ休暇",
+    "myProfile": "マイプロフィール",
     "shifts": "シフト管理",
     "contracts": "契約"
   },

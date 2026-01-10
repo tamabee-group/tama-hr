@@ -12,5 +12,10 @@
   "addNew": "新規追加",
   "wallet": "ウォレット",
   "companyInfo": "会社情報",
-  "settings": "設定"
+  "settings": "設定",
+  "attendance": "勤怠",
+  "myAttendance": "マイ勤怠",
+  "payroll": "給与",
+  "myPayslip": "マイ給与明細",
+  "leaves": "休暇"
 }

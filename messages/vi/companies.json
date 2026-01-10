@@ -47,6 +47,18 @@
     "autoFillAddress": "Đang tự nhập địa chỉ...",
     "logo": "Logo"
   },
+  "subscription": {
+    "title": "Thông tin dịch vụ",
+    "plan": "Gói dịch vụ",
+    "monthlyPrice": "Phí hàng tháng",
+    "maxEmployees": "Số nhân viên tối đa",
+    "unlimited": "Không giới hạn",
+    "walletBalance": "Số dư ví",
+    "freeTrialEnd": "Hết hạn dùng thử",
+    "nextBilling": "Thanh toán tiếp theo",
+    "lastBilling": "Thanh toán gần nhất",
+    "manageWallet": "Quản lý ví"
+  },
   "messages": {
     "createSuccess": "Tạo công ty thành công",
     "updateSuccess": "Cập nhật công ty thành công",

@@ -120,7 +120,7 @@ export function SupportTransactionTable({
             )}
           >
             {isPositive ? "+" : "-"}
-            {formatCurrency(amount, locale)}
+            {formatCurrency(amount)}
           </span>
         );
       },
@@ -128,7 +128,9 @@ export function SupportTransactionTable({
     {
       accessorKey: "balanceAfter",
       header: t("table.balanceAfter"),
-      cell: ({ row }) => formatCurrency(row.getValue("balanceAfter"), locale),
+      cell: ({ row }) => {
+        formatCurrency(row.getValue("balanceAfter"));
+      },
     },
     {
       accessorKey: "description",

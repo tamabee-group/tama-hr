@@ -1,6 +1,7 @@
 {
   "title": "Quản lý ví",
   "description": "Xem tổng quan và quản lý ví của tất cả công ty",
+  "companyDescription": "Xem tổng quan và quản lý ví của công ty",
   "balance": "Số dư hiện tại",
   "lastBilling": "Ngày thanh toán gần nhất",
   "nextBilling": "Ngày thanh toán tiếp theo",
@@ -11,6 +12,29 @@
   "notFound": "Không tìm thấy công ty",
   "addBalance": "Thêm tiền",
   "deductBalance": "Trừ tiền",
+  "depositRequest": "Yêu cầu nạp tiền",
+  "tabs": {
+    "all": "Tất cả",
+    "deposit": "Nạp tiền",
+    "billing": "Thanh toán",
+    "refund": "Hoàn tiền"
+  },
+  "card": {
+    "title": "Thông tin ví",
+    "balance": "Số dư hiện tại",
+    "plan": "Gói",
+    "lastBilling": "Thanh toán gần nhất",
+    "nextBilling": "Thanh toán tiếp theo",
+    "freeTrial": "Dùng thử",
+    "deposit": "Nạp tiền",
+    "refund": "Hoàn tiền",
+    "expires": "Hết hạn",
+    "billing": "Thanh toán"
+  },
+  "chart": {
+    "deposit": "Nạp tiền",
+    "billing": "Thanh toán"
+  },
   "table": {
     "company": "Công ty",
     "companyName": "Tên công ty",
@@ -28,7 +52,8 @@
     "amount": "Số tiền",
     "balanceBefore": "Số dư trước",
     "balanceAfter": "Số dư sau",
-    "description": "Mô tả"
+    "description": "Mô tả",
+    "createdAt": "Ngày tạo"
   },
   "transaction": {
     "type": "Loại",

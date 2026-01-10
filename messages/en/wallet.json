@@ -1,6 +1,7 @@
 {
   "title": "Wallet Management",
   "description": "View overview and manage wallets of all companies",
+  "companyDescription": "View overview and manage your company wallet",
   "balance": "Current Balance",
   "lastBilling": "Last Billing Date",
   "nextBilling": "Next Billing Date",
@@ -11,6 +12,29 @@
   "notFound": "Company not found",
   "addBalance": "Add Balance",
   "deductBalance": "Deduct Balance",
+  "depositRequest": "Deposit Request",
+  "tabs": {
+    "all": "All",
+    "deposit": "Deposits",
+    "billing": "Billing",
+    "refund": "Refunds"
+  },
+  "card": {
+    "title": "Wallet Information",
+    "balance": "Current Balance",
+    "plan": "Plan",
+    "lastBilling": "Last Billing",
+    "nextBilling": "Next Billing",
+    "freeTrial": "Free Trial",
+    "deposit": "Deposit",
+    "refund": "Refund",
+    "expires": "Expires",
+    "billing": "Billing"
+  },
+  "chart": {
+    "deposit": "Deposit",
+    "billing": "Billing"
+  },
   "table": {
     "company": "Company",
     "companyName": "Company Name",
@@ -28,7 +52,8 @@
     "amount": "Amount",
     "balanceBefore": "Balance Before",
     "balanceAfter": "Balance After",
-    "description": "Description"
+    "description": "Description",
+    "createdAt": "Created At"
   },
   "transaction": {
     "type": "Type",

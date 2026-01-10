@@ -1,16 +1,27 @@
 export const INDUSTRIES = [
-  { value: "technology", label: "Công nghệ thông tin" },
-  { value: "manufacturing", label: "Sản xuất" },
-  { value: "retail", label: "Bán lẻ" },
-  { value: "finance", label: "Tài chính - Ngân hàng" },
-  { value: "healthcare", label: "Y tế - Chăm sóc sức khỏe" },
-  { value: "education", label: "Giáo dục - Đào tạo" },
-  { value: "construction", label: "Xây dựng" },
-  { value: "hospitality", label: "Khách sạn - Nhà hàng" },
-  { value: "logistics", label: "Vận tải - Logistics" },
-  { value: "other", label: "Khác" },
+  "technology",
+  "manufacturing",
+  "retail",
+  "finance",
+  "healthcare",
+  "education",
+  "construction",
+  "hospitality",
+  "logistics",
+  "other",
 ] as const;
 
-export const getIndustryLabel = (value: string): string => {
-  return INDUSTRIES.find((item) => item.value === value)?.label || value;
+export type Industry = (typeof INDUSTRIES)[number];
+
+/**
+ * Lấy label của industry từ translation function
+ * @param value - industry value
+ * @param t - translation function từ useTranslations("enums.industry")
+ */
+export const getIndustryLabel = (
+  value: string,
+  t?: (key: string) => string,
+): string => {
+  if (!t) return value;
+  return t(value);
 };

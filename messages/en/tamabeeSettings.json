@@ -6,6 +6,7 @@
     "REFERRAL_BONUS_MONTHS": "Referral Bonus Months",
     "DEFAULT_PLAN_ID": "Default Plan",
     "COMMISSION_AMOUNT": "Commission Amount",
+    "CUSTOM_PRICE_PER_EMPLOYEE": "Price per Employee (Custom)",
     "MIN_DEPOSIT_AMOUNT": "Minimum Deposit",
     "BANK_NAME": "Bank Name",
     "BANK_ACCOUNT": "Bank Account",
@@ -16,6 +17,7 @@
     "REFERRAL_BONUS_MONTHS": "Additional free months with referral code",
     "DEFAULT_PLAN_ID": "Default plan for new companies during free trial",
     "COMMISSION_AMOUNT": "Fixed referral commission amount (JPY)",
+    "CUSTOM_PRICE_PER_EMPLOYEE": "Price per employee for Custom plan (JPY)",
     "MIN_DEPOSIT_AMOUNT": "Minimum deposit amount (JPY)",
     "BANK_NAME": "Bank name for deposits",
     "BANK_ACCOUNT": "Bank account number",
@@ -32,6 +34,16 @@
   "groups": {
     "trial": "Trial",
     "referral": "Referral",
-    "banking": "Banking"
+    "banking": "Banking",
+    "other": "Other"
+  },
+  "table": {
+    "name": "Setting Name",
+    "value": "Value",
+    "group": "Group"
+  },
+  "dialog": {
+    "save": "Save",
+    "cancel": "Cancel"
   }
 }

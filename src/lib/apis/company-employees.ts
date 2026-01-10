@@ -81,3 +81,31 @@ export async function uploadCompanyEmployeeAvatar(
 export async function getApprovers(): Promise<ApproverInfo[]> {
   return apiClient.get<ApproverInfo[]>("/api/company/employees/approvers");
 }
+
+/**
+ * Gửi mã xác thực email cho nhân viên trong tenant
+ * Dùng cho: đổi email, xác thực email mới của nhân viên
+ * @client-only
+ */
+export async function sendEmployeeVerificationCode(
+  email: string,
+  language?: string,
+) {
+  const params = new URLSearchParams({ email });
+  if (language) params.append("language", language);
+  return apiClient.post(`/api/company/employees/send-verification?${params}`);
+}
+
+/**
+ * Xác thực mã OTP cho nhân viên trong tenant
+ * @client-only
+ */
+export async function verifyEmployeeEmail(
+  email: string,
+  code: string,
+): Promise<boolean> {
+  const params = new URLSearchParams({ email, code });
+  return apiClient.post<boolean>(
+    `/api/company/employees/verify-email?${params}`,
+  );
+}

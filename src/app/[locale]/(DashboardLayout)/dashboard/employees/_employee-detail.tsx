@@ -348,7 +348,7 @@ export function EmployeeDetail({ employee }: EmployeeDetailProps) {
                     {tSalary("amount")}
                   </p>
                   <p className="text-base font-bold text-green-600">
-                    {formatCurrency(getSalaryAmount(salaryConfig), "ja")}
+                    {formatCurrency(getSalaryAmount(salaryConfig))}
                   </p>
                 </div>
               </div>

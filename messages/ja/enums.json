@@ -152,5 +152,17 @@
     "ACTIVE": "有効",
     "EXPIRED": "期限切れ",
     "TERMINATED": "終了"
+  },
+  "industry": {
+    "technology": "情報技術",
+    "manufacturing": "製造業",
+    "retail": "小売業",
+    "finance": "金融・銀行",
+    "healthcare": "医療・ヘルスケア",
+    "education": "教育・研修",
+    "construction": "建設業",
+    "hospitality": "ホテル・飲食業",
+    "logistics": "運輸・物流",
+    "other": "その他"
   }
 }

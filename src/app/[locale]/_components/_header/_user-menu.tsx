@@ -49,42 +49,41 @@ interface MenuConfig {
 
 // Cấu hình menu cho từng role
 const MENU_CONFIG: Record<UserRole, MenuConfig> = {
-  // Tamabee Admin - Quản lý toàn hệ thống
+  // Tamabee Admin - Quản lý toàn hệ thống + HR features
   ADMIN_TAMABEE: {
     dashboard: {
       href: "/admin/companies",
-      labelKey: "dashboard",
-      icon: LayoutDashboard,
+      labelKey: "platformAdmin",
+      icon: Building2,
     },
     items: [
-      { href: "/admin/companies", labelKey: "customers", icon: Building2 },
-      { href: "/admin/users", labelKey: "users", icon: Users },
+      { href: "/dashboard", labelKey: "dashboard", icon: LayoutDashboard },
       { href: "/admin/deposits", labelKey: "deposits", icon: Wallet },
       { href: "/admin/settings", labelKey: "settings", icon: Settings },
     ],
   },
-  // Tamabee Manager - Quản lý công ty và deposits
+  // Tamabee Manager - Quản lý công ty và deposits + HR features
   MANAGER_TAMABEE: {
     dashboard: {
       href: "/admin/companies",
+      labelKey: "platformAdmin",
+      icon: Building2,
+    },
+    items: [
+      { href: "/dashboard", labelKey: "dashboard", icon: LayoutDashboard },
+      { href: "/admin/deposits", labelKey: "deposits", icon: Wallet },
+    ],
+  },
+  // Tamabee Employee - HR features
+  EMPLOYEE_TAMABEE: {
+    dashboard: {
+      href: "/dashboard",
       labelKey: "dashboard",
       icon: LayoutDashboard,
     },
     items: [
-      { href: "/admin/companies", labelKey: "customers", icon: Building2 },
-      { href: "/admin/deposits", labelKey: "deposits", icon: Wallet },
-    ],
-  },
-  // Tamabee Employee - Hỗ trợ khách hàng
-  EMPLOYEE_TAMABEE: {
-    dashboard: {
-      href: "/employee-tamabee/referrals",
-      labelKey: "referrals",
-      icon: Users,
-    },
-    items: [
       {
-        href: "/employee-tamabee/commissions",
+        href: "/dashboard/my-commissions",
         labelKey: "commissions",
         icon: Wallet,
       },

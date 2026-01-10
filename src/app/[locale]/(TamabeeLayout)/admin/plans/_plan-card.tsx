@@ -71,7 +71,7 @@ export function PlanCard({
       <CardContent className="flex-1 space-y-4">
         <div className="flex items-baseline gap-1">
           <span className="text-3xl font-bold text-primary">
-            {formatCurrency(plan.monthlyPrice, locale)}
+            {formatCurrency(plan.monthlyPrice)}
           </span>
           <span className="text-muted-foreground">{t("card.perMonth")}</span>
         </div>

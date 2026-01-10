@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { WalletTransactionResponse } from "@/types/wallet";
 import { getMyTransactions } from "@/lib/apis/wallet-api";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/chart";
 
 interface TransactionChartProps {
-  locale: SupportedLocale;
   refreshTrigger?: number;
 }
 
@@ -40,12 +39,6 @@ interface MonthlyData {
 const EMPTY_COLOR = "#d1d5db";
 // Giá trị tối thiểu để hiển thị cột trống
 const MIN_DISPLAY_VALUE = 0.5;
-
-// Chart colors
-const CHART_COLORS = {
-  deposit: "#22c55e",
-  billing: "#ef4444",
-};
 
 /**
  * Tạo danh sách N tháng gần nhất
@@ -80,19 +73,16 @@ interface CustomTooltipProps {
     payload: MonthlyData;
   }>;
   label?: string;
-  locale: SupportedLocale;
-  labels: {
-    deposit: string;
-    billing: string;
-  };
+  depositLabel: string;
+  billingLabel: string;
 }
 
 function CustomTooltip({
   active,
   payload,
   label,
-  locale,
-  labels,
+  depositLabel,
+  billingLabel,
 }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
@@ -106,29 +96,21 @@ function CustomTooltip({
           <div
             className="h-2 w-2 rounded-full"
             style={{
-              backgroundColor: data.hasDeposit
-                ? CHART_COLORS.deposit
-                : EMPTY_COLOR,
+              backgroundColor: data.hasDeposit ? "#22c55e" : EMPTY_COLOR,
             }}
           />
-          <span className="text-muted-foreground">{labels.deposit}:</span>
-          <span className="font-medium">
-            {formatCurrency(data.deposit, locale)}
-          </span>
+          <span className="text-muted-foreground">{depositLabel}:</span>
+          <span className="font-medium">{formatCurrency(data.deposit)}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <div
             className="h-2 w-2 rounded-full"
             style={{
-              backgroundColor: data.hasBilling
-                ? CHART_COLORS.billing
-                : EMPTY_COLOR,
+              backgroundColor: data.hasBilling ? "#ef4444" : EMPTY_COLOR,
             }}
           />
-          <span className="text-muted-foreground">{labels.billing}:</span>
-          <span className="font-medium">
-            {formatCurrency(data.billing, locale)}
-          </span>
+          <span className="text-muted-foreground">{billingLabel}:</span>
+          <span className="font-medium">{formatCurrency(data.billing)}</span>
         </div>
       </div>
     </div>
@@ -139,28 +121,26 @@ function CustomTooltip({
  * Custom Legend component
  */
 interface CustomLegendProps {
-  labels: {
-    deposit: string;
-    billing: string;
-  };
+  depositLabel: string;
+  billingLabel: string;
 }
 
-function CustomLegend({ labels }: CustomLegendProps) {
+function CustomLegend({ depositLabel, billingLabel }: CustomLegendProps) {
   return (
     <div className="flex justify-end gap-4 pb-2">
       <div className="flex items-center gap-1.5">
         <div
           className="h-3 w-3 rounded-sm"
-          style={{ backgroundColor: CHART_COLORS.deposit }}
+          style={{ backgroundColor: "#22c55e" }}
         />
-        <span className="text-sm">{labels.deposit}</span>
+        <span className="text-sm">{depositLabel}</span>
       </div>
       <div className="flex items-center gap-1.5">
         <div
           className="h-3 w-3 rounded-sm"
-          style={{ backgroundColor: CHART_COLORS.billing }}
+          style={{ backgroundColor: "#ef4444" }}
         />
-        <span className="text-sm">{labels.billing}</span>
+        <span className="text-sm">{billingLabel}</span>
       </div>
     </div>
   );
@@ -169,30 +149,25 @@ function CustomLegend({ labels }: CustomLegendProps) {
 /**
  * Chart hiển thị giao dịch theo tháng
  */
-export function TransactionChart({
-  locale,
-  refreshTrigger,
-}: TransactionChartProps) {
-  const tEnums = useTranslations("enums");
+export function TransactionChart({ refreshTrigger }: TransactionChartProps) {
+  const t = useTranslations("wallet");
   const [data, setData] = useState<MonthlyData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Labels cho chart
-  const chartLabels = {
-    deposit: tEnums("transactionType.DEPOSIT"),
-    billing: tEnums("transactionType.BILLING"),
-  };
+  // Labels từ translations
+  const depositLabel = t("chart.deposit");
+  const billingLabel = t("chart.billing");
 
-  // Chart config với labels đã translate
+  // Chart config với labels động
   const chartConfig = {
     deposit: {
-      label: chartLabels.deposit,
-      color: CHART_COLORS.deposit,
+      label: depositLabel,
+      color: "#22c55e",
     },
     billing: {
-      label: chartLabels.billing,
-      color: CHART_COLORS.billing,
+      label: billingLabel,
+      color: "#ef4444",
     },
   };
 
@@ -334,10 +309,20 @@ export function TransactionChart({
                 domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
               />
               <Tooltip
-                content={<CustomTooltip locale={locale} labels={chartLabels} />}
+                content={
+                  <CustomTooltip
+                    depositLabel={depositLabel}
+                    billingLabel={billingLabel}
+                  />
+                }
               />
               <Legend
-                content={<CustomLegend labels={chartLabels} />}
+                content={
+                  <CustomLegend
+                    depositLabel={depositLabel}
+                    billingLabel={billingLabel}
+                  />
+                }
                 verticalAlign="top"
               />
               <Bar
@@ -348,7 +333,7 @@ export function TransactionChart({
                 {data.map((entry, index) => (
                   <Cell
                     key={`deposit-${index}`}
-                    fill={entry.hasDeposit ? CHART_COLORS.deposit : EMPTY_COLOR}
+                    fill={entry.hasDeposit ? "#22c55e" : EMPTY_COLOR}
                   />
                 ))}
               </Bar>
@@ -360,7 +345,7 @@ export function TransactionChart({
                 {data.map((entry, index) => (
                   <Cell
                     key={`billing-${index}`}
-                    fill={entry.hasBilling ? CHART_COLORS.billing : EMPTY_COLOR}
+                    fill={entry.hasBilling ? "#ef4444" : EMPTY_COLOR}
                   />
                 ))}
               </Bar>

@@ -6,6 +6,7 @@
     "REFERRAL_BONUS_MONTHS": "紹介ボーナス期間",
     "DEFAULT_PLAN_ID": "デフォルトプラン",
     "COMMISSION_AMOUNT": "紹介手数料",
+    "CUSTOM_PRICE_PER_EMPLOYEE": "従業員単価（カスタム）",
     "MIN_DEPOSIT_AMOUNT": "最低入金額",
     "BANK_NAME": "銀行名",
     "BANK_ACCOUNT": "口座番号",
@@ -16,6 +17,7 @@
     "REFERRAL_BONUS_MONTHS": "紹介コード使用時の追加無料期間（月）",
     "DEFAULT_PLAN_ID": "無料期間中の新規会社のデフォルトプラン",
     "COMMISSION_AMOUNT": "紹介手数料の固定金額（円）",
+    "CUSTOM_PRICE_PER_EMPLOYEE": "カスタムプランの従業員単価（円）",
     "MIN_DEPOSIT_AMOUNT": "最低入金額（円）",
     "BANK_NAME": "入金先銀行名",
     "BANK_ACCOUNT": "入金先口座番号",
@@ -32,6 +34,16 @@
   "groups": {
     "trial": "トライアル",
     "referral": "紹介",
-    "banking": "銀行"
+    "banking": "銀行",
+    "other": "その他"
+  },
+  "table": {
+    "name": "設定名",
+    "value": "値",
+    "group": "グループ"
+  },
+  "dialog": {
+    "save": "保存",
+    "cancel": "キャンセル"
   }
 }

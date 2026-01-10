@@ -1,12 +1,10 @@
 "use client";
 
 import { NextPage } from "next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useZipcode, localeToRegion } from "@/hooks/use-zipcode";
-import { login as loginApi, register } from "@/lib/apis/auth";
-import { useAuth } from "@/hooks/use-auth";
+import { register } from "@/lib/apis/auth";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Step1 from "./_step-1";
 import Step2 from "./_step-2";
@@ -18,10 +16,41 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { RegisterFormData } from "@/types/register";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 
+const STORAGE_KEY = "register_form_data";
+const STORAGE_STATE_KEY = "register_form_state";
+
+// Giá trị mặc định cho form
+const DEFAULT_FORM_DATA: RegisterFormData = {
+  companyName: "",
+  ownerName: "",
+  phone: "",
+  address: "",
+  industry: "",
+  locale: "vi",
+  language: "vi",
+  email: "",
+  otp: "",
+  password: "",
+  confirmPassword: "",
+  zipcode: "",
+  referralCode: "",
+  tenantDomain: "",
+};
+
+interface FormState {
+  step: number;
+  zipcode: string;
+  emailSent: string;
+  companySent: string;
+  verified: boolean;
+}
+
 const RegisterPage: NextPage = () => {
-  const { login } = useAuth();
   const t = useTranslations("auth");
   const tErrors = useTranslations("errors");
+
+  // Khởi tạo state từ localStorage hoặc default
+  const [isInitialized, setIsInitialized] = useState(false);
   const [step, setStep] = useState(1);
   const [prevStep, setPrevStep] = useState(1);
   const [zipcode, setZipcode] = useState("");
@@ -29,22 +58,79 @@ const RegisterPage: NextPage = () => {
   const [companySent, setCompanySent] = useState("");
   const [verified, setVerified] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-  const [formData, setFormData] = useState<RegisterFormData>({
-    companyName: "TAMABEE",
-    ownerName: "Quang Hiep",
-    phone: "07044781997",
-    address: "",
-    industry: "",
-    locale: "vi",
-    language: "vi",
-    email: "tamachan.test1@gmail.com",
-    otp: "",
-    password: "",
-    confirmPassword: "",
-    zipcode: "9500911",
-    referralCode: "",
-    tenantDomain: "",
-  });
+  const [formData, setFormData] = useState<RegisterFormData>(DEFAULT_FORM_DATA);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Load data từ localStorage khi mount
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      const savedState = localStorage.getItem(STORAGE_STATE_KEY);
+
+      if (savedData) {
+        const parsed = JSON.parse(savedData) as RegisterFormData;
+        // Không restore password và confirmPassword vì lý do bảo mật
+        setFormData({
+          ...parsed,
+          password: "",
+          confirmPassword: "",
+          otp: "",
+        });
+      }
+
+      if (savedState) {
+        const state = JSON.parse(savedState) as FormState;
+        setStep(state.step);
+        setZipcode(state.zipcode);
+        setEmailSent(state.emailSent);
+        setCompanySent(state.companySent);
+        setVerified(state.verified);
+      }
+    } catch (error) {
+      console.error("Error loading register data from localStorage:", error);
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Lưu formData vào localStorage khi thay đổi
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      // Không lưu password và otp vì lý do bảo mật
+      const dataToSave = {
+        ...formData,
+        password: "",
+        confirmPassword: "",
+        otp: "",
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    } catch (error) {
+      console.error("Error saving register data to localStorage:", error);
+    }
+  }, [formData, isInitialized]);
+
+  // Lưu state vào localStorage khi thay đổi
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      const state: FormState = {
+        step,
+        zipcode,
+        emailSent,
+        companySent,
+        verified,
+      };
+      localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving register state to localStorage:", error);
+    }
+  }, [step, zipcode, emailSent, companySent, verified, isInitialized]);
+
+  // Clear localStorage sau khi đăng ký thành công
+  const clearStorage = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_STATE_KEY);
+  }, []);
 
   const { address, loading } = useZipcode(
     zipcode,
@@ -56,9 +142,6 @@ const RegisterPage: NextPage = () => {
       setFormData((prev) => ({ ...prev, address }));
     }
   }, [address]);
-
-  const router = useRouter();
-  const [submitting, setSubmitting] = useState(false);
 
   const handleNext = () => {
     setPrevStep(step);
@@ -95,16 +178,51 @@ const RegisterPage: NextPage = () => {
         tenantDomain: formData.tenantDomain,
       });
 
-      const user = await loginApi(formData.email, formData.password);
-      login(user);
+      // Clear localStorage sau khi đăng ký thành công
+      clearStorage();
+
       toast.success(t("registerSuccess"));
-      router.push("/");
+
+      // Redirect đến login page trên tenant domain mới
+      const tenantLoginUrl = buildTenantLoginUrl(
+        formData.tenantDomain,
+        formData.locale,
+      );
+      window.location.href = tenantLoginUrl;
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(getErrorMessage(error, tErrors, t("registerFailed")));
     } finally {
       setSubmitting(false);
     }
+  };
+
+  /**
+   * Build URL login cho tenant domain mới
+   * Local: tenant-name.tamabee.local
+   * Production: tenant-name.tamabee.vn
+   */
+  const buildTenantLoginUrl = (
+    tenantDomain: string,
+    locale: string,
+  ): string => {
+    const currentHost = window.location.host;
+    const protocol = window.location.protocol;
+
+    // Lấy base domain (tamabee.local hoặc tamabee.vn)
+    const hostParts = currentHost.split(".");
+    let baseDomain: string;
+
+    if (hostParts.length >= 2) {
+      // Lấy 2 phần cuối: tamabee.local hoặc tamabee.vn
+      baseDomain = hostParts.slice(-2).join(".");
+    } else {
+      baseDomain = currentHost;
+    }
+
+    // Build URL với subdomain mới
+    const newHost = `${tenantDomain}.${baseDomain}`;
+    return `${protocol}//${newHost}/${locale}/login`;
   };
 
   const steps = [

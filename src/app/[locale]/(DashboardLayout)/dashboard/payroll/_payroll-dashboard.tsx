@@ -130,7 +130,7 @@ export function PayrollDashboard() {
                 {t("summary.totalPayroll")}
               </p>
               <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalNetSalary ?? 0, locale)}
+                {formatCurrency(summary.totalNetSalary ?? 0)}
               </p>
             </CardContent>
           </Card>

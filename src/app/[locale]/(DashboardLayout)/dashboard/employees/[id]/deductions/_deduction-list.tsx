@@ -63,7 +63,7 @@ export function DeductionList({
     if (deduction.deductionType === "PERCENTAGE" && deduction.percentage) {
       return `${deduction.percentage}%`;
     }
-    return formatCurrency(deduction.amount || 0, "ja");
+    return formatCurrency(deduction.amount || 0);
   };
 
   return (

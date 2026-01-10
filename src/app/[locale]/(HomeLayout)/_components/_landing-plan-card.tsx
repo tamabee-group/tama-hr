@@ -62,7 +62,7 @@ export function LandingPlanCard({
           ) : (
             <>
               <span className="text-3xl font-bold text-primary">
-                {formatCurrency(plan.monthlyPrice, locale)}
+                {formatCurrency(plan.monthlyPrice)}
               </span>
               <span className="text-muted-foreground">{t("perMonth")}</span>
             </>

@@ -97,7 +97,7 @@ export function AllowanceList({
                 </div>
               </TableCell>
               <TableCell className="text-right font-medium">
-                {formatCurrency(allowance.amount, "ja")}
+                {formatCurrency(allowance.amount)}
               </TableCell>
               <TableCell>
                 {allowance.taxable ? (

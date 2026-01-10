@@ -152,5 +152,17 @@
     "ACTIVE": "Active",
     "EXPIRED": "Expired",
     "TERMINATED": "Terminated"
+  },
+  "industry": {
+    "technology": "Information Technology",
+    "manufacturing": "Manufacturing",
+    "retail": "Retail",
+    "finance": "Finance & Banking",
+    "healthcare": "Healthcare",
+    "education": "Education & Training",
+    "construction": "Construction",
+    "hospitality": "Hospitality & Restaurant",
+    "logistics": "Transportation & Logistics",
+    "other": "Other"
   }
 }

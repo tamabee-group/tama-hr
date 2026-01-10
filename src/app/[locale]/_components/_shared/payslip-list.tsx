@@ -83,7 +83,6 @@ export function PayslipList({ payslips, onViewDetail }: PayslipListProps) {
             <TableCell className="text-right">
               <CurrencyDisplay
                 amount={payslip.netSalary}
-                locale={locale}
                 className="font-semibold text-green-600"
               />
             </TableCell>

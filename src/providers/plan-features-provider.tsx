@@ -47,14 +47,18 @@ export function PlanFeaturesProvider({ children }: PlanFeaturesProviderProps) {
 
   // Refresh features (dùng khi plan thay đổi)
   const refresh = useCallback(async () => {
-    if (user?.planId) {
+    if (user?.planId !== undefined && user?.planId !== null) {
       await fetchFeatures(user.planId);
     }
   }, [user?.planId, fetchFeatures]);
 
   // Fetch features khi user login
   useEffect(() => {
-    if (status === "authenticated" && user?.planId) {
+    if (
+      status === "authenticated" &&
+      user?.planId !== undefined &&
+      user?.planId !== null
+    ) {
       fetchFeatures(user.planId);
     } else if (status === "unauthenticated") {
       // Clear features khi logout

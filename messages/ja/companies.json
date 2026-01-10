@@ -47,6 +47,18 @@
     "autoFillAddress": "住所を自動入力中...",
     "logo": "ロゴ"
   },
+  "subscription": {
+    "title": "サブスクリプション情報",
+    "plan": "プラン",
+    "monthlyPrice": "月額料金",
+    "maxEmployees": "最大従業員数",
+    "unlimited": "無制限",
+    "walletBalance": "ウォレット残高",
+    "freeTrialEnd": "無料トライアル終了日",
+    "nextBilling": "次回請求日",
+    "lastBilling": "前回請求日",
+    "manageWallet": "ウォレット管理"
+  },
   "messages": {
     "createSuccess": "会社を作成しました",
     "updateSuccess": "会社を更新しました",

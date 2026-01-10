@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { WalletOverviewResponse } from "@/types/wallet";
+import { useTranslations, useLocale } from "next-intl";
+import { WalletOverviewResponse, getWalletPlanName } from "@/types/wallet";
 import { walletApi } from "@/lib/apis/wallet-api";
-import { formatCurrency } from "@/lib/utils/format-currency";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Building2, Wallet, Gift } from "lucide-react";
 import { toast } from "sonner";
+
+import { formatCurrency } from "@/lib/utils/format-currency";
 
 interface CompanySearchProps {
   onSelectCompany: (company: WalletOverviewResponse) => void;
@@ -22,6 +23,7 @@ interface CompanySearchProps {
 export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
   const tCommon = useTranslations("common");
   const tWallet = useTranslations("wallet");
+  const locale = useLocale() as "vi" | "en" | "ja";
   const [searchTerm, setSearchTerm] = useState("");
   const [companies, setCompanies] = useState<WalletOverviewResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -108,7 +110,8 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
                     <div>
                       <p className="font-medium">{company.companyName}</p>
                       <p className="text-sm text-muted-foreground">
-                        {company.planName || tCommon("noResults")}
+                        {getWalletPlanName(company, locale) ||
+                          tCommon("noResults")}
                       </p>
                     </div>
                   </div>
@@ -122,7 +125,7 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
                     <div className="flex items-center gap-1 text-primary">
                       <Wallet className="h-4 w-4" />
                       <span className="font-medium">
-                        {formatCurrency(company.balance, "vi")}
+                        {formatCurrency(company.balance)}
                       </span>
                     </div>
                   </div>

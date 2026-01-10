@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ import {
 
 import { payrollApi, PayrollPreviewRecord } from "@/lib/apis/payroll-api";
 import { YearMonth } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { PayrollDetailDialog } from "./_payroll-detail-dialog";
 
@@ -42,7 +42,6 @@ export function PayrollPreviewTable({
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
-  const locale = useLocale() as SupportedLocale;
 
   // State
   const [records, setRecords] = useState<PayrollPreviewRecord[]>([]);
@@ -108,7 +107,9 @@ export function PayrollPreviewTable({
     {
       accessorKey: "baseSalary",
       header: t("table.baseSalary"),
-      cell: ({ row }) => formatCurrency(row.original.baseSalary, locale),
+      cell: ({ row }) => {
+        formatCurrency(row.original.baseSalary);
+      },
     },
     {
       accessorKey: "totalOvertimePay",
@@ -117,9 +118,7 @@ export function PayrollPreviewTable({
         const overtime = row.original.totalOvertimePay;
         if (!overtime || overtime === 0) return "-";
         return (
-          <span className="text-blue-600">
-            {formatCurrency(overtime, locale)}
-          </span>
+          <span className="text-blue-600">{formatCurrency(overtime)}</span>
         );
       },
     },
@@ -130,9 +129,7 @@ export function PayrollPreviewTable({
         const allowances = row.original.totalAllowances;
         if (!allowances || allowances === 0) return "-";
         return (
-          <span className="text-green-600">
-            {formatCurrency(allowances, locale)}
-          </span>
+          <span className="text-green-600">{formatCurrency(allowances)}</span>
         );
       },
     },
@@ -143,9 +140,7 @@ export function PayrollPreviewTable({
         const deductions = row.original.totalDeductions;
         if (!deductions || deductions === 0) return "-";
         return (
-          <span className="text-red-600">
-            -{formatCurrency(deductions, locale)}
-          </span>
+          <span className="text-red-600">-{formatCurrency(deductions)}</span>
         );
       },
     },
@@ -154,7 +149,7 @@ export function PayrollPreviewTable({
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary, locale)}
+          {formatCurrency(row.original.netSalary)}
         </span>
       ),
     },

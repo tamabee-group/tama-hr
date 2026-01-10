@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { WalletResponse } from "@/types/wallet";
+import { WalletResponse, getWalletPlanName } from "@/types/wallet";
 import { DepositRequestResponse } from "@/types/deposit";
 import { getMyWallet } from "@/lib/apis/wallet-api";
 import { depositApi } from "@/lib/apis/deposit-api";
@@ -149,6 +149,7 @@ export function PageContent({ locale }: PageContentProps) {
                 {
                   ...wallet,
                   companyName: user?.companyName || "",
+                  planName: getWalletPlanName(wallet, locale),
                 } as SharedWalletData
               }
               locale={locale}
@@ -160,7 +161,7 @@ export function PageContent({ locale }: PageContentProps) {
 
         {/* Transaction Chart - chiếm phần còn lại */}
         <div className="flex-1 min-w-0">
-          <TransactionChart locale={locale} refreshTrigger={refreshTrigger} />
+          <TransactionChart refreshTrigger={refreshTrigger} />
         </div>
       </div>
 

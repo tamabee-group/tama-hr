@@ -1,15 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDate } from "@/lib/utils/format-date";
-import { cn } from "@/lib/utils";
-import { Plus, Calendar, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Gift } from "lucide-react";
 
 /**
- * Data interface cho WalletCard
+ * Interface chung cho wallet data
+ * Hỗ trợ cả WalletResponse và WalletOverviewResponse
  */
 export interface SharedWalletData {
   balance: number;
@@ -20,95 +19,170 @@ export interface SharedWalletData {
   freeTrialEndDate?: string;
 }
 
-interface WalletCardProps {
+interface SharedWalletCardProps {
+  /** Data wallet - hỗ trợ cả WalletResponse và WalletOverviewResponse */
   wallet: SharedWalletData;
+  /** Locale cho format tiền tệ */
   locale?: SupportedLocale;
+  /** Hiển thị action buttons */
   showActions?: boolean;
+  /** Callback nạp tiền */
   onDeposit?: () => void;
+  /** Callback hoàn tiền */
+  onRefund?: () => void;
 }
 
 /**
- * Card hiển thị thông tin ví
+ * Component hiển thị thông tin ví dạng credit card
+ * Design giống thẻ ngân hàng thật với tông màu teal (#00b1ce)
  */
 export function WalletCard({
   wallet,
   locale = "vi",
-  showActions = true,
+  showActions = false,
   onDeposit,
-}: WalletCardProps) {
+  onRefund,
+}: SharedWalletCardProps) {
   const t = useTranslations("wallet");
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center justify-between">
-          <span>{t("card.title")}</span>
-          {wallet.companyName && (
-            <span className="text-sm font-normal text-muted-foreground flex items-center gap-1">
-              <Building2 className="h-4 w-4" />
-              {wallet.companyName}
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Số dư */}
-        <div>
-          <p className="text-sm text-muted-foreground">{t("card.balance")}</p>
-          <p
-            className={cn(
-              "text-3xl font-bold",
-              wallet.balance > 0 ? "text-green-600" : "text-red-600",
+    <div className="space-y-4">
+      {/* Credit Card Style */}
+      <div
+        className="relative overflow-hidden rounded-2xl p-6 shadow-xl aspect-[1.6/1] max-w-md"
+        style={{
+          background:
+            "linear-gradient(135deg, #00b1ce 0%, #0891b2 50%, #00b1ce 100%)",
+        }}
+      >
+        {/* Decorative wave curves */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 400 250"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,150 Q100,100 200,150 T400,120 L400,250 L0,250 Z"
+            fill="rgba(255,255,255,0.08)"
+          />
+          <path
+            d="M0,180 Q150,130 300,180 T400,160 L400,250 L0,250 Z"
+            fill="rgba(255,255,255,0.05)"
+          />
+          <ellipse
+            cx="350"
+            cy="50"
+            rx="80"
+            ry="80"
+            fill="rgba(255,255,255,0.06)"
+          />
+          <ellipse
+            cx="380"
+            cy="100"
+            rx="50"
+            ry="50"
+            fill="rgba(255,255,255,0.04)"
+          />
+        </svg>
+
+        {/* SIM Chip + Contactless - bên phải */}
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center">
+          {/* SIM Chip */}
+          <svg width="45" height="35" viewBox="0 0 45 35">
+            <defs>
+              <linearGradient
+                id="chipGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="#d4af37" />
+                <stop offset="50%" stopColor="#f4d03f" />
+                <stop offset="100%" stopColor="#c9a227" />
+              </linearGradient>
+            </defs>
+            <rect
+              x="0"
+              y="0"
+              width="45"
+              height="35"
+              rx="4"
+              fill="url(#chipGradient)"
+            />
+            {/* Chip lines */}
+            <rect x="5" y="8" width="35" height="2" fill="#b8960c" rx="1" />
+            <rect x="5" y="14" width="35" height="2" fill="#b8960c" rx="1" />
+            <rect x="5" y="20" width="35" height="2" fill="#b8960c" rx="1" />
+            <rect x="5" y="26" width="35" height="2" fill="#b8960c" rx="1" />
+            <rect x="14" y="5" width="2" height="25" fill="#b8960c" rx="1" />
+            <rect x="29" y="5" width="2" height="25" fill="#b8960c" rx="1" />
+          </svg>
+        </div>
+
+        {/* Card content */}
+        <div className="relative h-full flex flex-col justify-between">
+          {/* Header: Company name + Trial badge */}
+          <div className="flex items-start justify-between">
+            <p className="text-white font-semibold text-lg truncate max-w-[200px]">
+              {wallet.companyName || "-"}
+            </p>
+            {wallet.isFreeTrialActive ? (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/20 text-amber-200 text-xs font-medium">
+                <Gift className="h-3 w-3" />
+                {t("card.freeTrial")}
+              </div>
+            ) : (
+              <span className="text-yellow-200/80 font-semibold">TAMABEE</span>
             )}
-          >
-            {formatCurrency(wallet.balance, locale)}
-          </p>
-        </div>
-
-        {/* Thông tin gói */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          {wallet.planName && (
-            <div>
-              <p className="text-muted-foreground">{t("card.plan")}</p>
-              <p className="font-medium">{wallet.planName}</p>
-            </div>
-          )}
-
-          {wallet.isFreeTrialActive && wallet.freeTrialEndDate ? (
-            <div>
-              <p className="text-muted-foreground">{t("card.trialEnds")}</p>
-              <p className="font-medium text-orange-600">
-                {formatDate(wallet.freeTrialEndDate, locale)}
-              </p>
-            </div>
-          ) : wallet.nextBillingDate ? (
-            <div>
-              <p className="text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {t("card.nextBilling")}
-              </p>
-              <p className="font-medium">
-                {formatDate(wallet.nextBillingDate, locale)}
-              </p>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Free trial badge */}
-        {wallet.isFreeTrialActive && (
-          <div className="rounded-md bg-orange-100 dark:bg-orange-900/20 px-3 py-2 text-sm text-orange-700 dark:text-orange-400">
-            {t("card.freeTrialActive")}
           </div>
-        )}
 
-        {/* Actions */}
-        {showActions && onDeposit && (
-          <Button onClick={onDeposit} className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
-            {t("card.deposit")}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+          {/* Balance - center */}
+          <p className="text-white text-xl font-bold tracking-tight">
+            {formatCurrency(wallet.balance)}
+          </p>
+
+          {/* Footer: Plan + Date */}
+          <div className="flex justify-between items-end">
+            <div>
+              <p className="text-white/60 text-[10px] uppercase">
+                {t("card.plan")}
+              </p>
+              <p className="text-white text-sm font-semibold">
+                {wallet.planName || "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-white/60 text-[10px] uppercase">
+                {wallet.isFreeTrialActive
+                  ? t("card.expires")
+                  : t("card.billing")}
+              </p>
+              <p className="text-white text-sm font-semibold">
+                {wallet.isFreeTrialActive
+                  ? formatDate(wallet.freeTrialEndDate, locale)
+                  : formatDate(wallet.nextBillingDate, locale)}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action buttons - bên ngoài card */}
+      {showActions && (
+        <div className="flex gap-3 max-w-md">
+          {onDeposit && (
+            <Button onClick={onDeposit} className="flex-1">
+              {t("card.deposit")}
+            </Button>
+          )}
+          {onRefund && (
+            <Button variant="outline" onClick={onRefund} className="flex-1">
+              {t("card.refund")}
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

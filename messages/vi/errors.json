@@ -59,5 +59,9 @@
   "ADJUSTMENT_PENDING_EXISTS": "Đã có yêu cầu điều chỉnh đang chờ duyệt.",
   "ADJUSTMENT_NOT_FOUND": "Không tìm thấy yêu cầu điều chỉnh.",
   "ADJUSTMENT_ALREADY_PROCESSED": "Yêu cầu điều chỉnh đã được xử lý.",
-  "ADJUSTMENT_NO_CHANGES": "Phải thay đổi ít nhất một thời gian."
+  "ADJUSTMENT_NO_CHANGES": "Phải thay đổi ít nhất một thời gian.",
+  "TENANT_DOMAIN_EXISTS": "Tên miền công ty đã được sử dụng.",
+  "TENANT_DOMAIN_RESERVED": "Tên miền này đã được đặt trước.",
+  "TENANT_PROVISIONING_FAILED": "Không thể tạo cơ sở dữ liệu cho công ty. Vui lòng thử lại.",
+  "USER_CREATION_FAILED": "Không thể tạo tài khoản người dùng. Vui lòng thử lại."
 }

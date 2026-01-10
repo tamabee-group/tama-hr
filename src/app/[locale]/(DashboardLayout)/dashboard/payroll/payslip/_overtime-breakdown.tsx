@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { OvertimeMultipliers } from "@/types/attendance-config";
 
 interface OvertimeBreakdownProps {
@@ -30,7 +30,6 @@ interface OvertimeBreakdownProps {
   holidayNightOvertimePay?: number;
   totalOvertimePay: number;
   multipliers?: OvertimeMultipliers;
-  locale: SupportedLocale;
 }
 
 /**
@@ -51,7 +50,6 @@ export function OvertimeBreakdown({
   holidayNightOvertimePay = 0,
   totalOvertimePay,
   multipliers,
-  locale,
 }: OvertimeBreakdownProps) {
   const t = useTranslations("payroll");
   const tSettings = useTranslations("settings");
@@ -104,7 +102,7 @@ export function OvertimeBreakdown({
               </CardTitle>
               <div className="flex items-center gap-4">
                 <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                  {formatCurrency(totalOvertimePay, locale)}
+                  {formatCurrency(totalOvertimePay)}
                 </span>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   {isOpen ? (
@@ -135,7 +133,7 @@ export function OvertimeBreakdown({
               <OvertimeRow
                 label={t("breakdown.regularOvertime")}
                 hours={formatHours(regularOvertimeMinutes)}
-                amount={formatCurrency(regularOvertimePay, locale)}
+                amount={formatCurrency(regularOvertimePay)}
                 multiplier={multipliers?.regularOvertime}
               />
             )}
@@ -145,7 +143,7 @@ export function OvertimeBreakdown({
               <OvertimeRow
                 label={t("breakdown.nightWork")}
                 hours={formatHours(nightMinutes)}
-                amount={formatCurrency(nightWorkPay, locale)}
+                amount={formatCurrency(nightWorkPay)}
                 multiplier={multipliers?.nightWork}
               />
             )}
@@ -155,7 +153,7 @@ export function OvertimeBreakdown({
               <OvertimeRow
                 label={t("breakdown.nightOvertime")}
                 hours={formatHours(nightOvertimeMinutes)}
-                amount={formatCurrency(nightOvertimePay, locale)}
+                amount={formatCurrency(nightOvertimePay)}
                 multiplier={multipliers?.nightOvertime}
               />
             )}
@@ -165,7 +163,7 @@ export function OvertimeBreakdown({
               <OvertimeRow
                 label={t("breakdown.holidayOvertime")}
                 hours={formatHours(holidayMinutes)}
-                amount={formatCurrency(holidayOvertimePay, locale)}
+                amount={formatCurrency(holidayOvertimePay)}
                 multiplier={multipliers?.holidayOvertime}
               />
             )}
@@ -175,7 +173,7 @@ export function OvertimeBreakdown({
               <OvertimeRow
                 label={t("breakdown.holidayNightOvertime")}
                 hours={formatHours(holidayNightMinutes)}
-                amount={formatCurrency(holidayNightOvertimePay, locale)}
+                amount={formatCurrency(holidayNightOvertimePay)}
                 multiplier={multipliers?.holidayNightOvertime}
               />
             )}
@@ -188,7 +186,7 @@ export function OvertimeBreakdown({
                 {t("breakdown.totalOvertime")}
               </span>
               <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                {formatCurrency(totalOvertimePay, locale)}
+                {formatCurrency(totalOvertimePay)}
               </span>
             </div>
           </CardContent>

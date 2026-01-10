@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -27,7 +27,7 @@ import {
   PayrollItem,
   PayrollAdjustmentInput,
 } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 interface PayrollAdjustmentDialogProps {
@@ -53,7 +53,6 @@ export function PayrollAdjustmentDialog({
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tValidation = useTranslations("validation");
-  const locale = useLocale() as SupportedLocale;
 
   // Form state
   const [amount, setAmount] = useState("");
@@ -124,7 +123,7 @@ export function PayrollAdjustmentDialog({
           <DialogTitle>{t("adjustmentTitle")}</DialogTitle>
           <DialogDescription>
             {item.employeeName} - {t("table.netSalary")}:{" "}
-            {formatCurrency(item.netSalary, locale)}
+            {formatCurrency(item.netSalary)}
           </DialogDescription>
         </DialogHeader>
 
@@ -135,16 +134,14 @@ export function PayrollAdjustmentDialog({
               <p className="text-sm text-muted-foreground">
                 {t("table.grossSalary")}
               </p>
-              <p className="font-medium">
-                {formatCurrency(item.grossSalary, locale)}
-              </p>
+              <p className="font-medium">{formatCurrency(item.grossSalary)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
                 {t("table.netSalary")}
               </p>
               <p className="font-medium text-green-600">
-                {formatCurrency(item.netSalary, locale)}
+                {formatCurrency(item.netSalary)}
               </p>
             </div>
           </div>
@@ -181,7 +178,7 @@ export function PayrollAdjustmentDialog({
                     : "text-red-600"
                 }
               >
-                {formatCurrency(newNetSalary, locale)}
+                {formatCurrency(newNetSalary)}
               </span>
             </p>
           </div>

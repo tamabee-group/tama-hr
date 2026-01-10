@@ -423,7 +423,7 @@ function TenantDomainInput({ value, onChange, error }: TenantDomainInputProps) {
           className="rounded-r-none"
         />
         <span className="px-3 py-2 bg-muted border border-l-0 rounded-r-md">
-          .tamabee.com
+          .tamabee.vn
         </span>
       </div>
 

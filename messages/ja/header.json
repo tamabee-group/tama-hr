@@ -17,6 +17,7 @@
   "wallet": "ウォレット",
   "menu": {
     "dashboard": "ダッシュボード",
+    "platformAdmin": "プラットフォーム管理",
     "companies": "会社管理",
     "customers": "顧客管理",
     "users": "ユーザー管理",

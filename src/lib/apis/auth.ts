@@ -28,12 +28,30 @@ export async function verifyEmail(email: string, code: string) {
 /**
  * API đăng nhập
  * @client-only - Chỉ sử dụng được ở client side
+ * @param identifier - Email hoặc mã nhân viên
+ * @param password - Mật khẩu
+ * @param tenantDomain - Tenant domain (optional, dùng cho development)
  */
-export async function login(identifier: string, password: string) {
-  return apiClient.post<User>("/api/auth/login", {
-    email: identifier,
-    password,
-  });
+export async function login(
+  identifier: string,
+  password: string,
+  tenantDomain?: string,
+) {
+  const headers: Record<string, string> = {};
+
+  // Gửi tenant domain trong header để backend biết query đúng database
+  if (tenantDomain) {
+    headers["X-Tenant-Domain"] = tenantDomain;
+  }
+
+  return apiClient.post<User>(
+    "/api/auth/login",
+    {
+      email: identifier,
+      password,
+    },
+    { headers },
+  );
 }
 
 /**

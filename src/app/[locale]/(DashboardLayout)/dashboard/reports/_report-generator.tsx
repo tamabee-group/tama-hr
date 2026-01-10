@@ -167,7 +167,7 @@ export function ReportGenerator() {
         header.toLowerCase().includes("amount") ||
         header.toLowerCase().includes("pay")
       ) {
-        return formatCurrency(value, "ja");
+        return formatCurrency(value);
       }
       return value.toLocaleString();
     }

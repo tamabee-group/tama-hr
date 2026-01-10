@@ -121,7 +121,6 @@ export function PayslipView({ year, month }: PayslipViewProps) {
       <PayslipCard
         payslip={payslip}
         companyName={user?.companyName || ""}
-        companyLocale={user?.locale}
         employeeCode={user?.employeeCode || ""}
         employeeName={user?.profile?.name || ""}
       />

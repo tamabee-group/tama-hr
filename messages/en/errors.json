@@ -59,5 +59,9 @@
   "ADJUSTMENT_PENDING_EXISTS": "A pending adjustment request already exists.",
   "ADJUSTMENT_NOT_FOUND": "Adjustment request not found.",
   "ADJUSTMENT_ALREADY_PROCESSED": "Adjustment request has already been processed.",
-  "ADJUSTMENT_NO_CHANGES": "At least one time must be changed."
+  "ADJUSTMENT_NO_CHANGES": "At least one time must be changed.",
+  "TENANT_DOMAIN_EXISTS": "Company domain is already in use.",
+  "TENANT_DOMAIN_RESERVED": "This domain is reserved.",
+  "TENANT_PROVISIONING_FAILED": "Failed to create company database. Please try again.",
+  "USER_CREATION_FAILED": "Failed to create user account. Please try again."
 }

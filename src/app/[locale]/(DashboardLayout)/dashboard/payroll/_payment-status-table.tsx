@@ -85,7 +85,7 @@ export function PaymentStatusTable({
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary, locale)}
+          {formatCurrency(row.original.netSalary)}
         </span>
       ),
     },

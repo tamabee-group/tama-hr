@@ -88,28 +88,20 @@ export function PayslipTable({
       {
         accessorKey: "baseSalary",
         header: t("breakdown.baseSalary"),
-        cell: ({ row }) => (
-          <CurrencyDisplay amount={row.original.baseSalary} locale={locale} />
-        ),
+        cell: ({ row }) => <CurrencyDisplay amount={row.original.baseSalary} />,
       },
       {
         accessorKey: "totalOvertimePay",
         header: t("breakdown.overtime"),
         cell: ({ row }) => (
-          <CurrencyDisplay
-            amount={row.original.totalOvertimePay}
-            locale={locale}
-          />
+          <CurrencyDisplay amount={row.original.totalOvertimePay} />
         ),
       },
       {
         accessorKey: "totalAllowances",
         header: t("breakdown.allowances"),
         cell: ({ row }) => (
-          <CurrencyDisplay
-            amount={row.original.totalAllowances}
-            locale={locale}
-          />
+          <CurrencyDisplay amount={row.original.totalAllowances} />
         ),
       },
       {
@@ -118,7 +110,6 @@ export function PayslipTable({
         cell: ({ row }) => (
           <CurrencyDisplay
             amount={-row.original.totalDeductions}
-            locale={locale}
             className="text-red-600"
           />
         ),
@@ -129,7 +120,6 @@ export function PayslipTable({
         cell: ({ row }) => (
           <CurrencyDisplay
             amount={row.original.netSalary}
-            locale={locale}
             className="font-semibold text-green-600"
           />
         ),
@@ -161,7 +151,7 @@ export function PayslipTable({
           ]
         : []),
     ],
-    [t, tCommon, locale, onDownload, downloadingId, formatPeriod],
+    [t, tCommon, onDownload, downloadingId, formatPeriod],
   );
 
   if (loading) {

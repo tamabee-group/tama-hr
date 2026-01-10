@@ -139,7 +139,7 @@
 - [x] 10. Tenant Domain Registration
   - [x] 10.1 Tạo TenantDomainInput component
     - Tạo file `app/[locale]/(NotFooter)/register/_tenant-domain-input.tsx`
-    - Input với .tamabee.com suffix
+    - Input với .tamabee.vn suffix
     - Real-time format validation
     - Debounce API check (500ms)
     - Show availability status

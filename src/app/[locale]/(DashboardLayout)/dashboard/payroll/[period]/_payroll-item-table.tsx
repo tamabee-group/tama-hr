@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Edit } from "lucide-react";
 
@@ -14,7 +14,7 @@ import {
   PayrollPeriodStatus,
   PayrollItemStatus,
 } from "@/types/attendance-enums";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { PayrollItemDetailDialog } from "./_payroll-item-detail-dialog";
 import { PayrollAdjustmentDialog } from "./_payroll-adjustment-dialog";
@@ -54,7 +54,6 @@ export function PayrollItemTable({
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
-  const locale = useLocale() as SupportedLocale;
 
   // Dialog state
   const [selectedItem, setSelectedItem] = useState<PayrollItem | null>(null);
@@ -81,8 +80,9 @@ export function PayrollItemTable({
     {
       accessorKey: "calculatedBaseSalary",
       header: t("table.baseSalary"),
-      cell: ({ row }) =>
-        formatCurrency(row.original.calculatedBaseSalary, locale),
+      cell: ({ row }) => {
+        formatCurrency(row.original.calculatedBaseSalary);
+      },
     },
     {
       accessorKey: "totalOvertimePay",
@@ -91,9 +91,7 @@ export function PayrollItemTable({
         const overtime = row.original.totalOvertimePay;
         if (!overtime || overtime === 0) return "-";
         return (
-          <span className="text-blue-600">
-            {formatCurrency(overtime, locale)}
-          </span>
+          <span className="text-blue-600">{formatCurrency(overtime)}</span>
         );
       },
     },
@@ -104,9 +102,7 @@ export function PayrollItemTable({
         const allowances = row.original.totalAllowances;
         if (!allowances || allowances === 0) return "-";
         return (
-          <span className="text-green-600">
-            {formatCurrency(allowances, locale)}
-          </span>
+          <span className="text-green-600">{formatCurrency(allowances)}</span>
         );
       },
     },
@@ -117,23 +113,23 @@ export function PayrollItemTable({
         const deductions = row.original.totalDeductions;
         if (!deductions || deductions === 0) return "-";
         return (
-          <span className="text-red-600">
-            -{formatCurrency(deductions, locale)}
-          </span>
+          <span className="text-red-600">-{formatCurrency(deductions)}</span>
         );
       },
     },
     {
       accessorKey: "grossSalary",
       header: t("table.grossSalary"),
-      cell: ({ row }) => formatCurrency(row.original.grossSalary, locale),
+      cell: ({ row }) => {
+        formatCurrency(row.original.grossSalary);
+      },
     },
     {
       accessorKey: "netSalary",
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary, locale)}
+          {formatCurrency(row.original.netSalary)}
         </span>
       ),
     },

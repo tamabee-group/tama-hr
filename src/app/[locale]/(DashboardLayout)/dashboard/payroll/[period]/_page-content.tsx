@@ -205,7 +205,7 @@ export function PayrollPeriodDetailContent({
             <CardContent>
               <p className="text-sm text-muted-foreground">{t("totalGross")}</p>
               <p className="text-2xl font-bold">
-                {formatCurrency(summary.totalGrossSalary, locale)}
+                {formatCurrency(summary.totalGrossSalary)}
               </p>
             </CardContent>
           </Card>
@@ -214,7 +214,7 @@ export function PayrollPeriodDetailContent({
             <CardContent>
               <p className="text-sm text-muted-foreground">{t("totalNet")}</p>
               <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalNetSalary, locale)}
+                {formatCurrency(summary.totalNetSalary)}
               </p>
             </CardContent>
           </Card>
@@ -225,7 +225,7 @@ export function PayrollPeriodDetailContent({
                 {t("breakdown.totalOvertime")}
               </p>
               <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(summary.totalOvertimePay, locale)}
+                {formatCurrency(summary.totalOvertimePay)}
               </p>
             </CardContent>
           </Card>

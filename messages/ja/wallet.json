@@ -1,6 +1,7 @@
 {
   "title": "ウォレット管理",
   "description": "すべての会社のウォレットの概要を表示・管理",
+  "companyDescription": "会社のウォレットの概要を表示・管理",
   "balance": "現在の残高",
   "lastBilling": "前回の請求日",
   "nextBilling": "次回の請求日",
@@ -11,6 +12,29 @@
   "notFound": "会社が見つかりません",
   "addBalance": "残高追加",
   "deductBalance": "残高控除",
+  "depositRequest": "入金リクエスト",
+  "tabs": {
+    "all": "すべて",
+    "deposit": "入金",
+    "billing": "請求",
+    "refund": "返金"
+  },
+  "card": {
+    "title": "ウォレット情報",
+    "balance": "現在の残高",
+    "plan": "プラン",
+    "lastBilling": "前回の請求",
+    "nextBilling": "次回の請求",
+    "freeTrial": "無料トライアル",
+    "deposit": "入金",
+    "refund": "返金",
+    "expires": "終了日",
+    "billing": "請求日"
+  },
+  "chart": {
+    "deposit": "入金",
+    "billing": "請求"
+  },
   "table": {
     "company": "会社",
     "companyName": "会社名",
@@ -28,7 +52,8 @@
     "amount": "金額",
     "balanceBefore": "取引前残高",
     "balanceAfter": "取引後残高",
-    "description": "説明"
+    "description": "説明",
+    "createdAt": "作成日"
   },
   "transaction": {
     "type": "種類",

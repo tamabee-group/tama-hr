@@ -63,6 +63,7 @@ export interface User {
   language: string;
   companyId: number;
   companyName?: string;
+  companyLogo?: string;
   tenantDomain: string; // "tamabee" cho Tamabee users, subdomain cho tenant users
   planId: number;
   profileCompleteness: number;

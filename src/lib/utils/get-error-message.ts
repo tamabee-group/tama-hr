@@ -10,14 +10,6 @@
 type ErrorTranslationFunction = (key: string) => string;
 
 /**
- * Interface cho API Error với errorCode
- */
-interface ApiErrorWithCode {
-  errorCode?: string;
-  message?: string;
-}
-
-/**
  * Danh sách các error codes đã biết từ backend
  * Dùng để type-check và documentation
  */
@@ -35,6 +27,10 @@ export const KNOWN_ERROR_CODES = [
   "NOT_FOUND",
   "VALIDATION_ERROR",
   "INTERNAL_ERROR",
+  "TENANT_DOMAIN_EXISTS",
+  "TENANT_DOMAIN_RESERVED",
+  "TENANT_PROVISIONING_FAILED",
+  "USER_CREATION_FAILED",
 ] as const;
 
 export type KnownErrorCode = (typeof KNOWN_ERROR_CODES)[number];
@@ -76,11 +72,21 @@ export function getErrorMessage(
   if (typeof errorCodeOrError === "string") {
     errorCode = errorCodeOrError;
   } else if (errorCodeOrError && typeof errorCodeOrError === "object") {
-    // Check if it's an API error with errorCode
-    const apiError = errorCodeOrError as ApiErrorWithCode;
-    errorCode = apiError.errorCode;
-    originalMessage = apiError.message;
+    // Check if it's an ApiError or API error with errorCode
+    const error = errorCodeOrError as {
+      errorCode?: string;
+      message?: string;
+    };
+    errorCode = error.errorCode;
+    originalMessage = error.message;
   }
+
+  // Log để debug
+  console.log("getErrorMessage:", {
+    errorCode,
+    originalMessage,
+    fallbackMessage,
+  });
 
   // Nếu không có errorCode, trả về message gốc hoặc fallback
   if (!errorCode) {

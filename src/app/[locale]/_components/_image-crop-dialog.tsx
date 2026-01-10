@@ -102,9 +102,9 @@ export function ImageCropDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="md:max-w-2xl max-h-[90vh] overflow-y-scroll">
+      <DialogContent className="md:max-w-xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>{t("imageCrop.title")}</DialogTitle>
+          <DialogTitle className="mb-2">{t("imageCrop.title")}</DialogTitle>
           <DialogDescription className="sr-only">
             {t("imageCrop.description")}
           </DialogDescription>
@@ -122,8 +122,10 @@ export function ImageCropDialog({
           />
         </div>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{t("imageCrop.zoom")}</label>
+          <div className="space-y-2 ">
+            <label className="text-sm font-medium block my-2">
+              {t("imageCrop.zoom")}
+            </label>
             <Slider
               value={[zoom]}
               onValueChange={(value) => setZoom(value[0])}

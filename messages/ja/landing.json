@@ -10,6 +10,8 @@
     "learnMore": "詳しく見る",
     "feature1": "自動勤怠管理",
     "feature2": "正確な給与計算",
+    "freeTrialInfo": "{months}ヶ月間無料トライアル",
+    "referralBonus": "紹介コードで+{months}ヶ月",
     "feature3": "リアルタイムレポート",
     "cardTitle": "自動化",
     "cardSubtitle": "80%の時間を節約",
@@ -65,19 +67,24 @@
   },
   "cta": {
     "title": "人事管理をアップグレードする準備はできましたか？",
-    "description": "今すぐ登録して14日間無料体験。クレジットカード不要。",
+    "description": "今すぐ登録して{months}ヶ月間無料体験。クレジットカード不要。",
     "button": "無料で始める",
     "viewPricing": "料金を見る"
   },
   "pricing": {
     "title": "透明な料金体系",
     "subtitle": "企業規模に合ったプランをお選びください",
+    "freeTrialNote": "全プラン{months}ヶ月間無料トライアル（全機能利用可能）",
     "error": "料金プランを読み込めませんでした",
     "free": "無料",
     "perMonth": "/月",
-    "maxEmployees": "最大従業員数",
+    "perEmployee": "/人/月",
+    "maxEmployees": "最大",
+    "unlimited": "従業員数無制限",
     "features": "機能",
-    "registerNow": "今すぐ登録"
+    "registerNow": "今すぐ登録",
+    "referralBonus": "紹介コードで+{months}ヶ月",
+    "contactUs": "お問い合わせ"
   },
   "footer": {
     "copyright": "© {year} Tamabee. 全著作権所有。",

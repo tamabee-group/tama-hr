@@ -2,8 +2,13 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { PublicSettings } from "@/lib/apis/plan-api";
 
-export async function CtaSection() {
+interface CtaSectionProps {
+  settings: PublicSettings;
+}
+
+export async function CtaSection({ settings }: CtaSectionProps) {
   const locale = await getLocale();
   const t = await getTranslations("landing.cta");
 
@@ -20,12 +25,12 @@ export async function CtaSection() {
               {t("title")}
             </h2>
             <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
-              {t("description")}
+              {t("description", { months: settings.freeTrialMonths })}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-white text-primary dark:bg-(--blue) hover:bg-gray-100 dark:hover:bg-(--blue)/90 px-8"
+                className="bg-white text-primary hover:bg-gray-100 px-8"
                 asChild
               >
                 <Link href={`/${locale}/register`}>

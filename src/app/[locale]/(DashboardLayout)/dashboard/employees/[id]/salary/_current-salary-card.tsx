@@ -92,7 +92,7 @@ export function CurrentSalaryCard({ config, onEdit }: CurrentSalaryCardProps) {
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{getAmountLabel()}</p>
           <p className="text-xl font-bold text-green-600">
-            {formatCurrency(amount || 0, locale)}
+            {formatCurrency(amount || 0)}
           </p>
         </div>
 

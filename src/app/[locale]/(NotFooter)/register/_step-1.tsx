@@ -75,6 +75,7 @@ const Step1: NextPage<Props> = ({
   const tValidation = useTranslations("auth.validation");
   const tRegister = useTranslations("auth.register");
   const tErrors = useTranslations("errors");
+  const tIndustry = useTranslations("enums.industry");
 
   const [sending, setSending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -352,8 +353,8 @@ const Step1: NextPage<Props> = ({
               icon={<Briefcase />}
             >
               {INDUSTRIES.map((industry) => (
-                <SelectItem key={industry.value} value={industry.value}>
-                  {industry.label}
+                <SelectItem key={industry} value={industry}>
+                  {tIndustry(industry)}
                 </SelectItem>
               ))}
             </SelectWithIcon>
@@ -445,7 +446,7 @@ const Step1: NextPage<Props> = ({
             {sending
               ? tRegister("processing")
               : fromStep4
-                ? t("confirm")
+                ? tRegister("confirm")
                 : tRegister("continue")}
           </Button>
           <div className="text-center text-sm">

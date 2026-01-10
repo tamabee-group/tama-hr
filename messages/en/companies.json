@@ -47,6 +47,18 @@
     "autoFillAddress": "Auto-filling address...",
     "logo": "Logo"
   },
+  "subscription": {
+    "title": "Subscription Information",
+    "plan": "Plan",
+    "monthlyPrice": "Monthly Fee",
+    "maxEmployees": "Max Employees",
+    "unlimited": "Unlimited",
+    "walletBalance": "Wallet Balance",
+    "freeTrialEnd": "Free Trial Ends",
+    "nextBilling": "Next Billing",
+    "lastBilling": "Last Billing",
+    "manageWallet": "Manage Wallet"
+  },
   "messages": {
     "createSuccess": "Company created successfully",
     "updateSuccess": "Company updated successfully",

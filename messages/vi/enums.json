@@ -152,5 +152,17 @@
     "ACTIVE": "Đang hiệu lực",
     "EXPIRED": "Hết hạn",
     "TERMINATED": "Đã chấm dứt"
+  },
+  "industry": {
+    "technology": "Công nghệ thông tin",
+    "manufacturing": "Sản xuất",
+    "retail": "Bán lẻ",
+    "finance": "Tài chính - Ngân hàng",
+    "healthcare": "Y tế - Chăm sóc sức khỏe",
+    "education": "Giáo dục - Đào tạo",
+    "construction": "Xây dựng",
+    "hospitality": "Khách sạn - Nhà hàng",
+    "logistics": "Vận tải - Logistics",
+    "other": "Khác"
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import { ReportChart } from "../_report-chart";
 import { ReportExportButtons } from "../_report-export-buttons";
 import { reportApi, OvertimeReportData } from "@/lib/apis/report-api";
 import { ReportFilters, ChartData } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 
 /**
  * Component hiển thị báo cáo tăng ca chi tiết
@@ -28,7 +28,6 @@ import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 export function OvertimeReportContent() {
   const t = useTranslations("reports");
   const tCommon = useTranslations("common");
-  const locale = useLocale() as SupportedLocale;
 
   // State
   const [startDate, setStartDate] = useState<Date | undefined>(
@@ -200,7 +199,7 @@ export function OvertimeReportContent() {
                               {formatMinutes(emp.totalOvertimeMinutes)}
                             </TableCell>
                             <TableCell className="text-right text-green-600 font-medium">
-                              {formatCurrency(emp.totalOvertimePay, locale)}
+                              {formatCurrency(emp.totalOvertimePay)}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -281,10 +280,7 @@ export function OvertimeReportContent() {
                       {t("overtime.summaryTotalPay")}
                     </p>
                     <p className="text-2xl font-bold text-green-600">
-                      {formatCurrency(
-                        reportData.summary.totalOvertimePay,
-                        locale,
-                      )}
+                      {formatCurrency(reportData.summary.totalOvertimePay)}
                     </p>
                   </div>
                 </div>

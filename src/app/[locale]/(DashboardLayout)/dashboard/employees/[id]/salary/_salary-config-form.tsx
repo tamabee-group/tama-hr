@@ -422,7 +422,7 @@ export function SalaryConfigForm({
                     {getSalaryTypeLabel(salaryType)}
                   </p>
                   <p className="text-xl font-bold text-green-600">
-                    {formatCurrency(Number(getAmountValue()), "ja")}
+                    {formatCurrency(Number(getAmountValue()))}
                   </p>
                 </div>
               </div>

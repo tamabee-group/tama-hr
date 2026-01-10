@@ -185,14 +185,16 @@ export function PayrollPeriodTable() {
     {
       accessorKey: "totalGrossSalary",
       header: t("totalGross"),
-      cell: ({ row }) => formatCurrency(row.original.totalGrossSalary, locale),
+      cell: ({ row }) => {
+        formatCurrency(row.original.totalGrossSalary);
+      },
     },
     {
       accessorKey: "totalNetSalary",
       header: t("totalNet"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.totalNetSalary, locale)}
+          {formatCurrency(row.original.totalNetSalary)}
         </span>
       ),
     },

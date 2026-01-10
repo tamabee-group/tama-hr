@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { PayrollStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
 
 import { PayrollPreviewRecord } from "@/lib/apis/payroll-api";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 
 interface PayrollDetailDialogProps {
   record: PayrollPreviewRecord | null;
@@ -35,7 +35,7 @@ export function PayrollDetailDialog({
 }: PayrollDetailDialogProps) {
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
-  const locale = useLocale() as SupportedLocale;
+  const locale = useLocale();
   const router = useRouter();
 
   if (!record) return null;
@@ -62,7 +62,7 @@ export function PayrollDetailDialog({
           {/* Lương cơ bản */}
           <div className="flex justify-between">
             <span>{t("breakdown.baseSalary")}</span>
-            <span>{formatCurrency(record.baseSalary, locale)}</span>
+            <span>{formatCurrency(record.baseSalary)}</span>
           </div>
 
           {/* Làm thêm giờ */}
@@ -70,33 +70,27 @@ export function PayrollDetailDialog({
             <BreakdownRow
               label={t("breakdown.regularOvertime")}
               value={record.regularOvertimePay}
-              locale={locale}
               hours={Math.round((record.regularOvertimeMinutes || 0) / 60)}
             />
             <BreakdownRow
               label={t("breakdown.nightWork")}
               value={record.nightWorkPay}
-              locale={locale}
               hours={Math.round((record.nightMinutes || 0) / 60)}
             />
             <BreakdownRow
               label={t("breakdown.nightOvertime")}
               value={record.nightOvertimePay}
-              locale={locale}
               hours={Math.round((record.nightOvertimeMinutes || 0) / 60)}
             />
             {(record.holidayOvertimePay || 0) > 0 && (
               <BreakdownRow
                 label={t("breakdown.holidayOvertime")}
                 value={record.holidayOvertimePay}
-                locale={locale}
               />
             )}
             <div className="flex justify-between">
               <span>{t("breakdown.totalOvertime")}</span>
-              <span>
-                {formatCurrency(record.totalOvertimePay || 0, locale)}
-              </span>
+              <span>{formatCurrency(record.totalOvertimePay || 0)}</span>
             </div>
           </div>
 
@@ -113,7 +107,6 @@ export function PayrollDetailDialog({
                   key={index}
                   label={item.name}
                   value={item.amount}
-                  locale={locale}
                 />
               ))
             ) : (
@@ -121,7 +114,7 @@ export function PayrollDetailDialog({
             )}
             <div className="flex justify-between font-medium text-green-600">
               <span>{t("breakdown.totalAllowances")}</span>
-              <span>{formatCurrency(record.totalAllowances || 0, locale)}</span>
+              <span>{formatCurrency(record.totalAllowances || 0)}</span>
             </div>
           </div>
 
@@ -138,7 +131,6 @@ export function PayrollDetailDialog({
                   key={index}
                   label={item.name}
                   value={-item.amount}
-                  locale={locale}
                   negative
                 />
               ))
@@ -147,9 +139,7 @@ export function PayrollDetailDialog({
             )}
             <div className="flex justify-between font-medium text-red-600">
               <span>{t("breakdown.totalDeductions")}</span>
-              <span>
-                -{formatCurrency(record.totalDeductions || 0, locale)}
-              </span>
+              <span>-{formatCurrency(record.totalDeductions || 0)}</span>
             </div>
           </div>
 
@@ -160,13 +150,13 @@ export function PayrollDetailDialog({
             <div className="flex justify-between">
               <span>{t("breakdown.grossSalary")}</span>
               <span className="font-medium">
-                {formatCurrency(record.grossSalary || 0, locale)}
+                {formatCurrency(record.grossSalary || 0)}
               </span>
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>{t("breakdown.netSalary")}</span>
               <span className="text-green-600">
-                {formatCurrency(record.netSalary || 0, locale)}
+                {formatCurrency(record.netSalary || 0)}
               </span>
             </div>
           </div>
@@ -192,18 +182,11 @@ export function PayrollDetailDialog({
 interface BreakdownRowProps {
   label: string;
   value: number;
-  locale: SupportedLocale;
   hours?: number;
   negative?: boolean;
 }
 
-function BreakdownRow({
-  label,
-  value,
-  locale,
-  hours,
-  negative,
-}: BreakdownRowProps) {
+function BreakdownRow({ label, value, hours, negative }: BreakdownRowProps) {
   if (!value || value === 0) return null;
 
   return (
@@ -216,7 +199,7 @@ function BreakdownRow({
       </span>
       <span className={negative ? "text-red-600" : ""}>
         {negative ? "-" : ""}
-        {formatCurrency(Math.abs(value), locale)}
+        {formatCurrency(Math.abs(value))}
       </span>
     </div>
   );

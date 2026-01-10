@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,13 @@ import { ReportChart } from "../_report-chart";
 import { ReportExportButtons } from "../_report-export-buttons";
 import { reportApi, CostAnalysisReportData } from "@/lib/apis/report-api";
 import { ReportFilters, ChartData } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 
 /**
  * Component hiển thị báo cáo phân tích chi phí
  */
 export function CostAnalysisReportContent() {
   const t = useTranslations("reports");
-  const locale = useLocale() as SupportedLocale;
 
   // State
   const [startDate, setStartDate] = useState<Date | undefined>(
@@ -182,7 +181,7 @@ export function CostAnalysisReportContent() {
                               {item.category}
                             </TableCell>
                             <TableCell className="text-right">
-                              {formatCurrency(item.amount, locale)}
+                              {formatCurrency(item.amount)}
                             </TableCell>
                             <TableCell className="text-right">
                               {formatPercentage(item.percentage)}
@@ -236,16 +235,16 @@ export function CostAnalysisReportContent() {
                               {trend.period}
                             </TableCell>
                             <TableCell className="text-right">
-                              {formatCurrency(trend.baseSalary, locale)}
+                              {formatCurrency(trend.baseSalary)}
                             </TableCell>
                             <TableCell className="text-right">
-                              {formatCurrency(trend.overtime, locale)}
+                              {formatCurrency(trend.overtime)}
                             </TableCell>
                             <TableCell className="text-right">
-                              {formatCurrency(trend.allowances, locale)}
+                              {formatCurrency(trend.allowances)}
                             </TableCell>
                             <TableCell className="text-right font-medium">
-                              {formatCurrency(trend.total, locale)}
+                              {formatCurrency(trend.total)}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -278,7 +277,7 @@ export function CostAnalysisReportContent() {
                       {t("costAnalysis.summaryTotalCost")}
                     </p>
                     <p className="text-2xl font-bold">
-                      {formatCurrency(reportData.summary.totalCost, locale)}
+                      {formatCurrency(reportData.summary.totalCost)}
                     </p>
                   </div>
                   <div className="p-4 border rounded-lg">
@@ -314,10 +313,7 @@ export function CostAnalysisReportContent() {
                       {t("costAnalysis.summaryCostPerEmployee")}
                     </p>
                     <p className="text-2xl font-bold text-blue-600">
-                      {formatCurrency(
-                        reportData.summary.costPerEmployee,
-                        locale,
-                      )}
+                      {formatCurrency(reportData.summary.costPerEmployee)}
                     </p>
                   </div>
                 </div>

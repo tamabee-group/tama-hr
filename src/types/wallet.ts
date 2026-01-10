@@ -13,7 +13,9 @@ export interface WalletResponse {
   nextBillingDate: string;
   freeTrialEndDate: string;
   isFreeTrialActive: boolean;
-  planName: string;
+  planNameVi: string;
+  planNameEn: string;
+  planNameJa: string;
 }
 
 /**
@@ -25,6 +27,21 @@ export interface WalletOverviewResponse extends WalletResponse {
   totalDeposits: number;
   totalBillings: number;
 }
+
+/**
+ * Helper function để lấy plan name theo locale
+ */
+export const getWalletPlanName = (
+  wallet: WalletResponse | WalletOverviewResponse,
+  locale: "vi" | "en" | "ja",
+): string => {
+  const nameMap: Record<string, string | undefined> = {
+    vi: wallet.planNameVi,
+    en: wallet.planNameEn,
+    ja: wallet.planNameJa,
+  };
+  return nameMap[locale] || wallet.planNameVi || "-";
+};
 
 /**
  * Thống kê tổng hợp wallet cho admin dashboard

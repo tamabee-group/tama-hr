@@ -22,7 +22,6 @@ import {
 import { NextPage } from "next";
 import type { RegisterFormData } from "@/types/register";
 import { useKeyDown } from "@/hooks/use-key-down";
-import { getIndustryLabel } from "@/constants/industries";
 import { useTranslations } from "next-intl";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -45,6 +44,7 @@ const Step4: NextPage<Props> = ({
 }) => {
   const tRegister = useTranslations("auth.register");
   const tCommon = useTranslations("common");
+  const tIndustry = useTranslations("enums.industry");
 
   useKeyDown({ onEnter: handleSubmit, disabled: submitting });
 
@@ -164,7 +164,7 @@ const Step4: NextPage<Props> = ({
             <div className="min-w-0">
               <p className="text-xs font-medium">{tRegister("industry")}</p>
               <p className="text-sm text-muted-foreground truncate">
-                {getIndustryLabel(formData.industry)}
+                {tIndustry(formData.industry)}
               </p>
             </div>
           </div>
@@ -208,7 +208,7 @@ const Step4: NextPage<Props> = ({
         </Button>
         <Button onClick={handleSubmit} className="flex-1" disabled={submitting}>
           {submitting ? (
-            <span>
+            <span className="flex">
               <Spinner />
               {tRegister("processing")}
             </span>

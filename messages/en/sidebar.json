@@ -1,6 +1,9 @@
 {
   "groups": {
     "overview": "Overview",
+    "myWorkspace": "My Workspace",
+    "hrManagement": "HR Management",
+    "settings": "Settings",
     "management": "Management",
     "finance": "Finance",
     "system": "System",
@@ -12,12 +15,14 @@
   "items": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "platformAdmin": "Platform Admin",
     "users": "Users",
     "employees": "Employees",
     "addEmployee": "Add Employee",
     "customers": "Customers",
     "plans": "Subscription Plans",
     "wallets": "Wallets",
+    "wallet": "Wallet",
     "deposits": "Deposits",
     "commissions": "Commissions",
     "settings": "Settings",
@@ -40,6 +45,7 @@
     "mySchedule": "My Schedule",
     "myPayroll": "My Payroll",
     "myLeave": "My Leave",
+    "myProfile": "My Profile",
     "shifts": "Shift Management",
     "contracts": "Contracts"
   },

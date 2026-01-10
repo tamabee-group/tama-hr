@@ -10,6 +10,8 @@
     "learnMore": "Learn More",
     "feature1": "Auto attendance",
     "feature2": "Accurate payroll",
+    "freeTrialInfo": "{months}-month free trial",
+    "referralBonus": "+{months} months with referral code",
     "feature3": "Real-time reports",
     "cardTitle": "Automation",
     "cardSubtitle": "Save 80% of time",
@@ -65,19 +67,24 @@
   },
   "cta": {
     "title": "Ready to upgrade your HR management?",
-    "description": "Sign up today and experience 14 days free. No credit card required.",
+    "description": "Sign up today and experience {months} months free. No credit card required.",
     "button": "Start Free",
     "viewPricing": "View Pricing"
   },
   "pricing": {
     "title": "Transparent Pricing",
     "subtitle": "Choose the plan that fits your business size",
+    "freeTrialNote": "All plans include a {months}-month free trial with full features",
     "error": "Unable to load pricing plans",
     "free": "Free",
     "perMonth": "/month",
-    "maxEmployees": "Max employees",
+    "perEmployee": "/employee/month",
+    "maxEmployees": "Up to",
+    "unlimited": "Unlimited employees",
     "features": "Features",
-    "registerNow": "Register now"
+    "registerNow": "Register now",
+    "referralBonus": "+{months} months with referral code",
+    "contactUs": "Contact us"
   },
   "footer": {
     "copyright": "© {year} Tamabee. All rights reserved.",

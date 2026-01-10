@@ -1,10 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  formatCurrency,
-  type SupportedLocale,
-} from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 
 // ============================================
 // Currency Formatting Utilities
@@ -26,11 +23,8 @@ export function getAmountColorClass(amount: number | null | undefined): string {
 /**
  * Format số tiền với dấu + hoặc - phía trước
  */
-export function formatCurrencyWithSign(
-  amount: number,
-  locale: SupportedLocale = "ja",
-): string {
-  const formatted = formatCurrency(Math.abs(amount), locale);
+export function formatCurrencyWithSign(amount: number): string {
+  const formatted = formatCurrency(Math.abs(amount));
   if (amount > 0) return `+${formatted}`;
   if (amount < 0) return `-${formatted}`;
   return formatted;
@@ -43,8 +37,6 @@ export function formatCurrencyWithSign(
 interface CurrencyDisplayProps {
   /** Số tiền cần hiển thị */
   amount: number | null | undefined;
-  /** Locale để format (mặc định: ja cho JPY) */
-  locale?: SupportedLocale;
   /** Custom className */
   className?: string;
   /** Hiển thị màu sắc dựa trên giá trị (xanh/đỏ) */
@@ -63,7 +55,6 @@ interface CurrencyDisplayProps {
  */
 export function CurrencyDisplay({
   amount,
-  locale = "ja",
   className,
   showColor = false,
   showSign = false,
@@ -79,9 +70,9 @@ export function CurrencyDisplay({
   // Format số tiền
   let displayAmount: string;
   if (showSign) {
-    displayAmount = formatCurrencyWithSign(amount, locale);
+    displayAmount = formatCurrencyWithSign(amount);
   } else {
-    displayAmount = formatCurrency(amount, locale);
+    displayAmount = formatCurrency(amount);
   }
 
   // Xác định màu sắc
@@ -101,8 +92,6 @@ export function CurrencyDisplay({
 interface SalaryDisplayProps {
   /** Số tiền lương */
   amount: number | null | undefined;
-  /** Locale để format (mặc định: ja cho JPY) */
-  locale?: SupportedLocale;
   /** Custom className */
   className?: string;
   /** Hiển thị "-" khi không có giá trị */
@@ -114,7 +103,6 @@ interface SalaryDisplayProps {
  */
 export function SalaryDisplay({
   amount,
-  locale = "ja",
   className,
   showPlaceholder = true,
 }: SalaryDisplayProps) {
@@ -123,7 +111,7 @@ export function SalaryDisplay({
     return <span className={cn("tabular-nums", className)}>-</span>;
   }
 
-  const displayAmount = formatCurrency(amount, locale);
+  const displayAmount = formatCurrency(amount);
 
   return (
     <span
@@ -144,8 +132,6 @@ export function SalaryDisplay({
 interface DeductionDisplayProps {
   /** Số tiền khấu trừ (số dương sẽ hiển thị với dấu -) */
   amount: number | null | undefined;
-  /** Locale để format (mặc định: ja cho JPY) */
-  locale?: SupportedLocale;
   /** Custom className */
   className?: string;
   /** Hiển thị "-" khi không có giá trị */
@@ -157,7 +143,6 @@ interface DeductionDisplayProps {
  */
 export function DeductionDisplay({
   amount,
-  locale = "ja",
   className,
   showPlaceholder = true,
 }: DeductionDisplayProps) {
@@ -166,7 +151,7 @@ export function DeductionDisplay({
     return <span className={cn("tabular-nums", className)}>-</span>;
   }
 
-  const displayAmount = `-${formatCurrency(Math.abs(amount), locale)}`;
+  const displayAmount = `-${formatCurrency(Math.abs(amount))}`;
 
   return (
     <span
@@ -184,8 +169,6 @@ export function DeductionDisplay({
 interface BalanceDisplayProps {
   /** Số dư */
   balance: number | null | undefined;
-  /** Locale để format (mặc định: ja cho JPY) */
-  locale?: SupportedLocale;
   /** Custom className */
   className?: string;
   /** Ngưỡng cảnh báo số dư thấp */
@@ -199,7 +182,6 @@ interface BalanceDisplayProps {
  */
 export function BalanceDisplay({
   balance,
-  locale = "ja",
   className,
   lowBalanceThreshold = 0,
   showPlaceholder = true,
@@ -209,7 +191,7 @@ export function BalanceDisplay({
     return <span className={cn("tabular-nums", className)}>-</span>;
   }
 
-  const displayBalance = formatCurrency(balance, locale);
+  const displayBalance = formatCurrency(balance);
   const isLowBalance = balance <= lowBalanceThreshold;
 
   return (

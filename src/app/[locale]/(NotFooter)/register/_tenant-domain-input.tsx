@@ -108,29 +108,27 @@ export function TenantDomainInput({
       </InputGroup>
 
       {/* Status indicator */}
-      <div className="min-h-[20px]">
-        {isChecking && (
-          <span className="text-muted-foreground text-sm flex items-center gap-1">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            {t("domainChecking")}
-          </span>
-        )}
-        {!isChecking && formatError && (
-          <span className="text-destructive text-sm">{formatError}</span>
-        )}
-        {!isChecking && !formatError && isAvailable === true && (
-          <span className="text-green-600 text-sm flex items-center gap-1">
-            <Check className="w-3.5 h-3.5" />
-            {t("domainAvailable")}
-          </span>
-        )}
-        {!isChecking && !formatError && isAvailable === false && (
-          <span className="text-destructive text-sm flex items-center gap-1">
-            <X className="w-3.5 h-3.5" />
-            {t("domainTaken")}
-          </span>
-        )}
-      </div>
+      {isChecking && (
+        <span className="text-muted-foreground text-sm flex items-center gap-1">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          {t("domainChecking")}
+        </span>
+      )}
+      {!isChecking && formatError && (
+        <span className="text-destructive text-sm">{formatError}</span>
+      )}
+      {!isChecking && !formatError && isAvailable === true && (
+        <span className="text-green-600 text-sm flex items-center gap-1">
+          <Check className="w-3.5 h-3.5" />
+          {t("domainAvailable")}
+        </span>
+      )}
+      {!isChecking && !formatError && isAvailable === false && (
+        <span className="text-destructive text-sm flex items-center gap-1">
+          <X className="w-3.5 h-3.5" />
+          {t("domainTaken")}
+        </span>
+      )}
     </div>
   );
 }

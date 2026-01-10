@@ -119,7 +119,6 @@ export function PayrollRecordDetail({ recordId }: PayrollRecordDetailProps) {
       <PayslipCard
         payslip={record}
         companyName={user?.companyName}
-        companyLocale={user?.locale}
         employeeName={record.employeeName}
       />
     </div>

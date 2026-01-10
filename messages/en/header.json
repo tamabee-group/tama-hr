@@ -17,6 +17,7 @@
   "wallet": "Wallet",
   "menu": {
     "dashboard": "Dashboard",
+    "platformAdmin": "Platform Admin",
     "companies": "Manage Companies",
     "customers": "Manage Customers",
     "users": "Manage Users",

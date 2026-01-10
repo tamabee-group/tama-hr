@@ -208,7 +208,7 @@ export const apiClient = {
   upload: async <T = unknown>(
     endpoint: string,
     formData: FormData,
-    options?: Omit<FetchOptions, "body">,
+    options?: Omit<FetchOptions, "body"> & { method?: string },
   ): Promise<T> => {
     const url = toProxyUrl(endpoint);
     const locale = getLocaleFromCookie();
@@ -218,7 +218,7 @@ export const apiClient = {
     };
 
     const response = await fetch(url, {
-      method: "POST",
+      method: options?.method || "POST",
       body: formData,
       credentials: "include",
       headers,

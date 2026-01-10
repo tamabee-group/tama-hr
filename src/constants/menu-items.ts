@@ -11,37 +11,40 @@ import {
   FileText,
   UserCircle,
   Receipt,
-  Coins,
-  UsersRound,
+  User,
+  ClipboardList,
 } from "lucide-react";
 import type { UserRole } from "@/types/enums";
 
 /**
  * Interface cho menu item trong sidebar
- * Hỗ trợ filtering theo plan features và user roles
  */
 export interface MenuItem {
-  /** Unique code cho menu item */
   code: string;
-  /** i18n key cho label */
   labelKey: string;
-  /** Lucide icon component */
   icon: LucideIcon;
-  /** URL path */
   href: string;
-  /** Feature code để check plan (optional) */
   featureCode?: string;
-  /** Roles được phép xem item này (optional - nếu không có thì tất cả roles đều thấy) */
   roles?: UserRole[];
-  /** Nested children items */
   children?: MenuItem[];
-  /** Badge key để hiển thị count */
   badgeKey?: string;
 }
 
 /**
- * Roles có quyền quản lý (Admin và Manager của cả Tamabee và Company)
+ * Interface cho menu group (nhóm các menu items)
  */
+export interface MenuGroup {
+  code: string;
+  labelKey: string;
+  items: MenuItem[];
+  roles?: UserRole[];
+}
+
+// ============================================================================
+// ROLE DEFINITIONS
+// ============================================================================
+
+/** Roles có quyền quản lý (Admin và Manager) */
 const MANAGEMENT_ROLES: UserRole[] = [
   "ADMIN_TAMABEE",
   "MANAGER_TAMABEE",
@@ -49,16 +52,23 @@ const MANAGEMENT_ROLES: UserRole[] = [
   "MANAGER_COMPANY",
 ];
 
-/**
- * Roles Admin (chỉ Admin của Tamabee và Company)
- */
+/** Roles Admin only */
 const ADMIN_ROLES: UserRole[] = ["ADMIN_TAMABEE", "ADMIN_COMPANY"];
 
-/**
- * ADMIN_MENU_ITEMS - Menu cho platform management (Tamabee admin only)
- * Sử dụng trong TamabeeLayout cho /admin/* routes
- * Theo spec: companies, deposits, plans + link đến dashboard
- */
+/** Roles Tamabee (Admin và Manager) */
+const TAMABEE_ADMIN_ROLES: UserRole[] = ["ADMIN_TAMABEE", "MANAGER_TAMABEE"];
+
+/** Roles Company (tất cả nhân viên công ty) */
+const COMPANY_ROLES: UserRole[] = [
+  "ADMIN_COMPANY",
+  "MANAGER_COMPANY",
+  "EMPLOYEE_COMPANY",
+];
+
+// ============================================================================
+// ADMIN MENU (TamabeeLayout - /admin/*)
+// ============================================================================
+
 export const ADMIN_MENU_ITEMS: MenuItem[] = [
   {
     code: "dashboard",
@@ -95,64 +105,113 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
   },
 ];
 
+// ============================================================================
+// DASHBOARD MENU GROUPS (DashboardLayout - /dashboard/*)
+// ============================================================================
+
 /**
- * DASHBOARD_MENU_ITEMS - Menu cho HR features (tất cả users)
- * Sử dụng trong DashboardLayout cho /dashboard/* routes
+ * Menu groups cho Dashboard
+ * Chia thành: Tổng quan, Của tôi, Quản lý nhân sự, Cài đặt
  */
-export const DASHBOARD_MENU_ITEMS: MenuItem[] = [
+export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
+  // ========== TỔNG QUAN ==========
   {
-    code: "dashboard",
-    labelKey: "sidebar.items.dashboard",
-    icon: LayoutDashboard,
-    href: "/dashboard",
+    code: "overview",
+    labelKey: "sidebar.groups.overview",
+    items: [
+      {
+        code: "dashboard",
+        labelKey: "sidebar.items.dashboard",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+      },
+      {
+        code: "platform-admin",
+        labelKey: "sidebar.items.platformAdmin",
+        icon: Building,
+        href: "/admin/companies",
+        roles: TAMABEE_ADMIN_ROLES,
+      },
+    ],
   },
+
+  // ========== CỦA TÔI (Employee features) ==========
   {
-    code: "attendance",
-    labelKey: "sidebar.items.attendance",
-    icon: Clock,
-    href: "/dashboard/attendance",
-    featureCode: "ATTENDANCE",
-    children: [
+    code: "my-workspace",
+    labelKey: "sidebar.groups.myWorkspace",
+    items: [
       {
         code: "my-attendance",
         labelKey: "sidebar.items.myAttendance",
         icon: Clock,
         href: "/dashboard/attendance/me",
+        featureCode: "ATTENDANCE",
       },
-      {
-        code: "team-attendance",
-        labelKey: "sidebar.items.attendanceRecords",
-        icon: Clock,
-        href: "/dashboard/attendance/team",
-        roles: MANAGEMENT_ROLES,
-      },
-      {
-        code: "adjustments",
-        labelKey: "sidebar.items.adjustments",
-        icon: Clock,
-        href: "/dashboard/attendance/adjustments",
-        roles: MANAGEMENT_ROLES,
-      },
-    ],
-  },
-  {
-    code: "schedules",
-    labelKey: "sidebar.items.schedules",
-    icon: CalendarDays,
-    href: "/dashboard/schedules",
-    featureCode: "ATTENDANCE",
-    children: [
       {
         code: "my-schedule",
         labelKey: "sidebar.items.mySchedule",
         icon: CalendarDays,
         href: "/dashboard/schedules/me",
+        featureCode: "ATTENDANCE",
+      },
+      {
+        code: "my-payslip",
+        labelKey: "sidebar.items.myPayroll",
+        icon: Wallet,
+        href: "/dashboard/payroll/me",
+        featureCode: "PAYROLL",
+      },
+      {
+        code: "my-leave",
+        labelKey: "sidebar.items.myLeave",
+        icon: FileText,
+        href: "/dashboard/leave/me",
+        featureCode: "LEAVE",
+      },
+      {
+        code: "my-profile",
+        labelKey: "sidebar.items.myProfile",
+        icon: User,
+        href: "/dashboard/me",
+      },
+    ],
+  },
+
+  // ========== QUẢN LÝ NHÂN SỰ (HR Management) ==========
+  {
+    code: "hr-management",
+    labelKey: "sidebar.groups.hrManagement",
+    roles: MANAGEMENT_ROLES,
+    items: [
+      {
+        code: "employees",
+        labelKey: "sidebar.items.employees",
+        icon: Users,
+        href: "/dashboard/employees",
+        roles: MANAGEMENT_ROLES,
+      },
+      {
+        code: "team-attendance",
+        labelKey: "sidebar.items.attendanceRecords",
+        icon: Clock,
+        href: "/dashboard/attendance",
+        featureCode: "ATTENDANCE",
+        roles: MANAGEMENT_ROLES,
+      },
+      {
+        code: "adjustments",
+        labelKey: "sidebar.items.adjustments",
+        icon: ClipboardList,
+        href: "/dashboard/attendance/adjustments",
+        featureCode: "ATTENDANCE",
+        roles: MANAGEMENT_ROLES,
       },
       {
         code: "team-schedules",
         labelKey: "sidebar.items.schedules",
         icon: CalendarDays,
         href: "/dashboard/schedules/team",
+        featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
       },
       {
@@ -160,87 +219,81 @@ export const DASHBOARD_MENU_ITEMS: MenuItem[] = [
         labelKey: "sidebar.items.shifts",
         icon: CalendarDays,
         href: "/dashboard/schedules/shifts",
+        featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
-      },
-    ],
-  },
-  {
-    code: "payroll",
-    labelKey: "sidebar.items.payroll",
-    icon: Wallet,
-    href: "/dashboard/payroll",
-    featureCode: "PAYROLL",
-    children: [
-      {
-        code: "my-payslip",
-        labelKey: "sidebar.items.myPayroll",
-        icon: Wallet,
-        href: "/dashboard/payroll/me",
       },
       {
         code: "payroll-management",
         labelKey: "sidebar.items.payrollRecords",
         icon: Wallet,
         href: "/dashboard/payroll/management",
+        featureCode: "PAYROLL",
         roles: ADMIN_ROLES,
-      },
-    ],
-  },
-  {
-    code: "leave",
-    labelKey: "sidebar.items.leave",
-    icon: FileText,
-    href: "/dashboard/leave",
-    featureCode: "LEAVE",
-    children: [
-      {
-        code: "my-leave",
-        labelKey: "sidebar.items.myLeave",
-        icon: FileText,
-        href: "/dashboard/leave/me",
       },
       {
         code: "leave-requests",
         labelKey: "sidebar.items.leaveRequests",
         icon: FileText,
         href: "/dashboard/leave/requests",
+        featureCode: "LEAVE",
+        roles: MANAGEMENT_ROLES,
+      },
+      {
+        code: "contracts",
+        labelKey: "sidebar.items.contracts",
+        icon: FileText,
+        href: "/dashboard/contracts",
+        roles: MANAGEMENT_ROLES,
+      },
+      {
+        code: "reports",
+        labelKey: "sidebar.items.reports",
+        icon: FileText,
+        href: "/dashboard/reports",
+        featureCode: "REPORTS",
         roles: MANAGEMENT_ROLES,
       },
     ],
   },
+
+  // ========== CÀI ĐẶT ==========
   {
-    code: "employees",
-    labelKey: "sidebar.items.employees",
-    icon: Users,
-    href: "/dashboard/employees",
-    roles: MANAGEMENT_ROLES,
-  },
-  {
-    code: "contracts",
-    labelKey: "sidebar.items.contracts",
-    icon: FileText,
-    href: "/dashboard/contracts",
-    roles: MANAGEMENT_ROLES,
-  },
-  {
-    code: "reports",
-    labelKey: "sidebar.items.reports",
-    icon: FileText,
-    href: "/dashboard/reports",
-    featureCode: "REPORTS",
-    roles: MANAGEMENT_ROLES,
-  },
-  {
-    code: "settings",
-    labelKey: "sidebar.items.settings",
-    icon: Settings,
-    href: "/dashboard/settings",
-    roles: ADMIN_ROLES,
-  },
-  {
-    code: "profile",
-    labelKey: "sidebar.items.company",
-    icon: UserCircle,
-    href: "/dashboard/profile",
+    code: "settings-group",
+    labelKey: "sidebar.groups.settings",
+    items: [
+      {
+        code: "company-profile",
+        labelKey: "sidebar.items.company",
+        icon: UserCircle,
+        href: "/dashboard/profile",
+        roles: COMPANY_ROLES,
+      },
+      {
+        code: "wallet",
+        labelKey: "sidebar.items.wallet",
+        icon: Wallet,
+        href: "/dashboard/wallet",
+        roles: ADMIN_ROLES,
+      },
+      {
+        code: "settings",
+        labelKey: "sidebar.items.settings",
+        icon: Settings,
+        href: "/dashboard/settings",
+        roles: ADMIN_ROLES,
+      },
+    ],
   },
 ];
+
+// ============================================================================
+// LEGACY: Flat menu items (for backward compatibility)
+// ============================================================================
+
+/**
+ * @deprecated Use DASHBOARD_MENU_GROUPS instead
+ * Giữ lại để tương thích với code cũ
+ */
+export const DASHBOARD_MENU_ITEMS: MenuItem[] = DASHBOARD_MENU_GROUPS.flatMap(
+  (group) => group.items,
+);

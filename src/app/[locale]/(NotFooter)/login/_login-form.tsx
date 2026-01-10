@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -36,13 +36,51 @@ export function LoginForm() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [tenantDomain, setTenantDomain] = useState<string | null>(null);
+
+  // Lấy tenant domain từ subdomain
+  useEffect(() => {
+    const tenant = getTenantDomain();
+    setTenantDomain(tenant);
+  }, []);
+
+  /**
+   * Lấy tenant domain từ subdomain
+   * Ví dụ: tenant-japan.tamabee.local -> tenant-japan
+   */
+  const getTenantDomain = (): string | null => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    const host = window.location.host;
+    const hostParts = host.split(".");
+
+    // Cần ít nhất 3 phần: subdomain.tamabee.local hoặc subdomain.tamabee.vn
+    if (hostParts.length >= 3) {
+      const subdomain = hostParts[0];
+      // Nếu subdomain là "tamabee" thì đây là root domain
+      if (subdomain === "tamabee") {
+        return "tamabee";
+      }
+      return subdomain;
+    }
+
+    // Root domain (tamabee.local hoặc tamabee.vn) -> default tenant
+    return "tamabee";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await login(formData.identifier, formData.password);
+      // Gửi tenant domain trong request để backend biết query đúng database
+      await login(
+        formData.identifier,
+        formData.password,
+        tenantDomain || undefined,
+      );
       const user = await fetchCurrentUser();
       setAuthUser(user);
 

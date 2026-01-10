@@ -147,7 +147,7 @@ export function PayrollReportContent() {
         header.toLowerCase().includes("deductions") ||
         header.toLowerCase().includes("overtime")
       ) {
-        return formatCurrency(value, "ja");
+        return formatCurrency(value);
       }
       return value.toLocaleString();
     }
@@ -336,7 +336,7 @@ export function PayrollReportContent() {
                           {typeof value === "number" &&
                           (key.toLowerCase().includes("salary") ||
                             key.toLowerCase().includes("amount"))
-                            ? formatCurrency(value, "ja")
+                            ? formatCurrency(value)
                             : typeof value === "number"
                               ? value.toLocaleString()
                               : value}

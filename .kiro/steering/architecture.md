@@ -1,9 +1,17 @@
-# Frontend Architecture (Next.js App Router)
+# Frontend Architecture (Next.js 16.1 App Router)
+
+## Proxy (Next.js 16.1)
+
+- Next.js 16.1 dùng `src/proxy.ts` thay vì `middleware.ts`
+- KHÔNG tạo file `middleware.ts`
+- Proxy xử lý: API forwarding, authentication, i18n routing
+- Export: `export default function proxy()` và `export const config`
 
 ## Project Structure
 
 ```
 src/
+├── proxy.ts                    # Proxy (thay middleware.ts)
 ├── app/[locale]/
 │   ├── (HomeLayout)/           # Public pages (landing, pricing)
 │   ├── (NotFooter)/            # Auth pages (login, register)

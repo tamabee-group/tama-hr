@@ -12,5 +12,10 @@
   "addNew": "Thêm mới",
   "wallet": "Ví tiền",
   "companyInfo": "Thông tin công ty",
-  "settings": "Cài đặt"
+  "settings": "Cài đặt",
+  "attendance": "Chấm công",
+  "myAttendance": "Chấm công của tôi",
+  "payroll": "Bảng lương",
+  "myPayslip": "Phiếu lương của tôi",
+  "leaves": "Nghỉ phép"
 }

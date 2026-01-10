@@ -16,6 +16,16 @@ import {
  */
 
 // ============================================
+// Types
+// ============================================
+
+export interface PublicSettings {
+  freeTrialMonths: number;
+  referralBonusMonths: number;
+  customPricePerEmployee: number;
+}
+
+// ============================================
 // Public APIs - Không cần authentication
 // ============================================
 
@@ -25,6 +35,32 @@ import {
  */
 export async function getActivePlans(): Promise<PlanResponse[]> {
   return apiClient.get<PlanResponse[]>("/api/plans/active");
+}
+
+/**
+ * Lấy public settings (free trial months, custom price per employee)
+ * @client-only
+ */
+export async function getPublicSettings(): Promise<PublicSettings> {
+  return apiClient.get<PublicSettings>("/api/plans/settings");
+}
+
+/**
+ * Lấy public settings cho Server Component
+ * @server-only - Chỉ sử dụng được ở server side
+ */
+export async function getPublicSettingsServer(apiServer: {
+  get: <T>(url: string) => Promise<T>;
+}): Promise<PublicSettings> {
+  try {
+    return await apiServer.get<PublicSettings>("/api/plans/settings");
+  } catch {
+    return {
+      freeTrialMonths: 2,
+      referralBonusMonths: 1,
+      customPricePerEmployee: 400,
+    };
+  }
 }
 
 // ============================================
@@ -91,9 +127,7 @@ export async function deletePlan(id: number): Promise<void> {
  * Lấy danh sách features của plan hiện tại
  * @client-only
  */
-export async function getPlanFeatures(
-  planId: number,
-): Promise<{
+export async function getPlanFeatures(planId: number): Promise<{
   planId: number;
   planName: string;
   features: { code: string; enabled: boolean }[];
@@ -108,6 +142,8 @@ export async function getPlanFeatures(
 export const planApi = {
   // Public APIs
   getActivePlans,
+  getPublicSettings,
+  getPublicSettingsServer,
 
   // Admin APIs
   getAll,

@@ -10,65 +10,56 @@ import { BreadcrumbRouter } from "@/app/[locale]/_components/_shared/_breadcrumb
 import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlanFeatures } from "@/hooks/use-plan-features";
-import { DASHBOARD_MENU_ITEMS, type MenuItem } from "@/constants/menu-items";
-import { filterMenuItems } from "@/lib/utils/filter-menu-items";
+import {
+  DASHBOARD_MENU_GROUPS,
+  type MenuGroup,
+  type MenuItem,
+} from "@/constants/menu-items";
 import type {
   SidebarGroup,
   SidebarHeaderConfig,
   SidebarItem,
 } from "@/types/sidebar";
+import type { UserRole } from "@/types/enums";
 
 /**
- * Chuyển đổi MenuItem[] sang SidebarGroup[] format
+ * Chuyển đổi MenuGroup[] sang SidebarGroup[] format
+ * Lọc theo role và plan features
  */
-function convertToSidebarGroups(
-  items: MenuItem[],
+function convertMenuGroupsToSidebarGroups(
+  menuGroups: MenuGroup[],
   t: ReturnType<typeof useTranslations>,
+  userRole: UserRole,
+  hasFeature: (code: string) => boolean,
 ): SidebarGroup[] {
-  // Nhóm items theo category
-  const overviewItems = items.filter((item) =>
-    ["dashboard"].includes(item.code),
-  );
-  const attendanceItems = items.filter((item) =>
-    ["attendance", "schedules"].includes(item.code),
-  );
-  const hrItems = items.filter((item) =>
-    ["payroll", "leave", "employees", "contracts", "reports"].includes(
-      item.code,
-    ),
-  );
-  const systemItems = items.filter((item) =>
-    ["settings", "profile"].includes(item.code),
-  );
-
   const groups: SidebarGroup[] = [];
 
-  if (overviewItems.length > 0) {
-    groups.push({
-      label: t("sidebar.groups.overview"),
-      items: convertMenuItemsToSidebarItems(overviewItems, t),
-    });
-  }
+  for (const group of menuGroups) {
+    // Kiểm tra group có được phép cho role này không
+    if (group.roles && !group.roles.includes(userRole)) {
+      continue;
+    }
 
-  if (attendanceItems.length > 0) {
-    groups.push({
-      label: t("sidebar.groups.attendance"),
-      items: convertMenuItemsToSidebarItems(attendanceItems, t),
+    // Lọc items theo role và feature
+    const filteredItems = group.items.filter((item) => {
+      // Kiểm tra role
+      if (item.roles && !item.roles.includes(userRole)) {
+        return false;
+      }
+      // Kiểm tra feature
+      if (item.featureCode && !hasFeature(item.featureCode)) {
+        return false;
+      }
+      return true;
     });
-  }
 
-  if (hrItems.length > 0) {
-    groups.push({
-      label: t("sidebar.groups.hr"),
-      items: convertMenuItemsToSidebarItems(hrItems, t),
-    });
-  }
-
-  if (systemItems.length > 0) {
-    groups.push({
-      label: t("sidebar.groups.system"),
-      items: convertMenuItemsToSidebarItems(systemItems, t),
-    });
+    // Chỉ thêm group nếu có items
+    if (filteredItems.length > 0) {
+      groups.push({
+        label: t(group.labelKey),
+        items: convertMenuItemsToSidebarItems(filteredItems, t),
+      });
+    }
   }
 
   return groups;
@@ -136,16 +127,17 @@ export default function DashboardLayout({
   }
 
   // Filter menu items theo plan features và role
-  const filteredItems = filterMenuItems(
-    DASHBOARD_MENU_ITEMS,
-    hasFeature,
+  const sidebarGroups = convertMenuGroupsToSidebarGroups(
+    DASHBOARD_MENU_GROUPS,
+    t,
     user.role,
+    hasFeature,
   );
-  const sidebarGroups = convertToSidebarGroups(filteredItems, t);
 
   // Header config - hiển thị company info
   const headerConfig: SidebarHeaderConfig = {
     name: user.companyName || user.tenantDomain.toUpperCase(),
+    logo: user.companyLogo,
     fallback: (user.companyName || user.tenantDomain)[0]?.toUpperCase(),
   };
 
@@ -153,6 +145,7 @@ export default function DashboardLayout({
     <div className="flex flex-col justify-center">
       <SidebarProvider>
         <BaseSidebar
+          key={user.companyLogo || "no-logo"}
           groups={sidebarGroups}
           headerConfig={headerConfig}
           userRole={user.role}

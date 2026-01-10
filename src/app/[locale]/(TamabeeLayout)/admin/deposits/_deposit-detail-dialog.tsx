@@ -125,7 +125,7 @@ export function DepositDetailDialog({
                   {t("table.amount")}
                 </p>
                 <p className="font-medium text-lg">
-                  {formatCurrency(deposit.amount, locale)}
+                  {formatCurrency(deposit.amount)}
                 </p>
               </div>
               <div className="space-y-1">

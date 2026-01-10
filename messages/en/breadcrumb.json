@@ -12,5 +12,10 @@
   "addNew": "Add New",
   "wallet": "Wallet",
   "companyInfo": "Company Info",
-  "settings": "Settings"
+  "settings": "Settings",
+  "attendance": "Attendance",
+  "myAttendance": "My Attendance",
+  "payroll": "Payroll",
+  "myPayslip": "My Payslip",
+  "leaves": "Leaves"
 }

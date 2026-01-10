@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { ReportExportButtons } from "../_report-export-buttons";
 import { reportApi, PayrollSummaryReportData } from "@/lib/apis/report-api";
 import { ReportFilters } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 
 /**
@@ -30,7 +30,6 @@ export function PayrollSummaryReportContent() {
   const t = useTranslations("reports");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
-  const locale = useLocale() as SupportedLocale;
 
   // State
   const [startDate, setStartDate] = useState<Date | undefined>(
@@ -208,22 +207,22 @@ export function PayrollSummaryReportContent() {
                               {period.totalEmployees}
                             </TableCell>
                             <TableCell className="text-right">
-                              {formatCurrency(period.totalBaseSalary, locale)}
+                              {formatCurrency(period.totalBaseSalary)}
                             </TableCell>
                             <TableCell className="text-right">
-                              {formatCurrency(period.totalOvertimePay, locale)}
+                              {formatCurrency(period.totalOvertimePay)}
                             </TableCell>
                             <TableCell className="text-right text-green-600">
-                              {formatCurrency(period.totalAllowances, locale)}
+                              {formatCurrency(period.totalAllowances)}
                             </TableCell>
                             <TableCell className="text-right text-red-600">
-                              {formatCurrency(period.totalDeductions, locale)}
+                              {formatCurrency(period.totalDeductions)}
                             </TableCell>
                             <TableCell className="text-right font-medium">
-                              {formatCurrency(period.totalGrossSalary, locale)}
+                              {formatCurrency(period.totalGrossSalary)}
                             </TableCell>
                             <TableCell className="text-right font-medium text-blue-600">
-                              {formatCurrency(period.totalNetSalary, locale)}
+                              {formatCurrency(period.totalNetSalary)}
                             </TableCell>
                             <TableCell className="text-center">
                               {getStatusBadge(period.status)}
@@ -255,10 +254,7 @@ export function PayrollSummaryReportContent() {
                       {t("payrollSummary.summaryGrandTotalGross")}
                     </p>
                     <p className="text-2xl font-bold">
-                      {formatCurrency(
-                        reportData.summary.grandTotalGross,
-                        locale,
-                      )}
+                      {formatCurrency(reportData.summary.grandTotalGross)}
                     </p>
                   </div>
                   <div className="p-4 border rounded-lg">
@@ -266,7 +262,7 @@ export function PayrollSummaryReportContent() {
                       {t("payrollSummary.summaryGrandTotalNet")}
                     </p>
                     <p className="text-2xl font-bold text-blue-600">
-                      {formatCurrency(reportData.summary.grandTotalNet, locale)}
+                      {formatCurrency(reportData.summary.grandTotalNet)}
                     </p>
                   </div>
                   <div className="p-4 border rounded-lg">
@@ -274,10 +270,7 @@ export function PayrollSummaryReportContent() {
                       {t("payrollSummary.summaryAveragePerEmployee")}
                     </p>
                     <p className="text-2xl font-bold text-green-600">
-                      {formatCurrency(
-                        reportData.summary.averagePerEmployee,
-                        locale,
-                      )}
+                      {formatCurrency(reportData.summary.averagePerEmployee)}
                     </p>
                   </div>
                 </div>

@@ -34,17 +34,13 @@ export function OvertimePreview({ config }: OvertimePreviewProps) {
       hours: sampleHours,
       amount: formatCurrency(
         hourlyRate * config.regularOvertimeRate * sampleHours,
-        "ja",
       ),
     },
     {
       label: t("nightWorkRate"),
       rate: config.nightWorkRate,
       hours: sampleHours,
-      amount: formatCurrency(
-        hourlyRate * config.nightWorkRate * sampleHours,
-        "ja",
-      ),
+      amount: formatCurrency(hourlyRate * config.nightWorkRate * sampleHours),
     },
     {
       label: t("nightOvertimeRate"),
@@ -52,7 +48,6 @@ export function OvertimePreview({ config }: OvertimePreviewProps) {
       hours: sampleHours,
       amount: formatCurrency(
         hourlyRate * config.nightOvertimeRate * sampleHours,
-        "ja",
       ),
     },
     {
@@ -61,7 +56,6 @@ export function OvertimePreview({ config }: OvertimePreviewProps) {
       hours: sampleHours,
       amount: formatCurrency(
         hourlyRate * config.holidayOvertimeRate * sampleHours,
-        "ja",
       ),
     },
     {
@@ -70,7 +64,6 @@ export function OvertimePreview({ config }: OvertimePreviewProps) {
       hours: sampleHours,
       amount: formatCurrency(
         hourlyRate * config.holidayNightOvertimeRate * sampleHours,
-        "ja",
       ),
     },
   ];

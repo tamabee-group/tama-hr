@@ -1,6 +1,9 @@
 {
   "groups": {
     "overview": "Tổng quan",
+    "myWorkspace": "Của tôi",
+    "hrManagement": "Quản lý nhân sự",
+    "settings": "Cài đặt",
     "management": "Quản lý",
     "finance": "Tài chính",
     "system": "Hệ thống",
@@ -12,12 +15,14 @@
   "items": {
     "home": "Trang chủ",
     "dashboard": "Bảng điều khiển",
+    "platformAdmin": "Quản trị hệ thống",
     "users": "Nhân sự",
     "employees": "Nhân viên",
     "addEmployee": "Thêm nhân viên",
     "customers": "Khách hàng",
     "plans": "Gói dịch vụ",
     "wallets": "Ví tiền",
+    "wallet": "Ví tiền",
     "deposits": "Nạp tiền",
     "commissions": "Hoa hồng",
     "settings": "Cài đặt",
@@ -40,6 +45,7 @@
     "mySchedule": "Lịch làm việc của tôi",
     "myPayroll": "Bảng lương của tôi",
     "myLeave": "Nghỉ phép của tôi",
+    "myProfile": "Hồ sơ của tôi",
     "shifts": "Quản lý ca",
     "contracts": "Hợp đồng"
   },

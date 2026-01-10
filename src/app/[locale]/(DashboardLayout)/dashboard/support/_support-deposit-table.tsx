@@ -90,7 +90,7 @@ export function SupportDepositTable({
       header: t("table.amount"),
       cell: ({ row }) => (
         <span className="font-medium">
-          {formatCurrency(row.getValue("amount"), locale)}
+          {formatCurrency(row.getValue("amount"))}
         </span>
       ),
     },

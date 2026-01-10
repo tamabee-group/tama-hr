@@ -195,7 +195,9 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
     {
       accessorKey: "baseSalary",
       header: t("table.baseSalary"),
-      cell: ({ row }) => formatCurrency(row.original.baseSalary, locale),
+      cell: ({ row }) => {
+        formatCurrency(row.original.baseSalary);
+      },
     },
     {
       accessorKey: "totalOvertimePay",
@@ -204,9 +206,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
         const overtime = row.original.totalOvertimePay;
         if (!overtime || overtime === 0) return "-";
         return (
-          <span className="text-blue-600">
-            {formatCurrency(overtime, locale)}
-          </span>
+          <span className="text-blue-600">{formatCurrency(overtime)}</span>
         );
       },
     },
@@ -215,7 +215,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary, locale)}
+          {formatCurrency(row.original.netSalary)}
         </span>
       ),
     },
@@ -285,7 +285,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
                 {t("summary.totalPayroll")}
               </p>
               <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalNetSalary, locale)}
+                {formatCurrency(summary.totalNetSalary)}
               </p>
             </CardContent>
           </Card>
@@ -296,7 +296,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
                 {t("summary.totalOvertime")}
               </p>
               <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(summary.totalOvertimePay, locale)}
+                {formatCurrency(summary.totalOvertimePay)}
               </p>
             </CardContent>
           </Card>
@@ -307,7 +307,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
                 {t("summary.totalAllowances")}
               </p>
               <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalAllowances, locale)}
+                {formatCurrency(summary.totalAllowances)}
               </p>
             </CardContent>
           </Card>

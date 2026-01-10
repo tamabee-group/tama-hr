@@ -19,7 +19,7 @@ Kiến trúc multi-tenant với mỗi tenant (company) có database riêng biệ
 **Tenant Domain là gì?**
 
 - Tenant domain = subdomain riêng cho mỗi công ty
-- Ví dụ: `acme.tamabee.com`, `toyota.tamabee.com`
+- Ví dụ: `acme.tamabee.vn`, `toyota.tamabee.vn`
 - User chọn domain khi đăng ký, hệ thống validate xem đã tồn tại chưa
 - **tenantDomain = tenantId = dbName** (đơn giản hóa, vì đã unique)
 
@@ -27,7 +27,7 @@ Ví dụ: User chọn domain `acme` →
 
 - tenantId = `acme`
 - dbName = `tamabee_acme`
-- URL = `acme.tamabee.com`
+- URL = `acme.tamabee.vn`
 
 **Tại sao cần database riêng cho mỗi tenant?**
 
@@ -66,7 +66,7 @@ Ví dụ: User chọn domain `acme` →
 │  Điện thoại:      [0901234567                            ]  │
 │  ...                                                        │
 │                                                             │
-│  Tenant Domain:   [abc        ] .tamabee.com               │
+│  Tenant Domain:   [abc        ] .tamabee.vn               │
 │                   ✓ Domain khả dụng                        │
 │                   ✗ Domain đã được sử dụng                 │
 └─────────────────────────────────────────────────────────────┘
@@ -983,7 +983,7 @@ Tenant có 2 giai đoạn chính:
 │                              │                                   │
 │                              ▼                                   │
 │  7. Update company status = ACTIVE                              │
-│     Company ready to use at acme.tamabee.com                    │
+│     Company ready to use at acme.tamabee.vn                    │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```

@@ -14,8 +14,48 @@ export interface Company {
   referredByEmployeeName?: string;
   logo?: string;
   ownerId?: number;
+  tenantDomain?: string;
+  status?: string;
+  planId?: number;
+  planNameVi?: string;
+  planNameEn?: string;
+  planNameJa?: string;
+  planMonthlyPrice?: number;
+  planMaxEmployees?: number;
+  walletBalance?: number;
+  lastBillingDate?: string;
+  nextBillingDate?: string;
+  freeTrialEndDate?: string;
+  isFreeTrialActive?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * Helper function để lấy plan name theo locale
+ */
+export const getCompanyPlanName = (
+  company: Company,
+  locale: "vi" | "en" | "ja",
+): string => {
+  const nameMap: Record<string, string | undefined> = {
+    vi: company.planNameVi,
+    en: company.planNameEn,
+    ja: company.planNameJa,
+  };
+  return nameMap[locale] || company.planNameVi || "-";
+};
+
+// Request để cập nhật company profile
+export interface UpdateCompanyProfileRequest {
+  name: string;
+  ownerName: string;
+  email: string;
+  phone: string;
+  address: string;
+  industry: string;
+  zipcode?: string;
+  logo?: string;
 }
 
 // Labels cho ngành nghề

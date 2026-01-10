@@ -207,6 +207,12 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
       headers.set("Content-Type", contentType);
     }
 
+    // Forward X-Tenant-Domain header nếu có (cho login từ tenant domain)
+    const tenantDomain = request.headers.get("X-Tenant-Domain");
+    if (tenantDomain) {
+      headers.set("X-Tenant-Domain", tenantDomain);
+    }
+
     return headers;
   };
 

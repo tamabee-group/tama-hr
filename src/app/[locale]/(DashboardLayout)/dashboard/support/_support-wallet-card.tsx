@@ -1,8 +1,8 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { WalletOverviewResponse } from "@/types/wallet";
+import { WalletOverviewResponse, getWalletPlanName } from "@/types/wallet";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,8 @@ export function SupportWalletCard({
   locale = "vi",
 }: SupportWalletCardProps) {
   const t = useTranslations("wallet");
+  const currentLocale = useLocale() as "vi" | "en" | "ja";
+  const planName = getWalletPlanName(company, currentLocale);
 
   return (
     <Card className="h-full">
@@ -45,16 +47,16 @@ export function SupportWalletCard({
               company.balance > 0 ? "text-green-600" : "text-red-600",
             )}
           >
-            {formatCurrency(company.balance, locale)}
+            {formatCurrency(company.balance)}
           </p>
         </div>
 
         {/* Thông tin gói */}
         <div className="grid grid-cols-2 gap-4 text-sm">
-          {company.planName && (
+          {planName && (
             <div>
               <p className="text-muted-foreground">{t("card.plan")}</p>
-              <p className="font-medium">{company.planName}</p>
+              <p className="font-medium">{planName}</p>
             </div>
           )}
 

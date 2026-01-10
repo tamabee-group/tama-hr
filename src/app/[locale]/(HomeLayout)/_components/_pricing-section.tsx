@@ -10,13 +10,23 @@ import {
   getFeatureText,
   LocaleKey,
 } from "@/types/plan";
-import { getActivePlans } from "@/lib/apis/plan-api";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { getActivePlans, PublicSettings } from "@/lib/apis/plan-api";
+import {
+  formatPriceWithConversion,
+  SupportedLocale,
+} from "@/lib/utils/format-currency";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, Star, Users } from "lucide-react";
 
-export function PricingSection() {
+// Custom plan ID
+const CUSTOM_PLAN_ID = 4;
+
+interface PricingSectionProps {
+  settings: PublicSettings;
+}
+
+export function PricingSection({ settings }: PricingSectionProps) {
   const router = useRouter();
   const locale = useLocale() as SupportedLocale;
   const t = useTranslations("landing.pricing");
@@ -26,18 +36,19 @@ export function PricingSection() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getActivePlans();
-        setPlans(data);
+        const plansData = await getActivePlans();
+        // Lọc bỏ Free Plan (id=0), chỉ hiển thị plans trả phí
+        setPlans(plansData.filter((p) => p.id !== 0));
       } catch {
         setError(t("error"));
       } finally {
         setLoading(false);
       }
     };
-    fetchPlans();
+    fetchData();
   }, [t]);
 
   const handleSelectPlan = (planId: number) => {
@@ -52,8 +63,8 @@ export function PricingSection() {
             <Skeleton className="h-10 w-64 mx-auto mb-4" />
             <Skeleton className="h-6 w-96 mx-auto" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
               <Skeleton key={i} className="h-80 rounded-xl" />
             ))}
           </div>
@@ -75,15 +86,24 @@ export function PricingSection() {
             {t("title")}
           </h2>
           <p className="text-muted-foreground text-lg">{t("subtitle")}</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            {t("freeTrialNote", { months: settings.freeTrialMonths })}
+          </p>
+          {settings.referralBonusMonths > 0 && (
+            <p className="text-sm text-primary mt-1">
+              {t("referralBonus", { months: settings.referralBonusMonths })}
+            </p>
+          )}
         </div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => (
             <PlanCard
               key={plan.id}
               plan={plan}
               locale={locale}
+              settings={settings}
               t={t}
               onSelect={() => handleSelectPlan(plan.id)}
             />
@@ -97,11 +117,13 @@ export function PricingSection() {
 function PlanCard({
   plan,
   locale,
+  settings,
   t,
   onSelect,
 }: {
   plan: PlanResponse;
   locale: SupportedLocale;
+  settings: PublicSettings;
   t: ReturnType<typeof useTranslations>;
   onSelect: () => void;
 }) {
@@ -109,6 +131,8 @@ function PlanCard({
   const sortedFeatures = [...plan.features].sort(
     (a, b) => a.sortOrder - b.sortOrder,
   );
+  const isCustomPlan = plan.id === CUSTOM_PLAN_ID;
+  const customPrice = settings.customPricePerEmployee;
 
   return (
     <div className="bg-card border rounded-xl p-6 flex flex-col hover:shadow-lg transition-shadow">
@@ -122,17 +146,28 @@ function PlanCard({
 
       {/* Price */}
       <div className="mb-4">
-        <span className="text-3xl font-bold text-primary">
-          {formatCurrency(plan.monthlyPrice, locale)}
-        </span>
-        <span className="text-muted-foreground text-sm">{t("perMonth")}</span>
+        {isCustomPlan ? (
+          <PriceDisplay
+            amountJPY={customPrice}
+            locale={locale}
+            suffix={t("perEmployee")}
+          />
+        ) : (
+          <PriceDisplay
+            amountJPY={plan.monthlyPrice}
+            locale={locale}
+            suffix={t("perMonth")}
+          />
+        )}
       </div>
 
       {/* Max Employees */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 pb-4 border-b">
         <Users className="w-4 h-4" />
         <span>
-          {t("maxEmployees")}: {plan.maxEmployees}
+          {isCustomPlan
+            ? t("unlimited")
+            : `${t("maxEmployees")} ${plan.maxEmployees}`}
         </span>
       </div>
 
@@ -150,9 +185,9 @@ function PlanCard({
               }`}
             >
               {feature.isHighlighted ? (
-                <Star className="w-4 h-4 mt-0.5 fill-primary flex-shrink-0" />
+                <Star className="w-4 h-4 mt-0.5 fill-primary shrink-0" />
               ) : (
-                <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <Check className="w-4 h-4 mt-0.5 shrink-0" />
               )}
               <span>{getFeatureText(feature, localeKey)}</span>
             </li>
@@ -162,8 +197,33 @@ function PlanCard({
 
       {/* CTA Button */}
       <Button onClick={onSelect} className="w-full rounded-full">
-        {t("registerNow")}
+        {isCustomPlan ? t("contactUs") : t("registerNow")}
       </Button>
+    </div>
+  );
+}
+
+// Component hiển thị giá với quy đổi tiền tệ
+function PriceDisplay({
+  amountJPY,
+  locale,
+  suffix,
+}: {
+  amountJPY: number;
+  locale: SupportedLocale;
+  suffix: string;
+}) {
+  const { jpy, converted } = formatPriceWithConversion(amountJPY, locale);
+
+  return (
+    <div>
+      <div className="flex items-baseline gap-1">
+        <span className="text-3xl font-bold text-primary">{jpy}</span>
+        <span className="text-muted-foreground text-sm">{suffix}</span>
+      </div>
+      {converted && (
+        <span className="text-sm text-muted-foreground">(~{converted})</span>
+      )}
     </div>
   );
 }

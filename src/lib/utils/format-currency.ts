@@ -1,13 +1,7 @@
 /**
- * Format tiền tệ theo locale
- * @param amount - Số tiền cần format
- * @param locale - Locale code (vi, en, ja)
- * @returns Chuỗi đã format theo locale
- *
- * Format theo locale:
- * - vi: "1.000.000 ₫" (VND)
- * - en: "$1,000,000" (USD)
- * - ja: "¥1,000,000" (JPY)
+ * Format tiền tệ - LUÔN hiển thị JPY (¥)
+ * @param amount - Số tiền JPY
+ * @returns Chuỗi đã format (¥1,000)
  */
 
 export type SupportedLocale = "vi" | "en" | "ja";
@@ -22,21 +16,46 @@ const LOCALE_CURRENCY_MAP: Record<
   ja: { currency: "JPY", localeString: "ja-JP" },
 };
 
+// Tỷ giá quy đổi từ JPY
+const EXCHANGE_RATES: Record<SupportedLocale, number> = {
+  vi: 170, // 1 JPY = 170 VND
+  en: 1 / 150, // 150 JPY = 1 USD -> 1 JPY = 0.00667 USD
+  ja: 1,
+};
+
 /**
- * Format số tiền theo locale
- * @param amount - Số tiền (number)
- * @param locale - Locale code (vi, en, ja)
- * @returns Chuỗi đã format
+ * Format số tiền JPY - luôn hiển thị ¥ bất kể locale
+ * @param amount - Số tiền JPY
+ * @returns Chuỗi đã format (¥1,000)
  */
-export function formatCurrency(
+export function formatCurrency(amount: number): string {
+  try {
+    const formatter = new Intl.NumberFormat("ja-JP", {
+      style: "currency",
+      currency: "JPY",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    return formatter.format(amount);
+  } catch {
+    return `¥${amount.toLocaleString()}`;
+  }
+}
+
+/**
+ * Format tiền theo locale cụ thể (VND, USD, JPY)
+ * @param amount - Số tiền
+ * @param locale - Locale code (vi, en, ja)
+ * @returns Chuỗi đã format theo locale
+ */
+export function formatCurrencyByLocale(
   amount: number,
-  locale: SupportedLocale = "ja",
+  locale: SupportedLocale,
 ): string {
   const config = LOCALE_CURRENCY_MAP[locale];
 
   if (!config) {
-    // Fallback to vi if locale not supported
-    return formatCurrency(amount, "ja");
+    return formatCurrency(amount);
   }
 
   try {
@@ -49,9 +68,35 @@ export function formatCurrency(
 
     return formatter.format(amount);
   } catch {
-    // Fallback format nếu Intl không hoạt động
     return `${amount.toLocaleString()} ${config.currency}`;
   }
+}
+
+/**
+ * Format giá JPY với quy đổi theo locale
+ * - vi: ¥1,000 (~170,000₫)
+ * - en: ¥1,000 (~$6)
+ * - ja: ¥1,000
+ * @param amountJPY - Số tiền JPY
+ * @param locale - Locale code
+ * @returns Object chứa giá JPY và giá quy đổi
+ */
+export function formatPriceWithConversion(
+  amountJPY: number,
+  locale: SupportedLocale,
+): { jpy: string; converted: string | null } {
+  const jpyFormatted = formatCurrency(amountJPY);
+
+  // Tiếng Nhật không cần quy đổi
+  if (locale === "ja") {
+    return { jpy: jpyFormatted, converted: null };
+  }
+
+  const rate = EXCHANGE_RATES[locale];
+  const convertedAmount = Math.floor(amountJPY * rate);
+  const convertedFormatted = formatCurrencyByLocale(convertedAmount, locale);
+
+  return { jpy: jpyFormatted, converted: convertedFormatted };
 }
 
 /**

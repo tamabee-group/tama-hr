@@ -1,19 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import {
-  WalletTransactionResponse,
-  TransactionFilterRequest,
-} from "@/types/wallet";
-import { getMyTransactions } from "@/lib/apis/wallet-api";
+import { WalletTransactionResponse } from "@/types/wallet";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { TransactionType } from "@/types/enums";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { cn } from "@/lib/utils";
 import { formatDateTime } from "@/lib/utils/format-date";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
@@ -22,27 +15,22 @@ type TabType = "ALL" | TransactionType;
 
 interface TransactionTableProps {
   locale?: SupportedLocale;
-  refreshTrigger?: number;
+  data: WalletTransactionResponse[];
 }
 
 /**
  * Bảng hiển thị danh sách giao dịch ví của user hiện tại
+ * Nhận data từ props, filter client-side theo tab
  */
 export function TransactionTable({
   locale = "vi",
-  refreshTrigger,
+  data,
 }: TransactionTableProps) {
   const t = useTranslations("wallet");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
 
-  const [transactions, setTransactions] = useState<WalletTransactionResponse[]>(
-    [],
-  );
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("ALL");
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
 
   const tabs: { value: TabType; label: string }[] = [
     { value: "ALL", label: t("tabs.all") },
@@ -51,31 +39,11 @@ export function TransactionTable({
     { value: "REFUND", label: t("tabs.refund") },
   ];
 
-  const fetchTransactions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filter: TransactionFilterRequest = {};
-      if (activeTab !== "ALL") {
-        filter.transactionType = activeTab;
-      }
-
-      const response = await getMyTransactions(filter, page, DEFAULT_PAGE_SIZE);
-      setTransactions(response.content);
-      setTotalPages(response.totalPages);
-    } catch (error) {
-      console.error("Failed to fetch transactions:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, page]);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions, refreshTrigger]);
-
-  useEffect(() => {
-    setPage(0);
-  }, [activeTab]);
+  // Filter client-side theo tab
+  const filteredTransactions = useMemo(() => {
+    if (activeTab === "ALL") return data;
+    return data.filter((t) => t.transactionType === activeTab);
+  }, [data, activeTab]);
 
   const columns: ColumnDef<WalletTransactionResponse>[] = [
     {
@@ -121,9 +89,7 @@ export function TransactionTable({
     {
       accessorKey: "balanceAfter",
       header: t("table.balanceAfter"),
-      cell: ({ row }) => {
-        formatCurrency(row.getValue("balanceAfter"));
-      },
+      cell: ({ row }) => formatCurrency(row.getValue("balanceAfter")),
     },
     {
       accessorKey: "description",
@@ -135,23 +101,6 @@ export function TransactionTable({
       cell: ({ row }) => formatDateTime(row.getValue("createdAt"), locale),
     },
   ];
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-10 w-24" />
-          ))}
-        </div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -174,34 +123,10 @@ export function TransactionTable({
 
       <BaseTable
         columns={columns}
-        data={transactions}
+        data={filteredTransactions}
         showPagination={false}
         noResultsText={tCommon("noResults")}
       />
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-end space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={page === 0}
-          >
-            {tCommon("previous")}
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            {page + 1} / {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            disabled={page >= totalPages - 1}
-          >
-            {tCommon("next")}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

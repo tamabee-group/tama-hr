@@ -27,6 +27,7 @@ export interface Company {
   nextBillingDate?: string;
   freeTrialEndDate?: string;
   isFreeTrialActive?: boolean;
+  employeeCount?: number;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,19 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
-import { DepositRequestResponse, DepositFilterRequest } from "@/types/deposit";
-import { depositApi } from "@/lib/apis/deposit-api";
+import { DepositRequestResponse } from "@/types/deposit";
 import { DepositStatusBadge } from "@/app/[locale]/_components/_status-badge";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { DepositStatus } from "@/types/enums";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Eye, X, Pencil } from "lucide-react";
-import { DEFAULT_PAGE_SIZE } from "@/types/api";
+import { Eye, X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { formatDateTime } from "@/lib/utils/format-date";
@@ -22,30 +19,27 @@ type TabStatus = "ALL" | DepositStatus;
 
 interface DepositTableProps {
   locale?: SupportedLocale;
+  data: DepositRequestResponse[];
   onViewImage?: (imageUrl: string) => void;
   onCancel?: (deposit: DepositRequestResponse) => void;
-  onEdit?: (deposit: DepositRequestResponse) => void;
-  refreshTrigger?: number;
+  onDeposit?: () => void;
 }
 
 /**
  * Bảng hiển thị danh sách yêu cầu nạp tiền của user hiện tại
+ * Nhận data từ props, filter client-side theo tab
  */
 export function DepositTable({
   locale = "vi",
+  data,
   onViewImage,
   onCancel,
-  onEdit,
-  refreshTrigger,
+  onDeposit,
 }: DepositTableProps) {
   const t = useTranslations("deposits");
   const tCommon = useTranslations("common");
 
-  const [deposits, setDeposits] = useState<DepositRequestResponse[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabStatus>("ALL");
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
 
   const tabs: { value: TabStatus; label: string }[] = [
     { value: "ALL", label: t("tabs.all") },
@@ -54,35 +48,11 @@ export function DepositTable({
     { value: "REJECTED", label: t("tabs.rejected") },
   ];
 
-  const fetchDeposits = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filter: DepositFilterRequest = {};
-      if (activeTab !== "ALL") {
-        filter.status = activeTab;
-      }
-
-      const response = await depositApi.getMyRequests(
-        filter,
-        page,
-        DEFAULT_PAGE_SIZE,
-      );
-      setDeposits(response.content);
-      setTotalPages(response.totalPages);
-    } catch (error) {
-      console.error("Failed to fetch deposits:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, page]);
-
-  useEffect(() => {
-    fetchDeposits();
-  }, [fetchDeposits, refreshTrigger]);
-
-  useEffect(() => {
-    setPage(0);
-  }, [activeTab]);
+  // Filter client-side theo tab
+  const filteredDeposits = useMemo(() => {
+    if (activeTab === "ALL") return data;
+    return data.filter((d) => d.status === activeTab);
+  }, [data, activeTab]);
 
   const columns: ColumnDef<DepositRequestResponse>[] = [
     {
@@ -123,42 +93,34 @@ export function DepositTable({
     },
     {
       id: "actions",
+      header: "",
       cell: ({ row }) => {
         const deposit = row.original;
         const isPending = deposit.status === "PENDING";
 
         return (
-          <div className="flex items-center gap-1">
-            {isPending && onEdit && (
+          <div className="flex items-center gap-2">
+            {onViewImage && (
               <Button
                 variant="ghost"
-                size="icon-sm"
-                onClick={() => onEdit(deposit)}
-                title={t("actions.edit")}
+                size="sm"
+                onClick={() =>
+                  onViewImage(getFileUrl(deposit.transferProofUrl))
+                }
               >
-                <Pencil className="h-4 w-4" />
+                <Eye className="h-4 w-4 mr-1" />
+                {t("actions.viewImage")}
               </Button>
             )}
             {isPending && onCancel && (
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="sm"
+                className="text-destructive hover:text-destructive"
                 onClick={() => onCancel(deposit)}
-                title={t("actions.cancel")}
               >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-            {onViewImage && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() =>
-                  onViewImage(getFileUrl(deposit.transferProofUrl))
-                }
-                title={t("actions.viewImage")}
-              >
-                <Eye className="h-4 w-4" />
+                <X className="h-4 w-4 mr-1" />
+                {t("actions.cancel")}
               </Button>
             )}
           </div>
@@ -167,72 +129,39 @@ export function DepositTable({
     },
   ];
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-10 w-24" />
-          ))}
-        </div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-1 border-b">
-        {tabs.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
-            className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px",
-              activeTab === tab.value
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1 border-b flex-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={cn(
+                "px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px",
+                activeTab === tab.value
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50",
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        {onDeposit && (
+          <Button onClick={onDeposit} size="sm">
+            <Plus className="h-4 w-4 mr-1" />
+            {t("actions.deposit")}
+          </Button>
+        )}
       </div>
 
       <BaseTable
         columns={columns}
-        data={deposits}
+        data={filteredDeposits}
         showPagination={false}
         noResultsText={tCommon("noResults")}
       />
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-end space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={page === 0}
-          >
-            {tCommon("previous")}
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            {page + 1} / {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            disabled={page >= totalPages - 1}
-          >
-            {tCommon("next")}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

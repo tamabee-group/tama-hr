@@ -7,6 +7,7 @@
   "transactionType": {
     "DEPOSIT": "Deposit",
     "BILLING": "Billing",
+    "BILLING_FAILED": "Billing Failed",
     "REFUND": "Refund",
     "COMMISSION": "Commission"
   },

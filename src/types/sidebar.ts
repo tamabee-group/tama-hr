@@ -28,8 +28,6 @@ export interface SidebarItem {
   icon: React.ReactNode;
   /** Danh sách sub-items (nếu có) */
   items?: SidebarSubItem[];
-  /** Key để lấy badge count từ context */
-  badgeKey?: string;
   /** Permission key yêu cầu để hiển thị item này (Tamabee) */
   requiredPermission?: PermissionKey;
   /** Permission key yêu cầu để hiển thị item này (Company) */

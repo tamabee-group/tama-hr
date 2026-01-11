@@ -59,6 +59,15 @@ function handleUnauthorized(): void {
   const locale = getLocaleFromCookie() || "en";
   const currentPath = window.location.pathname;
 
+  // Không redirect nếu đang ở guest-only routes (login, register, forgot-password)
+  const guestOnlyRoutes = ["/login", "/register", "/forgot-password"];
+  const isGuestRoute = guestOnlyRoutes.some((route) =>
+    currentPath.includes(route),
+  );
+  if (isGuestRoute) {
+    return;
+  }
+
   // Redirect về login với redirect param
   const loginUrl = `/${locale}/login?redirect=${encodeURIComponent(currentPath)}`;
   window.location.href = loginUrl;

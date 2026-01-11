@@ -2,7 +2,6 @@
   "title": "Deposit Requests",
   "description": "View and process deposit requests from companies",
   "createRequest": "Create Deposit Request",
-  "editRequest": "Edit Deposit Request",
   "table": {
     "companyName": "Company",
     "amount": "Amount",
@@ -11,12 +10,18 @@
     "requestedBy": "Requested By",
     "requesterName": "Requester Name",
     "requesterEmail": "Requester Email",
+    "requesterRole": "Role",
     "employeeCode": "Employee Code",
     "createdAt": "Created At",
     "processedAt": "Processed At",
     "processedBy": "Processed By",
     "approvedBy": "Approved By",
-    "rejectionReason": "Rejection Reason"
+    "approverName": "Processor Name",
+    "approverRole": "Processor Role",
+    "approverCode": "Employee Code",
+    "approverEmail": "Processor Email",
+    "rejectionReason": "Rejection Reason",
+    "actions": "Actions"
   },
   "tabs": {
     "all": "All",
@@ -30,18 +35,26 @@
     "reject": "Reject",
     "viewProof": "View Transfer Proof",
     "download": "Download",
-    "approving": "Approving..."
+    "approving": "Approving...",
+    "deposit": "Deposit",
+    "cancel": "Cancel",
+    "viewImage": "View Image"
   },
   "dialog": {
     "detailTitle": "Deposit Request Detail",
     "detailDescription": "View details and process request",
+    "companyInfo": "Company Information",
+    "requesterInfo": "Requester Information",
+    "approverInfo": "Processor Information",
+    "statusInfo": "Status & Timeline",
     "approveTitle": "Approve Deposit",
     "approveDescription": "Approve this deposit request?",
     "rejectTitle": "Reject Deposit",
     "rejectDescription": "Please provide a reason for rejection",
     "rejectReason": "Rejection Reason",
     "rejectReasonPlaceholder": "Enter reason for rejection",
-    "rejecting": "Processing..."
+    "rejecting": "Processing...",
+    "requesterLanguage": "Requester's language"
   },
   "messages": {
     "approveSuccess": "Deposit approved",
@@ -50,8 +63,6 @@
     "rejectError": "Failed to reject deposit",
     "createSuccess": "Request created",
     "createError": "Failed to create request",
-    "updateSuccess": "Request updated",
-    "updateError": "Failed to update request",
     "cancelSuccess": "Request cancelled",
     "cancelError": "Failed to cancel request",
     "cancelConfirm": "Cancel this deposit request?",
@@ -61,6 +72,8 @@
     "amount": "Deposit Amount",
     "amountPlaceholder": "Enter deposit amount",
     "transferProof": "Transfer Proof",
-    "transferProofHint": "Upload a screenshot of your bank transfer"
+    "transferProofHint": "Upload a screenshot of your bank transfer",
+    "minAmountHint": "Minimum amount: ¥{amount}",
+    "minAmountError": "Minimum deposit amount is ¥{amount}"
   }
 }

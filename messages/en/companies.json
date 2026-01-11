@@ -9,6 +9,19 @@
   "companyWallet": "Company Wallet",
   "employees": "Employees",
   "featureUpdating": "Feature is being updated",
+  "serviceInfo": "Service Information",
+  "plan": "Plan",
+  "balance": "Balance",
+  "lastBilling": "Last Billing",
+  "nextBilling": "Next Billing",
+  "statistics": "Statistics",
+  "limit": "Limit",
+  "timeline": "Timeline",
+  "referralInfo": "Referral Information",
+  "contactInfo": "Contact Information",
+  "locationInfo": "Location",
+  "settingsInfo": "Settings",
+  "employeeUsage": "Number of Employees",
   "table": {
     "name": "Company Name",
     "email": "Email",
@@ -57,7 +70,8 @@
     "freeTrialEnd": "Free Trial Ends",
     "nextBilling": "Next Billing",
     "lastBilling": "Last Billing",
-    "manageWallet": "Manage Wallet"
+    "manageWallet": "Manage Wallet",
+    "viewPlans": "View Plans"
   },
   "messages": {
     "createSuccess": "Company created successfully",
@@ -79,5 +93,13 @@
     "emailRequired": "Please enter email",
     "ownerNameRequired": "Please enter representative name",
     "checkInfo": "Please check the information"
+  },
+  "deleteDialog": {
+    "button": "Delete Company",
+    "title": "Delete Company Permanently",
+    "warning": "This action will delete all company data including employees, attendance, payroll and database. This cannot be undone.",
+    "confirmInstruction": "Type \"{name}\" to confirm deletion",
+    "companyName": "Company Name",
+    "confirm": "Delete Permanently"
   }
 }

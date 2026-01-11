@@ -9,6 +9,19 @@
   "companyWallet": "会社ウォレット",
   "employees": "従業員",
   "featureUpdating": "機能は更新中です",
+  "serviceInfo": "サービス情報",
+  "plan": "プラン",
+  "balance": "残高",
+  "lastBilling": "前回請求日",
+  "nextBilling": "次回請求日",
+  "statistics": "統計",
+  "limit": "上限",
+  "timeline": "タイムライン",
+  "referralInfo": "紹介情報",
+  "contactInfo": "連絡先",
+  "locationInfo": "所在地",
+  "settingsInfo": "設定",
+  "employeeUsage": "従業員数",
   "table": {
     "name": "会社名",
     "email": "メール",
@@ -57,7 +70,8 @@
     "freeTrialEnd": "無料トライアル終了日",
     "nextBilling": "次回請求日",
     "lastBilling": "前回請求日",
-    "manageWallet": "ウォレット管理"
+    "manageWallet": "ウォレット管理",
+    "viewPlans": "プランを見る"
   },
   "messages": {
     "createSuccess": "会社を作成しました",
@@ -79,5 +93,13 @@
     "emailRequired": "メールを入力してください",
     "ownerNameRequired": "代表者名を入力してください",
     "checkInfo": "情報を確認してください"
+  },
+  "deleteDialog": {
+    "button": "会社を削除",
+    "title": "会社を完全に削除",
+    "warning": "この操作により、従業員、勤怠、給与、データベースを含むすべての会社データが削除されます。元に戻すことはできません。",
+    "confirmInstruction": "削除を確認するには「{name}」と入力してください",
+    "companyName": "会社名",
+    "confirm": "完全に削除"
   }
 }

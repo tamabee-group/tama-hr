@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { WalletTransactionResponse } from "@/types/wallet";
-import { getMyTransactions } from "@/lib/apis/wallet-api";
 import { formatCurrency } from "@/lib/utils/format-currency";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   ChartContainer,
   Bar,
@@ -21,7 +19,7 @@ import {
 } from "@/components/ui/chart";
 
 interface TransactionChartProps {
-  refreshTrigger?: number;
+  transactions: WalletTransactionResponse[];
 }
 
 interface MonthlyData {
@@ -38,7 +36,9 @@ interface MonthlyData {
 // Màu xám cho cột không có dữ liệu
 const EMPTY_COLOR = "#d1d5db";
 // Giá trị tối thiểu để hiển thị cột trống
-const MIN_DISPLAY_VALUE = 0.5;
+const MIN_DISPLAY_VALUE = 0.3;
+// Giá trị tối thiểu cho trục Y khi không có data
+const MIN_Y_AXIS_VALUE = 10;
 
 /**
  * Tạo danh sách N tháng gần nhất
@@ -148,11 +148,10 @@ function CustomLegend({ depositLabel, billingLabel }: CustomLegendProps) {
 
 /**
  * Chart hiển thị giao dịch theo tháng
+ * Nhận transactions từ props, tính toán data cho chart
  */
-export function TransactionChart({ refreshTrigger }: TransactionChartProps) {
+export function TransactionChart({ transactions }: TransactionChartProps) {
   const t = useTranslations("wallet");
-  const [data, setData] = useState<MonthlyData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false);
 
   // Labels từ translations
@@ -185,107 +184,73 @@ export function TransactionChart({ refreshTrigger }: TransactionChartProps) {
   // Số tháng hiển thị: 12 trên desktop, 6 trên mobile
   const monthCount = isDesktop ? 12 : 6;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // Lấy 200 giao dịch gần nhất để cover 12 tháng
-        const response = await getMyTransactions(undefined, 0, 200);
-        const transactions = response.content;
+  // Tính toán data cho chart từ transactions
+  const { data, yAxisMax } = useMemo(() => {
+    // Group theo tháng
+    const monthlyMap = new Map<string, { deposit: number; billing: number }>();
 
-        // Group theo tháng
-        const monthlyMap = new Map<
-          string,
-          { deposit: number; billing: number }
-        >();
+    transactions.forEach((tx: WalletTransactionResponse) => {
+      const date = new Date(tx.createdAt);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
-        transactions.forEach((tx: WalletTransactionResponse) => {
-          const date = new Date(tx.createdAt);
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-
-          if (!monthlyMap.has(monthKey)) {
-            monthlyMap.set(monthKey, { deposit: 0, billing: 0 });
-          }
-
-          const monthData = monthlyMap.get(monthKey)!;
-          if (tx.transactionType === "DEPOSIT") {
-            monthData.deposit += tx.amount;
-          } else if (tx.transactionType === "BILLING") {
-            monthData.billing += Math.abs(tx.amount);
-          }
-        });
-
-        // Tạo data cho N tháng gần nhất
-        const lastNMonths = getLastNMonths(monthCount);
-
-        // Tính max value để xác định giá trị hiển thị cho cột trống
-        let max = 0;
-        lastNMonths.forEach((monthKey: string) => {
-          const values = monthlyMap.get(monthKey);
-          if (values) {
-            max = Math.max(max, values.deposit, values.billing);
-          }
-        });
-
-        // Giá trị hiển thị cho cột trống (khoảng 3% của max)
-        const emptyDisplayValue = max > 0 ? max * 0.03 : MIN_DISPLAY_VALUE;
-
-        const chartData: MonthlyData[] = lastNMonths.map((monthKey: string) => {
-          const values = monthlyMap.get(monthKey) || { deposit: 0, billing: 0 };
-          const hasDeposit = values.deposit > 0;
-          const hasBilling = values.billing > 0;
-
-          return {
-            month: formatMonthLabel(monthKey),
-            monthKey,
-            deposit: values.deposit,
-            billing: values.billing,
-            depositDisplay: hasDeposit ? values.deposit : emptyDisplayValue,
-            billingDisplay: hasBilling ? values.billing : emptyDisplayValue,
-            hasDeposit,
-            hasBilling,
-          };
-        });
-
-        setData(chartData);
-      } catch (error) {
-        console.error("Failed to fetch transactions for chart:", error);
-        // Vẫn hiển thị N tháng trống nếu lỗi
-        const lastNMonths = getLastNMonths(monthCount);
-        setData(
-          lastNMonths.map((monthKey: string) => ({
-            month: formatMonthLabel(monthKey),
-            monthKey,
-            deposit: 0,
-            billing: 0,
-            depositDisplay: MIN_DISPLAY_VALUE,
-            billingDisplay: MIN_DISPLAY_VALUE,
-            hasDeposit: false,
-            hasBilling: false,
-          })),
-        );
-      } finally {
-        setLoading(false);
+      if (!monthlyMap.has(monthKey)) {
+        monthlyMap.set(monthKey, { deposit: 0, billing: 0 });
       }
+
+      const monthData = monthlyMap.get(monthKey)!;
+      if (tx.transactionType === "DEPOSIT") {
+        monthData.deposit += tx.amount;
+      } else if (tx.transactionType === "BILLING") {
+        monthData.billing += Math.abs(tx.amount);
+      }
+    });
+
+    // Tạo data cho N tháng gần nhất
+    const lastNMonths = getLastNMonths(monthCount);
+
+    // Tính max value để xác định giá trị hiển thị cho cột trống
+    let max = 0;
+    lastNMonths.forEach((monthKey: string) => {
+      const values = monthlyMap.get(monthKey);
+      if (values) {
+        max = Math.max(max, values.deposit, values.billing);
+      }
+    });
+
+    // Giá trị hiển thị cho cột trống (khoảng 3% của max)
+    const emptyDisplayValue = max > 0 ? max * 0.03 : MIN_DISPLAY_VALUE;
+
+    // Tính yAxisMax - làm tròn lên số đẹp
+    const calculatedMax = Math.max(MIN_Y_AXIS_VALUE, Math.ceil(max * 1.2));
+    const niceMax = Math.ceil(calculatedMax / 5) * 5; // Làm tròn lên bội số của 5
+
+    const chartData: MonthlyData[] = lastNMonths.map((monthKey: string) => {
+      const values = monthlyMap.get(monthKey) || { deposit: 0, billing: 0 };
+      const hasDeposit = values.deposit > 0;
+      const hasBilling = values.billing > 0;
+
+      return {
+        month: formatMonthLabel(monthKey),
+        monthKey,
+        deposit: values.deposit,
+        billing: values.billing,
+        depositDisplay: hasDeposit ? values.deposit : emptyDisplayValue,
+        billingDisplay: hasBilling ? values.billing : emptyDisplayValue,
+        hasDeposit,
+        hasBilling,
+      };
+    });
+
+    return {
+      data: chartData,
+      yAxisMax: niceMax || MIN_Y_AXIS_VALUE,
     };
-
-    fetchData();
-  }, [refreshTrigger, monthCount]);
-
-  if (loading) {
-    return (
-      <Card>
-        <CardContent className="pt-4">
-          <Skeleton className="h-[200px] w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
+  }, [transactions, monthCount]);
 
   return (
-    <Card className="flex flex-col justify-end">
-      <CardContent className="pt-4">
-        <ChartContainer config={chartConfig} className="h-[200px]">
+    <Card className="h-[225px]">
+      <CardContent className="h-full">
+        <ChartContainer config={chartConfig} className="h-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
@@ -303,10 +268,11 @@ export function TransactionChart({ refreshTrigger }: TransactionChartProps) {
                 axisLine={false}
                 fontSize={11}
                 width={50}
+                ticks={[0, yAxisMax / 2, yAxisMax]}
                 tickFormatter={(value) =>
                   value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value
                 }
-                domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
+                domain={[0, yAxisMax]}
               />
               <Tooltip
                 content={

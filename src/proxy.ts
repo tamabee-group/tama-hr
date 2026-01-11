@@ -207,6 +207,12 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
       headers.set("Content-Type", contentType);
     }
 
+    // Forward Host header để backend xác định tenant từ subdomain
+    const host = request.headers.get("Host");
+    if (host) {
+      headers.set("X-Forwarded-Host", host);
+    }
+
     // Forward X-Tenant-Domain header nếu có (cho login từ tenant domain)
     const tenantDomain = request.headers.get("X-Tenant-Domain");
     if (tenantDomain) {
@@ -366,6 +372,12 @@ async function handleAuthentication(
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
+  // Skip authentication check cho guest-only routes
+  // Tránh redirect loop khi đang ở login page với expired tokens
+  if (matchRoute(pathname, GUEST_ONLY_ROUTES)) {
+    return null;
+  }
+
   // Không có accessToken nhưng có refreshToken → thử refresh
   if (!accessToken && refreshToken && matchRoute(pathname, PROTECTED_ROUTES)) {
     const refreshResult = await refreshAccessTokenWithCookie(
@@ -391,7 +403,10 @@ async function handleAuthentication(
     } else {
       // Refresh thất bại → redirect về login
       const loginUrl = new URL(`/${locale}/login`, request.url);
-      loginUrl.searchParams.set("redirect", pathname);
+      // Không set redirect nếu đang ở guest-only routes (login, register, etc.)
+      if (!matchRoute(pathname, GUEST_ONLY_ROUTES)) {
+        loginUrl.searchParams.set("redirect", pathname);
+      }
       return NextResponse.redirect(loginUrl);
     }
   }
@@ -408,7 +423,10 @@ async function handleAuthentication(
   // Protected routes: redirect về login nếu chưa đăng nhập
   if (matchRoute(pathname, PROTECTED_ROUTES) && !authenticated) {
     const loginUrl = new URL(`/${locale}/login`, request.url);
-    loginUrl.searchParams.set("redirect", pathname);
+    // Không set redirect nếu đang ở guest-only routes
+    if (!matchRoute(pathname, GUEST_ONLY_ROUTES)) {
+      loginUrl.searchParams.set("redirect", pathname);
+    }
     return NextResponse.redirect(loginUrl);
   }
 

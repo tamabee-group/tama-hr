@@ -78,5 +78,14 @@
   "general": "General",
   "account": "Account",
   "role": "Role",
-  "you": "You"
+  "you": "You",
+  "inactiveCompany": {
+    "title": "Account Suspended",
+    "description": "Your company has been suspended due to payment failure. Please deposit to continue using the service.",
+    "depositNow": "Deposit Now",
+    "reactivate": "Reactivate",
+    "reactivateSuccess": "Reactivated successfully! Your account is now active.",
+    "insufficientBalance": "Insufficient balance to reactivate. Please deposit more.",
+    "alreadyActive": "Account is already active."
+  }
 }

@@ -9,7 +9,6 @@ import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
 import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { SidebarLogo } from "@/app/[locale]/_components/_logo";
 import { useAuth } from "@/hooks/use-auth";
-import { usePendingDepositsCount } from "@/hooks/use-pending-deposits-count";
 import { ADMIN_MENU_ITEMS, type MenuItem } from "@/constants/menu-items";
 import { filterMenuItems } from "@/lib/utils/filter-menu-items";
 import type { SidebarGroup, SidebarHeaderConfig } from "@/types/sidebar";
@@ -24,10 +23,12 @@ function convertToSidebarGroups(
 ): SidebarGroup[] {
   // Nhóm items theo category
   const platformItems = items.filter((item) =>
-    ["dashboard", "users", "customers", "plans"].includes(item.code),
+    ["dashboard", "users", "customers", "companies", "plans"].includes(
+      item.code,
+    ),
   );
   const financeItems = items.filter((item) =>
-    ["wallets", "deposits", "commissions"].includes(item.code),
+    ["wallets", "deposits", "commissions", "billing"].includes(item.code),
   );
   const systemItems = items.filter((item) => ["settings"].includes(item.code));
 
@@ -98,7 +99,6 @@ export default function TamabeeLayout({
   const router = useRouter();
   const { user, status } = useAuth();
   const t = useTranslations();
-  const { count: pendingDepositsCount } = usePendingDepositsCount();
 
   // Kiểm tra quyền truy cập
   useEffect(() => {
@@ -136,17 +136,12 @@ export default function TamabeeLayout({
   );
   const sidebarGroups = convertToSidebarGroups(filteredItems, t);
 
-  const badgeCounts = {
-    pendingDeposits: pendingDepositsCount,
-  };
-
   return (
     <div className="flex flex-col justify-center">
       <SidebarProvider>
         <BaseSidebar
           groups={sidebarGroups}
           headerConfig={tamabeeHeaderConfig}
-          badgeCounts={badgeCounts}
           userRole={user.role}
         />
         <main className="w-full">

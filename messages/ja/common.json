@@ -78,5 +78,14 @@
   "general": "一般",
   "account": "アカウント",
   "role": "役割",
-  "you": "あなた"
+  "you": "あなた",
+  "inactiveCompany": {
+    "title": "アカウント停止中",
+    "description": "お支払いの失敗により、会社のアカウントが停止されました。サービスを継続するには入金してください。",
+    "depositNow": "今すぐ入金",
+    "reactivate": "再有効化",
+    "reactivateSuccess": "再有効化しました！アカウントが有効になりました。",
+    "insufficientBalance": "残高不足のため再有効化できません。入金してください。",
+    "alreadyActive": "アカウントは既に有効です。"
+  }
 }

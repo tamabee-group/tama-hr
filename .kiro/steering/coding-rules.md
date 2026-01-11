@@ -27,6 +27,7 @@
 - KHÔNG hardcode text, KHÔNG inline labels pattern
 - Enum translations: `getEnumLabel("enumName", value, tEnums)`
 - Error translations: `getErrorMessage(errorCode, tErrors)`
+- Khi update file translation: kiểm tra và xóa các key không còn sử dụng
 
 ```tsx
 // Client

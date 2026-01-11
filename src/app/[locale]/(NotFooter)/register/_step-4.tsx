@@ -208,7 +208,7 @@ const Step4: NextPage<Props> = ({
         </Button>
         <Button onClick={handleSubmit} className="flex-1" disabled={submitting}>
           {submitting ? (
-            <span className="flex">
+            <span className="flex gap-2">
               <Spinner />
               {tRegister("processing")}
             </span>

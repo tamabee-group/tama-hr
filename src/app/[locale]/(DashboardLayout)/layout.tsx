@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ToggleTheme } from "@/app/[locale]/_components/_toggle-theme";
 import { BreadcrumbRouter } from "@/app/[locale]/_components/_shared/_breadcrumb-router";
 import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
+import { InactiveCompanyBanner } from "@/app/[locale]/_components/_inactive-company-banner";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlanFeatures } from "@/hooks/use-plan-features";
 import {
@@ -22,15 +23,23 @@ import type {
 } from "@/types/sidebar";
 import type { UserRole } from "@/types/enums";
 
+// Các routes được phép truy cập khi company INACTIVE
+const ALLOWED_INACTIVE_ROUTES = [
+  "/dashboard/profile",
+  "/dashboard/wallet",
+  "/dashboard/plans",
+];
+
 /**
  * Chuyển đổi MenuGroup[] sang SidebarGroup[] format
- * Lọc theo role và plan features
+ * Lọc theo role, plan features, và company status
  */
 function convertMenuGroupsToSidebarGroups(
   menuGroups: MenuGroup[],
   t: ReturnType<typeof useTranslations>,
   userRole: UserRole,
   hasFeature: (code: string) => boolean,
+  isCompanyInactive: boolean,
 ): SidebarGroup[] {
   const groups: SidebarGroup[] = [];
 
@@ -40,7 +49,7 @@ function convertMenuGroupsToSidebarGroups(
       continue;
     }
 
-    // Lọc items theo role và feature
+    // Lọc items theo role, feature, và company status
     const filteredItems = group.items.filter((item) => {
       // Kiểm tra role
       if (item.roles && !item.roles.includes(userRole)) {
@@ -49,6 +58,15 @@ function convertMenuGroupsToSidebarGroups(
       // Kiểm tra feature
       if (item.featureCode && !hasFeature(item.featureCode)) {
         return false;
+      }
+      // Khi company INACTIVE, chỉ hiển thị các routes được phép
+      if (isCompanyInactive) {
+        const isAllowed = ALLOWED_INACTIVE_ROUTES.some((route) =>
+          item.href.includes(route),
+        );
+        if (!isAllowed) {
+          return false;
+        }
       }
       return true;
     });
@@ -96,9 +114,18 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, status } = useAuth();
   const { hasFeature } = usePlanFeatures();
   const t = useTranslations();
+
+  // Kiểm tra company có bị INACTIVE không
+  const isCompanyInactive = user?.companyStatus === "INACTIVE";
+
+  // Kiểm tra route hiện tại có được phép khi INACTIVE không
+  const isAllowedRoute = ALLOWED_INACTIVE_ROUTES.some((route) =>
+    pathname?.includes(route),
+  );
 
   // Kiểm tra quyền truy cập
   useEffect(() => {
@@ -114,7 +141,13 @@ export default function DashboardLayout({
       router.replace("/unauthorized");
       return;
     }
-  }, [user, status, router]);
+
+    // Nếu company INACTIVE và đang ở route không được phép, redirect về profile
+    if (isCompanyInactive && !isAllowedRoute) {
+      const locale = pathname?.split("/")[1] || "vi";
+      router.replace(`/${locale}/dashboard/profile`);
+    }
+  }, [user, status, router, isCompanyInactive, isAllowedRoute, pathname]);
 
   // Loading state
   if (status === "loading" || !user) {
@@ -126,12 +159,13 @@ export default function DashboardLayout({
     return null;
   }
 
-  // Filter menu items theo plan features và role
+  // Filter menu items theo plan features, role, và company status
   const sidebarGroups = convertMenuGroupsToSidebarGroups(
     DASHBOARD_MENU_GROUPS,
     t,
     user.role,
     hasFeature,
+    isCompanyInactive,
   );
 
   // Header config - hiển thị company info
@@ -164,6 +198,8 @@ export default function DashboardLayout({
               <ToggleTheme />
             </div>
           </div>
+          {/* Banner cảnh báo khi company INACTIVE */}
+          {isCompanyInactive && <InactiveCompanyBanner />}
           <div className="p-4 pb-20 md:pb-4">{children}</div>
         </main>
       </SidebarProvider>

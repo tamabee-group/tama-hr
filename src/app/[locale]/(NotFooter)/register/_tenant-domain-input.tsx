@@ -13,17 +13,21 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 
 interface TenantDomainInputProps {
   value: string;
   onChange: (value: string) => void;
   onValidityChange?: (isValid: boolean) => void;
+  /** Hiển thị label bên trong component */
+  showLabel?: boolean;
 }
 
 export function TenantDomainInput({
   value,
   onChange,
   onValidityChange,
+  showLabel = false,
 }: TenantDomainInputProps) {
   const t = useTranslations("auth.register");
   const [isChecking, setIsChecking] = useState(false);
@@ -93,10 +97,57 @@ export function TenantDomainInput({
     onChange(newValue);
   };
 
+  // Render status message
+  const renderStatus = () => {
+    if (isChecking) {
+      return (
+        <span className="text-muted-foreground text-sm flex items-center leading-0 gap-1">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          {t("domainChecking")}
+        </span>
+      );
+    }
+    if (formatError) {
+      return (
+        <span className="text-destructive text-sm flex items-center leading-0 gap-1">
+          <X className="w-3.5 h-3.5" />
+          {formatError}
+        </span>
+      );
+    }
+    if (isAvailable === true) {
+      return (
+        <span className="text-green-600 text-sm flex items-center leading-0 gap-1">
+          <Check className="w-3.5 h-3.5" />
+          {t("domainAvailable")}
+        </span>
+      );
+    }
+    if (isAvailable === false) {
+      return (
+        <span className="text-destructive text-sm flex items-center leading-0 gap-1">
+          <X className="w-3.5 h-3.5" />
+          {t("domainTaken")}
+        </span>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="space-y-1.5">
+    <div>
+      {/* Label - luôn hiển thị */}
+      {showLabel && (
+        <div className="flex items-center justify-between">
+          <Label htmlFor="tenantDomain">{t("tenantDomain")}</Label>
+          {/* Status bên cạnh label - chỉ desktop */}
+          <span className="hidden md:block">{renderStatus()}</span>
+        </div>
+      )}
+
       <InputGroup>
         <InputGroupInput
+          id="tenantDomain"
           value={value}
           onChange={handleChange}
           placeholder={t("domainPlaceholder")}
@@ -107,28 +158,8 @@ export function TenantDomainInput({
         <InputGroupAddon align="inline-end">.tamabee.vn</InputGroupAddon>
       </InputGroup>
 
-      {/* Status indicator */}
-      {isChecking && (
-        <span className="text-muted-foreground text-sm flex items-center gap-1">
-          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          {t("domainChecking")}
-        </span>
-      )}
-      {!isChecking && formatError && (
-        <span className="text-destructive text-sm">{formatError}</span>
-      )}
-      {!isChecking && !formatError && isAvailable === true && (
-        <span className="text-green-600 text-sm flex items-center gap-1">
-          <Check className="w-3.5 h-3.5" />
-          {t("domainAvailable")}
-        </span>
-      )}
-      {!isChecking && !formatError && isAvailable === false && (
-        <span className="text-destructive text-sm flex items-center gap-1">
-          <X className="w-3.5 h-3.5" />
-          {t("domainTaken")}
-        </span>
-      )}
+      {/* Status dưới input - mobile hoặc khi không có label */}
+      <div className={showLabel ? "md:hidden" : ""}>{renderStatus()}</div>
     </div>
   );
 }

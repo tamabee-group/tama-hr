@@ -32,3 +32,16 @@ export async function uploadCompanyLogo(
   formData.append("logo", file);
   return apiClient.upload<string>(`/api/admin/companies/${id}/logo`, formData);
 }
+
+/**
+ * Xóa hoàn toàn công ty và tenant database
+ * @client-only
+ */
+export async function deleteCompany(
+  id: number,
+  confirmName: string,
+): Promise<void> {
+  return apiClient.delete<void>(
+    `/api/admin/companies/${id}?confirmName=${encodeURIComponent(confirmName)}`,
+  );
+}

@@ -78,5 +78,14 @@
   "general": "Chung",
   "account": "Tài khoản",
   "role": "Vai trò",
-  "you": "Bạn"
+  "you": "Bạn",
+  "inactiveCompany": {
+    "title": "Tài khoản bị tạm ngưng",
+    "description": "Công ty của bạn đã bị tạm ngưng do thanh toán thất bại. Vui lòng nạp tiền để tiếp tục sử dụng dịch vụ.",
+    "depositNow": "Nạp tiền ngay",
+    "reactivate": "Kích hoạt lại",
+    "reactivateSuccess": "Kích hoạt lại thành công! Tài khoản đã hoạt động trở lại.",
+    "insufficientBalance": "Số dư không đủ để kích hoạt lại. Vui lòng nạp thêm tiền.",
+    "alreadyActive": "Tài khoản đã được kích hoạt."
+  }
 }

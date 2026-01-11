@@ -5,6 +5,7 @@ export const NAMESPACES = [
   "allowances",
   "attendance",
   "auth",
+  "billing",
   "breadcrumb",
   "break",
   "commissions",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,12 @@ import { Upload, X, Image as ImageIcon, AlertCircle } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
 
-// Kích thước file tối đa mặc định (5MB)
-const DEFAULT_MAX_SIZE_MB = 5;
 // Định dạng file được chấp nhận mặc định
 const DEFAULT_ACCEPT = ["image/jpeg", "image/png", "image/webp"];
 
 export interface ImageUploadProps {
   value?: string;
-  onChange: (url: string) => void;
+  onChange: (url: string, file?: File) => void;
   onFileSelect?: (file: File) => void;
   maxSize?: number; // MB, default 5
   accept?: string[]; // Default: ['image/jpeg', 'image/png', 'image/webp']
@@ -59,7 +57,6 @@ export function ImageUpload({
   value,
   onChange,
   onFileSelect,
-  maxSize = DEFAULT_MAX_SIZE_MB,
   accept = DEFAULT_ACCEPT,
   disabled = false,
   className,
@@ -72,12 +69,20 @@ export function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const t = useTranslations("imageUpload");
 
+  // Sync previewUrl khi value thay đổi từ bên ngoài
+  useEffect(() => {
+    if (value !== previewUrl) {
+      setPreviewUrl(value || null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
   // Xử lý file được chọn
   const handleFile = useCallback(
     async (file: File) => {
       setError(null);
 
-      // Validate file type
+      // Validate file type (chỉ check type, không check size vì sẽ compress)
       const acceptedFormats = accept
         .map((type) => type.split("/")[1])
         .join(", ");
@@ -91,21 +96,10 @@ export function ImageUpload({
         return;
       }
 
-      // Validate file size
-      const sizeValidation = validateFileSize(
-        file.size,
-        maxSize,
-        t("fileTooLarge", { maxSize }),
-      );
-      if (!sizeValidation.valid) {
-        setError(sizeValidation.error || t("fileTooLargeGeneric"));
-        return;
-      }
-
       setIsLoading(true);
 
       try {
-        // Compress ảnh sang WebP để giảm dung lượng
+        // Compress ảnh sang WebP để giảm dung lượng (tự động nén xuống < 500KB)
         const compressedFile = await compressImageToWebP(file);
 
         // Tạo preview URL
@@ -117,15 +111,15 @@ export function ImageUpload({
           onFileSelect(compressedFile);
         }
 
-        // Gọi onChange với URL preview
-        onChange(objectUrl);
+        // Gọi onChange với URL preview và file
+        onChange(objectUrl, compressedFile);
       } catch {
         setError(t("processError"));
       } finally {
         setIsLoading(false);
       }
     },
-    [accept, maxSize, onChange, onFileSelect, t],
+    [accept, onChange, onFileSelect, t],
   );
 
   // Xử lý khi chọn file từ input
@@ -261,8 +255,7 @@ export function ImageUpload({
             <p className="mt-1 text-xs text-muted-foreground">
               {accept
                 .map((type) => type.split("/")[1].toUpperCase())
-                .join(", ")}{" "}
-              • {t("maxSize", { maxSize })}
+                .join(", ")}
             </p>
           </div>
         )}

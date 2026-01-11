@@ -28,6 +28,9 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://tamabee.local",
+  ),
   title: "Tamabee | Quản lý nhân sự thông minh",
   icons: {
     icon: "/logo/dark-bg-rounded.svg",

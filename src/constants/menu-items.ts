@@ -13,6 +13,7 @@ import {
   Receipt,
   User,
   ClipboardList,
+  CreditCard,
 } from "lucide-react";
 import type { UserRole } from "@/types/enums";
 
@@ -88,6 +89,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     icon: Receipt,
     href: "/admin/deposits",
     badgeKey: "pendingDeposits",
+  },
+  {
+    code: "billing",
+    labelKey: "sidebar.items.billing",
+    icon: CreditCard,
+    href: "/admin/billing",
+    roles: ["ADMIN_TAMABEE"],
   },
   {
     code: "plans",

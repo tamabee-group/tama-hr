@@ -5,19 +5,25 @@ import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { depositApi } from "@/lib/apis/deposit-api";
 import { handleApiError } from "@/lib/utils/api-error-handler";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Globe, Loader2 } from "lucide-react";
 import { SupportedLocale } from "@/lib/utils/format-currency";
+
+// Map locale code sang tên ngôn ngữ
+const LOCALE_NAMES: Record<string, string> = {
+  vi: "Tiếng Việt",
+  en: "English",
+  ja: "日本語",
+};
 
 interface RejectFormProps {
   open: boolean;
@@ -25,6 +31,7 @@ interface RejectFormProps {
   depositId: number;
   onSuccess: () => void;
   locale?: SupportedLocale;
+  requesterLocale?: string;
 }
 
 export function RejectForm({
@@ -32,6 +39,7 @@ export function RejectForm({
   onOpenChange,
   depositId,
   onSuccess,
+  requesterLocale,
 }: RejectFormProps) {
   const t = useTranslations("deposits");
   const tCommon = useTranslations("common");
@@ -89,12 +97,24 @@ export function RejectForm({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+        <VisuallyHidden>
           <DialogTitle>{t("dialog.rejectTitle")}</DialogTitle>
-          <DialogDescription>{t("dialog.rejectDescription")}</DialogDescription>
-        </DialogHeader>
+        </VisuallyHidden>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Hiển thị ngôn ngữ của người gửi request */}
+          {requesterLocale && (
+            <div className="flex items-center gap-2 rounded-lg text-sm text-blue-700">
+              <Globe className="h-4 w-4 shrink-0" />
+              <span>
+                {t("dialog.requesterLanguage")}:{" "}
+                <strong>
+                  {LOCALE_NAMES[requesterLocale] || requesterLocale}
+                </strong>
+              </span>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="rejectionReason">{t("dialog.rejectReason")}</Label>
             <Textarea
@@ -109,7 +129,7 @@ export function RejectForm({
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2">
             <Button
               type="button"
               variant="outline"

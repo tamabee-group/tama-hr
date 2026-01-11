@@ -31,12 +31,15 @@
   "INVALID_REFERRAL_CODE": "無効な紹介コードです。",
   "PLAN_NOT_FOUND": "サブスクリプションプランが見つかりません。",
   "PLAN_IN_USE": "プランは使用中のため削除できません。",
+  "PLAN_NOT_ACTIVE": "サブスクリプションプランは無効です。",
+  "PLAN_EXCEEDS_EMPLOYEE_LIMIT": "現在の従業員数がプランの上限を超えています。",
   "SETTING_NOT_FOUND": "設定が見つかりません。",
   "WALLET_NOT_FOUND": "ウォレットが見つかりません。",
   "INVALID_AMOUNT": "無効な金額です。",
   "INSUFFICIENT_BALANCE": "ウォレット残高が不足しています。",
   "DEPOSIT_NOT_FOUND": "入金リクエストが見つかりません。",
   "DEPOSIT_ALREADY_PROCESSED": "入金リクエストは既に処理されています。",
+  "MIN_DEPOSIT_AMOUNT": "入金額が最低金額を下回っています。",
   "INVALID_TRANSFER_PROOF": "無効な振込証明画像です。",
   "INVALID_REJECTION_REASON": "却下理由を入力してください。",
   "COMMISSION_NOT_FOUND": "コミッションが見つかりません。",
@@ -63,5 +66,6 @@
   "TENANT_DOMAIN_EXISTS": "会社ドメインは既に使用されています。",
   "TENANT_DOMAIN_RESERVED": "このドメインは予約されています。",
   "TENANT_PROVISIONING_FAILED": "会社データベースの作成に失敗しました。もう一度お試しください。",
+  "TENANT_NOT_FOUND": "会社が存在しないか、削除されました。",
   "USER_CREATION_FAILED": "ユーザーアカウントの作成に失敗しました。もう一度お試しください。"
 }

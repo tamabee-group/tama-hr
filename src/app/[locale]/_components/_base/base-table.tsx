@@ -191,8 +191,8 @@ export function BaseTable<TData, TValue>({
       )}
 
       {/* Table với horizontal scroll trên mobile */}
-      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="overflow-hidden rounded-md border min-w-[600px] sm:min-w-0">
+      <div className="overflow-x-auto">
+        <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

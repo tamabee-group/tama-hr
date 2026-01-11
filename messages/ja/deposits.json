@@ -2,7 +2,6 @@
   "title": "入金リクエスト",
   "description": "会社からの入金リクエストを表示・処理",
   "createRequest": "入金リクエストを作成",
-  "editRequest": "入金リクエストを編集",
   "table": {
     "companyName": "会社名",
     "amount": "金額",
@@ -11,12 +10,18 @@
     "requestedBy": "申請者",
     "requesterName": "申請者名",
     "requesterEmail": "申請者メール",
+    "requesterRole": "申請者役職",
     "employeeCode": "社員コード",
     "createdAt": "作成日",
     "processedAt": "処理日",
     "processedBy": "処理者",
     "approvedBy": "承認者",
-    "rejectionReason": "却下理由"
+    "approverName": "処理者名",
+    "approverRole": "処理者役職",
+    "approverCode": "社員コード",
+    "approverEmail": "処理者メール",
+    "rejectionReason": "却下理由",
+    "actions": "操作"
   },
   "tabs": {
     "all": "すべて",
@@ -30,18 +35,26 @@
     "reject": "却下",
     "viewProof": "振込証明を表示",
     "download": "ダウンロード",
-    "approving": "承認中..."
+    "approving": "承認中...",
+    "deposit": "入金",
+    "cancel": "キャンセル",
+    "viewImage": "画像を表示"
   },
   "dialog": {
     "detailTitle": "入金リクエスト詳細",
     "detailDescription": "詳細を確認してリクエストを処理",
+    "companyInfo": "会社情報",
+    "requesterInfo": "申請者情報",
+    "approverInfo": "処理者情報",
+    "statusInfo": "ステータス・日時",
     "approveTitle": "入金を承認",
     "approveDescription": "この入金リクエストを承認してもよろしいですか？",
     "rejectTitle": "入金を却下",
     "rejectDescription": "却下理由を入力してください",
     "rejectReason": "却下理由",
     "rejectReasonPlaceholder": "却下理由を入力",
-    "rejecting": "処理中..."
+    "rejecting": "処理中...",
+    "requesterLanguage": "申請者の言語"
   },
   "messages": {
     "approveSuccess": "入金を承認しました",
@@ -50,8 +63,6 @@
     "rejectError": "入金の却下に失敗しました",
     "createSuccess": "入金リクエストを作成しました",
     "createError": "入金リクエストの作成に失敗しました",
-    "updateSuccess": "入金リクエストを更新しました",
-    "updateError": "入金リクエストの更新に失敗しました",
     "cancelSuccess": "入金リクエストをキャンセルしました",
     "cancelError": "入金リクエストのキャンセルに失敗しました",
     "cancelConfirm": "この入金リクエストをキャンセルしてもよろしいですか？",
@@ -61,6 +72,8 @@
     "amount": "入金額",
     "amountPlaceholder": "入金額を入力",
     "transferProof": "振込証明",
-    "transferProofHint": "銀行振込のスクリーンショットをアップロード"
+    "transferProofHint": "銀行振込のスクリーンショットをアップロード",
+    "minAmountHint": "最低金額: ¥{amount}",
+    "minAmountError": "最低入金額は¥{amount}です"
   }
 }

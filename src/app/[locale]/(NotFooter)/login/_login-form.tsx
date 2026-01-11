@@ -87,7 +87,11 @@ export function LoginForm() {
       toast.success(t("loginSuccess"));
 
       // Redirect về trang trước đó hoặc dashboard
-      const redirect = searchParams.get("redirect") || "/dashboard";
+      // Không redirect về login/register pages
+      let redirect = searchParams.get("redirect") || "/dashboard";
+      if (redirect.includes("/login") || redirect.includes("/register")) {
+        redirect = "/dashboard";
+      }
       router.push(redirect);
     } catch (error) {
       const message = getErrorMessage(error, tErrors, t("loginFailed"));

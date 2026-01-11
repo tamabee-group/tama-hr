@@ -127,6 +127,20 @@ function getBreadcrumbs(pathname: string): BreadcrumbConfig[] {
         { labelKey: "companyInfo" },
       ];
 
+    case "/dashboard/plans":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "companyInfo", href: "/dashboard/profile" },
+        { labelKey: "plans" },
+      ];
+
+    case "/dashboard/wallet":
+      return [
+        { labelKey: "companyAdmin", href: "/dashboard" },
+        { labelKey: "companyInfo", href: "/dashboard/profile" },
+        { labelKey: "wallet" },
+      ];
+
     // Legacy Company Admin routes (backward compatibility)
     case "/company/dashboard":
       return [

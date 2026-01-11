@@ -1,12 +1,23 @@
 {
   "title": "Gói dịch vụ",
-  "description": "Quản lý các gói dịch vụ cho công ty",
+  "description": "Chọn gói dịch vụ phù hợp với công ty của bạn",
   "createPlan": "Tạo gói dịch vụ",
   "editPlan": "Sửa gói dịch vụ",
   "deletePlan": "Xóa gói dịch vụ",
   "addPlan": "Thêm gói",
   "refresh": "Làm mới",
   "noPlans": "Chưa có gói dịch vụ nào",
+  "current": "Hiện tại",
+  "currentPlan": "Gói hiện tại",
+  "selectPlan": "Chọn gói này",
+  "registerNow": "Đăng ký ngay",
+  "contactUs": "Liên hệ",
+  "perMonth": "/tháng",
+  "perEmployee": "/nhân viên",
+  "maxEmployees": "Tối đa",
+  "unlimited": "Không giới hạn",
+  "features": "Tính năng",
+  "exceedsLimit": "Số nhân viên vượt quá giới hạn gói",
   "table": {
     "name": "Tên gói",
     "price": "Giá",
@@ -59,7 +70,9 @@
     "createError": "Không thể tạo gói dịch vụ",
     "updateError": "Không thể cập nhật gói dịch vụ",
     "deleteError": "Không thể xóa gói dịch vụ",
-    "planInUse": "Gói dịch vụ đang được sử dụng, không thể xóa"
+    "planInUse": "Gói dịch vụ đang được sử dụng, không thể xóa",
+    "changeSuccess": "Đổi gói dịch vụ thành công",
+    "changeError": "Không thể đổi gói dịch vụ"
   },
   "dialog": {
     "deleteTitle": "Xóa gói dịch vụ",

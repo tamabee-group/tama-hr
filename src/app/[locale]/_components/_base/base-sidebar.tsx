@@ -25,7 +25,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarMenuBadge,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -138,7 +137,6 @@ interface BaseSidebarProps {
   headerConfig: SidebarHeaderConfig;
   className?: string;
   headerHeight?: number;
-  badgeCounts?: Record<string, number>;
   userRole?: string;
   /** Extra content hiển thị dưới header (ví dụ: work mode indicator) */
   headerExtra?: React.ReactNode;
@@ -149,7 +147,6 @@ export function BaseSidebar({
   headerConfig,
   className,
   headerHeight,
-  badgeCounts = {},
   userRole,
   headerExtra,
 }: BaseSidebarProps) {
@@ -335,11 +332,6 @@ export function BaseSidebar({
                               )}
                             </Link>
                           </SidebarMenuButton>
-                          {item.badgeKey && badgeCounts[item.badgeKey] > 0 && (
-                            <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
-                              {badgeCounts[item.badgeKey]}
-                            </SidebarMenuBadge>
-                          )}
                         </SidebarMenuItem>
                       );
                     })}

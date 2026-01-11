@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { WalletResponse, getWalletPlanName } from "@/types/wallet";
+import { WalletTransactionResponse } from "@/types/wallet";
 import { DepositRequestResponse } from "@/types/deposit";
-import { getMyWallet } from "@/lib/apis/wallet-api";
+import { getMyWallet, getMyTransactions } from "@/lib/apis/wallet-api";
 import { depositApi } from "@/lib/apis/deposit-api";
 import { useAuth } from "@/lib/auth";
 import { WalletCard, SharedWalletData } from "./_wallet-card";
@@ -12,7 +13,7 @@ import { TransactionChart } from "./_transaction-chart";
 import { TransactionTable } from "./_transaction-table";
 import { DepositTable } from "./_deposit-table";
 import { DepositForm } from "./_deposit-form";
-import { ImageModal } from "./_image-modal";
+import { ImageZoomDialog } from "@/app/[locale]/_components/_image-zoom-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SupportedLocale } from "@/lib/utils/format-currency";
@@ -35,6 +36,7 @@ interface PageContentProps {
 /**
  * Client component chứa logic và state cho Dashboard Wallet page
  * Hiển thị thông tin ví, lịch sử giao dịch và yêu cầu nạp tiền
+ * Fetch data 1 lần khi vào trang, filter client-side
  */
 export function PageContent({ locale }: PageContentProps) {
   const { user } = useAuth();
@@ -43,47 +45,66 @@ export function PageContent({ locale }: PageContentProps) {
   const tCommon = useTranslations("common");
   const tDialogs = useTranslations("dialogs");
   const tErrors = useTranslations("errors");
+
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
+  const [transactions, setTransactions] = useState<WalletTransactionResponse[]>(
+    [],
+  );
+  const [deposits, setDeposits] = useState<DepositRequestResponse[]>([]);
+  const [minDepositAmount, setMinDepositAmount] = useState<number>(5000);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [depositFormOpen, setDepositFormOpen] = useState(false);
-  const [editDeposit, setEditDeposit] = useState<DepositRequestResponse | null>(
-    null,
-  );
   const [cancelDeposit, setCancelDeposit] =
     useState<DepositRequestResponse | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
 
-  /** Fetch thông tin ví */
-  const fetchWallet = useCallback(async () => {
+  // Kiểm tra có phải Tamabee user không (companyId = 0)
+  const isTamabeeUser = user?.companyId === 0;
+
+  /** Fetch tất cả data 1 lần khi vào trang */
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getMyWallet();
-      setWallet(data);
+
+      // Fetch song song wallet, transactions và deposits
+      const [walletData, transactionsData, depositsData, minAmountData] =
+        await Promise.all([
+          getMyWallet(),
+          getMyTransactions({}, 0, 100),
+          isTamabeeUser
+            ? Promise.resolve({ content: [] })
+            : depositApi.getMyRequests({}, 0, 100),
+          isTamabeeUser
+            ? Promise.resolve(5000)
+            : depositApi.getMinDepositAmount(),
+        ]);
+
+      setWallet(walletData);
+      setTransactions(transactionsData.content);
+      setDeposits(depositsData.content);
+      setMinDepositAmount(minAmountData);
       setError(null);
     } catch (err) {
-      console.error("Failed to fetch wallet:", err);
+      console.error("Failed to fetch data:", err);
       setError(tErrors("generic"));
     } finally {
       setLoading(false);
     }
-  }, [tErrors]);
+  }, [tErrors, isTamabeeUser]);
 
   useEffect(() => {
-    fetchWallet();
-  }, [fetchWallet]);
+    fetchAllData();
+  }, [fetchAllData]);
 
   /** Mở form nạp tiền */
   const handleDeposit = () => {
-    setEditDeposit(null);
     setDepositFormOpen(true);
   };
 
-  /** Xử lý sau khi nạp tiền thành công */
+  /** Xử lý sau khi nạp tiền thành công - refetch all data */
   const handleDepositSuccess = () => {
-    fetchWallet();
-    setRefreshTrigger((prev) => prev + 1);
+    fetchAllData();
   };
 
   /** Xem ảnh chứng minh chuyển khoản */
@@ -103,19 +124,14 @@ export function PageContent({ locale }: PageContentProps) {
     try {
       await depositApi.cancel(cancelDeposit.id);
       toast.success(tDeposits("messages.cancelSuccess"));
-      setRefreshTrigger((prev) => prev + 1);
+      // Refetch all data sau khi cancel
+      fetchAllData();
     } catch (error) {
       console.error("Failed to cancel deposit:", error);
       toast.error(tDeposits("messages.cancelError"));
     } finally {
       setCancelDeposit(null);
     }
-  };
-
-  /** Mở form edit yêu cầu bị từ chối */
-  const handleEditRequest = (deposit: DepositRequestResponse) => {
-    setEditDeposit(deposit);
-    setDepositFormOpen(true);
   };
 
   return (
@@ -153,38 +169,45 @@ export function PageContent({ locale }: PageContentProps) {
                 } as SharedWalletData
               }
               locale={locale}
-              showActions={true}
-              onDeposit={handleDeposit}
+              showActions={false}
             />
           ) : null}
         </div>
 
         {/* Transaction Chart - chiếm phần còn lại */}
         <div className="flex-1 min-w-0">
-          <TransactionChart refreshTrigger={refreshTrigger} />
+          <TransactionChart transactions={transactions} />
         </div>
       </div>
 
       {/* Tabs: Giao dịch / Yêu cầu nạp tiền */}
       <Tabs defaultValue="transactions" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="transactions">{t("transactions")}</TabsTrigger>
-          <TabsTrigger value="deposits">{tDeposits("title")}</TabsTrigger>
+          <TabsTrigger value="transactions">
+            {t("transactions")} ({transactions.length})
+          </TabsTrigger>
+          {!isTamabeeUser && (
+            <TabsTrigger value="deposits">
+              {tDeposits("title")} ({deposits.length})
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="transactions">
-          <TransactionTable locale={locale} refreshTrigger={refreshTrigger} />
+          <TransactionTable locale={locale} data={transactions} />
         </TabsContent>
 
-        <TabsContent value="deposits">
-          <DepositTable
-            locale={locale}
-            onViewImage={handleViewImage}
-            onCancel={handleCancelRequest}
-            onEdit={handleEditRequest}
-            refreshTrigger={refreshTrigger}
-          />
-        </TabsContent>
+        {!isTamabeeUser && (
+          <TabsContent value="deposits">
+            <DepositTable
+              locale={locale}
+              data={deposits}
+              onViewImage={handleViewImage}
+              onCancel={handleCancelRequest}
+              onDeposit={handleDeposit}
+            />
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Deposit Form Dialog */}
@@ -192,14 +215,15 @@ export function PageContent({ locale }: PageContentProps) {
         open={depositFormOpen}
         onOpenChange={setDepositFormOpen}
         onSuccess={handleDepositSuccess}
-        editDeposit={editDeposit}
+        minAmount={minDepositAmount}
       />
 
-      {/* Image Modal */}
-      <ImageModal
+      {/* Image Zoom Dialog */}
+      <ImageZoomDialog
         open={!!imageModalUrl}
         onOpenChange={(open) => !open && setImageModalUrl(null)}
-        imageUrl={imageModalUrl || ""}
+        src={imageModalUrl || ""}
+        alt={tDeposits("table.transferProof")}
       />
 
       {/* Cancel Confirmation Dialog */}

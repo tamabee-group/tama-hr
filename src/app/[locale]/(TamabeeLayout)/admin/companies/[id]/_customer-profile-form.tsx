@@ -1,488 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SelectContent, SelectItem } from "@/components/ui/select";
-import { SelectWithIcon } from "@/components/ui/select-with-icon";
-import { ClearableInput } from "@/components/ui/clearable-input";
-import { getFileUrl } from "@/lib/utils/file-url";
-import { formatDate } from "@/lib/utils/format-date";
-import { SupportedLocale } from "@/lib/utils/format-currency";
-import {
-  Edit,
-  Save,
-  X,
-  Camera,
-  Building2,
-  Mail,
-  Phone,
-  MapPin,
-  Globe,
-  Milestone,
-  User,
-  Briefcase,
-  Hash,
-  Languages,
-} from "lucide-react";
-import { LANGUAGES, LOCALES, normalizeLocale } from "@/types/enums";
-import { INDUSTRIES, Company } from "@/types/company";
-import { useZipcode } from "@/hooks/use-zipcode";
-import { ImageCropDialog } from "@/app/[locale]/_components/_image-crop-dialog";
-import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
+import { CompanyDetailCard } from "@/app/[locale]/_components/_company-detail-card";
+import { Company } from "@/types/company";
 import { updateCompany, uploadCompanyLogo } from "@/lib/apis/admin-companies";
-import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
-import { validateEmail, validatePhone } from "@/lib/validation";
-import { getLanguageLabel, getLocaleLabel } from "@/lib/utils/get-enum-label";
+import { DeleteCompanyDialog } from "./_delete-company-dialog";
+import { Trash2, Hash } from "lucide-react";
 
-interface FormData {
-  name: string;
-  ownerName: string;
-  email: string;
-  phone: string;
-  industry: string;
-  locale: string;
-  language: string;
-  zipcode: string;
-  address: string;
-  logo: string;
+interface CustomerProfileFormProps {
+  company: Company;
 }
 
-export function CustomerProfileForm({ company }: { company: Company }) {
-  const router = useRouter();
-  const params = useParams();
-  const locale = (params.locale as SupportedLocale) || "vi";
+export function CustomerProfileForm({ company }: CustomerProfileFormProps) {
   const t = useTranslations("companies");
-  const tCommon = useTranslations("common");
-  const tEnums = useTranslations("enums");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [cropDialogOpen, setCropDialogOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const getInitialData = (): FormData => ({
-    name: company.name || "",
-    ownerName: company.ownerName || "",
-    email: company.email || "",
-    phone: company.phone || "",
-    industry: company.industry || "",
-    locale: normalizeLocale(company.locale || ""),
-    language: company.language || "vi",
-    zipcode: company.zipcode || "",
-    address: company.address || "",
-    logo: company.logo || "",
-  });
-
-  const [formData, setFormData] = useState<FormData>(getInitialData);
-  const [initialData] = useState<FormData>(getInitialData);
-
-  const { address: autoAddress, loading } = useZipcode(formData.zipcode);
-
-  const hasChanges =
-    JSON.stringify(formData) !== JSON.stringify(initialData) ||
-    logoFile !== null;
-
-  useEffect(() => {
-    if (autoAddress && isEditing) {
-      setFormData((prev) => ({ ...prev, address: autoAddress }));
+  const handleSave = async (
+    data: {
+      name: string;
+      ownerName: string;
+      email: string;
+      phone: string;
+      industry: string;
+      zipcode: string;
+      address: string;
+    },
+    logoFile: File | null,
+  ) => {
+    if (logoFile) {
+      await uploadCompanyLogo(company.id, logoFile);
     }
-  }, [autoAddress, isEditing]);
-
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = t("validation.nameRequired");
-    }
-
-    const emailError = validateEmail(formData.email);
-    if (emailError) newErrors.email = emailError;
-
-    if (formData.phone) {
-      const phoneError = validatePhone(formData.phone);
-      if (phoneError) newErrors.phone = phoneError;
-    }
-
-    if (!formData.ownerName.trim()) {
-      newErrors.ownerName = t("validation.ownerNameRequired");
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSave = async () => {
-    if (!validateForm()) {
-      toast.error(t("validation.checkInfo"));
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      if (logoFile) {
-        await uploadCompanyLogo(company.id, logoFile);
-      }
-
-      await updateCompany(company.id, formData);
-
-      toast.success(t("messages.updateSuccess"));
-      setIsEditing(false);
-      setLogoFile(null);
-      setErrors({});
-      router.refresh();
-    } catch (error) {
-      console.error("Save error:", error);
-      toast.error(t("messages.updateError"));
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setFormData(initialData);
-    setLogoFile(null);
-    setErrors({});
-    setIsEditing(false);
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result as string);
-        setCropDialogOpen(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCropComplete = async (croppedFile: File) => {
-    try {
-      const compressedFile = await compressImageToWebP(croppedFile);
-      setLogoFile(compressedFile);
-      const previewUrl = URL.createObjectURL(compressedFile);
-      setFormData((prev) => ({ ...prev, logo: previewUrl }));
-    } catch (error) {
-      console.error("Crop error:", error);
-      toast.error(tCommon("errorLoading"));
-    }
+    await updateCompany(company.id, data);
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-row items-center justify-between">
-          <CardTitle>{t("companyInfo")}</CardTitle>
-          {!isEditing ? (
-            <Button size="sm" onClick={() => setIsEditing(true)}>
-              <Edit className="h-4 w-4 mr-2" />
-              {tCommon("edit")}
-            </Button>
-          ) : (
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={!hasChanges || isSaving}
-              >
-                {isSaving ? (
-                  <Spinner className="h-4 w-4 mr-2" />
-                ) : (
-                  <Save className="h-4 w-4 mr-2" />
-                )}
-                {isSaving ? t("messages.saving") : tCommon("save")}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isSaving}
-              >
-                <X className="h-4 w-4 mr-2" />
-                {tCommon("cancel")}
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="relative w-fit">
-            {formData.logo ? (
-              <div className="relative h-20 w-20 border-2 border-primary rounded-lg overflow-hidden">
-                <Image
-                  src={getFileUrl(formData.logo)}
-                  alt="Logo"
-                  fill
-                  className="object-cover"
-                />
-                {isEditing && (
-                  <>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                      id="logo-input"
-                    />
-                    <label
-                      htmlFor="logo-input"
-                      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                    >
-                      <Camera className="h-8 w-8 text-white" />
-                    </label>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="relative h-20 w-20 border-2 border-dashed border-muted-foreground rounded-lg bg-muted flex items-center justify-center">
-                <span className="text-xs text-muted-foreground font-medium">
-                  LOGO
-                </span>
-                {isEditing && (
-                  <>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                      id="logo-input"
-                    />
-                    <label
-                      htmlFor="logo-input"
-                      className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                    >
-                      <Camera className="h-8 w-8 text-white" />
-                    </label>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
-          {selectedImage && (
-            <ImageCropDialog
-              open={cropDialogOpen}
-              onOpenChange={setCropDialogOpen}
-              imageSrc={selectedImage}
-              onCropComplete={handleCropComplete}
-              aspectRatio={1}
-              cropShape="rect"
-            />
-          )}
-
-          {(company.referredByEmployeeCode ||
-            company.referredByEmployeeName) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center col-span-2">
+    <>
+      <CompanyDetailCard
+        company={company}
+        canEdit={true}
+        showWalletButton={false}
+        onSave={handleSave}
+      >
+        {/* Referral Info */}
+        {(company.referredByEmployeeCode || company.referredByEmployeeName) && (
+          <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 flex items-center gap-4 text-sm mb-3">
+            <Hash className="h-4 w-4 text-amber-600" />
+            <div className="flex gap-4">
               {company.referredByEmployeeCode && (
-                <div>
-                  <Label>{t("form.referralCode")}</Label>
-                  <ClearableInput
-                    value={company.referredByEmployeeCode}
-                    disabled
-                    icon={<Hash />}
-                    onClear={() => {}}
-                  />
-                </div>
+                <span>
+                  <span className="text-muted-foreground">
+                    {t("form.referralCode")}:
+                  </span>{" "}
+                  <span className="font-mono font-medium">
+                    {company.referredByEmployeeCode}
+                  </span>
+                </span>
               )}
               {company.referredByEmployeeName && (
-                <div>
-                  <Label>{t("form.referredBy")}</Label>
-                  <ClearableInput
-                    value={company.referredByEmployeeName}
-                    disabled
-                    icon={<User />}
-                    onClear={() => {}}
-                  />
-                </div>
+                <span>
+                  <span className="text-muted-foreground">
+                    {t("form.referredBy")}:
+                  </span>{" "}
+                  <span className="font-medium">
+                    {company.referredByEmployeeName}
+                  </span>
+                </span>
               )}
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Delete Button */}
+        <div className="flex justify-end">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-1" />
+            {t("deleteDialog.button")}
+          </Button>
         </div>
+      </CompanyDetailCard>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label>{t("form.name")}</Label>
-            <ClearableInput
-              value={formData.name}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, name: e.target.value }))
-              }
-              onClear={() => setFormData((prev) => ({ ...prev, name: "" }))}
-              disabled={!isEditing}
-              icon={<Building2 />}
-            />
-            {errors.name && (
-              <p className="text-sm text-destructive mt-1">{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <Label>{t("form.ownerName")}</Label>
-            <ClearableInput
-              value={formData.ownerName}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, ownerName: e.target.value }))
-              }
-              onClear={() =>
-                setFormData((prev) => ({ ...prev, ownerName: "" }))
-              }
-              disabled={!isEditing}
-              icon={<User />}
-            />
-            {errors.ownerName && (
-              <p className="text-sm text-destructive mt-1">
-                {errors.ownerName}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <Label>{tCommon("email")}</Label>
-            <ClearableInput
-              value={formData.email}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, email: e.target.value }))
-              }
-              onClear={() => setFormData((prev) => ({ ...prev, email: "" }))}
-              disabled={!isEditing}
-              icon={<Mail />}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive mt-1">{errors.email}</p>
-            )}
-          </div>
-
-          <div>
-            <Label>{tCommon("phone")}</Label>
-            <ClearableInput
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, phone: e.target.value }))
-              }
-              onClear={() => setFormData((prev) => ({ ...prev, phone: "" }))}
-              disabled={!isEditing}
-              icon={<Phone />}
-            />
-            {errors.phone && (
-              <p className="text-sm text-destructive mt-1">{errors.phone}</p>
-            )}
-          </div>
-
-          <div>
-            <Label>{t("form.industry")}</Label>
-            <SelectWithIcon
-              value={formData.industry}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, industry: value }))
-              }
-              icon={<Briefcase />}
-              disabled={!isEditing}
-              placeholder={t("form.industryPlaceholder")}
-            >
-              <SelectContent>
-                {INDUSTRIES.map((ind) => (
-                  <SelectItem key={ind.value} value={ind.value}>
-                    {ind.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </SelectWithIcon>
-          </div>
-
-          <div>
-            <Label>{t("form.locale")}</Label>
-            <SelectWithIcon
-              value={formData.locale}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, locale: value }))
-              }
-              icon={<Globe />}
-              disabled={!isEditing}
-              placeholder={t("form.localePlaceholder")}
-            >
-              <SelectContent>
-                {LOCALES.map((loc) => (
-                  <SelectItem key={loc} value={loc}>
-                    {getLocaleLabel(loc, tEnums)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </SelectWithIcon>
-          </div>
-
-          <div>
-            <Label>{t("form.language")}</Label>
-            <SelectWithIcon
-              value={formData.language}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, language: value }))
-              }
-              icon={<Languages />}
-              disabled={!isEditing}
-            >
-              <SelectContent>
-                {LANGUAGES.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value}>
-                    {lang.flag} {getLanguageLabel(lang.value, tEnums)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </SelectWithIcon>
-          </div>
-
-          <div>
-            <Label>{t("form.zipcode")}</Label>
-            <ClearableInput
-              value={formData.zipcode}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, zipcode: e.target.value }))
-              }
-              onClear={() => setFormData((prev) => ({ ...prev, zipcode: "" }))}
-              disabled={!isEditing}
-              placeholder={t("form.zipcodePlaceholder")}
-              icon={<Milestone />}
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <Label>{t("form.address")}</Label>
-            <ClearableInput
-              value={formData.address}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, address: e.target.value }))
-              }
-              onClear={() => setFormData((prev) => ({ ...prev, address: "" }))}
-              disabled={!isEditing || loading}
-              placeholder={
-                loading
-                  ? t("form.autoFillAddress")
-                  : t("form.addressPlaceholder")
-              }
-              icon={loading ? <Spinner /> : <MapPin />}
-            />
-          </div>
-        </div>
-        <div className="flex gap-4 text-xs text-muted-foreground">
-          <span>
-            {t("table.createdAt")}: {formatDate(company.createdAt, locale)}
-          </span>
-          <span>•</span>
-          <span>
-            {t("table.updatedAt")}: {formatDate(company.updatedAt, locale)}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
+      <DeleteCompanyDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        companyId={company.id}
+        companyName={company.name}
+      />
+    </>
   );
 }

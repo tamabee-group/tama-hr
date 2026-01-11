@@ -1,12 +1,23 @@
 {
   "title": "サブスクリプションプラン",
-  "description": "会社向けサブスクリプションプランを管理",
+  "description": "会社に合ったプランをお選びください",
   "createPlan": "プランを作成",
   "editPlan": "プランを編集",
   "deletePlan": "プランを削除",
   "addPlan": "プランを追加",
   "refresh": "更新",
   "noPlans": "プランがまだありません",
+  "current": "現在",
+  "currentPlan": "現在のプラン",
+  "selectPlan": "プランを選択",
+  "registerNow": "今すぐ登録",
+  "contactUs": "お問い合わせ",
+  "perMonth": "/月",
+  "perEmployee": "/従業員",
+  "maxEmployees": "最大",
+  "unlimited": "無制限",
+  "features": "機能",
+  "exceedsLimit": "従業員数がプラン上限を超えています",
   "table": {
     "name": "プラン名",
     "price": "価格",
@@ -59,7 +70,9 @@
     "createError": "プランの作成に失敗しました",
     "updateError": "プランの更新に失敗しました",
     "deleteError": "プランの削除に失敗しました",
-    "planInUse": "プランは使用中のため削除できません"
+    "planInUse": "プランは使用中のため削除できません",
+    "changeSuccess": "プランを変更しました",
+    "changeError": "プランの変更に失敗しました"
   },
   "dialog": {
     "deleteTitle": "プランを削除",

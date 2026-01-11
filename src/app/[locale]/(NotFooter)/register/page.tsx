@@ -144,6 +144,10 @@ const RegisterPage: NextPage = () => {
   }, [address]);
 
   const handleNext = () => {
+    // Sync zipcode vào formData trước khi chuyển step
+    if (step === 1 || step === 3) {
+      setFormData((prev) => ({ ...prev, zipcode }));
+    }
     setPrevStep(step);
     setStep(step + 1);
   };
@@ -152,6 +156,8 @@ const RegisterPage: NextPage = () => {
     setStep(step - 1);
   };
   const handleConfirmFromStep1 = () => {
+    // Sync zipcode vào formData trước khi chuyển về Step4
+    setFormData((prev) => ({ ...prev, zipcode }));
     setPrevStep(step);
     setStep(4);
   };
@@ -231,6 +237,31 @@ const RegisterPage: NextPage = () => {
     { num: 3, label: t("step.password") },
     { num: 4, label: t("step.confirm") },
   ];
+
+  // Không render cho đến khi đã load xong từ localStorage
+  if (!isInitialized) {
+    return (
+      <div className="w-full flex flex-col items-center pt-8 pb-14 gap-6">
+        <div className="flex justify-center items-center gap-3">
+          {steps.map((s, idx) => (
+            <div key={s.num} className="flex gap-3">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-muted text-muted-foreground">
+                  {s.num}
+                </div>
+                <span className="text-sm font-medium hidden sm:block text-muted-foreground">
+                  {s.label}
+                </span>
+              </div>
+              {idx < 3 && (
+                <div className="w-12 h-0.5 relative top-4 rounded-full bg-muted" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col items-center pt-8 pb-14 gap-6">

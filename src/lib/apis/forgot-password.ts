@@ -1,36 +1,30 @@
 import { apiClient } from "@/lib/utils/fetch-client";
 
 /**
- * Gửi mã reset password đến email
+ * Gửi link reset password đến email
+ * Backend tự lấy tenant từ Host header
  * @client-only
  */
-export async function sendResetCode(email: string): Promise<void> {
-  return apiClient.post("/api/auth/forgot-password", { email });
-}
-
-/**
- * Xác thực mã reset password
- * @client-only
- */
-export async function verifyResetCode(
+export async function sendResetLink(
   email: string,
-  code: string,
+  language?: string,
 ): Promise<void> {
-  return apiClient.post("/api/auth/verify-reset-code", { email, code });
+  return apiClient.post("/api/auth/forgot-password", {
+    email,
+    language,
+  });
 }
 
 /**
- * Đặt lại mật khẩu mới
+ * Đặt lại mật khẩu mới với token từ email
  * @client-only
  */
 export async function resetPassword(
-  email: string,
-  code: string,
+  token: string,
   newPassword: string,
 ): Promise<void> {
   return apiClient.post("/api/auth/reset-password", {
-    email,
-    code,
+    token,
     newPassword,
   });
 }

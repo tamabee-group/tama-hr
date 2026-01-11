@@ -1,19 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
-import { DepositRequestResponse, DepositFilterRequest } from "@/types/deposit";
+import { DepositRequestResponse } from "@/types/deposit";
 import { depositApi } from "@/lib/apis/deposit-api";
 import { DepositStatusBadge } from "@/app/[locale]/_components/_status-badge";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { DepositStatus } from "@/types/enums";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Eye } from "lucide-react";
-import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { cn } from "@/lib/utils";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { formatRequesterName } from "@/lib/utils/format-requester";
@@ -27,6 +23,10 @@ interface AdminDepositTableProps {
   refreshTrigger?: number;
 }
 
+/**
+ * Bảng hiển thị danh sách yêu cầu nạp tiền (Admin)
+ * Fetch 1 lần, filter client-side theo tab
+ */
 export function AdminDepositTable({
   locale = "vi",
   onViewDetail,
@@ -35,11 +35,8 @@ export function AdminDepositTable({
   const t = useTranslations("deposits");
   const tCommon = useTranslations("common");
 
-  const [deposits, setDeposits] = useState<DepositRequestResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allDeposits, setAllDeposits] = useState<DepositRequestResponse[]>([]);
   const [activeTab, setActiveTab] = useState<TabStatus>("ALL");
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
 
   const tabs: { value: TabStatus; label: string }[] = [
     { value: "ALL", label: t("tabs.all") },
@@ -48,31 +45,33 @@ export function AdminDepositTable({
     { value: "REJECTED", label: t("tabs.rejected") },
   ];
 
-  const fetchDeposits = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filter: DepositFilterRequest = {};
-      if (activeTab !== "ALL") {
-        filter.status = activeTab;
+  // Fetch tất cả deposits khi mount hoặc refreshTrigger thay đổi
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadDeposits = async () => {
+      try {
+        const response = await depositApi.getAll({}, 0, 100);
+        if (isMounted) {
+          setAllDeposits(response.content);
+        }
+      } catch (error) {
+        console.error("Failed to fetch deposits:", error);
       }
+    };
 
-      const response = await depositApi.getAll(filter, page, DEFAULT_PAGE_SIZE);
-      setDeposits(response.content);
-      setTotalPages(response.totalPages);
-    } catch (error) {
-      console.error("Failed to fetch deposits:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, page]);
+    loadDeposits();
 
-  useEffect(() => {
-    fetchDeposits();
-  }, [fetchDeposits, refreshTrigger]);
+    return () => {
+      isMounted = false;
+    };
+  }, [refreshTrigger]);
 
-  useEffect(() => {
-    setPage(0);
-  }, [activeTab]);
+  // Filter client-side theo tab
+  const filteredDeposits = useMemo(() => {
+    if (activeTab === "ALL") return allDeposits;
+    return allDeposits.filter((d) => d.status === activeTab);
+  }, [allDeposits, activeTab]);
 
   const columns: ColumnDef<DepositRequestResponse>[] = [
     {
@@ -86,7 +85,7 @@ export function AdminDepositTable({
       accessorKey: "amount",
       header: t("table.amount"),
       cell: ({ row }) => (
-        <span className="font-medium">
+        <span className="font-medium text-primary">
           {formatCurrency(row.getValue("amount"))}
         </span>
       ),
@@ -118,48 +117,33 @@ export function AdminDepositTable({
       header: t("table.requesterName"),
       cell: ({ row }) => {
         const deposit = row.original;
-        return formatRequesterName({
-          requestedBy: deposit.requestedBy,
-          requesterName: deposit.requesterName,
-        });
+        return (
+          <div className="space-y-0.5">
+            <div className="font-medium">
+              {formatRequesterName({
+                requestedBy: deposit.requestedBy,
+                requesterName: deposit.requesterName,
+              })}
+            </div>
+            {deposit.requesterEmail && (
+              <div className="text-xs text-muted-foreground">
+                {deposit.requesterEmail}
+              </div>
+            )}
+          </div>
+        );
       },
     },
     {
       accessorKey: "createdAt",
       header: t("table.createdAt"),
-      cell: ({ row }) => formatDateTime(row.getValue("createdAt"), locale),
-    },
-    {
-      id: "actions",
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onViewDetail?.(row.original)}
-          title={t("actions.viewDetail")}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
+        <span className="text-sm text-muted-foreground">
+          {formatDateTime(row.getValue("createdAt"), locale)}
+        </span>
       ),
     },
   ];
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-10 w-24" />
-          ))}
-        </div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -182,34 +166,11 @@ export function AdminDepositTable({
 
       <BaseTable
         columns={columns}
-        data={deposits}
+        data={filteredDeposits}
         showPagination={false}
         noResultsText={tCommon("noResults")}
+        onRowClick={onViewDetail}
       />
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-end space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={page === 0}
-          >
-            {tCommon("previous")}
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            {page + 1} / {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            disabled={page >= totalPages - 1}
-          >
-            {tCommon("next")}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

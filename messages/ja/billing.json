@@ -1,0 +1,19 @@
+{
+  "title": "請求管理",
+  "description": "サブスクリプション請求のテストと管理ツール",
+  "triggerBilling": "請求実行",
+  "triggerDescription": "支払い期限が到来したすべての企業の請求を処理します",
+  "triggerNow": "請求を実行",
+  "triggerSuccess": "請求処理が完了しました",
+  "setupTest": "テストデータ設定",
+  "companyId": "企業ID",
+  "daysAgo": "日前",
+  "balance": "残高（¥）",
+  "setupNow": "設定",
+  "setupSuccess": "テストデータの設定が完了しました",
+  "checkFreeTrial": "無料トライアル確認",
+  "checkNow": "確認",
+  "processing": "処理中...",
+  "inFreeTrial": "現在無料トライアル期間中です",
+  "notInFreeTrial": "無料トライアル期間は終了しました"
+}

@@ -77,6 +77,7 @@ export type Gender = (typeof GENDERS)[number];
 export const TRANSACTION_TYPES = [
   "DEPOSIT",
   "BILLING",
+  "BILLING_FAILED",
   "REFUND",
   "COMMISSION",
 ] as const;

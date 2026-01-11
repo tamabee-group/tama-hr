@@ -1,0 +1,19 @@
+{
+  "title": "Billing Management",
+  "description": "Tools for testing and managing subscription billing",
+  "triggerBilling": "Trigger Billing",
+  "triggerDescription": "Process billing for all companies due for payment",
+  "triggerNow": "Run Billing",
+  "triggerSuccess": "Billing processed successfully",
+  "setupTest": "Setup Test Data",
+  "companyId": "Company ID",
+  "daysAgo": "Days Ago",
+  "balance": "Balance (¥)",
+  "setupNow": "Setup",
+  "setupSuccess": "Test data setup successfully",
+  "checkFreeTrial": "Check Free Trial",
+  "checkNow": "Check",
+  "processing": "Processing...",
+  "inFreeTrial": "Currently in free trial period",
+  "notInFreeTrial": "Free trial period has ended"
+}

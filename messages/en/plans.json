@@ -1,12 +1,23 @@
 {
   "title": "Subscription Plans",
-  "description": "Manage subscription plans for companies",
+  "description": "Choose the plan that fits your company",
   "createPlan": "Create Plan",
   "editPlan": "Edit Plan",
   "deletePlan": "Delete Plan",
   "addPlan": "Add Plan",
   "refresh": "Refresh",
   "noPlans": "No plans yet",
+  "current": "Current",
+  "currentPlan": "Current Plan",
+  "selectPlan": "Select Plan",
+  "registerNow": "Register Now",
+  "contactUs": "Contact Us",
+  "perMonth": "/month",
+  "perEmployee": "/employee",
+  "maxEmployees": "Max",
+  "unlimited": "Unlimited",
+  "features": "Features",
+  "exceedsLimit": "Employee count exceeds plan limit",
   "table": {
     "name": "Plan Name",
     "price": "Price",
@@ -59,7 +70,9 @@
     "createError": "Failed to create plan",
     "updateError": "Failed to update plan",
     "deleteError": "Failed to delete plan",
-    "planInUse": "Plan is in use and cannot be deleted"
+    "planInUse": "Plan is in use and cannot be deleted",
+    "changeSuccess": "Plan changed successfully",
+    "changeError": "Failed to change plan"
   },
   "dialog": {
     "deleteTitle": "Delete Plan",

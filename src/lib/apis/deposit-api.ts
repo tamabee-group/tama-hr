@@ -121,12 +121,26 @@ export async function reject(
 // Deposit API object - Export tất cả functions
 // ============================================
 
+/**
+ * Upload ảnh chứng từ chuyển khoản
+ * @client-only
+ */
+export async function uploadTransferProof(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiClient.upload<string>(
+    "/api/company/deposits/upload-proof",
+    formData,
+  );
+}
+
 export const depositApi = {
   // Company APIs
   create,
   getMyRequests,
   cancel,
-  update,
+  uploadTransferProof,
+  getMinDepositAmount,
 
   // Admin APIs
   getAll,
@@ -149,15 +163,9 @@ export async function cancel(id: number): Promise<DepositRequestResponse> {
 }
 
 /**
- * Cập nhật yêu cầu nạp tiền bị từ chối
+ * Lấy số tiền nạp tối thiểu
  * @client-only
  */
-export async function update(
-  id: number,
-  data: DepositRequestCreateRequest,
-): Promise<DepositRequestResponse> {
-  return apiClient.put<DepositRequestResponse>(
-    `/api/company/deposits/${id}`,
-    data,
-  );
+export async function getMinDepositAmount(): Promise<number> {
+  return apiClient.get<number>("/api/company/deposits/min-amount");
 }

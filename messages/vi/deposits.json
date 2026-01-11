@@ -2,7 +2,6 @@
   "title": "Yêu cầu nạp tiền",
   "description": "Xem và xử lý yêu cầu nạp tiền từ các công ty",
   "createRequest": "Tạo yêu cầu nạp tiền",
-  "editRequest": "Sửa yêu cầu nạp tiền",
   "table": {
     "companyName": "Công ty",
     "amount": "Số tiền",
@@ -11,12 +10,18 @@
     "requestedBy": "Người yêu cầu",
     "requesterName": "Tên người yêu cầu",
     "requesterEmail": "Email người yêu cầu",
+    "requesterRole": "Vai trò",
     "employeeCode": "Mã nhân viên",
     "createdAt": "Ngày tạo",
     "processedAt": "Ngày xử lý",
     "processedBy": "Người xử lý",
     "approvedBy": "Người duyệt",
-    "rejectionReason": "Lý do từ chối"
+    "approverName": "Tên người xử lý",
+    "approverRole": "Vai trò người xử lý",
+    "approverCode": "Mã nhân viên",
+    "approverEmail": "Email người xử lý",
+    "rejectionReason": "Lý do từ chối",
+    "actions": "Thao tác"
   },
   "tabs": {
     "all": "Tất cả",
@@ -30,18 +35,26 @@
     "reject": "Từ chối",
     "viewProof": "Xem chứng từ",
     "download": "Tải xuống",
-    "approving": "Đang duyệt..."
+    "approving": "Đang duyệt...",
+    "deposit": "Nạp tiền",
+    "cancel": "Hủy",
+    "viewImage": "Xem hình ảnh"
   },
   "dialog": {
     "detailTitle": "Chi tiết yêu cầu nạp tiền",
     "detailDescription": "Xem thông tin chi tiết và duyệt yêu cầu",
+    "companyInfo": "Thông tin công ty",
+    "requesterInfo": "Thông tin người yêu cầu",
+    "approverInfo": "Thông tin người xử lý",
+    "statusInfo": "Trạng thái & Thời gian",
     "approveTitle": "Duyệt yêu cầu nạp tiền",
     "approveDescription": "Duyệt yêu cầu nạp tiền này?",
     "rejectTitle": "Từ chối yêu cầu nạp tiền",
     "rejectDescription": "Vui lòng nhập lý do từ chối",
     "rejectReason": "Lý do từ chối",
     "rejectReasonPlaceholder": "Nhập lý do từ chối",
-    "rejecting": "Đang xử lý..."
+    "rejecting": "Đang xử lý...",
+    "requesterLanguage": "Ngôn ngữ người yêu cầu"
   },
   "messages": {
     "approveSuccess": "Đã duyệt yêu cầu",
@@ -50,8 +63,6 @@
     "rejectError": "Không thể từ chối yêu cầu nạp tiền",
     "createSuccess": "Tạo yêu cầu thành công",
     "createError": "Không thể tạo yêu cầu",
-    "updateSuccess": "Cập nhật yêu cầu thành công",
-    "updateError": "Không thể cập nhật yêu cầu",
     "cancelSuccess": "Hủy yêu cầu thành công",
     "cancelError": "Không thể hủy yêu cầu",
     "cancelConfirm": "Hủy yêu cầu nạp tiền này?",
@@ -61,6 +72,8 @@
     "amount": "Số tiền nạp",
     "amountPlaceholder": "Nhập số tiền nạp",
     "transferProof": "Chứng từ chuyển khoản",
-    "transferProofHint": "Tải lên ảnh chụp màn hình chuyển khoản ngân hàng"
+    "transferProofHint": "Tải lên ảnh chụp màn hình chuyển khoản ngân hàng",
+    "minAmountHint": "Số tiền tối thiểu: ¥{amount}",
+    "minAmountError": "Số tiền nạp tối thiểu là ¥{amount}"
   }
 }

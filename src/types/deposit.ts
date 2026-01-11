@@ -13,9 +13,14 @@ export interface DepositRequestResponse {
   transferProofUrl: string;
   status: DepositStatus;
   requestedBy: string;
-  requesterName?: string; // Tên người yêu cầu
-  requesterEmail?: string; // Email người yêu cầu
+  requesterName?: string;
+  requesterRole?: string;
+  requesterEmail?: string;
+  requesterLanguage?: string;
   approvedBy?: string;
+  approverName?: string;
+  approverRole?: string;
+  approverEmail?: string;
   rejectionReason?: string;
   createdAt: string;
   processedAt?: string;

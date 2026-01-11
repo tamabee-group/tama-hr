@@ -267,13 +267,13 @@ const Step1: NextPage<Props> = ({
             )}
           </div>
           <div>
-            <Label htmlFor="tenantDomain">{tRegister("tenantDomain")}</Label>
             <TenantDomainInput
               value={formData.tenantDomain}
               onChange={(value) =>
                 setFormData({ ...formData, tenantDomain: value })
               }
               onValidityChange={handleDomainValidityChange}
+              showLabel
             />
           </div>
           <div>
@@ -443,11 +443,16 @@ const Step1: NextPage<Props> = ({
             disabled={sending || !isDomainValid}
             className="w-full md:w-auto md:px-12 md:ml-auto md:flex"
           >
-            {sending
-              ? tRegister("processing")
-              : fromStep4
-                ? tRegister("confirm")
-                : tRegister("continue")}
+            {sending ? (
+              <>
+                <Spinner />
+                {tRegister("processing")}
+              </>
+            ) : fromStep4 ? (
+              tRegister("confirm")
+            ) : (
+              tRegister("continue")
+            )}
           </Button>
           <div className="text-center text-sm">
             {tRegister("haveAccount")}{" "}

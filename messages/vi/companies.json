@@ -9,6 +9,19 @@
   "companyWallet": "Ví công ty",
   "employees": "Nhân viên",
   "featureUpdating": "Chức năng đang cập nhật",
+  "serviceInfo": "Thông tin dịch vụ",
+  "plan": "Gói dịch vụ",
+  "balance": "Số dư",
+  "lastBilling": "Thanh toán gần nhất",
+  "nextBilling": "Thanh toán tiếp theo",
+  "statistics": "Thống kê",
+  "limit": "Giới hạn",
+  "timeline": "Thời gian",
+  "referralInfo": "Thông tin giới thiệu",
+  "contactInfo": "Thông tin liên hệ",
+  "locationInfo": "Địa chỉ",
+  "settingsInfo": "Cài đặt",
+  "employeeUsage": "Số lượng nhân viên",
   "table": {
     "name": "Tên công ty",
     "email": "Email",
@@ -57,7 +70,8 @@
     "freeTrialEnd": "Hết hạn dùng thử",
     "nextBilling": "Thanh toán tiếp theo",
     "lastBilling": "Thanh toán gần nhất",
-    "manageWallet": "Quản lý ví"
+    "manageWallet": "Quản lý ví",
+    "viewPlans": "Xem các gói dịch vụ"
   },
   "messages": {
     "createSuccess": "Tạo công ty thành công",
@@ -79,5 +93,13 @@
     "emailRequired": "Vui lòng nhập email",
     "ownerNameRequired": "Vui lòng nhập tên người đại diện",
     "checkInfo": "Vui lòng kiểm tra lại thông tin"
+  },
+  "deleteDialog": {
+    "button": "Xóa công ty",
+    "title": "Xóa công ty vĩnh viễn",
+    "warning": "Hành động này sẽ xóa toàn bộ dữ liệu của công ty bao gồm nhân viên, chấm công, bảng lương và database. Không thể hoàn tác.",
+    "confirmInstruction": "Nhập \"{name}\" để xác nhận xóa",
+    "companyName": "Tên công ty",
+    "confirm": "Xóa vĩnh viễn"
   }
 }

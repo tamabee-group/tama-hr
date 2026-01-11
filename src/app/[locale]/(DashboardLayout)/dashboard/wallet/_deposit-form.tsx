@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/app/[locale]/_components/_image-upload";
 import { depositApi } from "@/lib/apis/deposit-api";
-import { DepositRequestResponse } from "@/types/deposit";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -43,22 +42,20 @@ interface DepositFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
-  /** Deposit để edit (nếu có) - chỉ cho phép edit khi status = REJECTED */
-  editDeposit?: DepositRequestResponse | null;
+  minAmount: number;
 }
 
 /**
- * Component form tạo/sửa yêu cầu nạp tiền
+ * Component form tạo yêu cầu nạp tiền
  * - Fields: amount (number input), transferProofUrl (image upload)
- * - Validation: amount > 0, transferProofUrl required
+ * - Validation: amount >= minAmount, transferProofUrl required
  * - Preview ảnh trước khi submit
- * - Hỗ trợ edit yêu cầu bị từ chối
  */
 export function DepositForm({
   open,
   onOpenChange,
   onSuccess,
-  editDeposit,
+  minAmount,
 }: DepositFormProps) {
   const t = useTranslations("deposits");
   const tCommon = useTranslations("common");
@@ -71,15 +68,8 @@ export function DepositForm({
     transferProofUrl?: string;
   }>({});
 
-  const isEditMode = !!editDeposit;
-
-  // Populate form khi edit
-  useEffect(() => {
-    if (editDeposit && open) {
-      setAmount(editDeposit.amount.toString());
-      setTransferProofUrl(editDeposit.transferProofUrl || "");
-    }
-  }, [editDeposit, open]);
+  // Lưu file để upload khi submit
+  const selectedFileRef = useRef<File | null>(null);
 
   // Validate form
   const validateForm = (): boolean => {
@@ -91,6 +81,10 @@ export function DepositForm({
       newErrors.amount = tValidation("required");
     } else if (isNaN(amountNum) || amountNum <= 0) {
       newErrors.amount = tValidation("positiveNumber");
+    } else if (amountNum < minAmount) {
+      newErrors.amount = t("form.minAmountError", {
+        amount: minAmount.toLocaleString(),
+      });
     }
 
     // Validate transferProofUrl
@@ -111,27 +105,29 @@ export function DepositForm({
 
     setIsSubmitting(true);
     try {
+      let finalProofUrl = transferProofUrl;
+
+      // Upload file nếu có file mới được chọn (blob: URL)
+      if (selectedFileRef.current && transferProofUrl.startsWith("blob:")) {
+        finalProofUrl = await depositApi.uploadTransferProof(
+          selectedFileRef.current,
+        );
+      }
+
       const data = {
         amount: parseFloat(amount),
-        transferProofUrl: transferProofUrl,
+        transferProofUrl: finalProofUrl,
       };
 
-      if (isEditMode && editDeposit) {
-        await depositApi.update(editDeposit.id, data);
-        toast.success(t("messages.updateSuccess"));
-      } else {
-        await depositApi.create(data);
-        toast.success(t("messages.createSuccess"));
-      }
+      await depositApi.create(data);
+      toast.success(t("messages.createSuccess"));
 
       resetForm();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
-      console.error("Failed to save deposit request:", error);
-      toast.error(
-        isEditMode ? t("messages.updateError") : t("messages.createError"),
-      );
+      console.error("Failed to create deposit request:", error);
+      toast.error(t("messages.createError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -141,6 +137,7 @@ export function DepositForm({
     setAmount("");
     setTransferProofUrl("");
     setErrors({});
+    selectedFileRef.current = null;
   };
 
   const handleClose = () => {
@@ -158,8 +155,11 @@ export function DepositForm({
     }
   };
 
-  const handleImageChange = (url: string) => {
+  const handleImageChange = (url: string, file?: File) => {
     setTransferProofUrl(url);
+    if (file) {
+      selectedFileRef.current = file;
+    }
     // Clear error khi user upload ảnh
     if (errors.transferProofUrl) {
       setErrors((prev) => ({ ...prev, transferProofUrl: undefined }));
@@ -170,16 +170,13 @@ export function DepositForm({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {isEditMode ? t("editRequest") : t("createRequest")}
-          </DialogTitle>
+          <DialogTitle>{t("createRequest")}</DialogTitle>
           <DialogDescription>{t("form.transferProofHint")}</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           {/* Amount field */}
           <div className="space-y-2">
-            <Label htmlFor="amount">{t("form.amount")}</Label>
             <Input
               id="amount"
               type="number"
@@ -187,8 +184,12 @@ export function DepositForm({
               value={amount}
               onChange={handleAmountChange}
               disabled={isSubmitting}
+              min={minAmount}
               className={errors.amount ? "border-destructive" : ""}
             />
+            <p className="text-xs text-muted-foreground">
+              {t("form.minAmountHint", { amount: minAmount.toLocaleString() })}
+            </p>
             {errors.amount && (
               <p className="text-sm text-destructive">{errors.amount}</p>
             )}
@@ -205,7 +206,7 @@ export function DepositForm({
             />
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="flex gap-2">
             <Button
               type="button"
               variant="outline"

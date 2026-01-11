@@ -1,0 +1,19 @@
+{
+  "title": "Quản lý Billing",
+  "description": "Công cụ test và quản lý thanh toán subscription",
+  "triggerBilling": "Trigger Billing",
+  "triggerDescription": "Xử lý billing cho tất cả company đến hạn thanh toán",
+  "triggerNow": "Chạy Billing",
+  "triggerSuccess": "Billing đã được xử lý thành công",
+  "setupTest": "Setup Test Data",
+  "companyId": "Company ID",
+  "daysAgo": "Số ngày trước",
+  "balance": "Số dư (¥)",
+  "setupNow": "Setup",
+  "setupSuccess": "Setup test data thành công",
+  "checkFreeTrial": "Kiểm tra Free Trial",
+  "checkNow": "Kiểm tra",
+  "processing": "Đang xử lý...",
+  "inFreeTrial": "Đang trong thời gian dùng thử miễn phí",
+  "notInFreeTrial": "Đã hết thời gian dùng thử miễn phí"
+}

@@ -96,17 +96,21 @@ export function PricingSection({ settings }: PricingSectionProps) {
           )}
         </div>
 
-        {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Plans Grid - căn giữa khi số lượng plan không đủ 4 */}
+        <div className="flex flex-wrap justify-center gap-6">
           {plans.map((plan) => (
-            <PlanCard
+            <div
               key={plan.id}
-              plan={plan}
-              locale={locale}
-              settings={settings}
-              t={t}
-              onSelect={() => handleSelectPlan(plan.id)}
-            />
+              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-[300px]"
+            >
+              <PlanCard
+                plan={plan}
+                locale={locale}
+                settings={settings}
+                t={t}
+                onSelect={() => handleSelectPlan(plan.id)}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -135,7 +139,7 @@ function PlanCard({
   const customPrice = settings.customPricePerEmployee;
 
   return (
-    <div className="bg-card border rounded-xl p-6 flex flex-col hover:shadow-lg transition-shadow">
+    <div className="bg-card border rounded-xl p-6 flex flex-col hover:shadow-lg transition-shadow h-full">
       {/* Plan Name */}
       <h3 className="text-lg font-semibold mb-1">
         {getPlanName(plan, localeKey)}

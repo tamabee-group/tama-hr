@@ -1,6 +1,15 @@
 {
   "title": "Cấu hình lương",
   "description": "Cấu hình lương cho nhân viên",
+  "hint": {
+    "title": "Hướng dẫn sử dụng",
+    "description": "Quản lý cấu hình lương cho nhân viên với khả năng lên kế hoạch tăng lương.",
+    "rule1": "Chỉ có cấu hình \"Đang áp dụng\" mới được sử dụng để tính lương",
+    "rule2": "Cấu hình đã được sử dụng để tính lương không thể sửa hoặc xóa",
+    "rule3EndOfMonth": "Kỳ lương tính từ ngày 1 đến cuối tháng",
+    "rule3Custom": "Kỳ lương tính từ ngày {startDay} tháng trước đến ngày {endDay} tháng này",
+    "companySettings": "theo thiết lập quy định"
+  },
   "currentConfig": "Cấu hình hiện tại",
   "noConfig": "Chưa có cấu hình lương",
   "create": "Tạo cấu hình",
@@ -22,7 +31,7 @@
   "effectiveFrom": "Có hiệu lực từ",
   "effectiveTo": "Có hiệu lực đến",
   "note": "Ghi chú",
-  "notePlaceholder": "Nhập ghi chú...",
+  "notePlaceholder": "Ví dụ: Lương thử việc.",
   "historyTitle": "Lịch sử cấu hình lương",
   "noHistory": "Chưa có lịch sử",
   "effectivePeriod": "Thời gian hiệu lực",
@@ -40,7 +49,10 @@
   "confirmCreateDescription": "Bạn có chắc chắn muốn tạo cấu hình lương này?",
   "confirmUpdateTitle": "Xác nhận cập nhật cấu hình lương",
   "confirmUpdateDescription": "Bạn có chắc chắn muốn cập nhật cấu hình lương này?",
-  "detailTitle": "Chi tiết cấu hình lương",
+  "compareChanges": "Xác nhận thay đổi cấu hình lương",
+  "before": "Trước",
+  "after": "Sau",
+  "detailTitle": "Chi tiết cấu hình",
   "amount": "Số tiền",
   "table": {
     "salaryType": "Loại lương",
@@ -52,14 +64,22 @@
   "statusActive": "Đang áp dụng",
   "statusExpired": "Hết hiệu lực",
   "statusUpcoming": "Sắp áp dụng",
+  "statusValid": "Còn hiệu lực",
   "deleteTitle": "Xóa cấu hình lương",
   "deleteDescription": "Xóa cấu hình lương này? Không thể hoàn tác.",
+  "cannotModifyUsed": "Cấu hình này đã được sử dụng để tính lương, không thể sửa hoặc xóa.",
+  "apply": "Áp dụng",
+  "applyTitle": "Áp dụng cấu hình lương",
+  "applyDescription": "Áp dụng cấu hình này? Cấu hình này sẽ được sử dụng để tính lương.",
+  "applySuccess": "Áp dụng cấu hình lương thành công",
+  "applyError": "Không thể áp dụng cấu hình lương",
   "confirmTitle": "Xác nhận cấu hình lương",
   "overlappingWarning": "Phát hiện cấu hình trùng lặp",
-  "overlappingDescription": "Có {count} cấu hình lương đang hoạt động sẽ bị vô hiệu hóa khi lưu cấu hình mới.",
+  "overlappingDescription": "Có {count} cấu hình lương khác đang hoạt động trong cùng thời gian. Bạn có thể xóa thủ công nếu cần.",
   "affectsPayrollShort": "Cấu hình này sẽ ảnh hưởng đến kỳ lương {period}.",
   "validation": {
     "amountRequired": "Vui lòng nhập số tiền",
-    "effectiveFromRequired": "Vui lòng chọn ngày có hiệu lực"
+    "effectiveFromRequired": "Vui lòng chọn ngày có hiệu lực",
+    "effectiveToAfterFrom": "Ngày kết thúc phải sau ngày bắt đầu"
   }
 }

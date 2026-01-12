@@ -6,6 +6,7 @@
   "notFound": "The requested resource was not found.",
   "BAD_REQUEST": "Invalid request.",
   "VALIDATION_ERROR": "Invalid data provided.",
+  "INVALID_DATE_RANGE": "End date must be after start date.",
   "NOT_FOUND": "Resource not found.",
   "CONFLICT": "Data conflict occurred.",
   "INTERNAL_SERVER_ERROR": "System error. Please try again later.",

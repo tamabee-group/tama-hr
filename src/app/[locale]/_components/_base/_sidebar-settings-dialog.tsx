@@ -260,7 +260,7 @@ function AccountSettings({
       {/* Profile link */}
       <SettingRow label={tHeader("profile")}>
         <button
-          onClick={() => onNavigate("/dashboard/profile")}
+          onClick={() => onNavigate(`/dashboard/employees/${user?.id}`)}
           className="text-sm text-primary hover:underline cursor-pointer"
         >
           {t("viewDetail")}

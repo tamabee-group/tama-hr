@@ -574,6 +574,8 @@ export interface EmployeeSalaryConfig {
   shiftRate?: number;
   effectiveFrom: string;
   effectiveTo?: string;
+  isActive?: boolean;
+  usedInPayroll?: boolean;
   note?: string;
   createdAt?: string;
   updatedAt?: string;

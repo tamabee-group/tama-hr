@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { vi, enUS, ja } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
+import { useLocale } from "next-intl";
 import { formatDate } from "@/lib/utils/format-date";
 
 import { cn } from "@/lib/utils";
@@ -11,12 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 
 type SupportedLocale = "vi" | "en" | "ja";
-
-const localeMap = {
-  vi: vi,
-  en: enUS,
-  ja: ja,
-};
 
 interface DatePickerProps {
   value?: Date;
@@ -31,12 +25,21 @@ export function DatePicker({
   value,
   onChange,
   placeholder = "Chọn ngày",
-  locale = "vi",
+  locale: localeProp,
   className,
   disabled = false,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
-  const dateLocale = localeMap[locale];
+
+  // Lấy locale từ next-intl nếu không được truyền vào
+  const nextIntlLocale = useLocale() as SupportedLocale;
+  const locale = localeProp || nextIntlLocale || "vi";
+
+  // Lấy timezone một lần khi component mount
+  const timeZone = useMemo(
+    () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+    [],
+  );
 
   const handleSelect = (date: Date | undefined) => {
     onChange?.(date);
@@ -75,8 +78,11 @@ export function DatePicker({
             mode="single"
             selected={value}
             onSelect={handleSelect}
-            locale={dateLocale}
             autoFocus
+            captionLayout="dropdown"
+            startMonth={new Date(new Date().getFullYear() - 60, 0)}
+            endMonth={new Date(new Date().getFullYear() + 10, 11)}
+            timeZone={timeZone}
           />
         </PopoverPrimitive.Content>
       </PopoverPrimitive.Portal>

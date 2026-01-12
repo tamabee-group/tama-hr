@@ -214,8 +214,6 @@ const Step1: NextPage<Props> = ({
         const errorMessage = tErrors(errorCode as string);
         if (errorCode === "EMAIL_EXISTS" || errorCode === "EMAIL_NOT_FOUND") {
           setErrors((prev) => ({ ...prev, email: errorMessage }));
-        } else if (errorCode === "COMPANY_NAME_EXISTS") {
-          setErrors((prev) => ({ ...prev, companyName: errorMessage }));
         } else {
           setErrors((prev) => ({ ...prev, email: errorMessage }));
         }

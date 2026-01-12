@@ -1,12 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Globe, Check, X, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  validateTenantDomain,
-  TenantDomainValidationResult,
-} from "@/lib/utils/validate-tenant-domain";
 import { checkTenantDomainAvailability } from "@/lib/apis/auth";
 import {
   InputGroup,
@@ -32,40 +28,17 @@ export function TenantDomainInput({
   const t = useTranslations("auth.register");
   const [isChecking, setIsChecking] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  // Lưu reason từ backend: INVALID_FORMAT, RESERVED, ALREADY_EXISTS
+  const [errorReason, setErrorReason] = useState<string | null>(null);
 
-  // Validate format
-  const validation: TenantDomainValidationResult = useMemo(() => {
-    if (!value) return { valid: false };
-    return validateTenantDomain(value);
-  }, [value]);
-
-  // Lấy error message từ validation result
-  const formatError = useMemo(() => {
-    if (!value) return null;
-    if (!validation.valid && validation.errorCode) {
-      switch (validation.errorCode) {
-        case "TOO_SHORT":
-          return t("domainTooShort");
-        case "TOO_LONG":
-          return t("domainTooLong");
-        case "INVALID_CHARS":
-          return t("domainInvalidChars");
-        case "INVALID_HYPHEN":
-          return t("domainInvalidHyphen");
-        default:
-          return null;
-      }
-    }
-    return null;
-  }, [value, validation, t]);
-
-  // Debounce check availability
+  // Debounce check availability từ backend
   useEffect(() => {
-    // Reset availability khi value thay đổi
+    // Reset state khi value thay đổi
     setIsAvailable(null);
+    setErrorReason(null);
 
-    // Không check nếu format không hợp lệ
-    if (!value || !validation.valid) {
+    // Không check nếu chưa nhập gì
+    if (!value) {
       return;
     }
 
@@ -74,60 +47,69 @@ export function TenantDomainInput({
       try {
         const result = await checkTenantDomainAvailability(value);
         setIsAvailable(result.available);
+        setErrorReason(result.reason || null);
       } catch {
         // Nếu API lỗi, coi như không khả dụng
         setIsAvailable(false);
+        setErrorReason(null);
       } finally {
         setIsChecking(false);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [value, validation.valid]);
+  }, [value]);
 
   // Notify parent về validity
   useEffect(() => {
-    const isValid = validation.valid && isAvailable === true;
+    const isValid = isAvailable === true;
     onValidityChange?.(isValid);
-  }, [validation.valid, isAvailable, onValidityChange]);
+  }, [isAvailable, onValidityChange]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Chuyển về lowercase và loại bỏ ký tự không hợp lệ
-    const newValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+    // Chỉ chuyển về lowercase, validate ở backend
+    const newValue = e.target.value.toLowerCase();
     onChange(newValue);
+  };
+
+  // Lấy error message từ reason
+  const getErrorMessage = () => {
+    if (!errorReason) return t("domainTaken");
+    switch (errorReason) {
+      case "INVALID_FORMAT":
+        return t("domainInvalidChars");
+      case "RESERVED":
+        return t("domainReserved");
+      case "ALREADY_EXISTS":
+        return t("domainTaken");
+      default:
+        return t("domainTaken");
+    }
   };
 
   // Render status message
   const renderStatus = () => {
     if (isChecking) {
       return (
-        <span className="text-muted-foreground text-sm flex items-center leading-0 gap-1">
-          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        <span className="text-muted-foreground text-sm flex items-center gap-1">
+          <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
           {t("domainChecking")}
-        </span>
-      );
-    }
-    if (formatError) {
-      return (
-        <span className="text-destructive text-sm flex items-center leading-0 gap-1">
-          <X className="w-3.5 h-3.5" />
-          {formatError}
         </span>
       );
     }
     if (isAvailable === true) {
       return (
-        <span className="text-green-600 text-sm flex items-center leading-0 gap-1">
-          <Check className="w-3.5 h-3.5" />
+        <span className="text-green-600 text-sm flex items-center gap-1">
+          <Check className="w-3.5 h-3.5 shrink-0" />
           {t("domainAvailable")}
         </span>
       );
     }
     if (isAvailable === false) {
       return (
-        <span className="text-destructive text-sm flex items-center leading-0 gap-1">
-          <X className="w-3.5 h-3.5" />
-          {t("domainTaken")}
+        <span className="text-destructive text-sm flex items-center gap-1">
+          <X className="w-3.5 h-3.5 shrink-0" />
+          {getErrorMessage()}
         </span>
       );
     }
@@ -136,14 +118,7 @@ export function TenantDomainInput({
 
   return (
     <div>
-      {/* Label - luôn hiển thị */}
-      {showLabel && (
-        <div className="flex items-center justify-between">
-          <Label htmlFor="tenantDomain">{t("tenantDomain")}</Label>
-          {/* Status bên cạnh label - chỉ desktop */}
-          <span className="hidden md:block">{renderStatus()}</span>
-        </div>
-      )}
+      {showLabel && <Label htmlFor="tenantDomain">{t("tenantDomain")}</Label>}
 
       <InputGroup>
         <InputGroupInput
@@ -158,8 +133,8 @@ export function TenantDomainInput({
         <InputGroupAddon align="inline-end">.tamabee.vn</InputGroupAddon>
       </InputGroup>
 
-      {/* Status dưới input - mobile hoặc khi không có label */}
-      <div className={showLabel ? "md:hidden" : ""}>{renderStatus()}</div>
+      {/* Status luôn hiển thị dưới input */}
+      <div>{renderStatus()}</div>
     </div>
   );
 }

@@ -1,6 +1,15 @@
 {
   "title": "Salary Configuration",
   "description": "Configure employee salary settings",
+  "hint": {
+    "title": "Usage Guide",
+    "description": "Manage employee salary configurations with the ability to plan salary increases.",
+    "rule1": "Only the \"Applied\" configuration will be used for payroll calculation",
+    "rule2": "Configurations used for payroll calculation cannot be edited or deleted",
+    "rule3EndOfMonth": "Payroll period is from the 1st to the end of the month",
+    "rule3Custom": "Payroll period is from the {startDay}th of last month to the {endDay}th of this month",
+    "companySettings": "based on company settings"
+  },
   "currentConfig": "Current Configuration",
   "noConfig": "No salary configuration",
   "create": "Create Configuration",
@@ -22,7 +31,7 @@
   "effectiveFrom": "Effective From",
   "effectiveTo": "Effective To",
   "note": "Note",
-  "notePlaceholder": "Enter note...",
+  "notePlaceholder": "E.g.: Probation salary.",
   "historyTitle": "Salary Configuration History",
   "noHistory": "No history",
   "effectivePeriod": "Effective Period",
@@ -40,6 +49,9 @@
   "confirmCreateDescription": "Are you sure you want to create this salary configuration?",
   "confirmUpdateTitle": "Confirm Update Salary Config",
   "confirmUpdateDescription": "Are you sure you want to update this salary configuration?",
+  "compareChanges": "Confirm salary configuration changes",
+  "before": "Before",
+  "after": "After",
   "detailTitle": "Salary Configuration Details",
   "amount": "Amount",
   "table": {
@@ -52,14 +64,22 @@
   "statusActive": "Active",
   "statusExpired": "Expired",
   "statusUpcoming": "Upcoming",
+  "statusValid": "Valid",
   "deleteTitle": "Delete Salary Configuration",
   "deleteDescription": "Delete this salary configuration? Cannot be undone.",
+  "cannotModifyUsed": "This configuration has been used for payroll calculation and cannot be edited or deleted.",
+  "apply": "Apply",
+  "applyTitle": "Apply Salary Configuration",
+  "applyDescription": "Apply this configuration? This configuration will be used for payroll calculation.",
+  "applySuccess": "Salary configuration applied successfully",
+  "applyError": "Failed to apply salary configuration",
   "confirmTitle": "Confirm Salary Configuration",
   "overlappingWarning": "Overlapping configurations detected",
-  "overlappingDescription": "{count} active salary configuration(s) will be deactivated when saving this new configuration.",
+  "overlappingDescription": "{count} other salary configuration(s) are active during the same period. You can delete them manually if needed.",
   "affectsPayrollShort": "This configuration will affect the {period} payroll period.",
   "validation": {
     "amountRequired": "Please enter an amount",
-    "effectiveFromRequired": "Please select an effective date"
+    "effectiveFromRequired": "Please select an effective date",
+    "effectiveToAfterFrom": "End date must be after start date"
   }
 }

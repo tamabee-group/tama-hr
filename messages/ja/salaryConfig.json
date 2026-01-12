@@ -1,6 +1,15 @@
 {
   "title": "給与設定",
   "description": "従業員の給与設定を管理",
+  "hint": {
+    "title": "使い方ガイド",
+    "description": "昇給計画を立てながら従業員の給与設定を管理できます。",
+    "rule1": "「適用」された設定のみが給与計算に使用されます",
+    "rule2": "給与計算に使用された設定は編集・削除できません",
+    "rule3EndOfMonth": "給与計算期間は1日から月末まで",
+    "rule3Custom": "給与計算期間は先月{startDay}日から今月{endDay}日まで",
+    "companySettings": "会社設定による"
+  },
   "currentConfig": "現在の設定",
   "noConfig": "給与設定がありません",
   "create": "設定を作成",
@@ -22,7 +31,7 @@
   "effectiveFrom": "適用開始日",
   "effectiveTo": "適用終了日",
   "note": "備考",
-  "notePlaceholder": "備考を入力...",
+  "notePlaceholder": "例：試用期間の給与。",
   "historyTitle": "給与設定履歴",
   "noHistory": "履歴がありません",
   "effectivePeriod": "適用期間",
@@ -40,6 +49,9 @@
   "confirmCreateDescription": "この給与設定を作成しますか？",
   "confirmUpdateTitle": "給与設定の更新確認",
   "confirmUpdateDescription": "この給与設定を更新しますか？",
+  "compareChanges": "給与設定の変更を確認",
+  "before": "変更前",
+  "after": "変更後",
   "detailTitle": "給与設定詳細",
   "amount": "金額",
   "table": {
@@ -52,14 +64,22 @@
   "statusActive": "適用中",
   "statusExpired": "期限切れ",
   "statusUpcoming": "適用予定",
+  "statusValid": "有効",
   "deleteTitle": "給与設定を削除",
   "deleteDescription": "この給与設定を削除してもよろしいですか？この操作は取り消せません。",
+  "cannotModifyUsed": "この設定は給与計算に使用されているため、編集・削除できません。",
+  "apply": "適用",
+  "applyTitle": "給与設定を適用",
+  "applyDescription": "この設定を適用しますか？この設定が給与計算に使用されます。",
+  "applySuccess": "給与設定を適用しました",
+  "applyError": "給与設定の適用に失敗しました",
   "confirmTitle": "給与設定の確認",
   "overlappingWarning": "重複する設定が検出されました",
-  "overlappingDescription": "この新しい設定を保存すると、{count}件の有効な給与設定が無効化されます。",
+  "overlappingDescription": "同じ期間に{count}件の他の給与設定が有効です。必要に応じて手動で削除できます。",
   "affectsPayrollShort": "この設定は{period}の給与計算に影響します。",
   "validation": {
     "amountRequired": "金額を入力してください",
-    "effectiveFromRequired": "適用開始日を選択してください"
+    "effectiveFromRequired": "適用開始日を選択してください",
+    "effectiveToAfterFrom": "終了日は開始日より後にしてください"
   }
 }

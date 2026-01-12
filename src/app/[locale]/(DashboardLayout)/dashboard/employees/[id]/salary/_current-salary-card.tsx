@@ -1,19 +1,16 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import { Edit, Calendar, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { FileText } from "lucide-react";
 import { EmployeeSalaryConfig } from "@/types/attendance-records";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDate } from "@/lib/utils/format-date";
 
 interface CurrentSalaryCardProps {
   config: EmployeeSalaryConfig;
-  onEdit: () => void;
 }
 
-export function CurrentSalaryCard({ config, onEdit }: CurrentSalaryCardProps) {
+export function CurrentSalaryCard({ config }: CurrentSalaryCardProps) {
   const t = useTranslations("salaryConfig");
   const locale = useLocale() as SupportedLocale;
 
@@ -69,19 +66,8 @@ export function CurrentSalaryCard({ config, onEdit }: CurrentSalaryCardProps) {
 
   return (
     <div className="space-y-4">
-      {/* Header với badge và nút edit */}
-      <div className="flex items-center justify-between">
-        <Badge variant="default" className="bg-green-600">
-          {t("statusActive")}
-        </Badge>
-        <Button variant="outline" size="sm" onClick={onEdit}>
-          <Edit className="h-4 w-4 mr-2" />
-          {t("edit")}
-        </Button>
-      </div>
-
       {/* Thông tin chính */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {/* Loại lương */}
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{t("salaryType")}</p>
@@ -98,10 +84,7 @@ export function CurrentSalaryCard({ config, onEdit }: CurrentSalaryCardProps) {
 
         {/* Ngày hiệu lực */}
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            {t("effectiveFrom")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("effectiveFrom")}</p>
           <p className="font-medium">
             {formatDate(config.effectiveFrom, locale)}
           </p>
@@ -109,10 +92,7 @@ export function CurrentSalaryCard({ config, onEdit }: CurrentSalaryCardProps) {
 
         {/* Ngày kết thúc */}
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            {t("effectiveTo")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("effectiveTo")}</p>
           <p className="font-medium">
             {config.effectiveTo ? formatDate(config.effectiveTo, locale) : "-"}
           </p>

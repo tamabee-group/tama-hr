@@ -6,6 +6,7 @@
   "notFound": "リクエストされたリソースが見つかりません。",
   "BAD_REQUEST": "無効なリクエストです。",
   "VALIDATION_ERROR": "無効なデータが提供されました。",
+  "INVALID_DATE_RANGE": "終了日は開始日より後にしてください。",
   "NOT_FOUND": "リソースが見つかりません。",
   "CONFLICT": "データの競合が発生しました。",
   "INTERNAL_SERVER_ERROR": "システムエラー。後でもう一度お試しください。",

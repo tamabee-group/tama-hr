@@ -160,6 +160,19 @@ export async function deleteSalaryConfig(
   );
 }
 
+/**
+ * Áp dụng cấu hình lương (set effectiveFrom = today)
+ * @client-only
+ */
+export async function applySalaryConfig(
+  employeeId: number,
+  configId: number,
+): Promise<EmployeeSalaryConfig> {
+  return apiClient.post<EmployeeSalaryConfig>(
+    `/api/company/employees/${employeeId}/salary-config/${configId}/apply`,
+  );
+}
+
 // ============================================
 // Export API object
 // ============================================
@@ -173,4 +186,5 @@ export const salaryConfigApi = {
   createSalaryConfig,
   updateSalaryConfig,
   deleteSalaryConfig,
+  applySalaryConfig,
 };

@@ -4,7 +4,7 @@ import { CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ClearableInput } from "@/components/ui/clearable-input";
-import { Mail, CheckCircle } from "lucide-react";
+import { Mail } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -79,12 +79,8 @@ export function ForgotPasswordForm() {
 
       {step === "sent" && (
         <div className="space-y-6 text-center">
-          <div className="flex justify-center">
-            <CheckCircle className="h-16 w-16 text-green-500" />
-          </div>
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              {tForgot("linkSentTo")}{" "}
               <span className="font-medium">{email}</span>
             </p>
             <p className="text-xs text-muted-foreground">

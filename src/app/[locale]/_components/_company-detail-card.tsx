@@ -18,6 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDate } from "@/lib/utils/format-date";
+import { toUpperCase, capitalizeWords } from "@/lib/utils/text-format";
 import {
   Edit,
   Save,
@@ -72,6 +73,7 @@ export function CompanyDetailCard({
   const locale = (params.locale as SupportedLocale) || "vi";
   const t = useTranslations("companies");
   const tCommon = useTranslations("common");
+  const tValidation = useTranslations("auth.validation");
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -117,17 +119,47 @@ export function CompanyDetailCard({
     }
   }, [autoAddress, isEditing]);
 
+  // Kiểm tra ký tự CJK (Nhật, Trung, Hàn)
+  const hasCJKCharacters = (text: string): boolean => {
+    return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]/.test(text);
+  };
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = t("validation.nameRequired");
+
+    // Company name: required, min 3 chars
+    if (!formData.name.trim()) {
+      newErrors.name = t("validation.nameRequired");
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = tValidation("companyNameMinLength");
+    }
+
+    // Owner name: required, romaji only, min 2 chars
+    if (!formData.ownerName.trim()) {
+      newErrors.ownerName = t("validation.ownerNameRequired");
+    } else if (hasCJKCharacters(formData.ownerName)) {
+      newErrors.ownerName = tValidation("ownerNameRomajiOnly");
+    } else if (formData.ownerName.trim().length < 2) {
+      newErrors.ownerName = tValidation("ownerNameMinLength");
+    }
+
+    // Email validation
     const emailError = validateEmail(formData.email);
     if (emailError) newErrors.email = emailError;
+
+    // Phone validation
     if (formData.phone) {
       const phoneError = validatePhone(formData.phone);
       if (phoneError) newErrors.phone = phoneError;
     }
-    if (!formData.ownerName.trim())
-      newErrors.ownerName = t("validation.ownerNameRequired");
+
+    // Address: required, min 5 chars
+    if (!formData.address.trim()) {
+      newErrors.address = tValidation("addressRequired");
+    } else if (formData.address.trim().length < 5) {
+      newErrors.address = tValidation("addressMinLength");
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -294,9 +326,10 @@ export function CompanyDetailCard({
               <Label className="text-xs">{t("form.name")}</Label>
               <ClearableInput
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, name: e.target.value }))
-                }
+                onChange={(e) => {
+                  const value = toUpperCase(e.target.value);
+                  setFormData((prev) => ({ ...prev, name: value }));
+                }}
                 onClear={() => setFormData((prev) => ({ ...prev, name: "" }))}
                 disabled={!isEditing}
                 icon={<Building2 />}
@@ -310,12 +343,10 @@ export function CompanyDetailCard({
               <Label className="text-xs">{t("form.ownerName")}</Label>
               <ClearableInput
                 value={formData.ownerName}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    ownerName: e.target.value,
-                  }))
-                }
+                onChange={(e) => {
+                  const value = capitalizeWords(e.target.value);
+                  setFormData((prev) => ({ ...prev, ownerName: value }));
+                }}
                 onClear={() =>
                   setFormData((prev) => ({ ...prev, ownerName: "" }))
                 }
@@ -416,6 +447,11 @@ export function CompanyDetailCard({
                 icon={loading ? <Spinner /> : <MapPin />}
                 className="h-9"
               />
+              {errors.address && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.address}
+                </p>
+              )}
             </div>
           </div>
 

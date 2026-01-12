@@ -100,13 +100,23 @@ export async function resetPassword(
 }
 
 /**
+ * Response từ API check-domain
+ */
+export interface DomainAvailabilityResponse {
+  domain: string;
+  available: boolean;
+  /** Lý do không khả dụng: INVALID_FORMAT, RESERVED, ALREADY_EXISTS */
+  reason?: string;
+}
+
+/**
  * API kiểm tra tenant domain có khả dụng không
  * @client-only - Chỉ sử dụng được ở client side
  */
 export async function checkTenantDomainAvailability(
   domain: string,
-): Promise<{ available: boolean }> {
-  return apiClient.get<{ available: boolean }>(
+): Promise<DomainAvailabilityResponse> {
+  return apiClient.get<DomainAvailabilityResponse>(
     `/api/auth/check-domain?domain=${encodeURIComponent(domain)}`,
   );
 }

@@ -11,9 +11,18 @@ import {
   getDefaultClassNames,
   type DayButton,
 } from "react-day-picker";
+import { vi, enUS, ja } from "date-fns/locale";
+import { useLocale } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
+
+// Map locale code to date-fns locale
+const localeMap = {
+  vi: vi,
+  en: enUS,
+  ja: ja,
+};
 
 function Calendar({
   className,
@@ -23,25 +32,32 @@ function Calendar({
   buttonVariant = "ghost",
   formatters,
   components,
+  locale: localeProp,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>["variant"];
 }) {
   const defaultClassNames = getDefaultClassNames();
 
+  // Lấy locale từ next-intl nếu không được truyền vào
+  const nextIntlLocale = useLocale() as keyof typeof localeMap;
+  const locale = localeProp || localeMap[nextIntlLocale] || vi;
+  const localeCode = (locale as { code?: string })?.code || "vi";
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+        "bg-background group/calendar p-3 [--cell-size:--spacing(8)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className,
       )}
       captionLayout={captionLayout}
+      locale={locale}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString("default", { month: "short" }),
+          date.toLocaleString(localeCode, { month: "short" }),
         ...formatters,
       }}
       classNames={{

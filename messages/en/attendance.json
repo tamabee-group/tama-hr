@@ -38,7 +38,8 @@
     "lateMinutes": "Late",
     "earlyLeaveMinutes": "Early Leave",
     "breakDuration": "Break Duration",
-    "netHours": "Net Hours"
+    "netHours": "Net Hours",
+    "break": "Break"
   },
   "status": {
     "notCheckedIn": "Not Checked In",
@@ -161,7 +162,9 @@
     "approveConfirm": "Approve this adjustment request?",
     "requestHistory": "Adjustment Request History",
     "approverComment": "Approver Comment",
-    "hasPendingRequest": "There is already a pending request"
+    "hasPendingRequest": "There is already a pending request",
+    "departmentManager": "Department Manager",
+    "defaultApproverHint": "Default: {name} (your department manager)"
   },
   "filter": {
     "dateRange": "Date Range",

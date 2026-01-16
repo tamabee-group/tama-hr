@@ -68,5 +68,13 @@
   "TENANT_DOMAIN_RESERVED": "This domain is reserved.",
   "TENANT_PROVISIONING_FAILED": "Failed to create company database. Please try again.",
   "TENANT_NOT_FOUND": "Company does not exist or has been deleted.",
-  "USER_CREATION_FAILED": "Failed to create user account. Please try again."
+  "USER_CREATION_FAILED": "Failed to create user account. Please try again.",
+  "DEPARTMENT_NOT_FOUND": "Department not found.",
+  "DEPARTMENT_CODE_EXISTS": "Department code already exists.",
+  "DEPARTMENT_NAME_REQUIRED": "Department name is required.",
+  "DEPARTMENT_CODE_REQUIRED": "Department code is required.",
+  "DEPARTMENT_HAS_EMPLOYEES": "Cannot delete department with employees.",
+  "DEPARTMENT_HAS_CHILDREN": "Cannot delete department with sub-departments.",
+  "DEPARTMENT_CIRCULAR_REFERENCE": "Cannot create circular reference in department structure.",
+  "DEPARTMENT_MANAGER_NOT_FOUND": "Department manager not found."
 }

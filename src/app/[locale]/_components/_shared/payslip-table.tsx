@@ -27,7 +27,7 @@ interface PayslipTableProps {
 
 /**
  * Shared component hiển thị danh sách payslip dạng table
- * Dùng chung cho /employee/payroll và /company/employees/[id]/payroll
+ * Dùng chung cho /employee/payroll và /company/employees/[id]?tab=salary
  */
 export function PayslipTable({
   payslips,

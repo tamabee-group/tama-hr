@@ -68,5 +68,13 @@
   "TENANT_DOMAIN_RESERVED": "Tên miền này đã được đặt trước.",
   "TENANT_PROVISIONING_FAILED": "Không thể tạo cơ sở dữ liệu cho công ty. Vui lòng thử lại.",
   "TENANT_NOT_FOUND": "Công ty không tồn tại hoặc đã bị xóa.",
-  "USER_CREATION_FAILED": "Không thể tạo tài khoản người dùng. Vui lòng thử lại."
+  "USER_CREATION_FAILED": "Không thể tạo tài khoản người dùng. Vui lòng thử lại.",
+  "DEPARTMENT_NOT_FOUND": "Không tìm thấy phòng ban.",
+  "DEPARTMENT_CODE_EXISTS": "Mã phòng ban đã tồn tại.",
+  "DEPARTMENT_NAME_REQUIRED": "Tên phòng ban không được để trống.",
+  "DEPARTMENT_CODE_REQUIRED": "Mã phòng ban không được để trống.",
+  "DEPARTMENT_HAS_EMPLOYEES": "Không thể xóa phòng ban có nhân viên.",
+  "DEPARTMENT_HAS_CHILDREN": "Không thể xóa phòng ban có phòng ban con.",
+  "DEPARTMENT_CIRCULAR_REFERENCE": "Không thể tạo vòng lặp trong cấu trúc phòng ban.",
+  "DEPARTMENT_MANAGER_NOT_FOUND": "Không tìm thấy người quản lý phòng ban."
 }

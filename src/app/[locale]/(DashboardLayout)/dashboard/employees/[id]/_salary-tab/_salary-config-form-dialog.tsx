@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -410,6 +411,9 @@ export function SalaryConfigFormDialog({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isEditing ? t("edit") : t("create")}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {isEditing ? t("edit") : t("create")}
+          </DialogDescription>
         </DialogHeader>
 
         {!showConfirm ? (

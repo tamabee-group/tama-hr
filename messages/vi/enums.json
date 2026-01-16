@@ -34,6 +34,12 @@
     "FEMALE": "Nữ",
     "OTHER": "Khác"
   },
+  "maritalStatus": {
+    "SINGLE": "Độc thân",
+    "MARRIED": "Đã kết hôn",
+    "DIVORCED": "Đã ly hôn",
+    "WIDOWED": "Góa"
+  },
   "language": {
     "vi": "Tiếng Việt",
     "en": "English",

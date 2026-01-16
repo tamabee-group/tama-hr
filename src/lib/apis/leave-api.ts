@@ -25,6 +25,7 @@ export interface CreateLeaveRequest {
   startDate: string;
   endDate: string;
   reason: string;
+  approverId?: number;
 }
 
 export interface RejectLeaveRequest {

@@ -19,11 +19,7 @@ import {
 import { SelectWithIcon } from "@/components/ui/select-with-icon";
 import { SelectItem } from "@/components/ui/select";
 import { NextPage } from "next";
-import {
-  capitalizeWords,
-  toLowerCase,
-  toUpperCase,
-} from "@/lib/utils/text-format";
+
 import { sendVerificationCode } from "@/lib/apis/auth";
 import { useState, useCallback } from "react";
 import type { RegisterFormData } from "@/types/register";
@@ -243,7 +239,7 @@ const Step1: NextPage<Props> = ({
               id="companyName"
               value={formData.companyName}
               onChange={(e) => {
-                const value = toUpperCase(e.target.value);
+                const value = e.target.value;
                 setFormData({ ...formData, companyName: value });
                 validateField("companyName", value);
                 setVerified(
@@ -257,6 +253,7 @@ const Step1: NextPage<Props> = ({
               onBlur={(e) => validateField("companyName", e.target.value)}
               icon={<Building2 />}
               placeholder={tRegister("companyNamePlaceholder")}
+              textTransform="uppercase"
             />
             {errors.companyName && (
               <p className="text-sm text-destructive mt-1">
@@ -280,7 +277,7 @@ const Step1: NextPage<Props> = ({
               id="ownerName"
               value={formData.ownerName}
               onChange={(e) => {
-                const value = capitalizeWords(e.target.value);
+                const value = e.target.value;
                 setFormData({ ...formData, ownerName: value });
                 validateField("ownerName", value);
               }}
@@ -288,6 +285,7 @@ const Step1: NextPage<Props> = ({
               onBlur={(e) => validateField("ownerName", e.target.value)}
               icon={<User />}
               placeholder={tRegister("ownerNamePlaceholder")}
+              textTransform="words"
             />
             {errors.ownerName && (
               <p className="text-sm text-destructive mt-1">
@@ -308,6 +306,7 @@ const Step1: NextPage<Props> = ({
               onBlur={(e) => validateField("phone", e.target.value)}
               icon={<Phone />}
               placeholder={tRegister("phonePlaceholder")}
+              textTransform="none"
             />
             {errors.phone && (
               <p className="text-sm text-destructive mt-1">{errors.phone}</p>
@@ -320,7 +319,7 @@ const Step1: NextPage<Props> = ({
               type="email"
               value={formData.email}
               onChange={(e) => {
-                const value = toLowerCase(e.target.value);
+                const value = e.target.value;
                 setFormData({ ...formData, email: value, otp: "" });
                 validateField("email", value);
                 setVerified(
@@ -334,6 +333,7 @@ const Step1: NextPage<Props> = ({
               onBlur={(e) => validateField("email", e.target.value)}
               icon={<Mail />}
               placeholder={tRegister("emailPlaceholder")}
+              textTransform="lowercase"
             />
             {errors.email && (
               <p className="text-sm text-destructive mt-1">{errors.email}</p>
@@ -409,6 +409,7 @@ const Step1: NextPage<Props> = ({
               icon={<Milestone />}
               placeholder={tRegister("zipcodePlaceholder")}
               maxLength={getZipcodeLength(localeToRegion(formData.locale))}
+              textTransform="none"
             />
           </div>
           <div className="md:col-span-2">

@@ -34,6 +34,12 @@
     "FEMALE": "Female",
     "OTHER": "Other"
   },
+  "maritalStatus": {
+    "SINGLE": "Single",
+    "MARRIED": "Married",
+    "DIVORCED": "Divorced",
+    "WIDOWED": "Widowed"
+  },
   "language": {
     "vi": "Vietnamese",
     "en": "English",

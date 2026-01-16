@@ -72,6 +72,10 @@
     "activateSuccess": "Kích hoạt người dùng thành công",
     "deactivateSuccess": "Vô hiệu hóa người dùng thành công"
   },
+  "confirmDelete": "Xác nhận xóa nhân viên",
+  "deleteWarning": "Bạn có chắc muốn xóa nhân viên {name}? Hành động này không thể hoàn tác và sẽ xóa tất cả dữ liệu liên quan.",
+  "deleteSuccess": "Xóa nhân viên thành công",
+  "deleteError": "Không thể xóa nhân viên",
   "dialog": {
     "deleteTitle": "Xóa người dùng",
     "deleteDescription": "Xóa người dùng này? Không thể hoàn tác.",

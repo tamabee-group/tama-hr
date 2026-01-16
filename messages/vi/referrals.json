@@ -2,7 +2,16 @@
   "title": "Công ty đã giới thiệu",
   "description": "Công ty bạn giới thiệu và trạng thái hoa hồng",
   "searchPlaceholder": "Tìm kiếm theo tên công ty...",
-  "noCompanies": "Bạn chưa giới thiệu công ty nào",
+  "noCompanies": "Chưa giới thiệu công ty nào",
+  "header": {
+    "referralCode": "Mã giới thiệu",
+    "commissionInfo": "Thông tin hoa hồng",
+    "commissionAmount": "Hoa hồng giới thiệu",
+    "bonusMonths": "Miễn phí thêm cho công ty",
+    "months": "tháng",
+    "hintTitle": "Quy định nhận hoa hồng",
+    "hintContent": "Bạn sẽ nhận {amount} hoa hồng cho mỗi công ty được giới thiệu thành công. Hoa hồng sẽ được thanh toán khi công ty đã sử dụng dịch vụ và thanh toán đầy đủ."
+  },
   "summary": {
     "totalReferrals": "Tổng công ty giới thiệu",
     "pendingAmount": "Chờ đủ điều kiện",
@@ -21,10 +30,14 @@
   },
   "detail": {
     "title": "Chi tiết công ty",
+    "description": "Thông tin chi tiết về công ty được giới thiệu",
     "companyInfo": "Thông tin công ty",
     "companyName": "Tên công ty",
     "owner": "Chủ sở hữu",
+    "email": "Email",
+    "phone": "Số điện thoại",
     "plan": "Gói dịch vụ",
+    "planExpiry": "Hạn gói",
     "status": "Trạng thái",
     "financialInfo": "Thông tin tài chính",
     "currentBalance": "Số dư hiện tại",

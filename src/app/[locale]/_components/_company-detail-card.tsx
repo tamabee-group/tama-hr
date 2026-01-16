@@ -18,7 +18,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { formatDate } from "@/lib/utils/format-date";
-import { toUpperCase, capitalizeWords } from "@/lib/utils/text-format";
 import {
   Edit,
   Save,
@@ -327,13 +326,13 @@ export function CompanyDetailCard({
               <ClearableInput
                 value={formData.name}
                 onChange={(e) => {
-                  const value = toUpperCase(e.target.value);
-                  setFormData((prev) => ({ ...prev, name: value }));
+                  setFormData((prev) => ({ ...prev, name: e.target.value }));
                 }}
                 onClear={() => setFormData((prev) => ({ ...prev, name: "" }))}
                 disabled={!isEditing}
                 icon={<Building2 />}
                 className="h-9"
+                textTransform="uppercase"
               />
               {errors.name && (
                 <p className="text-xs text-destructive mt-1">{errors.name}</p>
@@ -344,8 +343,10 @@ export function CompanyDetailCard({
               <ClearableInput
                 value={formData.ownerName}
                 onChange={(e) => {
-                  const value = capitalizeWords(e.target.value);
-                  setFormData((prev) => ({ ...prev, ownerName: value }));
+                  setFormData((prev) => ({
+                    ...prev,
+                    ownerName: e.target.value,
+                  }));
                 }}
                 onClear={() =>
                   setFormData((prev) => ({ ...prev, ownerName: "" }))
@@ -353,6 +354,7 @@ export function CompanyDetailCard({
                 disabled={!isEditing}
                 icon={<User />}
                 className="h-9"
+                textTransform="words"
               />
               {errors.ownerName && (
                 <p className="text-xs text-destructive mt-1">
@@ -391,6 +393,7 @@ export function CompanyDetailCard({
                 disabled={!isEditing}
                 icon={<Mail />}
                 className="h-9"
+                type="email"
               />
               {errors.email && (
                 <p className="text-xs text-destructive mt-1">{errors.email}</p>
@@ -407,6 +410,7 @@ export function CompanyDetailCard({
                 disabled={!isEditing}
                 icon={<Phone />}
                 className="h-9"
+                textTransform="none"
               />
               {errors.phone && (
                 <p className="text-xs text-destructive mt-1">{errors.phone}</p>
@@ -426,6 +430,7 @@ export function CompanyDetailCard({
                 placeholder={t("form.zipcodePlaceholder")}
                 icon={<Milestone />}
                 className="h-9"
+                textTransform="none"
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">

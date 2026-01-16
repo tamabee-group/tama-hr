@@ -95,6 +95,7 @@ export function LoginDialog({
             <InputGroup>
               <InputGroupInput
                 id="dialog-identifier"
+                type="email"
                 value={formData.identifier}
                 onChange={(e) =>
                   setFormData({ ...formData, identifier: e.target.value })
@@ -114,6 +115,7 @@ export function LoginDialog({
               <InputGroupInput
                 id="dialog-password"
                 type="password"
+                isPassword
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })

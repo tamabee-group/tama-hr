@@ -1,0 +1,76 @@
+{
+  "tabs": {
+    "overview": "Overview",
+    "personalInfo": "Personal Info",
+    "attendance": "Attendance",
+    "salary": "Salary",
+    "contracts": "Contracts",
+    "leave": "Leave",
+    "documents": "Documents",
+    "referrals": "Referrals"
+  },
+  "editProfile": "Edit Profile",
+  "actions": {
+    "sendEmail": "Send Email",
+    "voiceCall": "Voice Call"
+  },
+  "overview": {
+    "statistics": "Statistics",
+    "presentDays": "Present Days",
+    "totalHours": "Total Hours",
+    "overtime": "Overtime",
+    "lateEarly": "Late/Early",
+    "attendanceActivity": "Attendance Activity",
+    "viewAllLogs": "View All",
+    "attendanceAlerts": "Attendance Alerts",
+    "noAlerts": "No alerts",
+    "alertBreakNotCompliant": "Insufficient break time",
+    "alertLate": "Late by {minutes} min",
+    "alertEarlyLeave": "Left early by {minutes} min",
+    "alertMissingCheckout": "Missing checkout",
+    "salaryChart": "Salary Chart",
+    "noSalaryData": "No salary data",
+    "noData": "No data available"
+  },
+  "personalInfo": {
+    "basicInfo": "Basic Information",
+    "workInfo": "Work Information",
+    "contactInfo": "Contact Information",
+    "bankDetails": "Bank Details",
+    "emergencyContact": "Emergency Contact"
+  },
+  "personalInfoSections": {
+    "general": "General",
+    "contact": "Contact",
+    "bank": "Bank",
+    "family": "Family",
+    "emergency": "Emergency"
+  },
+  "documents": {
+    "title": "Documents",
+    "uploadNew": "Upload",
+    "gridView": "Grid",
+    "listView": "List",
+    "filterByType": "Filter by type",
+    "allTypes": "All",
+    "noDocuments": "No documents",
+    "view": "View",
+    "download": "Download",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this document?",
+    "uploadSuccess": "Upload successful",
+    "deleteSuccess": "Delete successful",
+    "dropOrClick": "Drag and drop or click to select file",
+    "allowedTypes": "Allowed types",
+    "maxSize": "Max size",
+    "invalidFileType": "File type not supported",
+    "fileTooLarge": "File exceeds maximum size (10MB)"
+  },
+  "documentTypes": {
+    "CONTRACT": "Contract",
+    "ID_CARD": "ID Card",
+    "CERTIFICATE": "Certificate",
+    "RESUME": "Resume",
+    "OTHER": "Other"
+  }
+}

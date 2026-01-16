@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -24,15 +25,18 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
+import { departmentApi } from "@/lib/apis/department-api";
 import { getApprovers, ApproverInfo } from "@/lib/apis/company-employees";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
+import { useAuth } from "@/hooks/use-auth";
 import type {
   AttendanceRecord,
   UnifiedAttendanceRecord,
   BreakRecord,
 } from "@/types/attendance-records";
+import type { DefaultApprover } from "@/types/department";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 // ============================================
@@ -149,18 +153,34 @@ export function AdjustmentDialog({
   const [errors, setErrors] = React.useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [approvers, setApprovers] = React.useState<ApproverInfo[]>([]);
+  const [defaultApprover, setDefaultApprover] =
+    React.useState<DefaultApprover | null>(null);
   const [isLoadingApprovers, setIsLoadingApprovers] = React.useState(false);
+  const { user } = useAuth();
 
-  // Fetch approvers khi dialog mở
+  // Fetch approvers và default approver khi dialog mở
+  const prevOpenRef = React.useRef(false);
   React.useEffect(() => {
-    if (open) {
+    if (open && !prevOpenRef.current && user?.id) {
       setIsLoadingApprovers(true);
-      getApprovers()
-        .then((data) => setApprovers(data))
+      Promise.all([getApprovers(), departmentApi.getDefaultApprover(user.id)])
+        .then(([approverList, defaultApproverData]) => {
+          setApprovers(approverList);
+          setDefaultApprover(defaultApproverData);
+
+          // Auto-select default approver nếu có và chưa chọn
+          if (defaultApproverData) {
+            setFormData((prev) => ({
+              ...prev,
+              assignedTo: String(defaultApproverData.id),
+            }));
+          }
+        })
         .catch((err) => console.error("Error fetching approvers:", err))
         .finally(() => setIsLoadingApprovers(false));
     }
-  }, [open]);
+    prevOpenRef.current = open;
+  }, [open, user?.id]);
 
   // Reset form khi dialog mở hoặc record thay đổi
   React.useEffect(() => {
@@ -185,11 +205,11 @@ export function AdjustmentDialog({
           isEditing: false,
         })),
         reason: "",
-        assignedTo: "",
+        assignedTo: defaultApprover ? String(defaultApprover.id) : "",
       });
       setErrors({});
     }
-  }, [open, record]);
+  }, [open, record, defaultApprover]);
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -316,9 +336,7 @@ export function AdjustmentDialog({
       <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("adjustment.title")}</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            {formatDate(workDate, locale)}
-          </p>
+          <DialogDescription>{formatDate(workDate, locale)}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
@@ -492,6 +510,11 @@ export function AdjustmentDialog({
                     <SelectItem key={approver.id} value={String(approver.id)}>
                       {approver.name} (
                       {getEnumLabel("userRole", approver.role, tEnums)})
+                      {defaultApprover?.id === approver.id && (
+                        <span className="text-muted-foreground ml-1">
+                          - {t("adjustment.departmentManager")}
+                        </span>
+                      )}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -499,6 +522,13 @@ export function AdjustmentDialog({
             )}
             {errors.assignedTo && (
               <p className="text-xs text-destructive">{errors.assignedTo}</p>
+            )}
+            {defaultApprover && (
+              <p className="text-xs text-muted-foreground">
+                {t("adjustment.defaultApproverHint", {
+                  name: defaultApprover.name,
+                })}
+              </p>
             )}
           </div>
         </div>

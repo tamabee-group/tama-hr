@@ -23,6 +23,7 @@ interface ColumnLabels {
   email: string;
   role: string;
   phone: string;
+  department: string;
   status: string;
   createdAt: string;
   profile: string;
@@ -56,13 +57,15 @@ export function createColumns(labels: ColumnLabels): ColumnDef<User>[] {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
-            <Link href={`/dashboard/employees/${row.original.id}/attendance`}>
+            <Link
+              href={`/dashboard/employees/${row.original.id}?tab=attendance`}
+            >
               <DropdownMenuItem>
                 <Calendar className="h-4 w-4" />
                 {labels.viewAttendance}
               </DropdownMenuItem>
             </Link>
-            <Link href={`/dashboard/employees/${row.original.id}/payroll`}>
+            <Link href={`/dashboard/employees/${row.original.id}?tab=salary`}>
               <DropdownMenuItem>
                 <Wallet className="h-4 w-4" />
                 {labels.viewPayroll}
@@ -111,6 +114,11 @@ export function createColumns(labels: ColumnLabels): ColumnDef<User>[] {
         const role = row.getValue("role") as UserRole;
         return labels.roleLabels[role] || role;
       },
+    },
+    {
+      accessorKey: "departmentName",
+      header: labels.department,
+      cell: ({ row }) => row.original.departmentName || "-",
     },
     {
       id: "phone",

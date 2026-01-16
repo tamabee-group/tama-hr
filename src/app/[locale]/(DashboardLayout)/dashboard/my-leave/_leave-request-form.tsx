@@ -27,9 +27,13 @@ import {
 import { cn } from "@/lib/utils";
 
 import { leaveApi, CreateLeaveRequest } from "@/lib/apis/leave-api";
+import { departmentApi } from "@/lib/apis/department-api";
+import { getApprovers, ApproverInfo } from "@/lib/apis/company-employees";
 import { LeaveBalance } from "@/types/attendance-records";
+import { DefaultApprover } from "@/types/department";
 import { LEAVE_TYPES, LeaveType } from "@/types/attendance-enums";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * Component form tạo yêu cầu nghỉ phép
@@ -40,17 +44,25 @@ export function LeaveRequestForm() {
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
   const tErrors = useTranslations("errors");
+  const { user } = useAuth();
 
   // Form state
   const [leaveType, setLeaveType] = useState<LeaveType | "">("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [reason, setReason] = useState("");
+  const [approverId, setApproverId] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Balance state
   const [balances, setBalances] = useState<LeaveBalance[]>([]);
   const [loadingBalance, setLoadingBalance] = useState(true);
+
+  // Approver state
+  const [approvers, setApprovers] = useState<ApproverInfo[]>([]);
+  const [defaultApprover, setDefaultApprover] =
+    useState<DefaultApprover | null>(null);
+  const [loadingApprovers, setLoadingApprovers] = useState(true);
 
   // Fetch leave balance
   const fetchBalance = useCallback(async () => {
@@ -65,9 +77,34 @@ export function LeaveRequestForm() {
     }
   }, []);
 
+  // Fetch approvers và default approver
+  const fetchApprovers = useCallback(async () => {
+    if (!user?.id) return;
+
+    setLoadingApprovers(true);
+    try {
+      const [approverList, defaultApproverData] = await Promise.all([
+        getApprovers(),
+        departmentApi.getDefaultApprover(user.id),
+      ]);
+      setApprovers(approverList);
+      setDefaultApprover(defaultApproverData);
+
+      // Auto-select default approver nếu có
+      if (defaultApproverData) {
+        setApproverId(defaultApproverData.id);
+      }
+    } catch (error) {
+      console.error("Failed to fetch approvers:", error);
+    } finally {
+      setLoadingApprovers(false);
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     fetchBalance();
-  }, [fetchBalance]);
+    fetchApprovers();
+  }, [fetchBalance, fetchApprovers]);
 
   // Calculate total days
   const totalDays =
@@ -100,6 +137,10 @@ export function LeaveRequestForm() {
       newErrors.reason = tCommon("checkInfo");
     }
 
+    if (!approverId) {
+      newErrors.approver = tCommon("checkInfo");
+    }
+
     if (dateRange?.from && dateRange?.to && dateRange.from > dateRange.to) {
       newErrors.dateRange = t("messages.invalidDateRange");
     }
@@ -121,6 +162,7 @@ export function LeaveRequestForm() {
       startDate: format(dateRange!.from!, "yyyy-MM-dd"),
       endDate: format(dateRange!.to!, "yyyy-MM-dd"),
       reason: reason.trim(),
+      approverId: approverId || undefined,
     };
 
     try {
@@ -132,6 +174,10 @@ export function LeaveRequestForm() {
       setLeaveType("");
       setDateRange(undefined);
       setReason("");
+      // Giữ lại approverId mặc định
+      if (defaultApprover) {
+        setApproverId(defaultApprover.id);
+      }
       setErrors({});
 
       // Refresh balance
@@ -300,6 +346,51 @@ export function LeaveRequestForm() {
             <span className="text-xs sm:text-sm text-destructive">
               {errors.reason}
             </span>
+          )}
+        </div>
+
+        {/* Approver - Full width */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label className="text-sm">{t("form.approver")}</Label>
+          <Select
+            value={approverId?.toString() || ""}
+            onValueChange={(value) => {
+              setApproverId(Number(value));
+              if (errors.approver)
+                setErrors((prev) => ({ ...prev, approver: "" }));
+            }}
+            disabled={loadingApprovers}
+          >
+            <SelectTrigger
+              className={cn(
+                "w-full h-10 sm:h-9",
+                errors.approver && "border-destructive",
+              )}
+            >
+              <SelectValue placeholder={t("form.approverPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              {approvers.map((approver) => (
+                <SelectItem key={approver.id} value={approver.id.toString()}>
+                  {approver.name}
+                  {defaultApprover?.id === approver.id && (
+                    <span className="text-muted-foreground ml-1">
+                      ({t("form.departmentManager")})
+                    </span>
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.approver && (
+            <span className="text-xs sm:text-sm text-destructive">
+              {errors.approver}
+            </span>
+          )}
+          {defaultApprover && (
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {t("form.defaultApproverHint", { name: defaultApprover.name })}
+            </p>
           )}
         </div>
 

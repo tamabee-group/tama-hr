@@ -28,6 +28,10 @@
     "endDate": "End Date",
     "reason": "Reason",
     "reasonPlaceholder": "Enter reason for leave...",
+    "approver": "Approver",
+    "approverPlaceholder": "Select approver...",
+    "departmentManager": "Department Manager",
+    "defaultApproverHint": "Default: {name} (your department manager)",
     "submit": "Submit Request"
   },
   "type": {

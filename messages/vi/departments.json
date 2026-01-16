@@ -1,0 +1,41 @@
+{
+  "title": "Quản lý phòng ban",
+  "description": "Quản lý cấu trúc phòng ban trong công ty",
+  "create": "Tạo phòng ban",
+  "edit": "Chỉnh sửa phòng ban",
+  "delete": "Xóa phòng ban",
+  "search": "Tìm kiếm phòng ban...",
+  "noData": "Chưa có phòng ban nào",
+  "viewEmployees": "Xem nhân viên",
+  "employeeList": "Danh sách nhân viên",
+  "noEmployees": "Chưa có nhân viên trong phòng ban này",
+  "fields": {
+    "name": "Tên phòng ban",
+    "code": "Mã phòng ban",
+    "description": "Mô tả",
+    "parent": "Phòng ban cha",
+    "manager": "Quản lý",
+    "employeeCount": "Số nhân viên"
+  },
+  "placeholders": {
+    "name": "Nhập tên phòng ban",
+    "code": "Nhập mã phòng ban",
+    "description": "Nhập mô tả",
+    "selectParent": "Chọn phòng ban cha",
+    "selectManager": "Chọn quản lý"
+  },
+  "messages": {
+    "createSuccess": "Tạo phòng ban thành công",
+    "updateSuccess": "Cập nhật phòng ban thành công",
+    "deleteSuccess": "Xóa phòng ban thành công",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa phòng ban này?"
+  },
+  "tree": {
+    "expand": "Mở rộng",
+    "collapse": "Thu gọn",
+    "noChildren": "Không có phòng ban con",
+    "expandAll": "Mở rộng tất cả",
+    "collapseAll": "Thu gọn tất cả",
+    "showingCount": "Hiển thị {count} phòng ban"
+  }
+}

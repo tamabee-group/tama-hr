@@ -113,6 +113,7 @@ export function LoginForm() {
             <InputGroup>
               <InputGroupInput
                 id="identifier"
+                type="email"
                 value={formData.identifier}
                 onChange={(e) =>
                   setFormData({ ...formData, identifier: e.target.value })
@@ -132,6 +133,7 @@ export function LoginForm() {
               <InputGroupInput
                 id="password"
                 type="password"
+                isPassword
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })

@@ -46,7 +46,6 @@ import {
 import { useZipcode } from "@/hooks/use-zipcode";
 import { ImageCropDialog } from "@/app/[locale]/_components/_image-crop-dialog";
 import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
-import { capitalizeWords } from "@/lib/utils/text-format";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { User } from "@/types/user";
@@ -510,12 +509,13 @@ export function BaseUserProfileForm({
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  name: capitalizeWords(e.target.value),
+                  name: e.target.value,
                 }))
               }
               onClear={() => setFormData((prev) => ({ ...prev, name: "" }))}
               disabled={!isEditing}
               icon={<UserIcon />}
+              textTransform="words"
             />
             {errors.name && (
               <p className="text-sm text-destructive mt-1">{errors.name}</p>
@@ -532,6 +532,7 @@ export function BaseUserProfileForm({
               onClear={() => setFormData((prev) => ({ ...prev, email: "" }))}
               disabled={!isEditing}
               icon={<Mail />}
+              type="email"
             />
             {errors.email && (
               <p className="text-sm text-destructive mt-1">{errors.email}</p>
@@ -568,6 +569,7 @@ export function BaseUserProfileForm({
               onClear={() => setFormData((prev) => ({ ...prev, phone: "" }))}
               disabled={!isEditing}
               icon={<Phone />}
+              textTransform="none"
             />
             {errors.phone && (
               <p className="text-sm text-destructive mt-1">{errors.phone}</p>
@@ -605,6 +607,7 @@ export function BaseUserProfileForm({
               disabled={!isEditing}
               placeholder={t("zipCodePlaceholder")}
               icon={<Milestone />}
+              textTransform="none"
             />
           </div>
 

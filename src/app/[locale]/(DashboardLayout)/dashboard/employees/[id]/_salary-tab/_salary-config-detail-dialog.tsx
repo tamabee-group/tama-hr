@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -181,6 +182,9 @@ export function SalaryConfigDetailDialog({
                 {status.label}
               </Badge>
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("detailTitle")}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">

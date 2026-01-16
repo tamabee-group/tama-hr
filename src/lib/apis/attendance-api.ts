@@ -202,9 +202,10 @@ export async function getEmployeeAttendanceByMonth(
   year: number,
   month: number,
 ): Promise<AttendanceRecord[]> {
-  return apiClient.get<AttendanceRecord[]>(
+  const response = await apiClient.get<PaginatedResponse<AttendanceRecord>>(
     `/api/company/employees/${employeeId}/attendance/month?year=${year}&month=${month}`,
   );
+  return response.content || [];
 }
 
 /**

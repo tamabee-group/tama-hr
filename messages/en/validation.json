@@ -14,5 +14,6 @@
   "integer": "Must be a whole number.",
   "pattern": "Invalid format.",
   "genderRequired": "Please select a gender.",
-  "roleRequired": "Please select a role."
+  "roleRequired": "Please select a role.",
+  "minAge": "Employee must be at least 15 years old according to labor law."
 }

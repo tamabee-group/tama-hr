@@ -31,6 +31,7 @@ export function DataTable<TData extends User, TValue>({
       email: t("table.email"),
       role: t("table.role"),
       phone: tCommon("phone"),
+      department: tCommon("department"),
       status: t("table.status"),
       createdAt: t("table.createdAt"),
       profile: t("table.profile"),
@@ -58,6 +59,7 @@ export function DataTable<TData extends User, TValue>({
         employeeCode: true,
         email: false,
         phone: false,
+        departmentName: false,
         status: true,
         createdAt: false,
       } as VisibilityState;
@@ -66,6 +68,7 @@ export function DataTable<TData extends User, TValue>({
       return {
         email: true,
         phone: false,
+        departmentName: false,
         createdAt: false,
       } as VisibilityState;
     }

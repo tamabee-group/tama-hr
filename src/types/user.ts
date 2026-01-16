@@ -67,6 +67,8 @@ export interface User {
   companyStatus?: "ACTIVE" | "INACTIVE"; // Trạng thái công ty
   tenantDomain: string; // "tamabee" cho Tamabee users, subdomain cho tenant users
   planId: number;
+  departmentId?: number; // ID phòng ban
+  departmentName?: string; // Tên phòng ban
   profileCompleteness: number;
   createdAt: string;
   updatedAt: string;

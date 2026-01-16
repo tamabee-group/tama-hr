@@ -1,0 +1,76 @@
+{
+  "tabs": {
+    "overview": "概要",
+    "personalInfo": "個人情報",
+    "attendance": "勤怠",
+    "salary": "給与",
+    "contracts": "契約",
+    "leave": "休暇",
+    "documents": "書類",
+    "referrals": "紹介"
+  },
+  "editProfile": "編集",
+  "actions": {
+    "sendEmail": "メール送信",
+    "voiceCall": "電話"
+  },
+  "overview": {
+    "statistics": "統計",
+    "presentDays": "出勤日数",
+    "totalHours": "総時間",
+    "overtime": "残業",
+    "lateEarly": "遅刻/早退",
+    "attendanceActivity": "勤怠履歴",
+    "viewAllLogs": "すべて表示",
+    "attendanceAlerts": "勤怠アラート",
+    "noAlerts": "アラートなし",
+    "alertBreakNotCompliant": "休憩時間不足",
+    "alertLate": "{minutes}分遅刻",
+    "alertEarlyLeave": "{minutes}分早退",
+    "alertMissingCheckout": "退勤未打刻",
+    "salaryChart": "給与推移",
+    "noSalaryData": "給与データがありません",
+    "noData": "データがありません"
+  },
+  "personalInfo": {
+    "basicInfo": "基本情報",
+    "workInfo": "勤務情報",
+    "contactInfo": "連絡先情報",
+    "bankDetails": "銀行情報",
+    "emergencyContact": "緊急連絡先"
+  },
+  "personalInfoSections": {
+    "general": "基本情報",
+    "contact": "連絡先",
+    "bank": "銀行",
+    "family": "家族",
+    "emergency": "緊急連絡先"
+  },
+  "documents": {
+    "title": "書類",
+    "uploadNew": "アップロード",
+    "gridView": "グリッド",
+    "listView": "リスト",
+    "filterByType": "種類で絞り込み",
+    "allTypes": "すべて",
+    "noDocuments": "書類がありません",
+    "view": "表示",
+    "download": "ダウンロード",
+    "delete": "削除",
+    "confirmDelete": "この書類を削除してもよろしいですか？",
+    "uploadSuccess": "アップロード成功",
+    "deleteSuccess": "削除成功",
+    "dropOrClick": "ドラッグ＆ドロップまたはクリックしてファイルを選択",
+    "allowedTypes": "対応形式",
+    "maxSize": "最大サイズ",
+    "invalidFileType": "対応していないファイル形式です",
+    "fileTooLarge": "ファイルサイズが上限を超えています（10MB）"
+  },
+  "documentTypes": {
+    "CONTRACT": "契約書",
+    "ID_CARD": "身分証明書",
+    "CERTIFICATE": "資格証明書",
+    "RESUME": "履歴書",
+    "OTHER": "その他"
+  }
+}

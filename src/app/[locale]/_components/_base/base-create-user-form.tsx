@@ -17,7 +17,6 @@ import {
   validatePhone,
   validateRequired,
 } from "@/lib/validation";
-import { capitalizeWords, toLowerCase } from "@/lib/utils/text-format";
 import { toast } from "sonner";
 import {
   Mail,
@@ -89,6 +88,7 @@ export function BaseCreateUserForm({
   const tEnums = useTranslations("enums");
   const tValidation = useTranslations("validation");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateUserFormData>({
     email: "",
     name: "",
@@ -131,6 +131,23 @@ export function BaseCreateUserForm({
       if (phoneError) newErrors.phone = phoneError;
     }
 
+    // Validate tuổi >= 15 theo luật lao động
+    if (formData.dateOfBirth) {
+      const birthDate = new Date(formData.dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+      if (age < 15) {
+        newErrors.dateOfBirth = tValidation("minAge");
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -155,6 +172,7 @@ export function BaseCreateUserForm({
 
     if (!validateForm()) return;
 
+    setIsSubmitting(true);
     const promise = onSubmit(formData);
 
     toast.promise(promise, {
@@ -173,6 +191,8 @@ export function BaseCreateUserForm({
         return err.message || tCommon("errorLoading");
       },
     });
+
+    promise.finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -199,13 +219,13 @@ export function BaseCreateUserForm({
               required
               value={formData.email}
               onChange={(e) => {
-                const value = toLowerCase(e.target.value);
-                setFormData({ ...formData, email: value });
+                setFormData({ ...formData, email: e.target.value });
                 if (errors.email) setErrors({ ...errors, email: "" });
               }}
               onClear={() => setFormData({ ...formData, email: "" })}
               icon={<Mail />}
               placeholder={t("form.emailPlaceholder")}
+              textTransform="lowercase"
             />
             {errors.email && (
               <p className="text-sm text-destructive mt-1">{errors.email}</p>
@@ -219,13 +239,13 @@ export function BaseCreateUserForm({
               required
               value={formData.name}
               onChange={(e) => {
-                const value = capitalizeWords(e.target.value);
-                setFormData({ ...formData, name: value });
+                setFormData({ ...formData, name: e.target.value });
                 if (errors.name) setErrors({ ...errors, name: "" });
               }}
               onClear={() => setFormData({ ...formData, name: "" })}
               icon={<User />}
               placeholder={t("form.namePlaceholder")}
+              textTransform="words"
             />
             {errors.name && (
               <p className="text-sm text-destructive mt-1">{errors.name}</p>
@@ -274,8 +294,15 @@ export function BaseCreateUserForm({
                   ...formData,
                   dateOfBirth: date ? date.toISOString().split("T")[0] : "",
                 });
+                if (errors.dateOfBirth)
+                  setErrors({ ...errors, dateOfBirth: "" });
               }}
             />
+            {errors.dateOfBirth && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.dateOfBirth}
+              </p>
+            )}
           </div>
 
           <div>
@@ -291,6 +318,7 @@ export function BaseCreateUserForm({
               onClear={() => setFormData({ ...formData, phone: "" })}
               icon={<Phone />}
               placeholder={t("form.phonePlaceholder")}
+              textTransform="none"
             />
             {errors.phone && (
               <p className="text-sm text-destructive mt-1">{errors.phone}</p>
@@ -310,6 +338,7 @@ export function BaseCreateUserForm({
               icon={<Milestone />}
               placeholder={t("form.zipCodePlaceholder")}
               maxLength={7}
+              textTransform="none"
             />
           </div>
 
@@ -370,11 +399,14 @@ export function BaseCreateUserForm({
               type="button"
               variant="outline"
               onClick={() => router.back()}
+              disabled={isSubmitting}
             >
               {tCommon("cancel")}
             </Button>
-            <Button type="submit">
-              {submitButtonText || tCommon("submit")}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? loadingText || tCommon("loading")
+                : submitButtonText || tCommon("submit")}
             </Button>
           </div>
         </form>

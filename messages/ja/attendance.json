@@ -38,7 +38,8 @@
     "lateMinutes": "遅刻",
     "earlyLeaveMinutes": "早退",
     "breakDuration": "休憩時間",
-    "netHours": "実働時間"
+    "netHours": "実働時間",
+    "break": "休憩"
   },
   "status": {
     "notCheckedIn": "未出勤",
@@ -161,7 +162,9 @@
     "approveConfirm": "この調整リクエストを承認してもよろしいですか？",
     "requestHistory": "調整リクエスト履歴",
     "approverComment": "承認者コメント",
-    "hasPendingRequest": "承認待ちのリクエストがあります"
+    "hasPendingRequest": "承認待ちのリクエストがあります",
+    "departmentManager": "部門マネージャー",
+    "defaultApproverHint": "デフォルト: {name} (あなたの部門マネージャー)"
   },
   "filter": {
     "dateRange": "期間",

@@ -117,3 +117,11 @@ export const COMMISSION_STATUS_COLORS: Record<
   ELIGIBLE: "info",
   PAID: "success",
 };
+
+// ============================================
+// Company Status Enums
+// ============================================
+
+export const COMPANY_STATUSES = ["ACTIVE", "INACTIVE"] as const;
+
+export type CompanyStatus = (typeof COMPANY_STATUSES)[number];

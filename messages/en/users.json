@@ -72,6 +72,10 @@
     "activateSuccess": "User activated successfully",
     "deactivateSuccess": "User deactivated successfully"
   },
+  "confirmDelete": "Confirm Delete Employee",
+  "deleteWarning": "Are you sure you want to delete employee {name}? This action cannot be undone and will delete all related data.",
+  "deleteSuccess": "Employee deleted successfully",
+  "deleteError": "Failed to delete employee",
   "dialog": {
     "deleteTitle": "Delete User",
     "deleteDescription": "Delete this user? Cannot be undone.",

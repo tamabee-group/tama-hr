@@ -14,5 +14,6 @@
   "integer": "Phải là số nguyên.",
   "pattern": "Định dạng không hợp lệ.",
   "genderRequired": "Vui lòng chọn giới tính.",
-  "roleRequired": "Vui lòng chọn vai trò."
+  "roleRequired": "Vui lòng chọn vai trò.",
+  "minAge": "Nhân viên phải từ 15 tuổi trở lên theo luật lao động."
 }

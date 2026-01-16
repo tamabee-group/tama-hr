@@ -771,7 +771,7 @@ export interface EmploymentContract {
 export interface EmploymentContractInput {
   contractType: ContractType;
   startDate: string;
-  endDate: string;
+  endDate?: string;
   salaryConfigId?: number;
   notes?: string;
 }

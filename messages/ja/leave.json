@@ -28,6 +28,10 @@
     "endDate": "終了日",
     "reason": "理由",
     "reasonPlaceholder": "休暇の理由を入力...",
+    "approver": "承認者",
+    "approverPlaceholder": "承認者を選択...",
+    "departmentManager": "部門マネージャー",
+    "defaultApproverHint": "デフォルト: {name} (あなたの部門マネージャー)",
     "submit": "申請を送信"
   },
   "type": {

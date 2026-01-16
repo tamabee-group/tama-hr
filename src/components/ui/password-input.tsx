@@ -22,6 +22,7 @@ export function PasswordInput({
       <InputGroupInput
         {...props}
         type={showPassword ? "text" : "password"}
+        isPassword
         className={cn(className)}
       />
       <InputGroupAddon>{icon ? icon : <Lock />}</InputGroupAddon>

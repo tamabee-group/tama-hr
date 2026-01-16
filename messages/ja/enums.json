@@ -34,6 +34,12 @@
     "FEMALE": "女性",
     "OTHER": "その他"
   },
+  "maritalStatus": {
+    "SINGLE": "未婚",
+    "MARRIED": "既婚",
+    "DIVORCED": "離婚",
+    "WIDOWED": "死別"
+  },
   "language": {
     "vi": "ベトナム語",
     "en": "英語",

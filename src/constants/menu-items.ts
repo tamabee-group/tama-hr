@@ -14,6 +14,7 @@ import {
   User,
   ClipboardList,
   CreditCard,
+  Network,
 } from "lucide-react";
 import type { UserRole } from "@/types/enums";
 
@@ -196,6 +197,13 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         labelKey: "sidebar.items.employees",
         icon: Users,
         href: "/dashboard/employees",
+        roles: MANAGEMENT_ROLES,
+      },
+      {
+        code: "departments",
+        labelKey: "sidebar.items.departments",
+        icon: Network,
+        href: "/dashboard/departments",
         roles: MANAGEMENT_ROLES,
       },
       {

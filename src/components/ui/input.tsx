@@ -2,7 +2,56 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+// Các kiểu transform text
+type TextTransform =
+  | "none"
+  | "capitalize"
+  | "words"
+  | "uppercase"
+  | "lowercase";
+
+// Hàm transform text theo kiểu
+function transformText(value: string, transform: TextTransform): string {
+  switch (transform) {
+    case "capitalize": // Viết hoa chữ cái đầu tiên trong ô
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    case "words": // Viết hoa chữ cái đầu mỗi từ
+      return value.replace(/\b\w/g, (char) => char.toUpperCase());
+    case "uppercase": // Viết hoa hết
+      return value.toUpperCase();
+    case "lowercase": // Viết thường hết
+      return value.toLowerCase();
+    default:
+      return value;
+  }
+}
+
+export interface InputProps extends React.ComponentProps<"input"> {
+  textTransform?: TextTransform;
+  isPassword?: boolean; // Đánh dấu đây là field password (dù type có thể là "text" khi show)
+}
+
+function Input({
+  className,
+  type,
+  textTransform = "capitalize", // Mặc định viết hoa chữ cái đầu tiên
+  isPassword,
+  onChange,
+  ...props
+}: InputProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Không transform nếu là email, password, hoặc field được đánh dấu là password
+    if (
+      textTransform !== "none" &&
+      type !== "email" &&
+      type !== "password" &&
+      !isPassword
+    ) {
+      e.target.value = transformText(e.target.value, textTransform);
+    }
+    onChange?.(e);
+  };
+
   return (
     <input
       type={type}
@@ -12,8 +61,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         "my-1.5",
-        className
+        className,
       )}
+      onChange={handleChange}
       {...props}
     />
   );

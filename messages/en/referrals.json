@@ -2,7 +2,16 @@
   "title": "Referred Companies",
   "description": "Companies you referred and commission status",
   "searchPlaceholder": "Search by company name...",
-  "noCompanies": "You haven't referred any companies yet",
+  "noCompanies": "No referred companies yet",
+  "header": {
+    "referralCode": "Referral Code",
+    "commissionInfo": "Commission Info",
+    "commissionAmount": "Commission per Referral",
+    "bonusMonths": "Bonus Free Months",
+    "months": "months",
+    "hintTitle": "Commission Rules",
+    "hintContent": "You will receive {amount} commission for each successfully referred company. Commission will be paid when the company has used the service and paid in full."
+  },
   "summary": {
     "totalReferrals": "Total Referred Companies",
     "pendingAmount": "Pending Eligibility",
@@ -21,10 +30,14 @@
   },
   "detail": {
     "title": "Company Details",
+    "description": "Detailed information about the referred company",
     "companyInfo": "Company Information",
     "companyName": "Company Name",
     "owner": "Owner",
+    "email": "Email",
+    "phone": "Phone",
     "plan": "Plan",
+    "planExpiry": "Plan Expiry",
     "status": "Status",
     "financialInfo": "Financial Information",
     "currentBalance": "Current Balance",

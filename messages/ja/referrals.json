@@ -3,6 +3,15 @@
   "description": "紹介した会社一覧とコミッション状況",
   "searchPlaceholder": "会社名で検索...",
   "noCompanies": "紹介した会社がまだありません",
+  "header": {
+    "referralCode": "紹介コード",
+    "commissionInfo": "コミッション情報",
+    "commissionAmount": "紹介1件あたりのコミッション",
+    "bonusMonths": "追加無料月数",
+    "months": "ヶ月",
+    "hintTitle": "コミッション規定",
+    "hintContent": "紹介が成功した会社1社につき{amount}のコミッションを受け取れます。会社がサービスを利用し、全額支払いが完了した時点でコミッションが支払われます。"
+  },
   "summary": {
     "totalReferrals": "紹介した会社数",
     "pendingAmount": "条件待ち",
@@ -21,10 +30,14 @@
   },
   "detail": {
     "title": "会社詳細",
+    "description": "紹介した会社の詳細情報",
     "companyInfo": "会社情報",
     "companyName": "会社名",
     "owner": "オーナー",
+    "email": "メール",
+    "phone": "電話番号",
     "plan": "プラン",
+    "planExpiry": "プラン有効期限",
     "status": "ステータス",
     "financialInfo": "財務情報",
     "currentBalance": "現在の残高",

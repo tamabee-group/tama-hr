@@ -68,5 +68,13 @@
   "TENANT_DOMAIN_RESERVED": "このドメインは予約されています。",
   "TENANT_PROVISIONING_FAILED": "会社データベースの作成に失敗しました。もう一度お試しください。",
   "TENANT_NOT_FOUND": "会社が存在しないか、削除されました。",
-  "USER_CREATION_FAILED": "ユーザーアカウントの作成に失敗しました。もう一度お試しください。"
+  "USER_CREATION_FAILED": "ユーザーアカウントの作成に失敗しました。もう一度お試しください。",
+  "DEPARTMENT_NOT_FOUND": "部署が見つかりません。",
+  "DEPARTMENT_CODE_EXISTS": "部署コードは既に存在します。",
+  "DEPARTMENT_NAME_REQUIRED": "部署名は必須です。",
+  "DEPARTMENT_CODE_REQUIRED": "部署コードは必須です。",
+  "DEPARTMENT_HAS_EMPLOYEES": "社員がいる部署は削除できません。",
+  "DEPARTMENT_HAS_CHILDREN": "サブ部署がある部署は削除できません。",
+  "DEPARTMENT_CIRCULAR_REFERENCE": "部署構造に循環参照を作成できません。",
+  "DEPARTMENT_MANAGER_NOT_FOUND": "部署管理者が見つかりません。"
 }

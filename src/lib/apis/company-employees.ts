@@ -21,9 +21,32 @@ export interface UpdateCompanyEmployeeRequest {
   status?: string;
   zipCode?: string;
   address?: string;
+  // Basic info
+  dateOfBirth?: string;
+  gender?: string;
+  nationality?: string;
+  maritalStatus?: string;
+  nationalId?: string;
+  // Work info
+  jobTitle?: string;
+  departmentId?: number;
+  employmentType?: string;
+  joiningDate?: string;
+  workLocation?: string;
+  // Bank info - Common
+  bankAccountType?: string;
+  japanBankType?: string;
   bankName?: string;
   bankAccount?: string;
   bankAccountName?: string;
+  // Bank info - Japan specific
+  bankCode?: string;
+  bankBranchCode?: string;
+  bankBranchName?: string;
+  bankAccountCategory?: string;
+  bankSymbol?: string;
+  bankNumber?: string;
+  // Emergency contact
   emergencyContactName?: string;
   emergencyContactPhone?: string;
   emergencyContactRelation?: string;
@@ -108,4 +131,12 @@ export async function verifyEmployeeEmail(
   return apiClient.post<boolean>(
     `/api/company/employees/verify-email?${params}`,
   );
+}
+
+/**
+ * Xóa nhân viên vĩnh viễn (hard delete)
+ * @client-only
+ */
+export async function deleteEmployee(employeeId: number): Promise<void> {
+  return apiClient.delete(`/api/company/employees/${employeeId}`);
 }

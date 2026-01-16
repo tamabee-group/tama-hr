@@ -38,7 +38,8 @@
     "lateMinutes": "Đi muộn",
     "earlyLeaveMinutes": "Về sớm",
     "breakDuration": "Thời gian nghỉ",
-    "netHours": "Giờ thực"
+    "netHours": "Giờ thực",
+    "break": "Giải lao"
   },
   "status": {
     "notCheckedIn": "Chưa chấm công",
@@ -161,7 +162,9 @@
     "approveConfirm": "Duyệt yêu cầu điều chỉnh này?",
     "requestHistory": "Lịch sử yêu cầu điều chỉnh",
     "approverComment": "Ghi chú người duyệt",
-    "hasPendingRequest": "Đã có yêu cầu đang chờ duyệt"
+    "hasPendingRequest": "Đã có yêu cầu đang chờ duyệt",
+    "departmentManager": "Quản lý phòng ban",
+    "defaultApproverHint": "Mặc định: {name} (quản lý phòng ban của bạn)"
   },
   "filter": {
     "dateRange": "Khoảng thời gian",

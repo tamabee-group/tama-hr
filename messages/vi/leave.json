@@ -28,6 +28,10 @@
     "endDate": "Ngày kết thúc",
     "reason": "Lý do",
     "reasonPlaceholder": "Nhập lý do nghỉ phép...",
+    "approver": "Người duyệt",
+    "approverPlaceholder": "Chọn người duyệt...",
+    "departmentManager": "Quản lý phòng ban",
+    "defaultApproverHint": "Mặc định: {name} (quản lý phòng ban của bạn)",
     "submit": "Gửi yêu cầu"
   },
   "type": {

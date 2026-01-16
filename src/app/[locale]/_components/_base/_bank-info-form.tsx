@@ -95,12 +95,11 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
             </Label>
             <Input
               value={data.bankAccountName}
-              onChange={(e) =>
-                onChange({ bankAccountName: e.target.value.toUpperCase() })
-              }
+              onChange={(e) => onChange({ bankAccountName: e.target.value })}
               disabled={!isEditing}
               placeholder={t("accountHolderPlaceholderVN")}
               className="mt-1"
+              textTransform="uppercase"
             />
           </div>
         </TabsContent>

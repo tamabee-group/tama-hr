@@ -6,11 +6,19 @@ import {
   CreateUserFormData,
 } from "@/app/[locale]/_components/_base/base-create-user-form";
 import { createCompanyEmployee } from "@/lib/apis/company-employees";
-import { COMPANY_USER_ROLES } from "@/types/enums";
+import { COMPANY_USER_ROLES, TAMABEE_USER_ROLES } from "@/types/enums";
+import { useAuth } from "@/hooks/use-auth";
 
 export function CreateEmployeeForm() {
   const t = useTranslations("users");
   const tCommon = useTranslations("common");
+  const { isTamabeeUser } = useAuth();
+
+  // Hiển thị role phù hợp với tenant
+  const availableRoles = isTamabeeUser
+    ? TAMABEE_USER_ROLES
+    : COMPANY_USER_ROLES;
+  const defaultRole = isTamabeeUser ? "EMPLOYEE_TAMABEE" : "EMPLOYEE_COMPANY";
 
   const handleSubmit = async (data: CreateUserFormData) => {
     await createCompanyEmployee(data);
@@ -19,8 +27,8 @@ export function CreateEmployeeForm() {
   return (
     <BaseCreateUserForm
       title={t("createUser")}
-      roles={COMPANY_USER_ROLES}
-      defaultRole="USER_COMPANY"
+      roles={availableRoles}
+      defaultRole={defaultRole}
       onSubmit={handleSubmit}
       submitButtonText={tCommon("add")}
       loadingText={tCommon("loading")}

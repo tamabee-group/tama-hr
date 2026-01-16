@@ -72,6 +72,10 @@
     "activateSuccess": "ユーザーを有効化しました",
     "deactivateSuccess": "ユーザーを無効化しました"
   },
+  "confirmDelete": "従業員の削除を確認",
+  "deleteWarning": "従業員 {name} を削除してもよろしいですか？この操作は取り消せず、関連するすべてのデータが削除されます。",
+  "deleteSuccess": "従業員を削除しました",
+  "deleteError": "従業員の削除に失敗しました",
   "dialog": {
     "deleteTitle": "ユーザーを削除",
     "deleteDescription": "このユーザーを削除してもよろしいですか？この操作は取り消せません。",

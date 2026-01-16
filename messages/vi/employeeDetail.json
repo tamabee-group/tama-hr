@@ -1,0 +1,76 @@
+{
+  "tabs": {
+    "overview": "Tổng quan",
+    "personalInfo": "Thông tin cá nhân",
+    "attendance": "Chấm công",
+    "salary": "Lương",
+    "contracts": "Hợp đồng",
+    "leave": "Nghỉ phép",
+    "documents": "Tài liệu",
+    "referrals": "Giới thiệu"
+  },
+  "editProfile": "Chỉnh sửa",
+  "actions": {
+    "sendEmail": "Gửi email",
+    "voiceCall": "Gọi điện"
+  },
+  "overview": {
+    "statistics": "Thống kê",
+    "presentDays": "Ngày làm việc",
+    "totalHours": "Tổng giờ",
+    "overtime": "Tăng ca",
+    "lateEarly": "Đi muộn/Về sớm",
+    "attendanceActivity": "Hoạt động chấm công",
+    "viewAllLogs": "Xem tất cả",
+    "attendanceAlerts": "Cảnh báo chấm công",
+    "noAlerts": "Không có cảnh báo",
+    "alertBreakNotCompliant": "Thiếu thời gian giải lao",
+    "alertLate": "Đi muộn {minutes} phút",
+    "alertEarlyLeave": "Về sớm {minutes} phút",
+    "alertMissingCheckout": "Chưa checkout",
+    "salaryChart": "Biểu đồ lương",
+    "noSalaryData": "Chưa có dữ liệu lương",
+    "noData": "Không có dữ liệu"
+  },
+  "personalInfo": {
+    "basicInfo": "Thông tin cơ bản",
+    "workInfo": "Thông tin công việc",
+    "contactInfo": "Thông tin liên hệ",
+    "bankDetails": "Thông tin ngân hàng",
+    "emergencyContact": "Liên hệ khẩn cấp"
+  },
+  "personalInfoSections": {
+    "general": "Thông tin chung",
+    "contact": "Liên hệ",
+    "bank": "Ngân hàng",
+    "family": "Gia đình",
+    "emergency": "Liên hệ khẩn cấp"
+  },
+  "documents": {
+    "title": "Tài liệu",
+    "uploadNew": "Tải lên",
+    "gridView": "Lưới",
+    "listView": "Danh sách",
+    "filterByType": "Lọc theo loại",
+    "allTypes": "Tất cả",
+    "noDocuments": "Chưa có tài liệu",
+    "view": "Xem",
+    "download": "Tải xuống",
+    "delete": "Xóa",
+    "confirmDelete": "Bạn có chắc muốn xóa tài liệu này?",
+    "uploadSuccess": "Tải lên thành công",
+    "deleteSuccess": "Xóa thành công",
+    "dropOrClick": "Kéo thả hoặc nhấp để chọn file",
+    "allowedTypes": "Định dạng cho phép",
+    "maxSize": "Kích thước tối đa",
+    "invalidFileType": "Định dạng file không được hỗ trợ",
+    "fileTooLarge": "File vượt quá kích thước cho phép (10MB)"
+  },
+  "documentTypes": {
+    "CONTRACT": "Hợp đồng",
+    "ID_CARD": "CMND/CCCD",
+    "CERTIFICATE": "Chứng chỉ",
+    "RESUME": "CV",
+    "OTHER": "Khác"
+  }
+}

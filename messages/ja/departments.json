@@ -1,0 +1,41 @@
+{
+  "title": "部署管理",
+  "description": "組織構造を管理",
+  "create": "部署を作成",
+  "edit": "部署を編集",
+  "delete": "部署を削除",
+  "search": "部署を検索...",
+  "noData": "部署がありません",
+  "viewEmployees": "社員を表示",
+  "employeeList": "社員一覧",
+  "noEmployees": "この部署には社員がいません",
+  "fields": {
+    "name": "部署名",
+    "code": "部署コード",
+    "description": "説明",
+    "parent": "親部署",
+    "manager": "管理者",
+    "employeeCount": "社員数"
+  },
+  "placeholders": {
+    "name": "部署名を入力",
+    "code": "部署コードを入力",
+    "description": "説明を入力",
+    "selectParent": "親部署を選択",
+    "selectManager": "管理者を選択"
+  },
+  "messages": {
+    "createSuccess": "部署を作成しました",
+    "updateSuccess": "部署を更新しました",
+    "deleteSuccess": "部署を削除しました",
+    "deleteConfirm": "この部署を削除してもよろしいですか？"
+  },
+  "tree": {
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "noChildren": "サブ部署なし",
+    "expandAll": "すべて展開",
+    "collapseAll": "すべて折りたたむ",
+    "showingCount": "{count}部署を表示"
+  }
+}

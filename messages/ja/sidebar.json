@@ -36,24 +36,21 @@
     "attendance": "勤怠",
     "attendanceRecords": "勤怠記録",
     "adjustments": "調整",
-    "schedules": "勤務スケジュール",
     "payroll": "給与",
     "payrollRecords": "給与記録",
+    "payrollPeriods": "給与期間",
+    "payslips": "給与明細",
     "holidays": "祝日",
     "leaveRequests": "休暇申請",
     "leave": "休暇",
     "reports": "レポート",
     "myAttendance": "マイ勤怠",
     "mySchedule": "マイスケジュール",
+    "myAdjustments": "調整申請",
     "myPayroll": "マイ給与",
     "myLeave": "マイ休暇",
     "myProfile": "マイプロフィール",
     "shifts": "シフト管理",
     "contracts": "契約"
-  },
-  "workModeIndicator": {
-    "fixedHours": "固定時間",
-    "flexibleShift": "フレックス/シフト",
-    "tooltip": "会社の現在の勤務モード"
   }
 }

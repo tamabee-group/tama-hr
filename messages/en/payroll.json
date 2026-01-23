@@ -173,5 +173,18 @@
   "itemStatusCalculated": "Calculated",
   "itemStatusAdjusted": "Adjusted",
   "itemStatusConfirmed": "Confirmed",
-  "newNetSalary": "New net salary"
+  "newNetSalary": "New net salary",
+  "adjustmentDescription": "Adjustment Description",
+  "adjustmentAmountHint": "Enter positive amount for bonus, negative for deduction",
+  "adjustmentSuccess": "Salary adjusted successfully",
+  "salaryType": "Salary Type",
+  "baseSalaryAmount": "Base Salary Amount",
+  "calculatedBase": "Calculated Base",
+  "regularOT": "Regular OT",
+  "nightOT": "Night OT",
+  "currentNetSalary": "Current Net Salary",
+  "newNetSalaryAfterAdjustment": "New Net Salary",
+  "viewPayslips": "View Payslips",
+  "payslipHistory": "Payslip History",
+  "viewAllPayslips": "View All Payslips"
 }

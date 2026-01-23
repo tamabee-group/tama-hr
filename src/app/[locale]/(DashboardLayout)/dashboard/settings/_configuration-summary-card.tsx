@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   CheckCircle2,
@@ -16,11 +15,7 @@ import {
   Minus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  CompanySettings,
-  WorkModeConfig,
-  WorkMode,
-} from "@/types/attendance-config";
+import { CompanySettings } from "@/types/attendance-config";
 import {
   checkSettingsCompleteness,
   hasIncompleteSettings,
@@ -28,21 +23,16 @@ import {
 
 interface ConfigurationSummaryCardProps {
   settings: CompanySettings | null;
-  workModeConfig: WorkModeConfig | null;
   className?: string;
 }
 
 export function ConfigurationSummaryCard({
   settings,
-  workModeConfig,
   className,
 }: ConfigurationSummaryCardProps) {
   const t = useTranslations("companySettings");
 
-  const completenessResult = checkSettingsCompleteness(
-    settings,
-    workModeConfig,
-  );
+  const completenessResult = checkSettingsCompleteness(settings, null);
 
   return (
     <Card className={cn("pt-5 gap-1", className)}>
@@ -53,24 +43,6 @@ export function ConfigurationSummaryCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Work Mode */}
-        <div className="flex flex-col items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {t("workMode.title")}
-          </span>
-          <Badge
-            variant={
-              workModeConfig?.mode === WorkMode.FIXED_HOURS
-                ? "secondary"
-                : "default"
-            }
-          >
-            {workModeConfig?.mode === WorkMode.FIXED_HOURS
-              ? t("workMode.fixedHours")
-              : t("workMode.flexibleShift")}
-          </Badge>
-        </div>
-
         {/* Completion Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">

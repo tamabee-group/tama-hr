@@ -76,5 +76,6 @@
   "DEPARTMENT_HAS_EMPLOYEES": "Cannot delete department with employees.",
   "DEPARTMENT_HAS_CHILDREN": "Cannot delete department with sub-departments.",
   "DEPARTMENT_CIRCULAR_REFERENCE": "Cannot create circular reference in department structure.",
-  "DEPARTMENT_MANAGER_NOT_FOUND": "Department manager not found."
+  "DEPARTMENT_MANAGER_NOT_FOUND": "Department manager not found.",
+  "SHIFT_OVERLAP_EXISTS": "Shift time overlaps with another shift on the same day."
 }

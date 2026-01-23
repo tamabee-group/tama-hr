@@ -273,23 +273,43 @@ export interface BreakAdjustmentRequest {
 // ============================================
 
 export interface ScheduleData {
-  workStartTime: string;
-  workEndTime: string;
-  breakMinutes: number;
-  breakPeriods?: {
-    name: string;
-    startTime: string;
-    endTime: string;
-    durationMinutes: number;
-    isFlexible: boolean;
-  }[];
-  flexibleStartRange?: string; // For FLEXIBLE type
-  flexibleEndRange?: string;
-  shifts?: {
-    name: string;
-    startTime: string;
-    endTime: string;
-  }[]; // For SHIFT type
+  // FIXED_HOURS type
+  defaultStartTime?: string | null;
+  defaultEndTime?: string | null;
+  defaultBreakMinutes?: number | null;
+
+  // FLEXIBLE type
+  flexibleStartRange?: string | null;
+  flexibleEndRange?: string | null;
+
+  // SHIFT type
+  shifts?:
+    | {
+        name: string;
+        startTime: string;
+        endTime: string;
+      }[]
+    | null;
+
+  // Common fields
+  breakPeriods?:
+    | {
+        name: string;
+        startTime: string;
+        endTime: string;
+        durationMinutes: number;
+        isFlexible: boolean;
+        order?: number | null;
+      }[]
+    | null;
+
+  dailySchedules?: Record<string, unknown> | null; // For future use
+  totalBreakMinutes?: number | null;
+
+  // Legacy fields (for backward compatibility)
+  workStartTime?: string;
+  workEndTime?: string;
+  breakMinutes?: number;
 }
 
 export interface WorkSchedule {
@@ -465,15 +485,6 @@ export interface BreakReportData {
 export interface YearMonth {
   year: number;
   month: number;
-}
-
-// ============================================
-// Date Range Type
-// ============================================
-
-export interface DateRange {
-  startDate: string;
-  endDate: string;
 }
 
 // ============================================
@@ -676,6 +687,10 @@ export interface PayrollPeriod {
   approverName?: string;
   paidAt?: string;
   paymentReference?: string;
+  totalBaseSalary?: number;
+  totalOvertimePay?: number;
+  totalAllowances?: number;
+  totalDeductions?: number;
 }
 
 export interface PayrollPeriodInput {
@@ -692,6 +707,9 @@ export interface PayrollItem {
   payrollPeriodId: number;
   employeeId: number;
   employeeName: string;
+  employeeCode?: string;
+  year?: number;
+  month?: number;
   salaryType: SalaryType;
   baseSalary: number;
   calculatedBaseSalary: number;
@@ -752,6 +770,8 @@ export interface EmploymentContract {
   id: number;
   employeeId: number;
   employeeName: string;
+  employeeCode?: string;
+  employeeEmail?: string;
   contractType: ContractType;
   contractNumber: string;
   startDate: string;

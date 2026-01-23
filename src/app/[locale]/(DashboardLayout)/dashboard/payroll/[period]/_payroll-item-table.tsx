@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Edit } from "lucide-react";
+import { Eye, Edit, FileText } from "lucide-react";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ export function PayrollItemTable({
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
+  const router = useRouter();
 
   // Dialog state
   const [selectedItem, setSelectedItem] = useState<PayrollItem | null>(null);
@@ -80,9 +82,7 @@ export function PayrollItemTable({
     {
       accessorKey: "calculatedBaseSalary",
       header: t("table.baseSalary"),
-      cell: ({ row }) => {
-        formatCurrency(row.original.calculatedBaseSalary);
-      },
+      cell: ({ row }) => formatCurrency(row.original.calculatedBaseSalary),
     },
     {
       accessorKey: "totalOvertimePay",
@@ -120,9 +120,7 @@ export function PayrollItemTable({
     {
       accessorKey: "grossSalary",
       header: t("table.grossSalary"),
-      cell: ({ row }) => {
-        formatCurrency(row.original.grossSalary);
-      },
+      cell: ({ row }) => formatCurrency(row.original.grossSalary),
     },
     {
       accessorKey: "netSalary",
@@ -154,6 +152,7 @@ export function PayrollItemTable({
               variant="ghost"
               size="sm"
               onClick={() => setSelectedItem(item)}
+              title={tCommon("view")}
             >
               <Eye className="h-4 w-4" />
             </Button>
@@ -162,14 +161,27 @@ export function PayrollItemTable({
                 variant="ghost"
                 size="sm"
                 onClick={() => setAdjustItem(item)}
+                title={tCommon("edit")}
               >
                 <Edit className="h-4 w-4" />
               </Button>
             )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                router.push(
+                  `/dashboard/employees/${item.employeeId}?tab=salary`,
+                )
+              }
+              title={t("viewPayslips")}
+            >
+              <FileText className="h-4 w-4" />
+            </Button>
           </div>
         );
       },
-      size: 100,
+      size: 120,
     },
   ];
 

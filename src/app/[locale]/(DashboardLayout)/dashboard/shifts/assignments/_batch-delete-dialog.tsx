@@ -23,53 +23,48 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SelectItem } from "@/components/ui/select";
-import { SelectWithIcon } from "@/components/ui/select-with-icon";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DatePicker } from "@/components/ui/date-picker";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
-import { ShiftTemplate } from "@/types/attendance-records";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { User } from "@/types/user";
 import { PaginatedResponse } from "@/types/api";
-import { getAllShiftTemplates, batchAssignShift } from "@/lib/apis/shift-api";
+import { batchDeleteShiftAssignments } from "@/lib/apis/shift-api";
 import { apiClient } from "@/lib/utils/fetch-client";
 import {
+  formatDateForApi,
   formatDate,
   getDayOfWeek,
-  formatDateForApi,
 } from "@/lib/utils/format-date";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
-interface ShiftAssignmentDialogProps {
+interface BatchDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
 
-type AssignmentMode = "single" | "range";
+type DeleteMode = "single" | "range";
 
 /**
- * Dialog phân công ca làm việc cho nhiều nhân viên
- * Hỗ trợ phân ca theo ngày đơn hoặc khoảng thời gian
+ * Dialog xóa phân ca hàng loạt
+ * Hỗ trợ xóa theo ngày đơn hoặc khoảng thời gian
  */
-export function ShiftAssignmentDialog({
+export function BatchDeleteDialog({
   open,
   onOpenChange,
   onSuccess,
-}: ShiftAssignmentDialogProps) {
+}: BatchDeleteDialogProps) {
   const t = useTranslations("shifts");
   const tCommon = useTranslations("common");
   const locale = useLocale() as SupportedLocale;
 
   const [employees, setEmployees] = useState<User[]>([]);
-  const [templates, setTemplates] = useState<ShiftTemplate[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [mode, setMode] = useState<AssignmentMode>("single");
+  const [mode, setMode] = useState<DeleteMode>("single");
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>([]);
-  const [shiftTemplateId, setShiftTemplateId] = useState<number>(0);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
 
@@ -78,7 +73,6 @@ export function ShiftAssignmentDialog({
   const [result, setResult] = useState<{
     success: number;
     failed: number;
-    failedDetails: { name: string; reason: string }[];
   } | null>(null);
 
   useEffect(() => {
@@ -86,10 +80,10 @@ export function ShiftAssignmentDialog({
       fetchData();
       setMode("single");
       setSelectedEmployeeIds([]);
-      setShiftTemplateId(0);
       setStartDate(new Date());
       setEndDate(new Date());
       setErrors({});
+      setShowConfirmation(false);
       setResult(null);
     }
   }, [open]);
@@ -97,14 +91,10 @@ export function ShiftAssignmentDialog({
   const fetchData = async () => {
     try {
       setIsLoadingData(true);
-      const [employeesRes, templatesRes] = await Promise.all([
-        apiClient.get<PaginatedResponse<User>>(
-          "/api/company/employees?page=0&size=100",
-        ),
-        getAllShiftTemplates(),
-      ]);
+      const employeesRes = await apiClient.get<PaginatedResponse<User>>(
+        "/api/company/employees?page=0&size=100",
+      );
       setEmployees(employeesRes.content);
-      setTemplates(templatesRes.filter((t) => t.isActive));
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -136,9 +126,6 @@ export function ShiftAssignmentDialog({
     if (selectedEmployeeIds.length === 0) {
       newErrors.employees = tCommon("checkInfo");
     }
-    if (!shiftTemplateId) {
-      newErrors.shiftTemplateId = tCommon("checkInfo");
-    }
     if (!startDate) {
       newErrors.startDate = tCommon("checkInfo");
     }
@@ -163,9 +150,8 @@ export function ShiftAssignmentDialog({
 
     try {
       setIsSubmitting(true);
-      const response = await batchAssignShift({
+      const response = await batchDeleteShiftAssignments({
         employeeIds: selectedEmployeeIds,
-        shiftTemplateId,
         startDate: formatDateForApi(startDate) || "",
         endDate: mode === "range" ? formatDateForApi(endDate) : undefined,
       });
@@ -173,15 +159,11 @@ export function ShiftAssignmentDialog({
       setResult({
         success: response.successCount,
         failed: response.failedCount,
-        failedDetails: response.failedAssignments.map((f) => ({
-          name: f.employeeName || `ID: ${f.employeeId}`,
-          reason: f.reason,
-        })),
       });
 
       if (response.successCount > 0) {
         toast.success(
-          t("batchAssignSuccess", { count: response.successCount }),
+          t("batchDeleteSuccess", { count: response.successCount }),
         );
         onSuccess();
 
@@ -192,7 +174,7 @@ export function ShiftAssignmentDialog({
       }
 
       if (response.failedCount > 0 && response.successCount === 0) {
-        toast.error(t("batchAssignAllFailed"));
+        toast.error(t("batchDeleteAllFailed"));
       }
     } catch {
       toast.error(tCommon("error"));
@@ -200,8 +182,6 @@ export function ShiftAssignmentDialog({
       setIsSubmitting(false);
     }
   };
-
-  const formatTime = (time: string) => time.substring(0, 5);
 
   // Tính số ngày được chọn
   const calculateDays = () => {
@@ -214,18 +194,16 @@ export function ShiftAssignmentDialog({
     return days;
   };
 
-  const totalAssignments = selectedEmployeeIds.length * calculateDays();
-
-  const selectedTemplate = templates.find((t) => t.id === shiftTemplateId);
+  const totalDeletions = selectedEmployeeIds.length * calculateDays();
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("createAssignment")}</DialogTitle>
+            <DialogTitle>{t("batchDelete")}</DialogTitle>
             <DialogDescription className="sr-only">
-              {t("createAssignment")}
+              {t("batchDelete")}
             </DialogDescription>
           </DialogHeader>
 
@@ -245,50 +223,42 @@ export function ShiftAssignmentDialog({
                   )}
                   <AlertDescription>
                     <div className="font-medium">
-                      {t("batchResult", {
+                      {t("batchDeleteResult", {
                         success: result.success,
                         failed: result.failed,
                       })}
                     </div>
-                    {result.failedDetails.length > 0 && (
-                      <div className="mt-3 space-y-1">
-                        <div className="text-sm font-medium">
-                          {t("failedEmployees")}:
-                        </div>
-                        <ul className="text-sm space-y-1 ml-4 list-disc">
-                          {result.failedDetails.map((item, idx) => (
-                            <li key={idx}>
-                              <span className="font-medium">{item.name}</span>
-                              <span className="text-muted-foreground">
-                                {" "}
-                                - {item.reason}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </AlertDescription>
                 </Alert>
               )}
 
-              {/* Chế độ phân ca */}
+              {/* Cảnh báo */}
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{t("batchDeleteWarning")}</AlertDescription>
+              </Alert>
               <div>
-                <Label>{t("assignmentMode")}</Label>
+                <Label>{t("deleteMode")}</Label>
                 <RadioGroup
                   value={mode}
-                  onValueChange={(value) => setMode(value as AssignmentMode)}
+                  onValueChange={(value) => setMode(value as DeleteMode)}
                   className="flex gap-4 mt-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="single" id="mode-single" />
-                    <Label htmlFor="mode-single" className="cursor-pointer">
+                    <RadioGroupItem value="single" id="delete-mode-single" />
+                    <Label
+                      htmlFor="delete-mode-single"
+                      className="cursor-pointer"
+                    >
                       {t("singleDay")}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="range" id="mode-range" />
-                    <Label htmlFor="mode-range" className="cursor-pointer">
+                    <RadioGroupItem value="range" id="delete-mode-range" />
+                    <Label
+                      htmlFor="delete-mode-range"
+                      className="cursor-pointer"
+                    >
                       {t("dateRange")}
                     </Label>
                   </div>
@@ -338,32 +308,6 @@ export function ShiftAssignmentDialog({
                 {mode === "single" && <div />}
               </div>
 
-              {/* Chọn ca */}
-              <div>
-                <Label>{t("selectShift")}</Label>
-                <SelectWithIcon
-                  value={shiftTemplateId ? shiftTemplateId.toString() : ""}
-                  onValueChange={(value) => setShiftTemplateId(parseInt(value))}
-                  placeholder={t("selectShift")}
-                  icon={<Clock className="h-4 w-4 text-muted-foreground" />}
-                >
-                  {templates.map((template) => (
-                    <SelectItem
-                      key={template.id}
-                      value={template.id.toString()}
-                    >
-                      {template.name} ({formatTime(template.startTime)} -{" "}
-                      {formatTime(template.endTime)})
-                    </SelectItem>
-                  ))}
-                </SelectWithIcon>
-                {errors.shiftTemplateId && (
-                  <p className="text-sm text-destructive">
-                    {errors.shiftTemplateId}
-                  </p>
-                )}
-              </div>
-
               {/* Chọn nhân viên */}
               <div>
                 <div className="flex items-center justify-between">
@@ -385,12 +329,12 @@ export function ShiftAssignmentDialog({
                       className="flex items-center space-x-2"
                     >
                       <Checkbox
-                        id={`emp-${employee.id}`}
+                        id={`del-emp-${employee.id}`}
                         checked={selectedEmployeeIds.includes(employee.id)}
                         onCheckedChange={() => toggleEmployee(employee.id)}
                       />
                       <label
-                        htmlFor={`emp-${employee.id}`}
+                        htmlFor={`del-emp-${employee.id}`}
                         className="text-sm cursor-pointer flex-1"
                       >
                         {employee.profile?.name || employee.email} (
@@ -408,7 +352,7 @@ export function ShiftAssignmentDialog({
                   </span>
                   {mode === "range" && calculateDays() > 1 && (
                     <span>
-                      {t("totalAssignments", { count: totalAssignments })}
+                      {t("totalDeletions", { count: totalDeletions })}
                     </span>
                   )}
                 </div>
@@ -425,6 +369,7 @@ export function ShiftAssignmentDialog({
               {tCommon("cancel")}
             </Button>
             <Button
+              variant="destructive"
               onClick={handleShowConfirmation}
               disabled={isSubmitting || isLoadingData}
             >
@@ -438,21 +383,13 @@ export function ShiftAssignmentDialog({
       <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("confirmAssignment")}</AlertDialogTitle>
+            <AlertDialogTitle>{t("confirmDelete")}</AlertDialogTitle>
           </AlertDialogHeader>
           <div className="space-y-3 px-6">
-            <div className="text-foreground">
-              {t("confirmAssignmentMessage")}
+            <div className="text-destructive font-medium">
+              {t("confirmDeleteWarning")}
             </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("shift")}:</span>
-                <span className="font-medium">
-                  {selectedTemplate?.name} (
-                  {formatTime(selectedTemplate?.startTime || "")} -{" "}
-                  {formatTime(selectedTemplate?.endTime || "")})
-                </span>
-              </div>
+            <div className="space-y-2 text-sm text-foreground">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   {mode === "single" ? t("workDate") : t("dateRange")}:
@@ -494,10 +431,10 @@ export function ShiftAssignmentDialog({
               </div>
               <div className="flex justify-between border-t pt-2">
                 <span className="text-muted-foreground">
-                  {t("totalAssignments", { count: totalAssignments })}
+                  {t("totalDeletions", { count: totalDeletions })}
                 </span>
-                <span className="font-semibold text-primary">
-                  {totalAssignments}
+                <span className="font-semibold text-destructive">
+                  {totalDeletions}
                 </span>
               </div>
             </div>
@@ -506,8 +443,12 @@ export function ShiftAssignmentDialog({
             <AlertDialogCancel disabled={isSubmitting}>
               {tCommon("cancel")}
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? tCommon("loading") : tCommon("confirm")}
+            <AlertDialogAction
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isSubmitting ? tCommon("loading") : tCommon("confirmDelete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

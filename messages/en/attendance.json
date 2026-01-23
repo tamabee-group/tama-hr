@@ -48,6 +48,25 @@
     "working": "Working",
     "onBreak": "On Break"
   },
+  "secondShiftConfirm": {
+    "title": "Confirm Second Shift Check-in",
+    "description": "You checked out at {time}. Checking in again will automatically create a break record from {checkOutTime} to now.",
+    "warning": "The system will treat this time as break between shifts. Confirm to continue?",
+    "confirm": "Confirm Check-in",
+    "cancel": "Cancel"
+  },
+  "hints": {
+    "noteLabel": "Note",
+    "title": "Attendance Guide",
+    "description": "The attendance system supports multiple shifts per day.",
+    "steps": [
+      "Check in when starting your first shift",
+      "Check out when ending the shift",
+      "If you have a second shift, check in again - system auto-creates break record",
+      "Check out when ending your last shift"
+    ],
+    "note": "Example: Morning shift 9am-12pm, evening shift 5pm-9pm. When checking in at 5pm, system automatically creates a 12pm-5pm break (5 hours). Final record will be 9am-9pm with 5 hours break."
+  },
   "messages": {
     "checkInSuccess": "Check in successful",
     "checkOutSuccess": "Check out successful",

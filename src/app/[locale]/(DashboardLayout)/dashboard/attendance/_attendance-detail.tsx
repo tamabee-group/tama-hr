@@ -21,7 +21,7 @@ import {
   TimeDisplay,
   DurationDisplay,
 } from "@/app/[locale]/_components/_shared/_time-display";
-import { BreakTimeline } from "./me/_break-timeline";
+import { BreakTimeline } from "../../../(PersonalLayout)/me/_break-timeline";
 
 import {
   AttendanceRecord,

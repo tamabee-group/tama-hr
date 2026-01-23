@@ -3,33 +3,33 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
-import { Plus, Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Trash, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShiftAssignment } from "@/types/attendance-records";
-import {
-  getShiftAssignments,
-  deleteShiftAssignment,
-} from "@/lib/apis/shift-api";
+import { getShiftAssignments } from "@/lib/apis/shift-api";
 import { formatDate, getDayOfWeek } from "@/lib/utils/format-date";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { ShiftAssignmentDialog } from "./_shift-assignment-dialog";
+import { BatchDeleteDialog } from "./_batch-delete-dialog";
 import { ShiftDetailDialog } from "./_shift-detail-dialog";
+import { ExplanationPanel } from "../../_components/_explanation-panel";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_LIMIT = 50;
+const STORAGE_KEY = "shift-assignment-filter-mode";
+
+type FilterMode = "month" | "week" | "day";
 
 /**
  * Component danh sách phân công ca làm việc - nhóm theo ngày
@@ -40,22 +40,73 @@ export function ShiftAssignmentList() {
   const tEnums = useTranslations("enums");
   const locale = useLocale() as SupportedLocale;
 
+  // Load filter mode từ localStorage
+  const getInitialFilterMode = (): FilterMode => {
+    if (typeof window === "undefined") return "month";
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "month" || saved === "week" || saved === "day") {
+      return saved;
+    }
+    return "month";
+  };
+
   const [assignments, setAssignments] = useState<ShiftAssignment[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isBatchDeleteOpen, setIsBatchDeleteOpen] = useState(false);
   const [viewingAssignment, setViewingAssignment] =
     useState<ShiftAssignment | null>(null);
-  const [deletingAssignment, setDeletingAssignment] =
-    useState<ShiftAssignment | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [filterMode, setFilterMode] =
+    useState<FilterMode>(getInitialFilterMode);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
-  // Fetch danh sách assignments
+  // Helper: Convert Date sang string YYYY-MM-DD theo local timezone
+  const toLocalDateString = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fetch danh sách assignments với filter
   const fetchAssignments = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await getShiftAssignments(page, DEFAULT_LIMIT);
+
+      let startDate: string | undefined;
+      let endDate: string | undefined;
+
+      if (filterMode === "month") {
+        // Filter theo tháng
+        const year = selectedDate.getFullYear();
+        const month = selectedDate.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        startDate = toLocalDateString(firstDay);
+        endDate = toLocalDateString(lastDay);
+      } else if (filterMode === "week") {
+        // Filter theo tuần (Thứ 2 - Chủ nhật)
+        const day = selectedDate.getDay();
+        const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(selectedDate);
+        monday.setDate(diff);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        startDate = toLocalDateString(monday);
+        endDate = toLocalDateString(sunday);
+      } else {
+        // Filter theo ngày cụ thể
+        startDate = toLocalDateString(selectedDate);
+        endDate = startDate;
+      }
+
+      const response = await getShiftAssignments(page, DEFAULT_LIMIT, {
+        startDate,
+        endDate,
+      });
       setAssignments(response.content);
       setTotalElements(response.totalElements);
     } catch {
@@ -63,7 +114,7 @@ export function ShiftAssignmentList() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, tCommon]);
+  }, [page, selectedDate, filterMode, tCommon]);
 
   useEffect(() => {
     fetchAssignments();
@@ -81,25 +132,100 @@ export function ShiftAssignmentList() {
       groups[date].push(assignment);
     });
 
-    // Sắp xếp theo ngày giảm dần (mới nhất trước)
+    // Sắp xếp theo ngày tăng dần (cũ nhất trước)
     return Object.entries(groups).sort(
-      ([a], [b]) => new Date(b).getTime() - new Date(a).getTime(),
+      ([a], [b]) => new Date(a).getTime() - new Date(b).getTime(),
     );
   }, [assignments]);
 
-  // Xử lý xóa assignment
-  const handleDelete = async () => {
-    if (!deletingAssignment) return;
-    try {
-      setIsDeleting(true);
-      await deleteShiftAssignment(deletingAssignment.id);
-      toast.success(t("assignmentDeleteSuccess"));
-      setDeletingAssignment(null);
-      fetchAssignments();
-    } catch {
-      toast.error(t("assignmentCreateError"));
-    } finally {
-      setIsDeleting(false);
+  // Chuyển tháng/tuần/ngày
+  const handlePrevious = () => {
+    if (filterMode === "month") {
+      setSelectedDate(
+        (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
+      );
+    } else if (filterMode === "week") {
+      setSelectedDate((prev) => {
+        const newDate = new Date(prev);
+        newDate.setDate(newDate.getDate() - 7);
+        return newDate;
+      });
+    } else if (filterMode === "day") {
+      setSelectedDate((prev) => {
+        const newDate = new Date(prev);
+        newDate.setDate(newDate.getDate() - 1);
+        return newDate;
+      });
+    }
+    setPage(0);
+  };
+
+  const handleNext = () => {
+    if (filterMode === "month") {
+      setSelectedDate(
+        (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
+      );
+    } else if (filterMode === "week") {
+      setSelectedDate((prev) => {
+        const newDate = new Date(prev);
+        newDate.setDate(newDate.getDate() + 7);
+        return newDate;
+      });
+    } else if (filterMode === "day") {
+      setSelectedDate((prev) => {
+        const newDate = new Date(prev);
+        newDate.setDate(newDate.getDate() + 1);
+        return newDate;
+      });
+    }
+    setPage(0);
+  };
+
+  const handleToday = () => {
+    const today = new Date();
+    setSelectedDate(today);
+    setFilterMode("day"); // Chuyển sang filter theo ngày
+    setPage(0);
+    setIsDatePickerOpen(false);
+    // Lưu vào localStorage
+    localStorage.setItem(STORAGE_KEY, "day");
+  };
+
+  // Xử lý thay đổi filter mode
+  const handleFilterModeChange = (mode: FilterMode) => {
+    setFilterMode(mode);
+    setPage(0);
+    setIsDatePickerOpen(false);
+    // Lưu vào localStorage
+    localStorage.setItem(STORAGE_KEY, mode);
+  };
+
+  // Xử lý chọn ngày từ calendar
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setPage(0);
+      setIsDatePickerOpen(false);
+    }
+  };
+
+  // Format hiển thị
+  const formatDisplayDate = () => {
+    if (filterMode === "month") {
+      return selectedDate.toLocaleDateString(locale, {
+        year: "numeric",
+        month: "long",
+      });
+    } else if (filterMode === "week") {
+      const day = selectedDate.getDay();
+      const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(selectedDate);
+      monday.setDate(diff);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      return `${formatDate(toLocalDateString(monday), locale)} - ${formatDate(toLocalDateString(sunday), locale)}`;
+    } else {
+      return formatDate(toLocalDateString(selectedDate), locale);
     }
   };
 
@@ -125,16 +251,119 @@ export function ShiftAssignmentList() {
 
   return (
     <>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-sm text-muted-foreground">
-              {tCommon("total")}: {totalElements}
+      {/* Explanation Panel */}
+      <ExplanationPanel
+        title={t("explanations.assignmentsTitle")}
+        description={t("explanations.assignmentsDesc")}
+        tips={[
+          t("explanations.assignmentsTip1"),
+          t("explanations.assignmentsTip2"),
+        ]}
+        workModeNote={t("explanations.assignmentsNote")}
+        defaultCollapsed={true}
+        className="mb-4"
+      />
+
+      <Card className="md:py-6 md:shadow-sm md:border py-0 shadow-none border-none">
+        <CardContent className="px-0 md:px-6">
+          {/* Filter Controls */}
+          <div className="flex flex-col justify-between items-center md:flex-row gap-4 mb-6">
+            <div className="flex flex-col md:flex-row md:justify-between gap-4">
+              {/* Filter Mode Tabs */}
+              <Tabs
+                value={filterMode}
+                onValueChange={(value) =>
+                  handleFilterModeChange(value as FilterMode)
+                }
+              >
+                <TabsList className="w-full md:w-fit">
+                  <TabsTrigger value="month">{t("filterMonth")}</TabsTrigger>
+                  <TabsTrigger value="week">{t("filterWeek")}</TabsTrigger>
+                  <TabsTrigger value="day">{t("filterDay")}</TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              {/* Navigation */}
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrevious}
+                  className="shrink-0"
+                >
+                  <ChevronLeft />
+                </Button>
+
+                <Popover
+                  open={isDatePickerOpen}
+                  onOpenChange={setIsDatePickerOpen}
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="justify-start"
+                    >
+                      <Calendar className="h-4 w-4 mr-2 shrink-0" />
+                      <span className="truncate">{formatDisplayDate()}</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <div className="p-3 border-b">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleToday}
+                        className="w-full"
+                      >
+                        {tCommon("today")}
+                      </Button>
+                    </div>
+                    <CalendarComponent
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      month={selectedDate}
+                      onMonthChange={setSelectedDate}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNext}
+                  className="shrink-0"
+                >
+                  <ChevronRight />
+                </Button>
+              </div>
             </div>
-            <Button onClick={() => setIsFormOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t("createAssignment")}
-            </Button>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsBatchDeleteOpen(true)}
+              >
+                <Trash className="h-4 w-4 mr-2" />
+                {t("batchDelete")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setIsFormOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t("createAssignment")}
+              </Button>
+            </div>
           </div>
 
           {isLoading ? (
@@ -188,7 +417,11 @@ export function ShiftAssignmentList() {
                       {items.map((assignment) => (
                         <div
                           key={assignment.id}
-                          className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                          className={cn(
+                            "flex items-center justify-between p-3 rounded-lg border bg-card hover:inset-shadow-2xs transition-colors cursor-pointer",
+                            today && "border-primary bg-primary/10",
+                          )}
+                          onClick={() => setViewingAssignment(assignment)}
                         >
                           <div className="flex items-center gap-4">
                             <div>
@@ -212,43 +445,23 @@ export function ShiftAssignmentList() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant={
-                                assignment.status === "COMPLETED"
-                                  ? "default"
-                                  : assignment.status === "SWAPPED"
-                                    ? "secondary"
-                                    : assignment.status === "CANCELLED"
-                                      ? "destructive"
-                                      : "outline"
-                              }
-                            >
-                              {getEnumLabel(
-                                "shiftAssignmentStatus",
-                                assignment.status,
-                                tEnums,
-                              )}
-                            </Badge>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setViewingAssignment(assignment)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            {assignment.status === "SCHEDULED" && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  setDeletingAssignment(assignment)
-                                }
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
+                          <Badge
+                            variant={
+                              assignment.status === "COMPLETED"
+                                ? "default"
+                                : assignment.status === "SWAPPED"
+                                  ? "secondary"
+                                  : assignment.status === "CANCELLED"
+                                    ? "destructive"
+                                    : "outline"
+                            }
+                          >
+                            {getEnumLabel(
+                              "shiftAssignmentStatus",
+                              assignment.status,
+                              tEnums,
                             )}
-                          </div>
+                          </Badge>
                         </div>
                       ))}
                     </div>
@@ -265,7 +478,7 @@ export function ShiftAssignmentList() {
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft />
                   </Button>
                   <span className="text-sm text-muted-foreground">
                     {page + 1} / {totalPages}
@@ -278,7 +491,7 @@ export function ShiftAssignmentList() {
                     }
                     disabled={page >= totalPages - 1}
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight />
                   </Button>
                 </div>
               )}
@@ -294,41 +507,20 @@ export function ShiftAssignmentList() {
         onSuccess={fetchAssignments}
       />
 
+      {/* Batch Delete Dialog */}
+      <BatchDeleteDialog
+        open={isBatchDeleteOpen}
+        onOpenChange={setIsBatchDeleteOpen}
+        onSuccess={fetchAssignments}
+      />
+
       {/* Detail Dialog */}
       <ShiftDetailDialog
         open={!!viewingAssignment}
         onOpenChange={(open: boolean) => !open && setViewingAssignment(null)}
         assignment={viewingAssignment}
+        onDelete={fetchAssignments}
       />
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!deletingAssignment}
-        onOpenChange={(open: boolean) => !open && setDeletingAssignment(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCommon("delete")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deletingAssignment?.employeeName} -{" "}
-              {deletingAssignment?.shiftName ||
-                deletingAssignment?.shiftTemplate?.name}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>
-              {tCommon("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

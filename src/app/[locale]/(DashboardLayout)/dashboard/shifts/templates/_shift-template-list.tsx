@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { formatTime } from "@/lib/utils/format-date";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,14 +34,25 @@ import {
   deleteShiftTemplate,
 } from "@/lib/apis/shift-api";
 import { ShiftTemplateFormDialog } from "./_shift-template-form-dialog";
+import { ExplanationPanel } from "../../_components/_explanation-panel";
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_LIMIT = 20;
 
+interface ShiftTemplateListProps {
+  defaultStartTime: string;
+  defaultEndTime: string;
+  defaultBreakMinutes: number;
+}
+
 /**
  * Component danh sách mẫu ca làm việc với CRUD
  */
-export function ShiftTemplateList() {
+export function ShiftTemplateList({
+  defaultStartTime,
+  defaultEndTime,
+  defaultBreakMinutes,
+}: ShiftTemplateListProps) {
   const t = useTranslations("shifts");
   const tCommon = useTranslations("common");
 
@@ -122,15 +134,23 @@ export function ShiftTemplateList() {
     setIsFormOpen(true);
   };
 
-  // Format thời gian HH:mm
-  const formatTime = (time: string) => {
-    return time.substring(0, 5);
-  };
-
   return (
     <>
+      {/* Explanation Panel */}
+      <ExplanationPanel
+        title={t("explanations.templatesTitle")}
+        description={t("explanations.templatesDesc")}
+        tips={[
+          t("explanations.templatesTip1"),
+          t("explanations.templatesTip2"),
+        ]}
+        workModeNote={t("explanations.templatesNote")}
+        defaultCollapsed={true}
+        className="mb-4"
+      />
+
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex justify-between items-center mb-4">
             <div className="text-sm text-muted-foreground">
               {tCommon("total")}: {templates.length}
@@ -221,6 +241,9 @@ export function ShiftTemplateList() {
         template={editingTemplate}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        defaultStartTime={defaultStartTime}
+        defaultEndTime={defaultEndTime}
+        defaultBreakMinutes={defaultBreakMinutes}
       />
 
       {/* Delete Confirmation Dialog */}

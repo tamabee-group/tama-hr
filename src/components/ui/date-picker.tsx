@@ -56,6 +56,7 @@ export function DatePicker({
           className={cn(
             "h-9 justify-start text-left font-normal",
             !value && "text-muted-foreground",
+            "my-1.5",
             className,
           )}
         >

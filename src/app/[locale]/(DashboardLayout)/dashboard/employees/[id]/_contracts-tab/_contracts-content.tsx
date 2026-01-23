@@ -3,29 +3,30 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Plus, Info, ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { EmploymentContract } from "@/types/attendance-records";
+import { User } from "@/types/user";
 import {
   getEmployeeCurrentContract,
   getEmployeeContractHistory,
 } from "@/lib/apis/employee-detail-api";
-import { ContractFormDialog } from "./_contract-form-dialog";
+import { ContractFormDialog } from "../../../contracts/_contract-form-dialog";
 import { ContractHistory } from "./_contract-history";
 import { CurrentContractCard } from "./_current-contract-card";
+import { ExplanationPanel } from "../../../_components/_explanation-panel";
 
 interface ContractsContentProps {
   employeeId: number;
+  employee: User;
 }
 
-export function ContractsContent({ employeeId }: ContractsContentProps) {
+export function ContractsContent({
+  employeeId,
+  employee,
+}: ContractsContentProps) {
   const t = useTranslations("contracts");
   const tCommon = useTranslations("common");
 
@@ -58,7 +59,18 @@ export function ContractsContent({ employeeId }: ContractsContentProps) {
   }, [employeeId, tCommon]);
 
   useEffect(() => {
-    fetchData();
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (!isMounted) return;
+      await fetchData();
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [fetchData]);
 
   // Xử lý khi tạo/cập nhật thành công
@@ -86,40 +98,19 @@ export function ContractsContent({ employeeId }: ContractsContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* Hint box */}
-      <Collapsible>
-        <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
-          <CollapsibleTrigger className="flex w-full items-center justify-between p-4">
-            <div className="flex items-center gap-2">
-              <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                {tCommon("hint")}
-              </span>
-            </div>
-            <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="px-4 pb-4">
-              <div className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
-                <ul className="list-disc list-inside space-y-0.5 text-blue-600 dark:text-blue-400">
-                  <li>
-                    {t("hint1") ||
-                      "Mỗi nhân viên chỉ có 1 hợp đồng hiệu lực tại một thời điểm"}
-                  </li>
-                  <li>
-                    {t("hint2") ||
-                      "Hợp đồng mới sẽ tự động thay thế hợp đồng cũ khi có hiệu lực"}
-                  </li>
-                  <li>
-                    {t("hint3") ||
-                      "Có thể liên kết hợp đồng với cấu hình lương"}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </CollapsibleContent>
-        </div>
-      </Collapsible>
+      {/* Explanation Panel */}
+      <ExplanationPanel
+        title={t("guide.title")}
+        description={t("guide.description")}
+        tips={[
+          t("guide.tip1"),
+          t("guide.tip2"),
+          t("guide.tip3"),
+          t("guide.tip4"),
+          t("guide.tip5"),
+        ]}
+        defaultCollapsed={true}
+      />
 
       <div className="flex flex-col-reverse lg:flex-row gap-6">
         {/* Left: History Table */}
@@ -163,14 +154,15 @@ export function ContractsContent({ employeeId }: ContractsContentProps) {
 
       {/* Form Dialog */}
       <ContractFormDialog
-        employeeId={employeeId}
-        existingContract={editingContract}
         open={showFormDialog}
-        onOpenChange={(open) => {
-          setShowFormDialog(open);
-          if (!open) setEditingContract(null);
+        onClose={() => {
+          setShowFormDialog(false);
+          setEditingContract(null);
         }}
         onSuccess={handleSuccess}
+        existingContract={editingContract}
+        preselectedEmployee={employee}
+        currentContract={currentContract}
       />
     </div>
   );

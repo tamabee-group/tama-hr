@@ -301,6 +301,8 @@ export const PAYROLL_ITEM_STATUSES = [
   "CALCULATED",
   "ADJUSTED",
   "CONFIRMED",
+  "FINALIZED",
+  "PAID",
 ] as const;
 
 export type PayrollItemStatus = (typeof PAYROLL_ITEM_STATUSES)[number];
@@ -312,6 +314,8 @@ export const PAYROLL_ITEM_STATUS_COLORS: Record<
   CALCULATED: "info",
   ADJUSTED: "warning",
   CONFIRMED: "success",
+  FINALIZED: "info",
+  PAID: "success",
 };
 
 // ============================================

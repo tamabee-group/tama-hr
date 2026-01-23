@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
@@ -9,18 +7,18 @@ import { Button } from "@/components/ui/button";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import {
   PayrollStatusBadge,
-  PaymentStatusBadge,
+  PayrollItemStatusBadge,
 } from "@/app/[locale]/_components/_shared/_status-badge";
 import { CurrencyDisplay } from "@/app/[locale]/_components/_shared/_currency-display";
 
-import { PayrollRecord } from "@/types/attendance-records";
+import { PayrollItem } from "@/types/attendance-records";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import { Spinner } from "@/components/ui/spinner";
 
 interface PayslipTableProps {
-  payslips: PayrollRecord[];
-  onViewDetail: (payslip: PayrollRecord) => void;
-  onDownload?: (payslip: PayrollRecord) => void;
+  payslips: PayrollItem[];
+  onViewDetail: (payslip: PayrollItem) => void;
+  onDownload?: (payslip: PayrollItem) => void;
   downloadingId?: number | null;
   loading?: boolean;
 }
@@ -52,7 +50,7 @@ export function PayslipTable({
   );
 
   // Table columns
-  const columns: ColumnDef<PayrollRecord>[] = useMemo(
+  const columns: ColumnDef<PayrollItem>[] = useMemo(
     () => [
       {
         accessorKey: "stt",
@@ -65,7 +63,9 @@ export function PayslipTable({
         header: t("table.period"),
         cell: ({ row }) => (
           <span className="font-medium text-primary underline underline-offset-3 decoration-(--blue) hover:text-(--blue-light)">
-            {formatPeriod(row.original.year, row.original.month)}
+            {row.original.year && row.original.month
+              ? formatPeriod(row.original.year, row.original.month)
+              : "-"}
           </span>
         ),
       },
@@ -73,14 +73,9 @@ export function PayslipTable({
         accessorKey: "status",
         header: tCommon("status"),
         cell: ({ row }) => {
-          // Nếu đã thanh toán thì chỉ hiện PaymentStatus, không hiện PayrollStatus
-          if (row.original.paymentStatus === "PAID") {
-            return <PaymentStatusBadge status={row.original.paymentStatus} />;
-          }
           return (
             <div className="flex gap-1">
-              <PayrollStatusBadge status={row.original.status} />
-              <PaymentStatusBadge status={row.original.paymentStatus} />
+              <PayrollItemStatusBadge status={row.original.status} />
             </div>
           );
         },
@@ -129,7 +124,7 @@ export function PayslipTable({
             {
               id: "actions",
               header: "",
-              cell: ({ row }: { row: { original: PayrollRecord } }) => (
+              cell: ({ row }: { row: { original: PayrollItem } }) => (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -147,7 +142,7 @@ export function PayslipTable({
                 </Button>
               ),
               size: 50,
-            } as ColumnDef<PayrollRecord>,
+            } as ColumnDef<PayrollItem>,
           ]
         : []),
     ],

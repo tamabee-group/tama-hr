@@ -173,5 +173,18 @@
   "itemStatusCalculated": "計算済み",
   "itemStatusAdjusted": "調整済み",
   "itemStatusConfirmed": "確認済み",
-  "newNetSalary": "新しい手取り額"
+  "newNetSalary": "新しい手取り額",
+  "adjustmentDescription": "調整説明",
+  "adjustmentAmountHint": "ボーナスは正の値、控除は負の値を入力",
+  "adjustmentSuccess": "給与を調整しました",
+  "salaryType": "給与タイプ",
+  "baseSalaryAmount": "基本給額",
+  "calculatedBase": "計算済み基本給",
+  "regularOT": "通常残業",
+  "nightOT": "深夜残業",
+  "currentNetSalary": "現在の手取り額",
+  "newNetSalaryAfterAdjustment": "新しい手取り額",
+  "viewPayslips": "給与明細を見る",
+  "payslipHistory": "給与明細履歴",
+  "viewAllPayslips": "すべての給与明細を見る"
 }

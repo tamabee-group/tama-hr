@@ -2,7 +2,6 @@
   "title": "Company Settings",
   "description": "Configure attendance, payroll and company policies",
   "tabs": {
-    "workMode": "Work Mode",
     "attendance": "Attendance",
     "payroll": "Payroll",
     "overtime": "Overtime",
@@ -173,38 +172,14 @@
     "title": "Confirm Save Changes",
     "description": "Save these settings changes?"
   },
-  "workMode": {
-    "title": "Work Mode",
-    "description": "Select the work mode that suits your company",
-    "fixedHours": "Fixed Hours",
-    "fixedHoursDesc": "Employees work fixed hours daily without shift scheduling. Suitable for offices and administrative companies.",
-    "flexibleShift": "Flexible/Shift-based",
-    "flexibleShiftDesc": "Employees can be assigned to different shifts. Suitable for factories, retail, and 24/7 services.",
-    "currentMode": "Current Mode",
-    "changeMode": "Change Mode",
-    "confirmChange": "Confirm Work Mode Change",
-    "confirmChangeDesc": "Changing the work mode will affect how the system displays and calculates. Are you sure you want to change?",
-    "switchToFixed": "Switch to Fixed Hours",
-    "switchToFlexible": "Switch to Flexible/Shift-based",
-    "schedulesWillBeInactive": "Existing schedules will be marked as inactive.",
-    "defaultHours": "Default Working Hours",
-    "defaultBreak": "Default Break Time"
-  },
   "explanation": {
-    "tips": "Tips",
-    "workModeNote": "Work Mode Note"
+    "tips": "Tips"
   },
   "explanations": {
-    "workModeTitle": "Work Mode Selection Guide",
-    "workModeDesc": "Work mode determines how the system manages working hours and calculates attendance for employees. Choose the mode that fits your company's operations.",
-    "workModeTip1": "Fixed Hours is suitable for offices and administrative companies with fixed working hours",
-    "workModeTip2": "Flexible/Shift-based is suitable for factories, retail, and 24/7 services",
-    "workModeTip3": "You can change the mode anytime, existing schedules will be preserved",
     "attendanceTitle": "Attendance Configuration Guide",
     "attendanceDesc": "Set up default working hours, time rounding rules, and check-in options for employees.",
     "attendanceTip1": "Configure late/early leave grace periods to avoid unnecessary penalties",
     "attendanceTip2": "Enable GPS requirement if you need to control check-in locations",
-    "attendanceWorkModeNote": "In Fixed Hours mode, default working hours apply to all employees",
     "payrollTitle": "Payroll Configuration Guide",
     "payrollDesc": "Set up default salary type, pay day, cutoff day, and payroll calculation rules.",
     "payrollTip1": "Cutoff day should be at least 5 days before pay day for processing time",

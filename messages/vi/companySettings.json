@@ -2,7 +2,6 @@
   "title": "Thiết lập quy định",
   "description": "Cấu hình chấm công, lương và các quy định của công ty",
   "tabs": {
-    "workMode": "Chế độ làm việc",
     "attendance": "Chấm công",
     "payroll": "Lương",
     "overtime": "Tăng ca",
@@ -173,38 +172,14 @@
     "title": "Xác nhận lưu thay đổi",
     "description": "Lưu các thay đổi cài đặt này?"
   },
-  "workMode": {
-    "title": "Chế độ làm việc",
-    "description": "Chọn chế độ làm việc phù hợp với công ty của bạn",
-    "fixedHours": "Giờ cố định",
-    "fixedHoursDesc": "Nhân viên làm việc theo giờ cố định hàng ngày, không cần phân ca. Phù hợp với văn phòng, công ty hành chính.",
-    "flexibleShift": "Linh hoạt/Theo ca",
-    "flexibleShiftDesc": "Nhân viên có thể được phân vào các ca làm việc khác nhau. Phù hợp với nhà máy, bán lẻ, dịch vụ 24/7.",
-    "currentMode": "Chế độ hiện tại",
-    "changeMode": "Thay đổi chế độ",
-    "confirmChange": "Xác nhận thay đổi chế độ làm việc",
-    "confirmChangeDesc": "Hành động này sẽ ảnh hưởng đến cách hệ thống hiển thị và tính toán. Bạn có chắc chắn muốn thay đổi?",
-    "switchToFixed": "Chuyển sang giờ cố định",
-    "switchToFlexible": "Chuyển sang linh hoạt/theo ca",
-    "schedulesWillBeInactive": "Các lịch làm việc hiện có sẽ được đánh dấu không hoạt động.",
-    "defaultHours": "Giờ làm việc mặc định",
-    "defaultBreak": "Thời gian nghỉ mặc định"
-  },
   "explanation": {
-    "tips": "Mẹo",
-    "workModeNote": "Lưu ý về chế độ làm việc"
+    "tips": "Mẹo"
   },
   "explanations": {
-    "workModeTitle": "Hướng dẫn chọn chế độ làm việc",
-    "workModeDesc": "Chế độ làm việc quyết định cách hệ thống quản lý giờ làm và tính công cho nhân viên. Chọn chế độ phù hợp với mô hình hoạt động của công ty.",
-    "workModeTip1": "Giờ cố định phù hợp với văn phòng, công ty hành chính có giờ làm việc cố định",
-    "workModeTip2": "Linh hoạt/Theo ca phù hợp với nhà máy, bán lẻ, dịch vụ 24/7",
-    "workModeTip3": "Bạn có thể thay đổi chế độ bất cứ lúc nào, các lịch làm việc cũ sẽ được giữ lại",
     "attendanceTitle": "Hướng dẫn cấu hình chấm công",
     "attendanceDesc": "Thiết lập giờ làm việc mặc định, quy tắc làm tròn thời gian và các tùy chọn chấm công cho nhân viên.",
     "attendanceTip1": "Cấu hình thời gian cho phép đi muộn/về sớm để tránh phạt nhân viên không cần thiết",
     "attendanceTip2": "Bật yêu cầu GPS nếu cần kiểm soát vị trí chấm công",
-    "attendanceWorkModeNote": "Ở chế độ Giờ cố định, giờ làm việc mặc định sẽ áp dụng cho tất cả nhân viên",
     "payrollTitle": "Hướng dẫn cấu hình lương",
     "payrollDesc": "Thiết lập loại lương mặc định, ngày trả lương, ngày chốt công và các quy tắc tính lương.",
     "payrollTip1": "Ngày chốt công nên trước ngày trả lương ít nhất 5 ngày để có thời gian xử lý",

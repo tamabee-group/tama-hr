@@ -128,17 +128,39 @@ export function formatMonth(
 }
 
 /**
- * Format thời gian theo locale
- * Format: HH:mm
+ * Format thời gian từ nhiều định dạng khác nhau
+ * - Date object
+ * - ISO datetime string (2024-01-21T09:00:00)
+ * - Time string (09:00:00, 09:00)
+ * Trả về chuỗi thời gian dạng HH:mm
  *
- * @param time - Date object, chuỗi thời gian ISO, hoặc null/undefined
- * @returns Chuỗi thời gian đã format hoặc "-" nếu invalid
+ * @param time - Date object, ISO datetime, hoặc time string
+ * @param fallback - Giá trị fallback nếu invalid (default: "-")
+ * @returns Chuỗi thời gian đã format hoặc fallback nếu invalid
+ *
+ * @example
+ * formatTime(new Date()) // "09:30"
+ * formatTime("2024-01-21T09:00:00") // "09:00"
+ * formatTime("09:00:00") // "09:00"
+ * formatTime("09:00") // "09:00"
+ * formatTime(null) // "-"
+ * formatTime(null, "--:--") // "--:--"
  */
-export function formatTime(time: Date | string | null | undefined): string {
-  if (!time) return "-";
+export function formatTime(
+  time: Date | string | null | undefined,
+  fallback: string = "-",
+): string {
+  if (!time) return fallback;
 
+  // Nếu là string và có dấu : nhưng không có T (time string, không phải ISO datetime)
+  if (typeof time === "string" && time.includes(":") && !time.includes("T")) {
+    // Xử lý time string: "09:00:00" hoặc "09:00"
+    return time.substring(0, 5); // Lấy HH:mm
+  }
+
+  // Xử lý Date object hoặc ISO datetime string
   const d = typeof time === "string" ? new Date(time) : time;
-  if (isNaN(d.getTime())) return "-";
+  if (isNaN(d.getTime())) return fallback;
 
   const hours = d.getHours().toString().padStart(2, "0");
   const minutes = d.getMinutes().toString().padStart(2, "0");
@@ -230,7 +252,7 @@ export function getDayOfWeek(
   const dayIndex = d.getDay(); // 0 = Sunday, 1 = Monday, ...
 
   const dayNames: Record<SupportedLocale, string[]> = {
-    vi: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+    vi: ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
     en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     ja: ["日", "月", "火", "水", "木", "金", "土"],
   };

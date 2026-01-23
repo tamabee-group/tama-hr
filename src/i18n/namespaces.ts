@@ -31,7 +31,6 @@ export const NAMESPACES = [
   "referrals",
   "reports",
   "salaryConfig",
-  "schedules",
   "settings",
   "shifts",
   "sidebar",

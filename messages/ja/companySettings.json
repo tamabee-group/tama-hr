@@ -2,7 +2,6 @@
   "title": "会社設定",
   "description": "勤怠、給与、会社ポリシーの設定",
   "tabs": {
-    "workMode": "勤務モード",
     "attendance": "勤怠",
     "payroll": "給与",
     "overtime": "残業",
@@ -173,38 +172,14 @@
     "title": "変更の保存を確認",
     "description": "これらの設定変更を保存してもよろしいですか？"
   },
-  "workMode": {
-    "title": "勤務モード",
-    "description": "会社に適した勤務モードを選択してください",
-    "fixedHours": "固定時間",
-    "fixedHoursDesc": "従業員はシフトスケジュールなしで毎日固定時間で勤務します。オフィスや管理会社に適しています。",
-    "flexibleShift": "フレキシブル/シフト制",
-    "flexibleShiftDesc": "従業員は異なるシフトに割り当てることができます。工場、小売、24時間サービスに適しています。",
-    "currentMode": "現在のモード",
-    "changeMode": "モードを変更",
-    "confirmChange": "勤務モード変更の確認",
-    "confirmChangeDesc": "勤務モードを変更すると、システムの表示と計算方法に影響します。変更してもよろしいですか？",
-    "switchToFixed": "固定時間に切り替え",
-    "switchToFlexible": "フレキシブル/シフト制に切り替え",
-    "schedulesWillBeInactive": "既存のスケジュールは非アクティブとしてマークされます。",
-    "defaultHours": "デフォルト勤務時間",
-    "defaultBreak": "デフォルト休憩時間"
-  },
   "explanation": {
-    "tips": "ヒント",
-    "workModeNote": "勤務モードに関する注意"
+    "tips": "ヒント"
   },
   "explanations": {
-    "workModeTitle": "勤務モード選択ガイド",
-    "workModeDesc": "勤務モードは、システムが従業員の勤務時間を管理し、勤怠を計算する方法を決定します。会社の運営に合ったモードを選択してください。",
-    "workModeTip1": "固定時間は、固定勤務時間のオフィスや管理会社に適しています",
-    "workModeTip2": "フレキシブル/シフト制は、工場、小売、24時間サービスに適しています",
-    "workModeTip3": "いつでもモードを変更できます。既存のスケジュールは保持されます",
     "attendanceTitle": "勤怠設定ガイド",
     "attendanceDesc": "デフォルトの勤務時間、時間丸めルール、従業員の打刻オプションを設定します。",
     "attendanceTip1": "不要なペナルティを避けるために、遅刻/早退の許容時間を設定してください",
     "attendanceTip2": "打刻場所を管理する必要がある場合は、GPS要件を有効にしてください",
-    "attendanceWorkModeNote": "固定時間モードでは、デフォルトの勤務時間がすべての従業員に適用されます",
     "payrollTitle": "給与設定ガイド",
     "payrollDesc": "デフォルトの給与タイプ、給料日、締め日、給与計算ルールを設定します。",
     "payrollTip1": "処理時間のために、締め日は給料日の少なくとも5日前にする必要があります",

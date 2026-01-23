@@ -21,10 +21,16 @@ src/
 │   │       ├── deposits/       # Quản lý nạp tiền
 │   │       ├── plans/          # Quản lý gói dịch vụ
 │   │       └── settings/       # Cấu hình platform
-│   ├── (DashboardLayout)/      # HR features (tất cả users kể cả Tamabee)
+│   ├── (PersonalLayout)/       # Personal workspace (all authenticated users)
+│   │   └── me/
+│   │       ├── adjustments/    # Lịch sử điều chỉnh
+│   │       ├── commissions/    # Hoa hồng (Tamabee employees)
+│   │       ├── leave/          # Nghỉ phép
+│   │       └── schedule/       # Lịch làm việc
+│   ├── (DashboardLayout)/      # HR Management (Admin/Manager only)
 │   │   └── dashboard/
-│   │       ├── attendance/     # Chấm công
-│   │       ├── payroll/        # Bảng lương
+│   │       ├── attendance/     # Quản lý chấm công
+│   │       ├── payroll/        # Quản lý lương
 │   │       ├── employees/      # Quản lý nhân viên
 │   │       ├── settings/       # Cấu hình công ty
 │   │       └── ...
@@ -43,12 +49,13 @@ src/
 
 ## Layout Access
 
-| Layout          | Path                             | Roles                                   |
-| --------------- | -------------------------------- | --------------------------------------- |
-| HomeLayout      | `/(HomeLayout)`                  | Public                                  |
-| NotFooter       | `/(NotFooter)`                   | Public (auth)                           |
-| TamabeeLayout   | `/(TamabeeLayout)/admin/*`       | ADMIN_TAMABEE, MANAGER_TAMABEE          |
-| DashboardLayout | `/(DashboardLayout)/dashboard/*` | All authenticated users (kể cả Tamabee) |
+| Layout          | Path                             | Roles                                |
+| --------------- | -------------------------------- | ------------------------------------ |
+| HomeLayout      | `/(HomeLayout)`                  | Public                               |
+| NotFooter       | `/(NotFooter)`                   | Public (auth)                        |
+| TamabeeLayout   | `/(TamabeeLayout)/admin/*`       | ADMIN_TAMABEE, MANAGER_TAMABEE       |
+| PersonalLayout  | `/(PersonalLayout)/me/*`         | All authenticated users              |
+| DashboardLayout | `/(DashboardLayout)/dashboard/*` | ADMIN*\*, MANAGER*\* (HR Management) |
 
 ## Component Placement
 

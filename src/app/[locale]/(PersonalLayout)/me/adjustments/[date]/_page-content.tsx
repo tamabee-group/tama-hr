@@ -6,9 +6,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AttendanceDayDetail } from "../_attendance-day-detail";
-import { AdjustmentDialog } from "../_adjustment-dialog";
-import { BreakTimeline } from "../_break-timeline";
+import { AttendanceDayDetail } from "../../_attendance-day-detail";
+import { AdjustmentDialog } from "../../_adjustment-dialog";
+import { BreakTimeline } from "../../_break-timeline";
 import { unifiedAttendanceApi } from "@/lib/apis/unified-attendance-api";
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
 import type {

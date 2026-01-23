@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
@@ -18,12 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { companySettingsApi } from "@/lib/apis/company-settings-api";
-import {
-  CompanySettings,
-  BreakConfig,
-  WorkMode,
-  WorkModeConfig,
-} from "@/types/attendance-config";
+import { CompanySettings, BreakConfig } from "@/types/attendance-config";
 import { toast } from "sonner";
 import { AttendanceConfigForm } from "./_attendance-config-form";
 import { PayrollConfigForm } from "./_payroll-config-form";
@@ -39,17 +34,11 @@ import {
   MinusCircle,
   LucideIcon,
   Save,
-  Settings2,
 } from "lucide-react";
-import {
-  getVisibleSettingsTabs,
-  SettingsTabKey,
-} from "@/lib/utils/settings-visibility";
 import { Spinner } from "@/components/ui/spinner";
 import { ExplanationPanel } from "../_components/_explanation-panel";
-import { WorkModeSelector } from "./_work-mode-selector";
 
-type TabKey = SettingsTabKey;
+type TabKey = "attendance" | "payroll" | "overtime" | "allowance" | "deduction";
 
 interface TabItem {
   key: TabKey;
@@ -57,7 +46,6 @@ interface TabItem {
 }
 
 const TAB_ITEMS: TabItem[] = [
-  { key: "workMode", icon: Settings2 },
   { key: "attendance", icon: Clock },
   { key: "payroll", icon: Wallet },
   { key: "overtime", icon: Timer },
@@ -72,24 +60,13 @@ interface TabExplanation {
   titleKey: string;
   descKey: string;
   tipsKeys?: string[];
-  workModeNoteKey?: string;
 }
 
 const TAB_EXPLANATIONS: Record<TabKey, TabExplanation> = {
-  workMode: {
-    titleKey: "explanations.workModeTitle",
-    descKey: "explanations.workModeDesc",
-    tipsKeys: [
-      "explanations.workModeTip1",
-      "explanations.workModeTip2",
-      "explanations.workModeTip3",
-    ],
-  },
   attendance: {
     titleKey: "explanations.attendanceTitle",
     descKey: "explanations.attendanceDesc",
     tipsKeys: ["explanations.attendanceTip1", "explanations.attendanceTip2"],
-    workModeNoteKey: "explanations.attendanceWorkModeNote",
   },
   payroll: {
     titleKey: "explanations.payrollTitle",
@@ -154,11 +131,8 @@ export function SettingsTabs() {
   const tCommon = useTranslations("common");
 
   const [settings, setSettings] = useState<CompanySettings | null>(null);
-  const [workModeConfig, setWorkModeConfig] = useState<WorkModeConfig | null>(
-    null,
-  );
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabKey>("workMode");
+  const [activeTab, setActiveTab] = useState<TabKey>("attendance");
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -169,12 +143,8 @@ export function SettingsTabs() {
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [settingsData, workModeData] = await Promise.all([
-        companySettingsApi.getSettings(),
-        companySettingsApi.getWorkModeConfig(),
-      ]);
+      const settingsData = await companySettingsApi.getSettings();
       setSettings(settingsData);
-      setWorkModeConfig(workModeData);
     } catch (error) {
       console.error("Failed to load settings:", error);
       toast.error(tCommon("errorLoading"));
@@ -210,53 +180,6 @@ export function SettingsTabs() {
   };
 
   /**
-   * Xử lý thay đổi work mode
-   * Khi chuyển sang FIXED_HOURS, sử dụng default hours từ attendance config nếu chưa có
-   */
-  const handleWorkModeChange = async (newMode: WorkMode) => {
-    try {
-      // Nếu chuyển sang FIXED_HOURS và chưa có default hours, lấy từ attendance config
-      let defaultWorkStartTime = workModeConfig?.defaultWorkStartTime;
-      let defaultWorkEndTime = workModeConfig?.defaultWorkEndTime;
-      let defaultBreakMinutes = workModeConfig?.defaultBreakMinutes;
-
-      if (newMode === "FIXED_HOURS") {
-        if (
-          !defaultWorkStartTime &&
-          settings?.attendanceConfig?.defaultWorkStartTime
-        ) {
-          defaultWorkStartTime = settings.attendanceConfig.defaultWorkStartTime;
-        }
-        if (
-          !defaultWorkEndTime &&
-          settings?.attendanceConfig?.defaultWorkEndTime
-        ) {
-          defaultWorkEndTime = settings.attendanceConfig.defaultWorkEndTime;
-        }
-        if (defaultBreakMinutes === null || defaultBreakMinutes === undefined) {
-          defaultBreakMinutes =
-            settings?.attendanceConfig?.defaultBreakMinutes ?? 60;
-        }
-      }
-
-      const updated = await companySettingsApi.updateWorkModeConfig({
-        mode: newMode,
-        defaultWorkStartTime,
-        defaultWorkEndTime,
-        defaultBreakMinutes,
-      });
-      setWorkModeConfig(updated);
-      toast.success(tCommon("saveSuccess"));
-      // Reload settings để cập nhật các config liên quan
-      loadSettings();
-    } catch (error) {
-      console.error("Failed to update work mode:", error);
-      toast.error(tCommon("errorSaving"));
-      throw error;
-    }
-  };
-
-  /**
    * Render explanation panel cho tab hiện tại
    */
   const renderExplanationPanel = () => {
@@ -264,17 +187,12 @@ export function SettingsTabs() {
     if (!explanation) return null;
 
     const tips = explanation.tipsKeys?.map((key) => t(key));
-    const workModeNote =
-      explanation.workModeNoteKey && workModeConfig?.mode === "FIXED_HOURS"
-        ? t(explanation.workModeNoteKey)
-        : undefined;
 
     return (
       <ExplanationPanel
         title={t(explanation.titleKey)}
         description={t(explanation.descKey)}
         tips={tips}
-        workModeNote={workModeNote}
         defaultCollapsed={true}
         className="mb-6"
       />
@@ -288,11 +206,6 @@ export function SettingsTabs() {
   if (!settings) {
     return <Spinner type="triangle" />;
   }
-
-  // Lọc các tabs hiển thị dựa trên work mode
-  const visibleTabs = workModeConfig
-    ? getVisibleSettingsTabs(TAB_ITEMS, workModeConfig.mode)
-    : TAB_ITEMS;
 
   return (
     <div className="space-y-6">
@@ -308,7 +221,7 @@ export function SettingsTabs() {
       {/* Mobile & Tablet: Horizontal scroll tabs */}
       <ScrollArea className="md:hidden w-full">
         <div className="flex gap-2 pb-3">
-          {visibleTabs.map((item) => (
+          {TAB_ITEMS.map((item) => (
             <Button
               key={item.key}
               variant={activeTab === item.key ? "default" : "outline"}
@@ -334,21 +247,6 @@ export function SettingsTabs() {
         <div className="flex-1 min-w-0">
           {/* Explanation Panel cho tab hiện tại */}
           {renderExplanationPanel()}
-
-          {/* Work Mode Tab */}
-          {activeTab === "workMode" && workModeConfig && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("workMode.title")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <WorkModeSelector
-                  currentMode={workModeConfig.mode}
-                  onModeChange={handleWorkModeChange}
-                />
-              </CardContent>
-            </Card>
-          )}
 
           {activeTab === "attendance" && (
             <AttendanceConfigForm
@@ -409,7 +307,7 @@ export function SettingsTabs() {
           <Card className="py-3">
             <CardContent className="px-3">
               <nav className="flex flex-col gap-1">
-                {visibleTabs.map((item) => (
+                {TAB_ITEMS.map((item) => (
                   <Button
                     key={item.key}
                     variant="ghost"
@@ -430,10 +328,7 @@ export function SettingsTabs() {
           </Card>
 
           {/* Configuration Summary Card */}
-          <ConfigurationSummaryCard
-            settings={settings}
-            workModeConfig={workModeConfig}
-          />
+          <ConfigurationSummaryCard settings={settings} />
         </div>
       </div>
 

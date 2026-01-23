@@ -6,6 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
   LogIn,
@@ -72,6 +82,8 @@ export function EmployeeAttendancePageContent() {
   const [currentTime, setCurrentTime] = React.useState(new Date());
   const [selectedMonth, setSelectedMonth] = React.useState(new Date());
   const [calendarRefreshKey, setCalendarRefreshKey] = React.useState(0);
+  const [showSecondShiftConfirm, setShowSecondShiftConfirm] =
+    React.useState(false);
 
   // Cập nhật thời gian mỗi giây
   React.useEffect(() => {
@@ -139,6 +151,16 @@ export function EmployeeAttendancePageContent() {
 
   // Handlers sử dụng unified API
   const handleCheckIn = async () => {
+    // Kiểm tra nếu đã check-out rồi (ca thứ 2)
+    if (todayRecord?.originalCheckOut) {
+      setShowSecondShiftConfirm(true);
+      return;
+    }
+
+    await performCheckIn();
+  };
+
+  const performCheckIn = async () => {
     try {
       setIsSubmitting(true);
       await unifiedAttendanceApi.checkIn({});
@@ -150,6 +172,7 @@ export function EmployeeAttendancePageContent() {
       toast.error(getErrorMessage(errorCode, tErrors));
     } finally {
       setIsSubmitting(false);
+      setShowSecondShiftConfirm(false);
     }
   };
 
@@ -388,6 +411,48 @@ export function EmployeeAttendancePageContent() {
           </Card>
         </div>
       </div>
+
+      {/* Second Shift Confirmation Dialog */}
+      <AlertDialog
+        open={showSecondShiftConfirm}
+        onOpenChange={setShowSecondShiftConfirm}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("secondShiftConfirm.title")}</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                {t("secondShiftConfirm.description", {
+                  time: todayRecord?.originalCheckOut
+                    ? formatTime(todayRecord.originalCheckOut)
+                    : "",
+                  checkOutTime: todayRecord?.originalCheckOut
+                    ? formatTime(todayRecord.originalCheckOut)
+                    : "",
+                })}
+              </p>
+              <p className="text-orange-600 font-medium">
+                {t("secondShiftConfirm.warning")}
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSubmitting}>
+              {t("secondShiftConfirm.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={performCheckIn}
+              disabled={isSubmitting}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isSubmitting && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
+              {t("secondShiftConfirm.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

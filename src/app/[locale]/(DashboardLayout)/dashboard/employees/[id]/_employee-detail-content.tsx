@@ -183,7 +183,7 @@ export function EmployeeDetailContent({
         <TabsContent value={EmployeeDetailTab.CONTRACTS} className="mt-6">
           {loadedTabs.has(EmployeeDetailTab.CONTRACTS) && (
             <Suspense fallback={<TabSkeleton />}>
-              <ContractsContent employeeId={employee.id} />
+              <ContractsContent employeeId={employee.id} employee={employee} />
             </Suspense>
           )}
         </TabsContent>

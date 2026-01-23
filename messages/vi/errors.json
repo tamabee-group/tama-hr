@@ -76,5 +76,6 @@
   "DEPARTMENT_HAS_EMPLOYEES": "Không thể xóa phòng ban có nhân viên.",
   "DEPARTMENT_HAS_CHILDREN": "Không thể xóa phòng ban có phòng ban con.",
   "DEPARTMENT_CIRCULAR_REFERENCE": "Không thể tạo vòng lặp trong cấu trúc phòng ban.",
-  "DEPARTMENT_MANAGER_NOT_FOUND": "Không tìm thấy người quản lý phòng ban."
+  "DEPARTMENT_MANAGER_NOT_FOUND": "Không tìm thấy người quản lý phòng ban.",
+  "SHIFT_OVERLAP_EXISTS": "Ca làm việc bị trùng giờ với ca khác trong cùng ngày."
 }

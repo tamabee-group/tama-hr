@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Plus, Trash2, AlertTriangle, XCircle } from "lucide-react";
+import { Plus, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
@@ -16,18 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
-import { contractApi, ContractFilters } from "@/lib/apis/contract-api";
+import { contractApi } from "@/lib/apis/contract-api";
 import { EmploymentContract } from "@/types/attendance-records";
 import {
   CONTRACT_TYPE_COLORS,
@@ -38,16 +28,15 @@ import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import { ExpiringContractsBadge } from "./_expiring-contracts-badge";
-import { ContractFormDialog } from "./_contract-form";
 import { ContractDetailDialog } from "./_contract-detail-dialog";
-import { TerminateContractDialog } from "./_terminate-contract-dialog";
+import { ContractFormDialog } from "./_contract-form-dialog";
 
-const DEFAULT_PAGE = 0;
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 50;
 
 /**
  * Component bảng danh sách hợp đồng lao động
  * Hiển thị contracts với status, highlighting cho contracts sắp hết hạn
+ * Filter trên client-side để tránh gọi API nhiều lần
  */
 export function ContractTable() {
   const t = useTranslations("contracts");
@@ -57,50 +46,103 @@ export function ContractTable() {
   const locale = useLocale() as SupportedLocale;
 
   // State
-  const [contracts, setContracts] = useState<EmploymentContract[]>([]);
+  const [allContracts, setAllContracts] = useState<EmploymentContract[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(DEFAULT_PAGE);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
 
   // Filter state
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterEmployee, setFilterEmployee] = useState<string>("all");
 
   // Dialog state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedContract, setSelectedContract] =
     useState<EmploymentContract | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
-  const [terminateTarget, setTerminateTarget] =
-    useState<EmploymentContract | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<EmploymentContract | null>(
-    null,
-  );
-  const [deleting, setDeleting] = useState(false);
+  const [selectedEmployeeIdForCreate, setSelectedEmployeeIdForCreate] =
+    useState<number | null>(null);
 
-  // Fetch contracts
+  // Fetch contracts từ API
   const fetchContracts = useCallback(async () => {
     setLoading(true);
     try {
-      const filters: ContractFilters = {};
-      if (filterType !== "all") filters.contractType = filterType;
-      if (filterStatus !== "all") filters.status = filterStatus;
-
-      const data = await contractApi.getContracts(page, DEFAULT_LIMIT, filters);
-      setContracts(data.content);
-      setTotalPages(data.totalPages);
-      setTotalElements(data.totalElements);
+      const data = await contractApi.getContracts(0, DEFAULT_LIMIT, {});
+      setAllContracts(data.content);
     } catch (error) {
       toast.error(getErrorMessage((error as Error).message, tErrors));
     } finally {
       setLoading(false);
     }
-  }, [page, filterType, filterStatus, tErrors]);
+  }, [tErrors]);
 
   useEffect(() => {
     fetchContracts();
   }, [fetchContracts]);
+
+  // Lấy danh sách nhân viên unique từ contracts
+  const employeeOptions = useMemo(() => {
+    const uniqueEmployees = new Map<
+      number,
+      { id: number; code: string; name: string }
+    >();
+    allContracts.forEach((contract) => {
+      if (contract.employeeId && !uniqueEmployees.has(contract.employeeId)) {
+        uniqueEmployees.set(contract.employeeId, {
+          id: contract.employeeId,
+          code: contract.employeeCode || "",
+          name: contract.employeeName || "",
+        });
+      }
+    });
+    return Array.from(uniqueEmployees.values()).sort((a, b) =>
+      a.code.localeCompare(b.code),
+    );
+  }, [allContracts]);
+
+  // Tìm current contract của employee được chọn (để tính startDate mặc định)
+  const currentContractForSelectedEmployee = useMemo(() => {
+    if (!selectedEmployeeIdForCreate) return null;
+    return (
+      allContracts.find(
+        (c) =>
+          c.employeeId === selectedEmployeeIdForCreate && c.status === "ACTIVE",
+      ) || null
+    );
+  }, [allContracts, selectedEmployeeIdForCreate]);
+
+  // Filter contracts trên client-side
+  const filteredContracts = useMemo(() => {
+    let filtered = [...allContracts];
+
+    // Filter by employee
+    if (filterEmployee !== "all") {
+      filtered = filtered.filter(
+        (c) => c.employeeId === Number(filterEmployee),
+      );
+    }
+
+    // Filter by type
+    if (filterType !== "all") {
+      filtered = filtered.filter((c) => c.contractType === filterType);
+    }
+
+    // Filter by status
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((c) => c.status === filterStatus);
+    }
+
+    // Sort theo employeeCode, sau đó contractNumber
+    filtered.sort((a, b) => {
+      const codeA = a.employeeCode || "";
+      const codeB = b.employeeCode || "";
+      if (codeA !== codeB) {
+        return codeA.localeCompare(codeB);
+      }
+      return (a.contractNumber || "").localeCompare(b.contractNumber || "");
+    });
+
+    return filtered;
+  }, [allContracts, filterEmployee, filterType, filterStatus]);
 
   // Handle view detail
   const handleViewDetail = (contract: EmploymentContract) => {
@@ -108,27 +150,10 @@ export function ContractTable() {
     setShowDetailDialog(true);
   };
 
-  // Handle delete
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-
-    setDeleting(true);
-    try {
-      await contractApi.deleteContract(deleteTarget.id);
-      toast.success(t("deleteSuccess"));
-      setDeleteTarget(null);
-      fetchContracts();
-    } catch (error) {
-      toast.error(getErrorMessage((error as Error).message, tErrors));
-    } finally {
-      setDeleting(false);
-    }
-  };
-
-  // Handle create/terminate success
+  // Handle create/edit success
   const handleSuccess = () => {
     setShowCreateDialog(false);
-    setTerminateTarget(null);
+    setShowDetailDialog(false);
     fetchContracts();
   };
 
@@ -145,8 +170,19 @@ export function ContractTable() {
     {
       id: "stt",
       header: "#",
-      cell: ({ row }) => page * DEFAULT_LIMIT + row.index + 1,
+      cell: ({ row, table }) => {
+        const pageIndex = table.getState().pagination.pageIndex;
+        const pageSize = table.getState().pagination.pageSize;
+        return pageIndex * pageSize + row.index + 1;
+      },
       size: 60,
+    },
+    {
+      accessorKey: "employeeCode",
+      header: t("table.employeeCode"),
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">{row.original.employeeCode}</span>
+      ),
     },
     {
       accessorKey: "contractNumber",
@@ -179,10 +215,10 @@ export function ContractTable() {
       accessorKey: "period",
       header: t("table.period"),
       cell: ({ row }) => (
-        <span>
-          {formatDate(row.original.startDate, locale)} -{" "}
-          {formatDate(row.original.endDate, locale)}
-        </span>
+        <div className="flex flex-col text-sm">
+          <span>{formatDate(row.original.startDate, locale)}</span>
+          <span>{formatDate(row.original.endDate, locale)}</span>
+        </div>
       ),
     },
     {
@@ -216,46 +252,6 @@ export function ContractTable() {
           </div>
         );
       },
-    },
-    {
-      id: "actions",
-      header: tCommon("actions"),
-      cell: ({ row }) => {
-        const contract = row.original;
-        const canDelete = contract.status === "ACTIVE";
-        const canTerminate = contract.status === "ACTIVE";
-
-        return (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleViewDetail(contract)}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-            {canTerminate && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setTerminateTarget(contract)}
-              >
-                <XCircle className="h-4 w-4 text-orange-500" />
-              </Button>
-            )}
-            {canDelete && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setDeleteTarget(contract)}
-              >
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
-            )}
-          </div>
-        );
-      },
-      size: 120,
     },
   ];
 
@@ -295,6 +291,21 @@ export function ContractTable() {
               </SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Employee Filter */}
+          <Select value={filterEmployee} onValueChange={setFilterEmployee}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder={t("selectEmployee")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{tCommon("all")}</SelectItem>
+              {employeeOptions.map((emp) => (
+                <SelectItem key={emp.id} value={emp.id.toString()}>
+                  {emp.code} - {emp.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Create Button */}
@@ -312,89 +323,37 @@ export function ContractTable() {
       ) : (
         <BaseTable
           columns={columns}
-          data={contracts}
+          data={filteredContracts}
           showPagination={true}
           pageSize={DEFAULT_LIMIT}
           noResultsText={t("noContracts")}
+          onRowClick={(contract) => handleViewDetail(contract)}
         />
-      )}
-
-      {/* Pagination Info */}
-      {!loading && totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {tCommon("total")}: {totalElements}
-          </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-            >
-              {tCommon("previous")}
-            </Button>
-            <span className="text-sm">
-              {page + 1} / {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1}
-            >
-              {tCommon("next")}
-            </Button>
-          </div>
-        </div>
       )}
 
       {/* Create Dialog */}
       <ContractFormDialog
         open={showCreateDialog}
-        onClose={() => setShowCreateDialog(false)}
+        onClose={() => {
+          setShowCreateDialog(false);
+          setSelectedEmployeeIdForCreate(null);
+        }}
         onSuccess={handleSuccess}
+        availableEmployees={employeeOptions}
+        currentContract={currentContractForSelectedEmployee}
+        onEmployeeChange={setSelectedEmployeeIdForCreate}
       />
 
       {/* Detail Dialog */}
       <ContractDetailDialog
         open={showDetailDialog}
-        onClose={() => setShowDetailDialog(false)}
+        onClose={() => {
+          setShowDetailDialog(false);
+          setSelectedContract(null);
+        }}
         contract={selectedContract}
-      />
-
-      {/* Terminate Dialog */}
-      <TerminateContractDialog
-        open={!!terminateTarget}
-        onClose={() => setTerminateTarget(null)}
-        contract={terminateTarget}
         onSuccess={handleSuccess}
       />
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!deleteTarget}
-        onOpenChange={() => setDeleteTarget(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCommon("delete")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteSuccess")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleting ? tCommon("loading") : tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useTranslations, useLocale } from "next-intl";
-import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import {
   Dialog,
@@ -11,14 +9,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
-import { payrollPeriodApi } from "@/lib/apis/payroll-period-api";
-import { PayrollItem, PayrollAdjustment } from "@/types/attendance-records";
+import { PayrollItem } from "@/types/attendance-records";
 import { PayrollItemStatus } from "@/types/attendance-enums";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { formatDateTime } from "@/lib/utils/format-date";
-import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { formatCurrency } from "@/lib/utils/format-currency";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 
 interface PayrollItemDetailDialogProps {
@@ -28,7 +22,6 @@ interface PayrollItemDetailDialogProps {
   item: PayrollItem;
 }
 
-// Map item status to badge variant
 const getItemStatusBadgeVariant = (
   status: PayrollItemStatus,
 ): "default" | "secondary" | "destructive" | "outline" => {
@@ -43,370 +36,203 @@ const getItemStatusBadgeVariant = (
   }
 };
 
-// State type cho fetch - null = loading, [] = no data, [...] = has data
-type AdjustmentsState = PayrollAdjustment[] | null;
-
-// Custom hook để fetch adjustments
-function useAdjustments(
-  open: boolean,
-  periodId: number,
-  itemId: number,
-  hasAdjustment: boolean,
-  tErrors: ReturnType<typeof useTranslations>,
-): { adjustments: PayrollAdjustment[]; loading: boolean } {
-  // null = loading/not fetched, [] = empty, [...] = has data
-  const [adjustments, setAdjustments] = useState<AdjustmentsState>(null);
-  const fetchedKeyRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    const key = `${periodId}-${itemId}`;
-
-    if (!open || !hasAdjustment) {
-      fetchedKeyRef.current = null;
-      return;
-    }
-
-    // Đã fetch rồi thì không fetch lại
-    if (fetchedKeyRef.current === key) return;
-    fetchedKeyRef.current = key;
-
-    // Sử dụng AbortController để cancel request
-    const controller = new AbortController();
-
-    // Fetch data
-    payrollPeriodApi
-      .getPayrollItemAdjustments(periodId, itemId)
-      .then((data) => {
-        if (!controller.signal.aborted) {
-          setAdjustments(data);
-        }
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) {
-          toast.error(getErrorMessage((error as Error).message, tErrors));
-          setAdjustments([]);
-        }
-      });
-
-    return () => {
-      controller.abort();
-    };
-  }, [open, periodId, itemId, hasAdjustment, tErrors]);
-
-  // Derive loading từ adjustments state
-  const result = useMemo(
-    () => ({
-      adjustments: adjustments ?? [],
-      loading: adjustments === null && hasAdjustment && open,
-    }),
-    [adjustments, hasAdjustment, open],
-  );
-
-  return result;
-}
-
 /**
- * Dialog chi tiết payroll item
- * Hiển thị complete breakdown
+ * Dialog hiển thị chi tiết payroll item
+ * Breakdown đầy đủ: base, overtime, allowances, deductions
  */
 export function PayrollItemDetailDialog({
   open,
   onClose,
-  periodId,
   item,
 }: PayrollItemDetailDialogProps) {
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
-  const tErrors = useTranslations("errors");
   const tEnums = useTranslations("enums");
-  const locale = useLocale() as SupportedLocale;
-
-  // Fetch adjustments
-  const hasAdjustment = !!(item.adjustmentAmount || item.status === "ADJUSTED");
-  const { adjustments, loading } = useAdjustments(
-    open,
-    periodId,
-    item.id,
-    hasAdjustment,
-    tErrors,
-  );
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {item.employeeName}
+          <DialogTitle>{t("itemDetailTitle")}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Employee Info */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">{item.employeeName}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("table.employee")} ID: {item.employeeId}
+              </p>
+            </div>
             <Badge variant={getItemStatusBadgeVariant(item.status)}>
               {getEnumLabel("payrollItemStatus", item.status, tEnums)}
             </Badge>
-          </DialogTitle>
-        </DialogHeader>
+          </div>
 
-        <div className="space-y-4">
-          {/* Base Salary Calculation */}
-          <Section title={t("breakdown.baseSalary")}>
-            <Row
-              label={getEnumLabel("salaryType", item.salaryType, tEnums)}
-              value={formatCurrency(item.baseSalary)}
-            />
-            <Row
-              label={t("breakdown.workingDays")}
-              value={`${item.workingDays} ${tCommon("days") || "ngày"}`}
-            />
-            <Row
-              label={t("breakdown.workingHours")}
-              value={`${item.workingHours} ${tCommon("hours")}`}
-            />
-            {/* Hiển thị công thức tính dựa trên salary type */}
-            {item.salaryType === "DAILY" && (
-              <Row
-                label={`${formatCurrency(item.baseSalary)} × ${item.workingDays}`}
-                value=""
-                className="text-muted-foreground text-xs"
-              />
-            )}
-            {item.salaryType === "HOURLY" && (
-              <Row
-                label={`${formatCurrency(item.baseSalary)} × ${item.workingHours}h`}
-                value=""
-                className="text-muted-foreground text-xs"
-              />
-            )}
-            <Row
-              label={t("breakdown.baseSalary")}
-              value={formatCurrency(item.calculatedBaseSalary)}
-              highlight
-            />
-          </Section>
+          {/* Base Salary */}
+          <div className="space-y-2">
+            <h3 className="font-medium">{t("breakdown.baseSalary")}</h3>
+            <div className="bg-muted rounded-md p-3 space-y-1">
+              <div className="flex justify-between text-sm">
+                <span>{t("breakdown.salaryType")}</span>
+                <span>
+                  {getEnumLabel("salaryType", item.salaryType, tEnums)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>{t("breakdown.baseSalaryAmount")}</span>
+                <span>{formatCurrency(item.baseSalary)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>{t("breakdown.workingDays")}</span>
+                <span>
+                  {item.workingDays} {t("breakdown.days")}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm font-medium">
+                <span>{t("breakdown.calculatedBase")}</span>
+                <span>{formatCurrency(item.calculatedBaseSalary)}</span>
+              </div>
+            </div>
+          </div>
 
-          <Separator />
-
-          {/* Overtime Breakdown */}
-          <Section title={t("breakdown.overtime")}>
-            {item.totalOvertimePay > 0 ? (
-              <>
+          {/* Overtime */}
+          {item.totalOvertimePay > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">{t("breakdown.overtime")}</h3>
+              <div className="bg-muted rounded-md p-3 space-y-1">
                 {item.regularOvertimeMinutes > 0 && (
-                  <Row
-                    label={t("breakdown.regularOvertime")}
-                    value={`${Math.round(item.regularOvertimeMinutes / 60)}h → ${formatCurrency(item.regularOvertimePay)}`}
-                  />
+                  <div className="flex justify-between text-sm">
+                    <span>{t("breakdown.regularOT")}</span>
+                    <span>
+                      {Math.floor(item.regularOvertimeMinutes / 60)}h{" "}
+                      {item.regularOvertimeMinutes % 60}m
+                    </span>
+                  </div>
                 )}
                 {item.nightOvertimeMinutes > 0 && (
-                  <Row
-                    label={t("breakdown.nightOvertime")}
-                    value={`${Math.round(item.nightOvertimeMinutes / 60)}h → ${formatCurrency(item.nightOvertimePay)}`}
-                  />
-                )}
-                {item.holidayOvertimeMinutes > 0 && (
-                  <Row
-                    label={t("breakdown.holidayOvertime")}
-                    value={`${Math.round(item.holidayOvertimeMinutes / 60)}h → ${formatCurrency(item.holidayOvertimePay)}`}
-                  />
-                )}
-                {item.weekendOvertimeMinutes > 0 && (
-                  <Row
-                    label={t("breakdown.weekendOvertime")}
-                    value={`${Math.round(item.weekendOvertimeMinutes / 60)}h → ${formatCurrency(item.weekendOvertimePay)}`}
-                  />
-                )}
-                <Row
-                  label={t("breakdown.totalOvertime")}
-                  value={formatCurrency(item.totalOvertimePay)}
-                  highlight
-                  className="text-blue-600"
-                />
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">-</p>
-            )}
-          </Section>
-
-          <Separator />
-
-          {/* Allowances */}
-          <Section title={t("breakdown.allowances")}>
-            {item.allowanceDetails.length > 0 ? (
-              <>
-                {item.allowanceDetails.map((allowance, index) => (
-                  <Row
-                    key={index}
-                    label={`${allowance.name}${allowance.taxable ? "" : " *"}`}
-                    value={formatCurrency(allowance.amount)}
-                  />
-                ))}
-                <Row
-                  label={t("breakdown.totalAllowances")}
-                  value={formatCurrency(item.totalAllowances)}
-                  highlight
-                  className="text-green-600"
-                />
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">-</p>
-            )}
-          </Section>
-
-          <Separator />
-
-          {/* Deductions */}
-          <Section title={t("breakdown.deductions")}>
-            {item.deductionDetails.length > 0 ? (
-              <>
-                {item.deductionDetails.map((deduction, index) => (
-                  <Row
-                    key={index}
-                    label={deduction.name}
-                    value={`-${formatCurrency(deduction.amount)}`}
-                    className="text-red-600"
-                  />
-                ))}
-              </>
-            ) : null}
-            {/* Break Deduction */}
-            {item.breakDeductionAmount > 0 && (
-              <Row
-                label={`${t("breakdown.breakDeduction")} (${item.totalBreakMinutes} ${tCommon("minutes")})`}
-                value={`-${formatCurrency(item.breakDeductionAmount)}`}
-                className="text-red-600"
-              />
-            )}
-            <Row
-              label={t("breakdown.totalDeductions")}
-              value={`-${formatCurrency(item.totalDeductions)}`}
-              highlight
-              className="text-red-600"
-            />
-          </Section>
-
-          <Separator />
-
-          {/* Adjustment History */}
-          {(item.status === "ADJUSTED" || item.adjustmentAmount) && (
-            <>
-              <Section title={t("adjustmentHistory")}>
-                {loading ? (
-                  <p className="text-sm text-muted-foreground">
-                    {tCommon("loading")}
-                  </p>
-                ) : adjustments.length > 0 ? (
-                  <div className="space-y-2">
-                    {adjustments.map((adj) => (
-                      <div
-                        key={adj.id}
-                        className="p-2 bg-muted rounded-md text-sm"
-                      >
-                        <div className="flex justify-between">
-                          <span
-                            className={
-                              adj.amount >= 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }
-                          >
-                            {adj.amount >= 0 ? "+" : ""}
-                            {formatCurrency(adj.amount)}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {formatDateTime(adj.adjustedAt, locale)}
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1">
-                          {adj.reason}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {adj.adjusterName}
-                        </p>
-                      </div>
-                    ))}
+                  <div className="flex justify-between text-sm">
+                    <span>{t("breakdown.nightOT")}</span>
+                    <span>
+                      {Math.floor(item.nightOvertimeMinutes / 60)}h{" "}
+                      {item.nightOvertimeMinutes % 60}m
+                    </span>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    {t("noAdjustments")}
-                  </p>
                 )}
-              </Section>
-              <Separator />
-            </>
+                <div className="flex justify-between text-sm font-medium text-blue-600">
+                  <span>{t("breakdown.totalOvertimePay")}</span>
+                  <span>{formatCurrency(item.totalOvertimePay)}</span>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Gross & Net Salary with Formula */}
-          <Section title={t("calculationFormula")}>
-            <div className="p-3 bg-muted rounded-md text-sm font-mono">
-              <p>
-                {t("breakdown.grossSalary")} = {t("breakdown.baseSalary")} +{" "}
-                {t("breakdown.overtime")} + {t("breakdown.allowances")}
-              </p>
-              <p className="mt-1">
-                = {formatCurrency(item.calculatedBaseSalary)} +{" "}
-                {formatCurrency(item.totalOvertimePay)} +{" "}
-                {formatCurrency(item.totalAllowances)}
-              </p>
-              <p className="mt-1 font-bold">
-                = {formatCurrency(item.grossSalary)}
-              </p>
+          {/* Allowances */}
+          {item.totalAllowances > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">{t("breakdown.allowances")}</h3>
+              <div className="bg-muted rounded-md p-3 space-y-1">
+                {item.allowanceDetails && item.allowanceDetails.length > 0 ? (
+                  <>
+                    {item.allowanceDetails.map((allowance, index) => (
+                      <div key={index} className="flex justify-between text-sm">
+                        <span>{allowance.name}</span>
+                        <span>{formatCurrency(allowance.amount)}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between text-sm font-medium text-green-600 pt-1 border-t">
+                      <span>{tCommon("total")}</span>
+                      <span>{formatCurrency(item.totalAllowances)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between text-sm font-medium text-green-600">
+                    <span>{tCommon("total")}</span>
+                    <span>{formatCurrency(item.totalAllowances)}</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="p-3 bg-muted rounded-md text-sm font-mono mt-2">
-              <p>
-                {t("breakdown.netSalary")} = {t("breakdown.grossSalary")} -{" "}
-                {t("breakdown.deductions")}
-                {item.adjustmentAmount
-                  ? ` ${item.adjustmentAmount >= 0 ? "+" : "-"} ${t("adjustmentTitle")}`
-                  : ""}
-              </p>
-              <p className="mt-1">
-                = {formatCurrency(item.grossSalary)} -{" "}
-                {formatCurrency(item.totalDeductions)}
-                {item.adjustmentAmount
-                  ? ` ${item.adjustmentAmount >= 0 ? "+" : ""} ${formatCurrency(item.adjustmentAmount)}`
-                  : ""}
-              </p>
-              <p className="mt-1 font-bold text-green-600">
-                = {formatCurrency(item.netSalary)}
-              </p>
+          )}
+
+          {/* Deductions */}
+          {item.totalDeductions > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">{t("breakdown.deductions")}</h3>
+              <div className="bg-muted rounded-md p-3 space-y-1">
+                {item.deductionDetails && item.deductionDetails.length > 0 ? (
+                  <>
+                    {item.deductionDetails.map((deduction, index) => (
+                      <div key={index} className="flex justify-between text-sm">
+                        <span>{deduction.name}</span>
+                        <span className="text-red-600">
+                          -{formatCurrency(deduction.amount || 0)}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between text-sm font-medium text-red-600 pt-1 border-t">
+                      <span>{tCommon("total")}</span>
+                      <span>-{formatCurrency(item.totalDeductions)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between text-sm font-medium text-red-600">
+                    <span>{tCommon("total")}</span>
+                    <span>-{formatCurrency(item.totalDeductions)}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </Section>
+          )}
+
+          {/* Adjustment */}
+          {item.adjustmentAmount && item.adjustmentAmount !== 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">{t("breakdown.adjustment")}</h3>
+              <div className="bg-muted rounded-md p-3 space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>{t("breakdown.adjustmentAmount")}</span>
+                  <span
+                    className={
+                      item.adjustmentAmount > 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }
+                  >
+                    {item.adjustmentAmount > 0 ? "+" : ""}
+                    {formatCurrency(item.adjustmentAmount)}
+                  </span>
+                </div>
+                {item.adjustmentReason && (
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-medium">
+                      {t("breakdown.reason")}:{" "}
+                    </span>
+                    {item.adjustmentReason}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Summary */}
+          <div className="space-y-2 pt-4 border-t">
+            <div className="flex justify-between">
+              <span className="font-medium">{t("breakdown.grossSalary")}</span>
+              <span className="font-medium">
+                {formatCurrency(item.grossSalary)}
+              </span>
+            </div>
+            <div className="flex justify-between text-lg">
+              <span className="font-bold">{t("breakdown.netSalary")}</span>
+              <span className="font-bold text-green-600">
+                {formatCurrency(item.netSalary)}
+              </span>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-// Helper components
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <h4 className="font-medium mb-2">{title}</h4>
-      <div className="space-y-1">{children}</div>
-    </div>
-  );
-}
-
-function Row({
-  label,
-  value,
-  highlight = false,
-  className = "",
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  className?: string;
-}) {
-  return (
-    <div className="flex justify-between text-sm">
-      <span className={highlight ? "font-medium" : "text-muted-foreground"}>
-        {label}
-      </span>
-      <span className={`${highlight ? "font-bold" : ""} ${className}`}>
-        {value}
-      </span>
-    </div>
   );
 }

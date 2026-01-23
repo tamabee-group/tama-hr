@@ -15,6 +15,8 @@ export default async function AdjustmentDetailPage({
   const { id } = await params;
   const t = await getTranslations("attendance");
 
+  const adjustmentId = parseInt(id, 10);
+
   return (
     <div className="space-y-6">
       <div>
@@ -24,7 +26,7 @@ export default async function AdjustmentDetailPage({
         </p>
       </div>
 
-      <AdjustmentDetailContent adjustmentId={parseInt(id, 10)} />
+      <AdjustmentDetailContent adjustmentId={adjustmentId} />
     </div>
   );
 }

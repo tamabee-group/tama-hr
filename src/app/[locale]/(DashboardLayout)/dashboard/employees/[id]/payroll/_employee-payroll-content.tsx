@@ -7,8 +7,8 @@ import { toast } from "sonner";
 
 import { PayslipTable } from "@/app/[locale]/_components/_shared/payslip-table";
 
-import { payrollApi } from "@/lib/apis/payroll-api";
-import { PayrollRecord } from "@/types/attendance-records";
+import { payrollApi } from "@/lib/apis/payroll-period-api";
+import { PayrollItem } from "@/types/attendance-records";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 
@@ -29,7 +29,7 @@ export function EmployeePayrollContent({
   const router = useRouter();
 
   // State
-  const [payslips, setPayslips] = useState<PayrollRecord[]>([]);
+  const [payslips, setPayslips] = useState<PayrollItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
@@ -55,12 +55,12 @@ export function EmployeePayrollContent({
   }, [fetchPayslips]);
 
   // Handle view detail
-  const handleViewDetail = (payslip: PayrollRecord) => {
+  const handleViewDetail = (payslip: PayrollItem) => {
     router.push(`/${locale}/dashboard/payroll/records/${payslip.id}`);
   };
 
   // Handle download PDF
-  const handleDownload = async (payslip: PayrollRecord) => {
+  const handleDownload = async (payslip: PayrollItem) => {
     setDownloadingId(payslip.id);
     try {
       const blob = await payrollApi.downloadCompanyPayslipPdf(payslip.id);

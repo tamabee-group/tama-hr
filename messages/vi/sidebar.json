@@ -36,24 +36,21 @@
     "attendance": "Chấm công",
     "attendanceRecords": "Bản ghi chấm công",
     "adjustments": "Điều chỉnh",
-    "schedules": "Lịch làm việc",
     "payroll": "Bảng lương",
     "payrollRecords": "Bản ghi lương",
+    "payrollPeriods": "Kỳ lương",
+    "payslips": "Phiếu lương",
     "holidays": "Ngày nghỉ lễ",
     "leaveRequests": "Yêu cầu nghỉ phép",
     "leave": "Nghỉ phép",
     "reports": "Báo cáo",
     "myAttendance": "Chấm công của tôi",
     "mySchedule": "Lịch làm việc của tôi",
+    "myAdjustments": "Yêu cầu điều chỉnh",
     "myPayroll": "Bảng lương của tôi",
     "myLeave": "Nghỉ phép của tôi",
     "myProfile": "Hồ sơ của tôi",
     "shifts": "Quản lý ca",
     "contracts": "Hợp đồng"
-  },
-  "workModeIndicator": {
-    "fixedHours": "Giờ cố định",
-    "flexibleShift": "Linh hoạt/Theo ca",
-    "tooltip": "Chế độ làm việc hiện tại của công ty"
   }
 }

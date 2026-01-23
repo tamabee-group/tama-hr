@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -31,10 +31,9 @@ import {
 } from "@/types/attendance-records";
 import { ContractType, CONTRACT_TYPES } from "@/types/attendance-enums";
 import { User } from "@/types/user";
-import { PaginatedResponse } from "@/types/api";
 import { createContract, updateContract } from "@/lib/apis/contract-api";
-import { getSalaryConfigs } from "@/lib/apis/salary-config-api";
-import { apiClient } from "@/lib/utils/fetch-client";
+import { getEmployeeSalaryConfigHistory } from "@/lib/apis/salary-config-api";
+
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { formatDateForApi } from "@/lib/utils/format-date";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
@@ -44,6 +43,10 @@ interface ContractFormDialogProps {
   onClose: () => void;
   onSuccess: () => void;
   existingContract?: EmploymentContract | null;
+  preselectedEmployee?: User; // Thông tin employee đã có sẵn (tránh gọi API)
+  currentContract?: EmploymentContract | null; // Hợp đồng hiện tại của employee (để tính ngày bắt đầu mặc định)
+  availableEmployees?: Array<{ id: number; code: string; name: string }>; // Danh sách employees có sẵn (tránh gọi API)
+  onEmployeeChange?: (employeeId: number | null) => void; // Callback khi employee thay đổi
 }
 
 /**
@@ -55,6 +58,10 @@ export function ContractFormDialog({
   onClose,
   onSuccess,
   existingContract,
+  preselectedEmployee,
+  currentContract,
+  availableEmployees,
+  onEmployeeChange,
 }: ContractFormDialogProps) {
   const t = useTranslations("contracts");
   const tCommon = useTranslations("common");
@@ -64,11 +71,9 @@ export function ContractFormDialog({
   const isEditing = !!existingContract;
 
   // Data state
-  const [employees, setEmployees] = useState<User[]>([]);
   const [salaryConfigs, setSalaryConfigs] = useState<EmployeeSalaryConfig[]>(
     [],
   );
-  const [isLoadingData, setIsLoadingData] = useState(false);
 
   // Form state - sử dụng Date object cho date fields
   const [employeeId, setEmployeeId] = useState("");
@@ -81,11 +86,44 @@ export function ContractFormDialog({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [overlapError, setOverlapError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Tính danh sách employees để hiển thị
+  const displayEmployees = useMemo(() => {
+    if (preselectedEmployee) {
+      return [
+        {
+          id: preselectedEmployee.id,
+          code: preselectedEmployee.employeeCode || "",
+          name: preselectedEmployee.profile?.name || preselectedEmployee.email,
+        },
+      ];
+    }
+    return availableEmployees || [];
+  }, [preselectedEmployee, availableEmployees]);
+
+  // Reset form
+  const resetForm = useCallback(() => {
+    setEmployeeId("");
+    setContractType("FULL_TIME");
+
+    // Nếu có currentContract, set startDate = endDate + 1 ngày
+    if (currentContract?.endDate) {
+      const nextDay = new Date(currentContract.endDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      setStartDate(nextDay);
+    } else {
+      setStartDate(new Date());
+    }
+
+    setEndDate(undefined);
+    setSalaryConfigId("");
+    setNotes("");
+  }, [currentContract]);
 
   // Fetch data khi mở dialog
   useEffect(() => {
     if (open) {
-      fetchData();
       if (existingContract) {
         setEmployeeId(existingContract.employeeId.toString());
         setContractType(existingContract.contractType);
@@ -103,53 +141,56 @@ export function ContractFormDialog({
         setNotes(existingContract.notes || "");
       } else {
         resetForm();
+        // Nếu có preselectedEmployee, tự động chọn employee đó
+        if (preselectedEmployee) {
+          setEmployeeId(preselectedEmployee.id.toString());
+        }
       }
-      setErrors({});
       setOverlapError(null);
     }
-  }, [open, existingContract]);
+  }, [open, existingContract, preselectedEmployee, resetForm]);
 
-  // Fetch employees khi mở dialog
-  const fetchData = async () => {
-    try {
-      setIsLoadingData(true);
-      const employeesRes = await apiClient.get<PaginatedResponse<User>>(
-        "/api/company/employees?page=0&size=100",
-      );
-      setEmployees(employeesRes.content);
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      setIsLoadingData(false);
-    }
-  };
-
-  // Fetch salary configs khi chọn employee
+  // Fetch salary configs CHỈ khi edit contract
   useEffect(() => {
-    if (employeeId) {
-      fetchSalaryConfigs(parseInt(employeeId));
-    } else {
+    if (open && employeeId && isEditing) {
+      const empId = parseInt(employeeId);
+      fetchSalaryConfigsOnly(empId);
+    } else if (!isEditing) {
       setSalaryConfigs([]);
     }
-  }, [employeeId]);
+  }, [employeeId, open, isEditing]);
 
-  const fetchSalaryConfigs = async (empId: number) => {
+  // Notify parent về employee change khi tạo mới (để parent tìm currentContract)
+  useEffect(() => {
+    if (open && employeeId && !isEditing) {
+      const empId = parseInt(employeeId);
+      onEmployeeChange?.(empId);
+    } else if (!employeeId) {
+      onEmployeeChange?.(null);
+    }
+  }, [employeeId, open, isEditing, onEmployeeChange]);
+
+  // Update startDate khi currentContract thay đổi
+  useEffect(() => {
+    if (currentContract?.endDate && !isEditing) {
+      const nextDay = new Date(currentContract.endDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      setStartDate(nextDay);
+    } else if (!currentContract && employeeId && !isEditing) {
+      setStartDate(new Date());
+    }
+  }, [currentContract, employeeId, isEditing]);
+
+  const fetchSalaryConfigsOnly = async (empId: number) => {
     try {
-      const data = await getSalaryConfigs(0, 100, { employeeId: empId });
-      setSalaryConfigs(data.content);
+      setIsLoading(true);
+      const salaryData = await getEmployeeSalaryConfigHistory(empId);
+      setSalaryConfigs(salaryData);
     } catch (error) {
       console.error("Error fetching salary configs:", error);
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  // Reset form
-  const resetForm = () => {
-    setEmployeeId("");
-    setContractType("FULL_TIME");
-    setStartDate(new Date());
-    setEndDate(undefined);
-    setSalaryConfigId("");
-    setNotes("");
   };
 
   // Lấy label cho contract type
@@ -233,11 +274,11 @@ export function ContractFormDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
+        <DialogHeader className="mb-4">
           <DialogTitle>{isEditing ? t("edit") : t("create")}</DialogTitle>
         </DialogHeader>
 
-        {isLoadingData ? (
+        {isLoading ? (
           <div className="py-8 text-center text-muted-foreground">
             {tCommon("loading")}
           </div>
@@ -252,7 +293,7 @@ export function ContractFormDialog({
             )}
 
             {/* Chọn nhân viên */}
-            <div className="space-y-2">
+            <div>
               <Label>{t("table.employee")}</Label>
               <Select
                 value={employeeId}
@@ -263,7 +304,7 @@ export function ContractFormDialog({
                   }
                   setOverlapError(null);
                 }}
-                disabled={isEditing}
+                disabled={isEditing || !!preselectedEmployee}
               >
                 <SelectTrigger
                   className={errors.employeeId ? "border-destructive" : ""}
@@ -271,15 +312,16 @@ export function ContractFormDialog({
                   <SelectValue placeholder={tCommon("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {employees.map((employee) => (
-                    <SelectItem
-                      key={employee.id}
-                      value={employee.id.toString()}
-                    >
-                      {employee.profile?.name || employee.email} (
-                      {employee.employeeCode})
-                    </SelectItem>
-                  ))}
+                  {displayEmployees.map(
+                    (employee: { id: number; code: string; name: string }) => (
+                      <SelectItem
+                        key={employee.id}
+                        value={employee.id.toString()}
+                      >
+                        {employee.name} ({employee.code})
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
               {errors.employeeId && (
@@ -288,7 +330,7 @@ export function ContractFormDialog({
             </div>
 
             {/* Loại hợp đồng */}
-            <div className="space-y-2">
+            <div>
               <Label>{t("contractType")}</Label>
               <Select
                 value={contractType}
@@ -310,7 +352,7 @@ export function ContractFormDialog({
             </div>
 
             {/* Ngày bắt đầu */}
-            <div className="space-y-2">
+            <div>
               <Label>{t("startDate")}</Label>
               <DatePicker
                 value={startDate}
@@ -331,7 +373,7 @@ export function ContractFormDialog({
             </div>
 
             {/* Ngày kết thúc */}
-            <div className="space-y-2">
+            <div>
               <Label>{t("endDate")}</Label>
               <DatePicker
                 value={endDate}
@@ -351,9 +393,9 @@ export function ContractFormDialog({
               )}
             </div>
 
-            {/* Cấu hình lương liên kết */}
-            {salaryConfigs.length > 0 && (
-              <div className="space-y-2">
+            {/* Cấu hình lương liên kết - chỉ hiển thị khi edit */}
+            {isEditing && salaryConfigs.length > 0 && (
+              <div>
                 <Label>{t("linkedSalaryConfig")}</Label>
                 <Select
                   value={salaryConfigId}
@@ -376,7 +418,7 @@ export function ContractFormDialog({
             )}
 
             {/* Ghi chú */}
-            <div className="space-y-2">
+            <div>
               <Label>{t("notes")}</Label>
               <Textarea
                 value={notes}
@@ -392,10 +434,7 @@ export function ContractFormDialog({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             {tCommon("cancel")}
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting || isLoadingData}
-          >
+          <Button onClick={handleSubmit} disabled={isSubmitting || isLoading}>
             {isSubmitting ? (
               <>
                 <Spinner className="h-4 w-4 mr-2" />

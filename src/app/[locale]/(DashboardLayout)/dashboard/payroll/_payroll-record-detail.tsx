@@ -9,8 +9,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PayslipCard } from "@/app/[locale]/_components/_shared/payslip-card";
 
-import { payrollApi } from "@/lib/apis/payroll-api";
-import { PayrollRecord } from "@/types/attendance-records";
+import { payrollApi } from "@/lib/apis/payroll-period-api";
+import { PayrollItem } from "@/types/attendance-records";
 
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { useAuth } from "@/hooks/use-auth";
@@ -31,7 +31,7 @@ export function PayrollRecordDetail({ recordId }: PayrollRecordDetailProps) {
   const { user } = useAuth();
 
   // State
-  const [record, setRecord] = useState<PayrollRecord | null>(null);
+  const [record, setRecord] = useState<PayrollItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
 

@@ -76,5 +76,6 @@
   "DEPARTMENT_HAS_EMPLOYEES": "社員がいる部署は削除できません。",
   "DEPARTMENT_HAS_CHILDREN": "サブ部署がある部署は削除できません。",
   "DEPARTMENT_CIRCULAR_REFERENCE": "部署構造に循環参照を作成できません。",
-  "DEPARTMENT_MANAGER_NOT_FOUND": "部署管理者が見つかりません。"
+  "DEPARTMENT_MANAGER_NOT_FOUND": "部署管理者が見つかりません。",
+  "SHIFT_OVERLAP_EXISTS": "シフトが同じ日の他のシフトと時間が重複しています。"
 }

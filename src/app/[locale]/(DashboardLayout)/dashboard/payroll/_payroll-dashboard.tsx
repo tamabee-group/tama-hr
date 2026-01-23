@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { payrollApi } from "@/lib/apis/payroll-api";
+import { payrollApi } from "@/lib/apis/payroll-period-api";
 import { PayrollSummary, YearMonth } from "@/types/attendance-records";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";

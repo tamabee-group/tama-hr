@@ -11,7 +11,7 @@ interface ProfileFormProps {
   canEdit: boolean;
 }
 
-export function ProfileForm({ company, canEdit }: ProfileFormProps) {
+export function CompanyProfileForm({ company, canEdit }: ProfileFormProps) {
   const router = useRouter();
   const { refreshUser } = useAuth();
 

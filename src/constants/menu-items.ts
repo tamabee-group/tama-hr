@@ -11,7 +11,6 @@ import {
   FileText,
   UserCircle,
   Receipt,
-  User,
   ClipboardList,
   CreditCard,
   Network,
@@ -115,12 +114,65 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
 ];
 
 // ============================================================================
+// PERSONAL MENU (PersonalLayout - /me/*)
+// ============================================================================
+
+/**
+ * Menu items cho PersonalLayout
+ * Dành cho tất cả users xem thông tin cá nhân
+ */
+export const PERSONAL_MENU_ITEMS: MenuItem[] = [
+  {
+    code: "my-attendance",
+    labelKey: "sidebar.items.myAttendance",
+    icon: Clock,
+    href: "/me",
+    featureCode: "ATTENDANCE",
+  },
+  {
+    code: "my-schedule",
+    labelKey: "sidebar.items.mySchedule",
+    icon: CalendarDays,
+    href: "/me/schedule",
+    featureCode: "ATTENDANCE",
+  },
+  {
+    code: "my-adjustments",
+    labelKey: "sidebar.items.myAdjustments",
+    icon: ClipboardList,
+    href: "/me/adjustments",
+    featureCode: "ATTENDANCE",
+  },
+  {
+    code: "my-leave",
+    labelKey: "sidebar.items.myLeave",
+    icon: FileText,
+    href: "/me/leave",
+    featureCode: "LEAVE",
+  },
+  {
+    code: "my-payslip",
+    labelKey: "sidebar.items.myPayroll",
+    icon: Wallet,
+    href: "/me/payroll",
+    featureCode: "PAYROLL",
+  },
+  {
+    code: "my-commissions",
+    labelKey: "sidebar.items.myCommissions",
+    icon: Receipt,
+    href: "/me/commissions",
+    roles: ["EMPLOYEE_TAMABEE"],
+  },
+];
+
+// ============================================================================
 // DASHBOARD MENU GROUPS (DashboardLayout - /dashboard/*)
 // ============================================================================
 
 /**
  * Menu groups cho Dashboard
- * Chia thành: Tổng quan, Của tôi, Quản lý nhân sự, Cài đặt
+ * Chia thành: Tổng quan, Quản lý nhân sự, Cài đặt
  */
 export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
   // ========== TỔNG QUAN ==========
@@ -140,48 +192,6 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         icon: Building,
         href: "/admin/companies",
         roles: TAMABEE_ADMIN_ROLES,
-      },
-    ],
-  },
-
-  // ========== CỦA TÔI (Employee features) ==========
-  {
-    code: "my-workspace",
-    labelKey: "sidebar.groups.myWorkspace",
-    items: [
-      {
-        code: "my-attendance",
-        labelKey: "sidebar.items.myAttendance",
-        icon: Clock,
-        href: "/dashboard/attendance/me",
-        featureCode: "ATTENDANCE",
-      },
-      {
-        code: "my-schedule",
-        labelKey: "sidebar.items.mySchedule",
-        icon: CalendarDays,
-        href: "/dashboard/schedules/me",
-        featureCode: "ATTENDANCE",
-      },
-      {
-        code: "my-payslip",
-        labelKey: "sidebar.items.myPayroll",
-        icon: Wallet,
-        href: "/dashboard/payroll/me",
-        featureCode: "PAYROLL",
-      },
-      {
-        code: "my-leave",
-        labelKey: "sidebar.items.myLeave",
-        icon: FileText,
-        href: "/dashboard/leave/me",
-        featureCode: "LEAVE",
-      },
-      {
-        code: "my-profile",
-        labelKey: "sidebar.items.myProfile",
-        icon: User,
-        href: "/dashboard/me",
       },
     ],
   },
@@ -218,15 +228,7 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         code: "adjustments",
         labelKey: "sidebar.items.adjustments",
         icon: ClipboardList,
-        href: "/dashboard/attendance/adjustments",
-        featureCode: "ATTENDANCE",
-        roles: MANAGEMENT_ROLES,
-      },
-      {
-        code: "team-schedules",
-        labelKey: "sidebar.items.schedules",
-        icon: CalendarDays,
-        href: "/dashboard/schedules/team",
+        href: "/dashboard/adjustments",
         featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
       },
@@ -234,7 +236,7 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         code: "shifts",
         labelKey: "sidebar.items.shifts",
         icon: CalendarDays,
-        href: "/dashboard/schedules/shifts",
+        href: "/dashboard/shifts",
         featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
       },
@@ -242,9 +244,23 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         code: "payroll-management",
         labelKey: "sidebar.items.payrollRecords",
         icon: Wallet,
-        href: "/dashboard/payroll/management",
+        href: "/dashboard/payroll",
         featureCode: "PAYROLL",
         roles: ADMIN_ROLES,
+        children: [
+          {
+            code: "payroll-periods",
+            labelKey: "sidebar.items.payrollPeriods",
+            icon: Wallet,
+            href: "/dashboard/payroll",
+          },
+          {
+            code: "payslips",
+            labelKey: "sidebar.items.payslips",
+            icon: FileText,
+            href: "/dashboard/payslip",
+          },
+        ],
       },
       {
         code: "leave-requests",

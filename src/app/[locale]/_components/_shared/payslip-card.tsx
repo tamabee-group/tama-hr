@@ -1,12 +1,10 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
-import { PayrollRecord } from "@/types/attendance-records";
+import { PayrollItem } from "@/types/attendance-records";
 import { formatCurrency } from "@/lib/utils/format-currency";
 
 interface PayslipCardProps {
-  payslip: PayrollRecord;
+  payslip: PayrollItem;
   companyName?: string;
   employeeCode?: string;
   employeeName?: string;
@@ -31,6 +29,7 @@ export function PayslipCard({
 
   // Format title
   const formatTitle = () => {
+    if (!payslip.year || !payslip.month) return "";
     const payMonth = payslip.month + 1 > 12 ? 1 : payslip.month + 1;
     const payYear = payslip.month + 1 > 12 ? payslip.year + 1 : payslip.year;
     const monthStr = String(payMonth).padStart(2, "0");
@@ -44,6 +43,7 @@ export function PayslipCard({
 
   // Format period
   const formatPeriod = () => {
+    if (!payslip.year || !payslip.month) return "";
     const lastDay = new Date(payslip.year, payslip.month, 0).getDate();
     const monthStr = String(payslip.month).padStart(2, "0");
 
@@ -58,13 +58,11 @@ export function PayslipCard({
     const total =
       (payslip.regularOvertimeMinutes || 0) +
       (payslip.nightOvertimeMinutes || 0) +
-      (payslip.holidayMinutes || 0);
+      (payslip.holidayOvertimeMinutes || 0);
     return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
   };
 
-  const workingDays =
-    payslip.workingDays ??
-    (payslip.regularMinutes ? Math.round(payslip.regularMinutes / 480) : 0);
+  const workingDays = payslip.workingDays || 0;
 
   const name = employeeName || payslip.employeeName;
   const code = employeeCode || "";

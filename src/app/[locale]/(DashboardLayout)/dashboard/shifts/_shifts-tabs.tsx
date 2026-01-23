@@ -5,23 +5,18 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
   LayoutTemplate,
   CalendarDays,
   ArrowLeftRight,
-  Calendar,
   LucideIcon,
 } from "lucide-react";
 import { ShiftTemplateList } from "./templates/_shift-template-list";
 import { ShiftAssignmentList } from "./assignments/_shift-assignment-list";
 import { SwapRequestList } from "./swaps/_swap-request-list";
-import { ScheduleTable } from "../schedules/_schedule-table";
-import { useWorkMode } from "@/hooks/use-work-mode";
-import { getHiddenTabsForUrl } from "@/lib/utils/sidebar-work-mode-filter";
 
-type TabKey = "schedules" | "templates" | "assignments" | "swaps";
+type TabKey = "templates" | "assignments" | "swaps";
 
 interface TabItem {
   key: TabKey;
@@ -29,54 +24,52 @@ interface TabItem {
   titleKey: string;
 }
 
+interface ShiftsTabsProps {
+  defaultStartTime: string;
+  defaultEndTime: string;
+  defaultBreakMinutes: number;
+}
+
 const ALL_TAB_ITEMS: TabItem[] = [
-  { key: "schedules", icon: Calendar, titleKey: "schedulesTitle" },
   { key: "templates", icon: LayoutTemplate, titleKey: "templatesTitle" },
   { key: "assignments", icon: CalendarDays, titleKey: "assignmentsTitle" },
   { key: "swaps", icon: ArrowLeftRight, titleKey: "swapsTitle" },
 ];
 
+const STORAGE_KEY = "shifts-active-tab";
+
 /**
  * Component tabs cho quản lý ca làm việc
  * - Mobile: Horizontal scroll tabs
  * - Desktop: Content trái + Sidebar phải
- * - Tự động ẩn tabs dựa trên work mode
  */
-export function ShiftsTabs() {
+export function ShiftsTabs({
+  defaultStartTime,
+  defaultEndTime,
+  defaultBreakMinutes,
+}: ShiftsTabsProps) {
   const t = useTranslations("shifts");
-  const { workMode, loading } = useWorkMode();
 
-  // Lấy danh sách tabs cần ẩn dựa trên work mode
-  const hiddenTabs = workMode
-    ? getHiddenTabsForUrl("/dashboard/shifts", workMode)
-    : [];
+  // Hiển thị tất cả tabs
+  const visibleTabs = ALL_TAB_ITEMS;
 
-  // Filter tabs dựa trên work mode
-  const visibleTabs = ALL_TAB_ITEMS.filter(
-    (tab) => !hiddenTabs.includes(tab.key),
-  );
+  // Load active tab từ localStorage
+  const getInitialTab = (): TabKey => {
+    if (typeof window === "undefined") return "templates";
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "templates" || saved === "assignments" || saved === "swaps") {
+      return saved;
+    }
+    return "templates";
+  };
 
-  // Default tab là tab đầu tiên trong danh sách visible
-  const defaultTab = visibleTabs[0]?.key || "assignments";
-  const [activeTab, setActiveTab] = useState<TabKey>(defaultTab);
+  const [activeTab, setActiveTab] = useState<TabKey>(getInitialTab);
 
-  // Nếu tab hiện tại bị ẩn, chuyển sang tab đầu tiên visible
-  const currentTab = hiddenTabs.includes(activeTab) ? defaultTab : activeTab;
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div>
-          <Skeleton className="h-7 w-48" />
-          <Skeleton className="h-4 w-64 mt-1" />
-        </div>
-        <div className="flex gap-4">
-          <Skeleton className="flex-1 h-64" />
-          <Skeleton className="hidden md:block w-48 h-40" />
-        </div>
-      </div>
-    );
-  }
+  // Lưu vào localStorage khi thay đổi tab
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    localStorage.setItem(STORAGE_KEY, tab);
+  };
 
   return (
     <div className="space-y-4">
@@ -87,19 +80,19 @@ export function ShiftsTabs() {
       </div>
 
       {/* Mobile & Tablet: Horizontal scroll tabs */}
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <ScrollArea className="w-full">
           <div className="flex gap-2 pb-3">
             {visibleTabs.map((item) => (
               <Button
                 key={item.key}
-                variant={currentTab === item.key ? "default" : "outline"}
+                variant={activeTab === item.key ? "default" : "outline"}
                 size="sm"
                 className={cn(
                   "shrink-0 gap-2",
-                  currentTab === item.key && "shadow-sm",
+                  activeTab === item.key && "shadow-sm",
                 )}
-                onClick={() => setActiveTab(item.key)}
+                onClick={() => handleTabChange(item.key)}
               >
                 <item.icon className="h-4 w-4" />
                 {t(item.titleKey)}
@@ -114,14 +107,19 @@ export function ShiftsTabs() {
       <div className="flex gap-4">
         {/* Content area */}
         <div className="flex-1 min-w-0">
-          {currentTab === "schedules" && <ScheduleTable />}
-          {currentTab === "templates" && <ShiftTemplateList />}
-          {currentTab === "assignments" && <ShiftAssignmentList />}
-          {currentTab === "swaps" && <SwapRequestList />}
+          {activeTab === "templates" && (
+            <ShiftTemplateList
+              defaultStartTime={defaultStartTime}
+              defaultEndTime={defaultEndTime}
+              defaultBreakMinutes={defaultBreakMinutes}
+            />
+          )}
+          {activeTab === "assignments" && <ShiftAssignmentList />}
+          {activeTab === "swaps" && <SwapRequestList />}
         </div>
 
         {/* Desktop: Sidebar navigation - bên phải */}
-        <Card className="hidden md:block w-48 shrink-0 h-fit sticky top-[66px]">
+        <Card className="py-2 hidden lg:block min-w-48 max-w-58 shrink-0 h-fit sticky top-[66px]">
           <CardContent className="p-3">
             <nav className="flex flex-col gap-1">
               {visibleTabs.map((item) => (
@@ -131,10 +129,10 @@ export function ShiftsTabs() {
                   size="sm"
                   className={cn(
                     "justify-start gap-3 h-10",
-                    currentTab === item.key &&
+                    activeTab === item.key &&
                       "bg-primary/10 text-primary font-medium",
                   )}
-                  onClick={() => setActiveTab(item.key)}
+                  onClick={() => handleTabChange(item.key)}
                 >
                   <item.icon className="h-4 w-4" />
                   {t(item.titleKey)}

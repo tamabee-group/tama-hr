@@ -21,6 +21,7 @@ import { formatDate } from "@/lib/utils/format-date";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { ShiftSwapDetailDialog } from "./_shift-swap-detail-dialog";
 import { SwapApprovalDialog } from "./_swap-approval-dialog";
+import { ExplanationPanel } from "../../_components/_explanation-panel";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 const DEFAULT_PAGE = 0;
@@ -116,8 +117,18 @@ export function SwapRequestList() {
 
   return (
     <>
+      {/* Explanation Panel */}
+      <ExplanationPanel
+        title={t("explanations.swapsTitle")}
+        description={t("explanations.swapsDesc")}
+        tips={[t("explanations.swapsTip1"), t("explanations.swapsTip2")]}
+        workModeNote={t("explanations.swapsNote")}
+        defaultCollapsed={true}
+        className="mb-4"
+      />
+
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex justify-between items-center mb-4">
             <div className="text-sm text-muted-foreground">
               {tCommon("total")}: {totalElements}

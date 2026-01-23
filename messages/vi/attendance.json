@@ -48,6 +48,25 @@
     "working": "Đang làm việc",
     "onBreak": "Đang nghỉ"
   },
+  "secondShiftConfirm": {
+    "title": "Xác nhận chấm công ca thứ 2",
+    "description": "Bạn đã chấm công ra lúc {time}. Chấm công vào lần nữa sẽ tự động tạo bản ghi giờ nghỉ từ {checkOutTime} đến hiện tại.",
+    "warning": "Hệ thống sẽ coi khoảng thời gian này là giờ nghỉ giữa các ca. Xác nhận tiếp tục?",
+    "confirm": "Xác nhận chấm công",
+    "cancel": "Hủy"
+  },
+  "hints": {
+    "noteLabel": "Lưu ý",
+    "title": "Hướng dẫn chấm công",
+    "description": "Hệ thống chấm công hỗ trợ nhiều ca làm việc trong ngày.",
+    "steps": [
+      "Chấm công vào khi bắt đầu ca làm việc đầu tiên",
+      "Chấm công ra khi kết thúc ca",
+      "Nếu có ca thứ 2, chấm công vào lại - hệ thống tự động tạo bản ghi giờ nghỉ",
+      "Chấm công ra khi kết thúc ca cuối cùng"
+    ],
+    "note": "Ví dụ: Ca sáng 9h-12h, ca tối 17h-21h. Khi chấm công vào lúc 17h, hệ thống tự động tạo giờ nghỉ 12h-17h (5 giờ). Bản ghi cuối cùng sẽ là 9h-21h với 5 giờ nghỉ."
+  },
   "messages": {
     "checkInSuccess": "Chấm công vào thành công",
     "checkOutSuccess": "Chấm công ra thành công",

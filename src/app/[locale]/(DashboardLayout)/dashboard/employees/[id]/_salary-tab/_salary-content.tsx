@@ -22,6 +22,7 @@ import { companySettingsApi } from "@/lib/apis/company-settings-api";
 import { SalaryConfigFormDialog } from "./_salary-config-form-dialog";
 import { SalaryConfigHistory } from "./_salary-config-history";
 import { CurrentSalaryCard } from "./_current-salary-card";
+import { PayslipHistoryTable } from "./_payslip-history-table";
 
 interface SalaryConfigContentProps {
   employeeId: number;
@@ -141,6 +142,16 @@ export function SalaryContent({ employeeId }: SalaryConfigContentProps) {
           </CollapsibleContent>
         </div>
       </Collapsible>
+
+      {/* Payslip History */}
+      <Card className="pt-6 pb-0">
+        <CardHeader>
+          <CardTitle>{t("payslipHistory")}</CardTitle>
+        </CardHeader>
+        <CardContent className="px-0">
+          <PayslipHistoryTable employeeId={employeeId} />
+        </CardContent>
+      </Card>
 
       <div className="flex flex-col-reverse lg:flex-row gap-6">
         {/* Left: History Table (flex-1) */}

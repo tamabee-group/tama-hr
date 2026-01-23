@@ -249,7 +249,12 @@ export function BaseTable<TData, TValue>({
       </div>
 
       {/* Footer: Row Selection + Pagination */}
-      {(showRowSelection || showPagination) && (
+      {((showRowSelection &&
+        table.getFilteredSelectedRowModel().rows.length > 0) ||
+        (showPagination && !serverPagination && table.getPageCount() > 1) ||
+        (showPagination &&
+          serverPagination &&
+          serverPagination.totalElements > 0)) && (
         <div className="flex items-center justify-between py-4">
           {showRowSelection && (
             <div className="text-muted-foreground text-sm">
@@ -259,60 +264,65 @@ export function BaseTable<TData, TValue>({
           )}
           {showPagination && (
             <>
-              {serverPagination ? (
-                // Server-side pagination - ẩn khi không có data
-                serverPagination.totalElements > 0 ? (
-                  <div className="flex items-center justify-end w-full text-sm gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        serverPagination.onPageChange(serverPagination.page - 1)
-                      }
-                      disabled={serverPagination.page === 0}
-                    >
-                      {previousText}
-                    </Button>
-                    <span className="text-muted-foreground">
-                      {serverPagination.page + 1} /{" "}
-                      {serverPagination.totalPages || 1}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        serverPagination.onPageChange(serverPagination.page + 1)
-                      }
-                      disabled={
-                        serverPagination.totalPages <= 1 ||
-                        serverPagination.page >= serverPagination.totalPages - 1
-                      }
-                    >
-                      {nextText}
-                    </Button>
-                  </div>
-                ) : null
-              ) : (
-                // Client-side pagination
-                <div className="space-x-2 ml-auto">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  >
-                    {previousText}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                  >
-                    {nextText}
-                  </Button>
-                </div>
-              )}
+              {serverPagination
+                ? // Server-side pagination - ẩn khi không có data
+                  serverPagination.totalElements > 0 && (
+                    <div className="flex items-center justify-end w-full text-sm gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          serverPagination.onPageChange(
+                            serverPagination.page - 1,
+                          )
+                        }
+                        disabled={serverPagination.page === 0}
+                      >
+                        {previousText}
+                      </Button>
+                      <span className="text-muted-foreground">
+                        {serverPagination.page + 1} /{" "}
+                        {serverPagination.totalPages || 1}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          serverPagination.onPageChange(
+                            serverPagination.page + 1,
+                          )
+                        }
+                        disabled={
+                          serverPagination.totalPages <= 1 ||
+                          serverPagination.page >=
+                            serverPagination.totalPages - 1
+                        }
+                      >
+                        {nextText}
+                      </Button>
+                    </div>
+                  )
+                : // Client-side pagination - chỉ hiển thị khi có > 1 trang
+                  table.getPageCount() > 1 && (
+                    <div className="space-x-2 ml-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                      >
+                        {previousText}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                      >
+                        {nextText}
+                      </Button>
+                    </div>
+                  )}
             </>
           )}
         </div>

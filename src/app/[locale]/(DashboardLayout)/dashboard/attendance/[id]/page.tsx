@@ -9,13 +9,15 @@ export default async function DashboardAttendanceDetailPage({ params }: Props) {
   const { id } = await params;
   const t = await getTranslations("attendance");
 
+  const attendanceId = parseInt(id, 10);
+
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold">{t("detail.title")}</h1>
         <p className="text-muted-foreground">{t("detail.description")}</p>
       </div>
-      <AttendanceDetailContent attendanceId={parseInt(id)} />
+      <AttendanceDetailContent attendanceId={attendanceId} />
     </div>
   );
 }

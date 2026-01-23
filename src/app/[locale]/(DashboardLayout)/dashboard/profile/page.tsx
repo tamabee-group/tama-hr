@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { apiServer } from "@/lib/utils/fetch-server";
 import { Company } from "@/types/company";
-import { ProfileForm } from "./_profile-form";
+import { CompanyProfileForm } from "./_company-profile-form";
 import { User } from "@/types/user";
 
 const EDIT_ROLES = [
@@ -24,7 +24,7 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t("companyInfo")}</h1>
-      <ProfileForm company={company} canEdit={canEdit} />
+      <CompanyProfileForm company={company} canEdit={canEdit} />
     </div>
   );
 }

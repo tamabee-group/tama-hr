@@ -25,6 +25,8 @@ import {
   LEAVE_TYPE_COLORS,
   LeaveStatus,
   LEAVE_STATUS_COLORS,
+  PayrollItemStatus,
+  PAYROLL_ITEM_STATUS_COLORS,
 } from "@/types/attendance-enums";
 
 // Định nghĩa các variant màu sắc cho badge
@@ -71,6 +73,12 @@ export function getAttendanceStatusVariant(
 
 export function getPayrollStatusVariant(status: PayrollStatus): BadgeVariant {
   return PAYROLL_STATUS_COLORS[status] || "default";
+}
+
+export function getPayrollItemStatusVariant(
+  status: PayrollItemStatus,
+): BadgeVariant {
+  return PAYROLL_ITEM_STATUS_COLORS[status] || "default";
 }
 
 export function getPaymentStatusVariant(status: PaymentStatus): BadgeVariant {
@@ -373,6 +381,30 @@ export function LeaveStatusBadge({ status, className }: LeaveStatusBadgeProps) {
   const tEnums = useTranslations("enums");
   const variant = getLeaveStatusVariant(status);
   const label = tEnums(`leaveStatus.${status}`);
+
+  return (
+    <StatusBadge variant={variant} className={className}>
+      {label}
+    </StatusBadge>
+  );
+}
+
+// ============================================
+// Payroll Item Status Badge
+// ============================================
+
+interface PayrollItemStatusBadgeProps {
+  status: PayrollItemStatus;
+  className?: string;
+}
+
+export function PayrollItemStatusBadge({
+  status,
+  className,
+}: PayrollItemStatusBadgeProps) {
+  const tEnums = useTranslations("enums");
+  const variant = getPayrollItemStatusVariant(status);
+  const label = tEnums(`payrollItemStatus.${status}`);
 
   return (
     <StatusBadge variant={variant} className={className}>

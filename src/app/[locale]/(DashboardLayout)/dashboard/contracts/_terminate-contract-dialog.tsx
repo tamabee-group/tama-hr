@@ -14,6 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { AlertTriangle } from "lucide-react";
 import { EmploymentContract } from "@/types/attendance-records";
@@ -28,6 +35,20 @@ interface TerminateContractDialogProps {
   contract: EmploymentContract | null;
   onSuccess: () => void;
 }
+
+// Các lý do chấm dứt hợp đồng phổ biến
+const TERMINATION_REASONS = [
+  "resignation", // Nhân viên xin nghỉ việc
+  "endOfContract", // Hết hạn hợp đồng
+  "mutualAgreement", // Thỏa thuận chấm dứt
+  "companyRestructure", // Tái cơ cấu công ty
+  "performanceIssues", // Vấn đề hiệu suất
+  "violation", // Vi phạm nội quy
+  "healthReasons", // Lý do sức khỏe
+  "relocation", // Chuyển công tác
+  "retirement", // Nghỉ hưu
+  "other", // Lý do khác
+] as const;
 
 /**
  * Dialog xác nhận chấm dứt hợp đồng lao động
@@ -44,13 +65,15 @@ export function TerminateContractDialog({
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
 
-  const [reason, setReason] = useState("");
+  const [selectedReason, setSelectedReason] = useState<string>("");
+  const [customReason, setCustomReason] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Reset state khi đóng dialog
   const handleClose = () => {
-    setReason("");
+    setSelectedReason("");
+    setCustomReason("");
     setError("");
     onClose();
   };
@@ -60,7 +83,12 @@ export function TerminateContractDialog({
     if (!contract) return;
 
     // Validate
-    if (!reason.trim()) {
+    const finalReason =
+      selectedReason === "other"
+        ? customReason.trim()
+        : t(`terminationReasons.${selectedReason}`);
+
+    if (!finalReason) {
       setError(tCommon("checkInfo"));
       return;
     }
@@ -68,7 +96,7 @@ export function TerminateContractDialog({
     setIsSubmitting(true);
     try {
       await terminateContract(contract.id, {
-        reason: reason.trim(),
+        reason: finalReason,
       });
       toast.success(t("terminateSuccess"));
       handleClose();
@@ -99,7 +127,7 @@ export function TerminateContractDialog({
           </div>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           {/* Contract Info Summary */}
           <div className="rounded-md bg-muted p-3 space-y-2">
             <div className="flex justify-between text-sm">
@@ -117,25 +145,56 @@ export function TerminateContractDialog({
             </div>
           </div>
 
-          {/* Reason Input */}
+          {/* Reason Selection */}
           <div className="space-y-2">
-            <Label htmlFor="terminate-reason">{t("terminateReason")}</Label>
-            <Textarea
-              id="terminate-reason"
-              placeholder={t("terminateReasonPlaceholder")}
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value);
+            <Label htmlFor="terminate-reason-select">
+              {t("terminateReason")}
+            </Label>
+            <Select
+              value={selectedReason}
+              onValueChange={(value) => {
+                setSelectedReason(value);
                 if (error) setError("");
               }}
-              className={error ? "border-destructive" : ""}
-              rows={3}
-            />
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            >
+              <SelectTrigger
+                id="terminate-reason-select"
+                className={error && !selectedReason ? "border-destructive" : ""}
+              >
+                <SelectValue placeholder={t("selectTerminationReason")} />
+              </SelectTrigger>
+              <SelectContent>
+                {TERMINATION_REASONS.map((reason) => (
+                  <SelectItem key={reason} value={reason}>
+                    {t(`terminationReasons.${reason}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Custom Reason Input (only show when "other" is selected) */}
+          {selectedReason === "other" && (
+            <div className="space-y-2">
+              <Label htmlFor="custom-reason">{t("customReason")}</Label>
+              <Textarea
+                id="custom-reason"
+                placeholder={t("terminateReasonPlaceholder")}
+                value={customReason}
+                onChange={(e) => {
+                  setCustomReason(e.target.value);
+                  if (error) setError("");
+                }}
+                className={error ? "border-destructive" : ""}
+                rows={3}
+              />
+            </div>
+          )}
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="gap-2">
           <Button
             variant="outline"
             onClick={handleClose}
@@ -150,7 +209,7 @@ export function TerminateContractDialog({
           >
             {isSubmitting ? (
               <>
-                <Spinner className="h-4 w-4 mr-2" />
+                <Spinner />
                 {tCommon("loading")}
               </>
             ) : (

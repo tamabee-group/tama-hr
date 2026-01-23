@@ -18,15 +18,8 @@ interface WorkModeFilterConfig {
  */
 const WORK_MODE_FILTER_CONFIG: Record<WorkMode, WorkModeFilterConfig> = {
   FIXED_HOURS: {
-    // Không cần ẩn gì ở sidebar vì Schedules đã nằm trong Shifts page
     hiddenUrls: [],
-    partialItems: [
-      {
-        // Shifts page: ẩn tab Schedules và Templates khi FIXED_HOURS
-        url: "/company/shifts",
-        hiddenTabs: ["schedules", "templates"],
-      },
-    ],
+    partialItems: [],
   },
   FLEXIBLE_SHIFT: {
     // Hiển thị tất cả khi FLEXIBLE_SHIFT

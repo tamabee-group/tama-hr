@@ -56,6 +56,29 @@ import { cn } from "@/lib/utils";
 import { SidebarSettingsDialog } from "./_sidebar-settings-dialog";
 
 /**
+ * Kiểm tra menu item có đang active không
+ * So sánh pathname với URL, bỏ qua locale prefix
+ */
+function isMenuItemActive(pathname: string, itemUrl: string): boolean {
+  // Loại bỏ locale prefix từ pathname (ví dụ: /vi/dashboard/employees -> /dashboard/employees)
+  const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}\//, "/");
+
+  // So sánh exact match
+  if (pathWithoutLocale === itemUrl) {
+    return true;
+  }
+
+  // Kiểm tra nếu đang ở sub-route của item
+  // Ví dụ: /dashboard/employees/123 active cho /dashboard/employees
+  // Nhưng /dashboard KHÔNG active cho /dashboard/employees
+  if (itemUrl !== "/dashboard" && pathWithoutLocale.startsWith(itemUrl + "/")) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Kiểm tra item có yêu cầu Admin-only permission không
  */
 function isAdminOnlyItem(item: SidebarItem): boolean {
@@ -306,7 +329,10 @@ export function BaseSidebar({
                                   <SidebarMenuSubItem key={subItem.title}>
                                     <SidebarMenuSubButton
                                       asChild
-                                      isActive={pathname === subItem.url}
+                                      isActive={isMenuItemActive(
+                                        pathname,
+                                        subItem.url,
+                                      )}
                                     >
                                       <Link href={subItem.url}>
                                         <span>{subItem.title}</span>
@@ -322,7 +348,7 @@ export function BaseSidebar({
                         <SidebarMenuItem key={item.title}>
                           <SidebarMenuButton
                             asChild
-                            isActive={pathname === item.url}
+                            isActive={isMenuItemActive(pathname, item.url)}
                           >
                             <Link href={item.url}>
                               {item.icon}

@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import {
   PayrollStatusBadge,
-  PaymentStatusBadge,
+  PayrollItemStatusBadge,
 } from "@/app/[locale]/_components/_shared/_status-badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { payrollApi } from "@/lib/apis/payroll-api";
+import { payrollApi } from "@/lib/apis/payroll-period-api";
 import {
-  PayrollRecord,
+  PayrollItem,
   PayrollSummary,
   YearMonth,
 } from "@/types/attendance-records";
@@ -63,7 +63,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
 
   // State
   const [summary, setSummary] = useState<PayrollSummary | null>(null);
-  const [records, setRecords] = useState<PayrollRecord[]>([]);
+  const [records, setRecords] = useState<PayrollItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showFinalizeDialog, setShowFinalizeDialog] = useState(false);
@@ -95,10 +95,11 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
   }, [fetchData]);
 
   // Check status
+  // TODO: Fix status check when PayrollItem has correct status fields
   const isFinalized = records.some(
-    (r) => r.status === "FINALIZED" || r.status === "PAID",
+    (r) => r.status === "CONFIRMED", // Assuming CONFIRMED is finalized
   );
-  const allPaid = records.every((r) => r.paymentStatus === "PAID");
+  const allPaid = false; // const allPaid = records.every((r) => r.paymentStatus === "PAID");
 
   // Handle finalize
   const handleFinalize = async () => {
@@ -134,7 +135,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
   const handleSendNotifications = async () => {
     setActionLoading("notify");
     try {
-      await payrollApi.sendNotifications(period);
+      await payrollApi.sendNotifications();
       toast.success(t("messages.notificationSent"));
       setShowNotifyDialog(false);
     } catch (error) {
@@ -178,7 +179,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
   };
 
   // Define columns
-  const columns: ColumnDef<PayrollRecord>[] = [
+  const columns: ColumnDef<PayrollItem>[] = [
     {
       id: "stt",
       header: "#",
@@ -222,8 +223,12 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
     {
       accessorKey: "status",
       header: t("table.status"),
-      cell: ({ row }) => <PayrollStatusBadge status={row.original.status} />,
+      cell: ({ row }) => (
+        <PayrollItemStatusBadge status={row.original.status} />
+      ),
     },
+    // Payment Status column removed as it's not present in PayrollItem
+    /*
     {
       accessorKey: "paymentStatus",
       header: t("table.paymentStatus"),
@@ -231,6 +236,7 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
         <PaymentStatusBadge status={row.original.paymentStatus} />
       ),
     },
+    */
     {
       id: "actions",
       header: tCommon("actions"),

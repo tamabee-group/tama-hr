@@ -2,7 +2,6 @@ import { apiClient } from "@/lib/utils/fetch-client";
 import {
   AttendanceRecord,
   AttendanceSummary,
-  DateRange,
 } from "@/types/attendance-records";
 import { PaginatedResponse } from "@/types/api";
 
@@ -150,10 +149,11 @@ export async function getMyAttendanceByDate(
  * @client-only
  */
 export async function getMyAttendanceSummary(
-  dateRange: DateRange,
+  startDate: string,
+  endDate: string,
 ): Promise<AttendanceSummary> {
   return apiClient.get<AttendanceSummary>(
-    `/api/employee/attendance/summary?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
+    `/api/employee/attendance/summary?startDate=${startDate}&endDate=${endDate}`,
   );
 }
 
@@ -229,10 +229,11 @@ export async function getEmployeeAttendanceSummary(
  * @client-only
  */
 export async function getCompanyAttendanceSummary(
-  dateRange: DateRange,
+  startDate: string,
+  endDate: string,
 ): Promise<AttendanceSummary> {
   return apiClient.get<AttendanceSummary>(
-    `/api/company/attendance/summary?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
+    `/api/company/attendance/summary?startDate=${startDate}&endDate=${endDate}`,
   );
 }
 

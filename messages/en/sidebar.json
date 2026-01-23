@@ -36,24 +36,21 @@
     "attendance": "Attendance",
     "attendanceRecords": "Attendance Records",
     "adjustments": "Adjustments",
-    "schedules": "Work Schedules",
     "payroll": "Payroll",
     "payrollRecords": "Payroll Records",
+    "payrollPeriods": "Payroll Periods",
+    "payslips": "Payslips",
     "holidays": "Holidays",
     "leaveRequests": "Leave Requests",
     "leave": "Leave",
     "reports": "Reports",
     "myAttendance": "My Attendance",
     "mySchedule": "My Schedule",
+    "myAdjustments": "Adjustment Requests",
     "myPayroll": "My Payroll",
     "myLeave": "My Leave",
     "myProfile": "My Profile",
     "shifts": "Shift Management",
     "contracts": "Contracts"
-  },
-  "workModeIndicator": {
-    "fixedHours": "Fixed Hours",
-    "flexibleShift": "Flexible/Shift",
-    "tooltip": "Current work mode of the company"
   }
 }

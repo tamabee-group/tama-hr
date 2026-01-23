@@ -148,8 +148,8 @@ export async function getShiftAssignments(
     params.append("employeeId", filters.employeeId.toString());
   if (filters?.shiftTemplateId)
     params.append("shiftTemplateId", filters.shiftTemplateId.toString());
-  if (filters?.startDate) params.append("startDate", filters.startDate);
-  if (filters?.endDate) params.append("endDate", filters.endDate);
+  if (filters?.startDate) params.append("workDateFrom", filters.startDate);
+  if (filters?.endDate) params.append("workDateTo", filters.endDate);
   if (filters?.status) params.append("status", filters.status);
 
   return apiClient.get<PaginatedResponse<ShiftAssignment>>(
@@ -219,17 +219,40 @@ export async function deleteShiftAssignment(id: number): Promise<void> {
 
 /**
  * Phân công ca cho nhiều nhân viên cùng lúc
+ * Hỗ trợ phân ca theo ngày đơn hoặc khoảng thời gian
  * @client-only
  */
 export async function batchAssignShift(data: {
   employeeIds: number[];
   shiftTemplateId: number;
-  workDate: string;
+  startDate: string;
+  endDate?: string; // Nếu null hoặc = startDate thì chỉ phân ca cho 1 ngày
 }): Promise<BatchAssignmentResult> {
   return apiClient.post<BatchAssignmentResult>(
     "/api/company/shifts/assignments/batch",
     data,
   );
+}
+
+/**
+ * Xóa phân ca hàng loạt theo nhân viên và khoảng thời gian
+ * @client-only
+ */
+export async function batchDeleteShiftAssignments(data: {
+  employeeIds: number[];
+  startDate: string;
+  endDate?: string;
+}): Promise<BatchDeleteResult> {
+  return apiClient.delete<BatchDeleteResult>(
+    "/api/company/shifts/assignments/batch",
+    { body: data },
+  );
+}
+
+export interface BatchDeleteResult {
+  totalRequested: number;
+  successCount: number;
+  failedCount: number;
 }
 
 export interface BatchAssignmentResult {

@@ -49,14 +49,14 @@ export function CompanyDetailDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader className="shrink-0 pb-4">
+        <DialogHeader className="shrink-0">
           <DialogTitle>{t("detail.title")}</DialogTitle>
           <DialogDescription className="sr-only">
             {t("detail.description")}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-6">
           {/* Thông tin công ty */}
           <Card className="py-4 gap-0">
             <CardHeader>

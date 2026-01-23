@@ -13,9 +13,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { PayrollStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
 
-import { PayrollPreviewRecord } from "@/lib/apis/payroll-api";
+import { PayrollPreviewRecord } from "@/lib/apis/payroll-period-api";
 import { formatCurrency } from "@/lib/utils/format-currency";
 
 interface PayrollDetailDialogProps {
@@ -54,7 +54,7 @@ export function PayrollDetailDialog({
         <DialogHeader>
           <DialogTitle className="flex gap-4">
             {record.employeeName}
-            <PayrollStatusBadge status={record.status} />
+            <PayrollItemStatusBadge status={record.status} />
           </DialogTitle>
         </DialogHeader>
 
@@ -72,11 +72,7 @@ export function PayrollDetailDialog({
               value={record.regularOvertimePay}
               hours={Math.round((record.regularOvertimeMinutes || 0) / 60)}
             />
-            <BreakdownRow
-              label={t("breakdown.nightWork")}
-              value={record.nightWorkPay}
-              hours={Math.round((record.nightMinutes || 0) / 60)}
-            />
+            {/* Night Work removed as it's not in PayrollItem */}
             <BreakdownRow
               label={t("breakdown.nightOvertime")}
               value={record.nightOvertimePay}

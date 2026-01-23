@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AttendanceDayDetail } from "@/app/[locale]/_components/_shared/attendance-day-detail";
-import { BreakTimeline } from "../me/_break-timeline";
+import { BreakTimeline } from "../../../../(PersonalLayout)/me/_break-timeline";
 import { EditAttendanceDialog } from "./_edit-attendance-dialog";
 
 import { apiClient } from "@/lib/utils/fetch-client";

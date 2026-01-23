@@ -57,6 +57,7 @@ export default async function RootLayout({ children, params }: Props) {
       <head />
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${kanit.variable} antialiased`}
+        suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale}>
           <ThemeProvider

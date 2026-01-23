@@ -7,7 +7,7 @@ import { Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { PayrollStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -20,7 +20,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { payrollApi, PayrollPreviewRecord } from "@/lib/apis/payroll-api";
+import {
+  payrollApi,
+  PayrollPreviewRecord,
+} from "@/lib/apis/payroll-period-api";
 import { YearMonth } from "@/types/attendance-records";
 import { formatCurrency } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
@@ -56,7 +59,7 @@ export function PayrollPreviewTable({
     setLoading(true);
     try {
       const response = await payrollApi.previewPayroll(period);
-      setRecords(response.records || []);
+      setRecords(response?.records || []);
     } catch (error) {
       toast.error(getErrorMessage((error as Error).message, tErrors));
     } finally {
@@ -156,7 +159,9 @@ export function PayrollPreviewTable({
     {
       accessorKey: "status",
       header: t("table.status"),
-      cell: ({ row }) => <PayrollStatusBadge status={row.original.status} />,
+      cell: ({ row }) => (
+        <PayrollItemStatusBadge status={row.original.status} />
+      ),
     },
   ];
 

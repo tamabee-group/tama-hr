@@ -32,6 +32,7 @@
   "effectiveTo": "適用終了日",
   "note": "備考",
   "notePlaceholder": "例：試用期間の給与。",
+  "payslipHistory": "給与明細履歴",
   "historyTitle": "給与設定履歴",
   "noHistory": "履歴がありません",
   "effectivePeriod": "適用期間",

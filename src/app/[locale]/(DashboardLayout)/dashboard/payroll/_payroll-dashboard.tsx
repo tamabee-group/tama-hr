@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -17,9 +17,10 @@ import {
 
 import { payrollApi } from "@/lib/apis/payroll-period-api";
 import { PayrollSummary, YearMonth } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatPayslip, SupportedLocale } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { PayrollPreviewTable } from "./_payroll-preview-table";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * Component tổng quan bảng lương
@@ -31,6 +32,8 @@ export function PayrollDashboard() {
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
   const router = useRouter();
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // State
   const [summary, setSummary] = useState<PayrollSummary | null>(null);
@@ -113,49 +116,41 @@ export function PayrollDashboard() {
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalEmployees")}
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {summary.totalEmployees ?? 0}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalEmployees")}
+            </p>
+            <p className="text-2xl font-bold text-blue-600">
+              {summary.totalEmployees ?? 0}
+            </p>
+          </GlassCard>
 
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalPayroll")}
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalNetSalary ?? 0)}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalPayroll")}
+            </p>
+            <p className="text-2xl font-bold text-green-600">
+              {formatPayslip(summary.totalNetSalary ?? 0, companyLocale)}
+            </p>
+          </GlassCard>
 
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.pendingPayments")}
-              </p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {summary.pendingCount ?? 0}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.pendingPayments")}
+            </p>
+            <p className="text-2xl font-bold text-yellow-600">
+              {summary.pendingCount ?? 0}
+            </p>
+          </GlassCard>
 
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.paidPayments")}
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {summary.paidCount ?? 0}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.paidPayments")}
+            </p>
+            <p className="text-2xl font-bold text-green-600">
+              {summary.paidCount ?? 0}
+            </p>
+          </GlassCard>
         </div>
       )}
 

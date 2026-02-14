@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
@@ -17,28 +16,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 import {
   payrollPeriodApi,
   PayrollPeriodFilters,
 } from "@/lib/apis/payroll-period-api";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
 import { PayrollPeriod } from "@/types/attendance-records";
 import { PayrollPeriodStatus } from "@/types/attendance-enums";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatPayslip, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { PayrollPeriodFormDialog } from "./_payroll-period-form";
+import { PayrollPeriodDetailDialog } from "./_payroll-period-detail-dialog";
+import { useAuth } from "@/hooks/use-auth";
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_LIMIT = 10;
@@ -70,7 +62,8 @@ export function PayrollPeriodTable() {
   const tErrors = useTranslations("errors");
   const tEnums = useTranslations("enums");
   const locale = useLocale() as SupportedLocale;
-  const router = useRouter();
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // State
   const [periods, setPeriods] = useState<PayrollPeriod[]>([]);
@@ -85,8 +78,9 @@ export function PayrollPeriodTable() {
 
   // Dialog state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<PayrollPeriod | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState<PayrollPeriod | null>(
+    null,
+  );
 
   // Tạo danh sách năm (5 năm gần nhất)
   const years = generateYears();
@@ -118,31 +112,27 @@ export function PayrollPeriodTable() {
     fetchPeriods();
   }, [fetchPeriods]);
 
-  // Handle view detail
-  const handleViewDetail = (period: PayrollPeriod) => {
-    router.push(`/${locale}/dashboard/payroll/${period.id}`);
-  };
-
-  // Handle delete
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-
-    setDeleting(true);
-    try {
-      await payrollPeriodApi.deletePayrollPeriod(deleteTarget.id);
-      toast.success(t("periodDeleteSuccess"));
-      setDeleteTarget(null);
+  // Subscribe real-time notification để auto-refresh
+  useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("PAYROLL", () => {
       fetchPeriods();
-    } catch (error) {
-      toast.error(getErrorMessage((error as Error).message, tErrors));
-    } finally {
-      setDeleting(false);
-    }
+    });
+    return unsubscribe;
+  }, [fetchPeriods]);
+
+  // Handle row click - mở dialog chi tiết
+  const handleRowClick = (period: PayrollPeriod) => {
+    setSelectedPeriod(period);
   };
 
   // Handle create success
   const handleCreateSuccess = () => {
     setShowCreateDialog(false);
+    fetchPeriods();
+  };
+
+  // Handle refresh sau khi action trong dialog
+  const handleRefresh = () => {
     fetchPeriods();
   };
 
@@ -185,14 +175,15 @@ export function PayrollPeriodTable() {
     {
       accessorKey: "totalGrossSalary",
       header: t("totalGross"),
-      cell: ({ row }) => formatCurrency(row.original.totalGrossSalary),
+      cell: ({ row }) =>
+        formatPayslip(row.original.totalGrossSalary, companyLocale),
     },
     {
       accessorKey: "totalNetSalary",
       header: t("totalNet"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.totalNetSalary)}
+          {formatPayslip(row.original.totalNetSalary, companyLocale)}
         </span>
       ),
     },
@@ -204,36 +195,6 @@ export function PayrollPeriodTable() {
           {getEnumLabel("payrollPeriodStatus", row.original.status, tEnums)}
         </Badge>
       ),
-    },
-    {
-      id: "actions",
-      header: tCommon("actions"),
-      cell: ({ row }) => {
-        const period = row.original;
-        const canDelete = period.status === "DRAFT";
-
-        return (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleViewDetail(period)}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-            {canDelete && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setDeleteTarget(period)}
-              >
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
-            )}
-          </div>
-        );
-      },
-      size: 100,
     },
   ];
 
@@ -291,6 +252,7 @@ export function PayrollPeriodTable() {
           showPagination={true}
           pageSize={DEFAULT_LIMIT}
           noResultsText={tCommon("noData")}
+          onRowClick={handleRowClick}
         />
       )}
 
@@ -331,30 +293,13 @@ export function PayrollPeriodTable() {
         onSuccess={handleCreateSuccess}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!deleteTarget}
-        onOpenChange={() => setDeleteTarget(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCommon("delete")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("confirmDeletePeriod")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleting ? tCommon("loading") : tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Detail Dialog */}
+      <PayrollPeriodDetailDialog
+        period={selectedPeriod}
+        open={!!selectedPeriod}
+        onOpenChange={(open) => !open && setSelectedPeriod(null)}
+        onRefresh={handleRefresh}
+      />
     </div>
   );
 }

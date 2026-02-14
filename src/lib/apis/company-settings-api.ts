@@ -5,8 +5,6 @@ import {
   PayrollConfig,
   OvertimeConfig,
   BreakConfig,
-  AllowanceConfig,
-  DeductionConfig,
   LegalOvertimeMinimums,
 } from "@/types/attendance-config";
 
@@ -119,38 +117,11 @@ export async function updateBreakConfig(config: BreakConfig): Promise<void> {
   await apiClient.put<void>("/api/company/settings/break", config);
 }
 
-/**
- * Cập nhật cấu hình phụ cấp
- * @client-only
- */
-export async function updateAllowanceConfig(
-  config: AllowanceConfig,
-): Promise<AllowanceConfig> {
-  return apiClient.put<AllowanceConfig>(
-    "/api/company/settings/allowance",
-    config,
-  );
-}
-
-/**
- * Cập nhật cấu hình khấu trừ
- * @client-only
- */
-export async function updateDeductionConfig(
-  config: DeductionConfig,
-): Promise<DeductionConfig> {
-  return apiClient.put<DeductionConfig>(
-    "/api/company/settings/deduction",
-    config,
-  );
-}
-
 // ============================================
 // Export API object
 // ============================================
 
 export const companySettingsApi = {
-  // Settings
   getSettings,
   getAttendanceConfig,
   getPayrollConfig,
@@ -161,6 +132,4 @@ export const companySettingsApi = {
   updatePayrollConfig,
   updateOvertimeConfig,
   updateBreakConfig,
-  updateAllowanceConfig,
-  updateDeductionConfig,
 };

@@ -1,17 +1,45 @@
 {
   "title": "Notifications",
-  "empty": "No new notifications",
-  "markAllRead": "Mark all as read",
-  "viewAll": "View all",
-  "markAsRead": "Mark as read",
-  "types": {
-    "adjustmentApproved": "Adjustment request approved",
-    "adjustmentRejected": "Adjustment request rejected",
-    "leaveApproved": "Leave request approved",
-    "leaveRejected": "Leave request rejected",
-    "salaryNotification": "Salary notification",
-    "scheduleApproved": "Schedule approved",
-    "scheduleRejected": "Schedule rejected",
-    "general": "General notification"
+  "markAllRead": "Mark all as seen",
+  "viewAll": "View all notifications",
+  "noNotifications": "No notifications",
+  "markAsRead": "Mark as seen",
+  "unread": "Unseen",
+  "codes": {
+    "WELCOME_COMPANY": "Welcome {companyName} to Tamabee HR!",
+    "WELCOME_EMPLOYEE": "Welcome to {companyName}!",
+    "PAYROLL_PERIOD_CREATED": "Payroll period {periodName} has been created",
+    "PAYROLL_CONFIRMED": "Payslip for {month}/{year} has been confirmed",
+    "PAYROLL_SUBMITTED": "Payroll period {month}/{year} has been submitted for approval",
+    "PAYROLL_REJECTED": "Payroll period {month}/{year} has been rejected",
+    "PAYROLL_PAID": "Salary for {month}/{year} has been paid",
+    "DEPOSIT_APPROVED": "Deposit request of {amount} has been approved",
+    "DEPOSIT_REJECTED": "Deposit request of {amount} has been rejected",
+    "DEPOSIT_SUBMITTED": "{companyName} has submitted a deposit request of {amount}",
+    "LOW_BALANCE_WARNING": "Wallet balance is {balance}, please top up",
+    "LEAVE_SUBMITTED": "{employeeName} has submitted a leave request from {startDate} to {endDate}",
+    "LEAVE_SUBMITTED_SINGLE": "{employeeName} has submitted a leave request for {startDate}",
+    "LEAVE_APPROVED": "Your leave request from {startDate} to {endDate} has been approved",
+    "LEAVE_APPROVED_SINGLE": "Your leave request for {startDate} has been approved",
+    "LEAVE_REJECTED": "Your leave request from {startDate} to {endDate} has been rejected",
+    "LEAVE_REJECTED_SINGLE": "Your leave request for {startDate} has been rejected",
+    "ADJUSTMENT_SUBMITTED": "{employeeName} has submitted an attendance adjustment request for {date}",
+    "ADJUSTMENT_APPROVED": "Your attendance adjustment request for {date} has been approved",
+    "ADJUSTMENT_REJECTED": "Your attendance adjustment request for {date} has been rejected",
+    "ATTENDANCE_ADJUSTED": "{adjustedBy} has adjusted your attendance for {workDate}",
+    "SYSTEM_ANNOUNCEMENT": "{message}",
+    "FEEDBACK_SUBMITTED": "{userName} submitted feedback: {title}",
+    "FEEDBACK_REPLIED": "Feedback \"{title}\" has a new reply from {repliedByName}"
+  },
+  "timeAgo": {
+    "justNow": "Just now",
+    "minutesAgo": "{count} minutes ago",
+    "hoursAgo": "{count} hours ago",
+    "daysAgo": "{count} days ago"
+  },
+  "detail": {
+    "notFound": "Notification not found",
+    "notFoundDescription": "This notification does not exist or you do not have permission to view it.",
+    "backToList": "Back to list"
   }
 }

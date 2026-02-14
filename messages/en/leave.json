@@ -16,6 +16,7 @@
     "startDate": "Start Date",
     "endDate": "End Date",
     "days": "Days",
+    "daysUnit": "day(s)",
     "reason": "Reason",
     "status": "Status",
     "approvedBy": "Approved By",

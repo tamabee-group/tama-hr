@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
@@ -73,12 +73,6 @@ export function ShiftsTabs({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("description")}</p>
-      </div>
-
       {/* Mobile & Tablet: Horizontal scroll tabs */}
       <div className="lg:hidden">
         <ScrollArea className="w-full">
@@ -119,28 +113,26 @@ export function ShiftsTabs({
         </div>
 
         {/* Desktop: Sidebar navigation - bên phải */}
-        <Card className="py-2 hidden lg:block min-w-48 max-w-58 shrink-0 h-fit sticky top-[66px]">
-          <CardContent className="p-3">
-            <nav className="flex flex-col gap-1">
-              {visibleTabs.map((item) => (
-                <Button
-                  key={item.key}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "justify-start gap-3 h-10",
-                    activeTab === item.key &&
-                      "bg-primary/10 text-primary font-medium",
-                  )}
-                  onClick={() => handleTabChange(item.key)}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {t(item.titleKey)}
-                </Button>
-              ))}
-            </nav>
-          </CardContent>
-        </Card>
+        <GlassCard className="p-3 hidden lg:block min-w-48 max-w-58 shrink-0 h-fit sticky top-[66px]">
+          <nav className="flex flex-col gap-1">
+            {visibleTabs.map((item) => (
+              <Button
+                key={item.key}
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "justify-start gap-3 h-10",
+                  activeTab === item.key &&
+                    "bg-primary/10 text-primary font-medium",
+                )}
+                onClick={() => handleTabChange(item.key)}
+              >
+                <item.icon className="h-4 w-4" />
+                {t(item.titleKey)}
+              </Button>
+            ))}
+          </nav>
+        </GlassCard>
       </div>
     </div>
   );

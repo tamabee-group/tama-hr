@@ -77,13 +77,18 @@ const MENU_CONFIG: Record<UserRole, MenuConfig> = {
   // Tamabee Employee - HR features
   EMPLOYEE_TAMABEE: {
     dashboard: {
-      href: "/dashboard",
-      labelKey: "dashboard",
+      href: "/support",
+      labelKey: "support",
       icon: LayoutDashboard,
     },
     items: [
       {
-        href: "/dashboard/my-commissions",
+        href: "/support/referrals",
+        labelKey: "referrals",
+        icon: Building2,
+      },
+      {
+        href: "/support/commissions",
         labelKey: "commissions",
         icon: Wallet,
       },

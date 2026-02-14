@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { CalendarIcon } from "lucide-react";
 import { useLocale } from "next-intl";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ interface DatePickerProps {
 export function DatePicker({
   value,
   onChange,
-  placeholder = "Chọn ngày",
+  placeholder = "Chọn ngày...",
   locale: localeProp,
   className,
   disabled = false,
@@ -54,7 +54,7 @@ export function DatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-9 justify-start text-left font-normal",
+            "h-9 justify-start text-left font-normal w-full",
             !value && "text-muted-foreground",
             "my-1.5",
             className,
@@ -79,6 +79,7 @@ export function DatePicker({
             mode="single"
             selected={value}
             onSelect={handleSelect}
+            defaultMonth={value}
             autoFocus
             captionLayout="dropdown"
             startMonth={new Date(new Date().getFullYear() - 60, 0)}

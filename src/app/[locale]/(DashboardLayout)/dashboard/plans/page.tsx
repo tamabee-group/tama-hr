@@ -1,19 +1,24 @@
-import { getTranslations } from "next-intl/server";
 import { apiServer } from "@/lib/utils/fetch-server";
-import { Company } from "@/types/company";
-import { PlansContent } from "./_plans-content";
+import { SubscriptionStatus } from "@/types/subscription";
+import { PlansWrapper } from "./_plans-wrapper";
 
 export default async function PlansPage() {
-  const t = await getTranslations("plans");
-  const company = await apiServer.get<Company>("/api/company/profile");
+  const subscription = await apiServer.get<SubscriptionStatus>(
+    "/api/company/subscription",
+  );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("description")}</p>
-      </div>
-      <PlansContent currentPlanId={company.planId ?? null} />
-    </div>
+    <PlansWrapper
+      currentPlanId={subscription.currentPlanId}
+      currentPlanPrice={subscription.currentPlanPrice}
+      isInFreeTrial={subscription.isInFreeTrial}
+      scheduledPlanId={subscription.scheduledPlanId}
+      scheduledPlanName={subscription.scheduledPlanName}
+      scheduledPlanEffectiveDate={subscription.scheduledPlanEffectiveDate}
+      canCancelUpgrade={subscription.canCancelUpgrade}
+      cancelUpgradeDeadline={subscription.cancelUpgradeDeadline}
+      previousPlanName={subscription.previousPlanName}
+      availablePlans={subscription.availablePlans}
+    />
   );
 }

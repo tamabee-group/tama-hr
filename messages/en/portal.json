@@ -1,0 +1,334 @@
+{
+  "navigation": {
+    "home": "Home",
+    "attendance": "Attendance",
+    "schedule": "Work Schedule",
+    "leave": "Leave",
+    "payroll": "Payslips",
+    "profile": "My Profile",
+    "contract": "Contracts",
+    "documents": "Documents",
+    "adjustments": "Adjustments",
+    "commissions": "Commissions",
+    "notifications": "Notifications",
+    "helpCenter": "Help Center",
+    "support": "Customer Support",
+    "platformAdmin": "Platform Admin",
+    "ariaLabel": "Main navigation",
+    "dashboard": "Dashboard"
+  },
+  "mobileNav": {
+    "home": "Home",
+    "schedule": "Schedule",
+    "leave": "Leave",
+    "payroll": "Payroll",
+    "profile": "Profile",
+    "ariaLabel": "Main navigation"
+  },
+  "sidebar": {
+    "main": "Main",
+    "personal": "Personal",
+    "history": "History",
+    "support": "Support",
+    "management": "Management"
+  },
+  "home": {
+    "title": "Home",
+    "description": "Manage your daily attendance",
+    "todayAttendance": "Today's Attendance",
+    "checkIn": "Check In",
+    "checkOut": "Check Out",
+    "breakStart": "Start Break",
+    "breakEnd": "End Break",
+    "history": "Today's History",
+    "calendar": "Attendance Calendar",
+    "noRecordsToday": "No records today",
+    "checkInSuccess": "Checked in successfully",
+    "checkOutSuccess": "Checked out successfully",
+    "breakStartSuccess": "Break started successfully",
+    "breakEndSuccess": "Break ended successfully",
+    "gpsRequired": "Please enable location sharing to record attendance",
+    "schedule": {
+      "todayShifts": "Today's Shifts",
+      "nextShiftLabel": "Next Shift",
+      "tomorrow": "Tomorrow",
+      "noShiftToday": "You don't have a shift today",
+      "noShiftScheduled": "You have no shifts scheduled this week",
+      "completed": "Done",
+      "current": "Now",
+      "upcoming": "Upcoming",
+      "viewDetail": "View detail"
+    },
+    "nextShift": {
+      "title": "Confirm Shift #{shiftNumber}",
+      "description": "You checked out at {time}. Do you want to start a new shift?",
+      "warning": "This will automatically create a break record between shifts.",
+      "confirm": "Confirm Check In",
+      "cancel": "Cancel"
+    },
+    "inactiveOverlay": {
+      "title": "Account Inactive",
+      "message": "Your account is currently inactive. Please contact your manager to check your status or set up an employment contract."
+    },
+    "outsideGeofence": {
+      "title": "Outside allowed area",
+      "description": "You are not within the allowed attendance area. Do you want to continue?",
+      "confirm": "Continue",
+      "cancel": "Cancel"
+    }
+  },
+  "schedule": {
+    "title": "Work Schedule",
+    "description": "View your shift schedule and swap requests",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "prevMonth": "Last Month",
+    "nextMonth": "Next Month",
+    "shifts": "Shifts",
+    "requestSwap": "Request Swap",
+    "history": "History",
+    "noShifts": "No Shifts",
+    "noShiftsDescription": "You have no shifts assigned for this period",
+    "swappedWith": "Swapped with",
+    "noSwapHistory": "No Swap History",
+    "noSwapHistoryDescription": "You haven't made any swap requests yet",
+    "status": {
+      "past": "Past",
+      "current": "Now",
+      "next": "Next"
+    },
+    "swapRequest": "Swap Request",
+    "yourShift": "Your Shift",
+    "targetShift": "Target Shift",
+    "requestedAt": "Requested at",
+    "cancelSwap": "Cancel Request",
+    "cancelSwapTitle": "Cancel Swap Request",
+    "cancelSwapDescription": "Are you sure you want to cancel this swap request?",
+    "swapCancelSuccess": "Swap request cancelled successfully",
+    "swapCancelError": "Failed to cancel swap request",
+    "rejectionReason": "Rejection Reason",
+    "approvedBy": "Approved by",
+    "selectYourShift": "Select your shift",
+    "selectTargetShift": "Select target shift",
+    "reason": "Reason for swap",
+    "reasonPlaceholder": "Enter reason for swap...",
+    "submitSwap": "Submit Request",
+    "swapSuccess": "Swap request submitted successfully",
+    "swapError": "Failed to submit swap request",
+    "noAvailableShifts": "No available shifts to swap",
+    "loadError": "Failed to load schedule"
+  },
+  "contract": {
+    "title": "My Contracts",
+    "description": "View your employment contracts",
+    "current": "Current Contract",
+    "history": "Contract History",
+    "noContract": "No Active Contract",
+    "noContractDescription": "You don't have an active employment contract",
+    "noHistory": "No Contract History",
+    "noHistoryDescription": "No previous contracts found",
+    "type": "Contract Type",
+    "period": "Contract Period",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "remaining": "Remaining",
+    "expiresIn": "{days} days remaining",
+    "expiringWarning": "Your contract is expiring soon. Please contact HR.",
+    "viewDetail": "View Details",
+    "viewContract": "View contract",
+    "detail": "Contract Details",
+    "terminationInfo": "Termination Information",
+    "notes": "Notes",
+    "loadError": "Failed to load contracts"
+  },
+  "payroll": {
+    "title": "My Payslips",
+    "description": "View your salary history and download payslips",
+    "filter": {
+      "year": "Year",
+      "status": "Status",
+      "all": "All"
+    },
+    "empty": "No payslips found"
+  },
+  "profile": {
+    "title": "My Profile",
+    "description": "Manage your personal information",
+    "completion": "Profile Completion",
+    "tabs": {
+      "basic": "Basic",
+      "work": "Work",
+      "bank": "Bank",
+      "emergency": "Emergency"
+    },
+    "fields": {
+      "avatar": "Profile Photo",
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "dob": "Date of Birth",
+      "gender": "Gender",
+      "address": "Address",
+      "zipCode": "Postal Code"
+    },
+    "workInfo": {
+      "employeeCode": "Employee Code",
+      "department": "Department",
+      "jobTitle": "Job Title",
+      "joiningDate": "Joining Date",
+      "contractType": "Contract Type",
+      "manager": "Direct Manager"
+    },
+    "bankInfo": {
+      "accountType": "Bank Account Type",
+      "japanBankType": "Japan Bank Type",
+      "bankName": "Bank Name",
+      "accountNumber": "Account Number",
+      "accountHolderName": "Account Holder Name",
+      "bankCode": "Bank Code",
+      "branchCode": "Branch Code",
+      "branchName": "Branch Name",
+      "accountCategory": "Account Category",
+      "symbol": "Symbol (記号)",
+      "number": "Number (番号)",
+      "types": {
+        "vietnam": "Vietnam Bank",
+        "japan": "Japan Bank"
+      },
+      "japanTypes": {
+        "normal": "Normal Bank",
+        "yucho": "Yucho Bank (ゆうちょ銀行)"
+      },
+      "categories": {
+        "futsu": "Ordinary (普通)",
+        "toza": "Current (当座)"
+      },
+      "placeholders": {
+        "selectAccountType": "Select bank account type",
+        "selectJapanBankType": "Select Japan bank type",
+        "bankName": "Enter bank name",
+        "accountNumber": "Enter account number",
+        "accountHolderName": "Enter account holder name",
+        "bankCode": "Enter bank code (4 digits)",
+        "branchCode": "Enter branch code (3 digits)",
+        "branchName": "Enter branch name",
+        "selectCategory": "Select account category",
+        "symbol": "Enter symbol (5 digits)",
+        "number": "Enter number (8 digits)"
+      }
+    },
+    "placeholders": {
+      "name": "Enter your full name",
+      "phone": "Enter phone number",
+      "address": "Enter your address",
+      "zipCode": "Enter postal code",
+      "selectGender": "Select gender",
+      "selectDob": "Select date of birth"
+    },
+    "messages": {
+      "saveSuccess": "Profile updated successfully",
+      "saveError": "Failed to update profile"
+    },
+    "emergencyContact": {
+      "contactName": "Contact Name",
+      "phone": "Phone Number",
+      "relationship": "Relationship",
+      "address": "Address",
+      "placeholders": {
+        "contactName": "Enter contact name",
+        "phone": "Enter phone number",
+        "relationship": "e.g., Spouse, Parent, Sibling",
+        "address": "Enter contact address"
+      }
+    },
+    "actions": {
+      "save": "Save Changes"
+    }
+  },
+  "leave": {
+    "title": "Leave",
+    "description": "Manage your leave requests and view remaining days",
+    "balance": "Leave Balance",
+    "used": "Used",
+    "pending": "Pending",
+    "remaining": "Remaining",
+    "requestLeave": "Request Leave",
+    "history": "History",
+    "type": "Leave Type",
+    "selectType": "Select leave type",
+    "dateRange": "Date Range",
+    "selectDateRange": "Select start and end date",
+    "totalDays": "Total days",
+    "days": "days",
+    "reason": "Reason",
+    "reasonPlaceholder": "Enter reason for leave...",
+    "approver": "Approver",
+    "selectApprover": "Select approver",
+    "departmentManager": "Department Manager",
+    "defaultApproverHint": "Default: {name}",
+    "submit": "Submit Request",
+    "requestSuccess": "Leave request submitted successfully",
+    "requestError": "Failed to submit leave request",
+    "invalidDateRange": "End date must be after start date",
+    "insufficientBalance": "Insufficient leave balance",
+    "noHistory": "No Requests",
+    "noHistoryDescription": "You haven't made any leave requests yet",
+    "cancelTitle": "Cancel Leave Request",
+    "cancelDescription": "Are you sure you want to cancel this leave request?",
+    "cancelSuccess": "Request cancelled successfully",
+    "rejectionReason": "Rejection Reason",
+    "detailTitle": "Leave Request Details"
+  },
+  "documents": {
+    "title": "My Documents",
+    "description": "Manage your personal documents",
+    "upload": "Upload Document",
+    "empty": "No Documents",
+    "emptyDescription": "You haven't uploaded any documents yet",
+    "totalDocuments": "{count} documents",
+    "documentType": "Document Type",
+    "selectType": "Select document type",
+    "dropzone": "Drop file here or click to browse",
+    "selectFile": "Select file",
+    "acceptedTypes": "JPG, PNG, WebP, PDF (max 10MB)",
+    "invalidFileType": "Invalid file type. Please upload JPG, PNG, WebP, or PDF",
+    "fileTooLarge": "File is too large. Maximum size is 10MB",
+    "removeFile": "Remove file",
+    "uploading": "Uploading...",
+    "uploadButton": "Upload",
+    "uploadSuccess": "Document uploaded successfully",
+    "uploadError": "Failed to upload document",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "deleteSuccess": "Document deleted successfully",
+    "deleteError": "Failed to delete document",
+    "confirmDeleteTitle": "Delete Document",
+    "confirmDeleteDescription": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+    "loadError": "Failed to load documents",
+    "close": "Close",
+    "download": "Download",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "rotate": "Rotate",
+    "previewNotAvailable": "Preview not available for this file type"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "detail": "Attendance Detail",
+    "description": "View daily attendance details",
+    "back": "Back"
+  },
+  "adjustments": {
+    "title": "Adjustments"
+  },
+  "commissions": {
+    "title": "Commissions"
+  },
+  "notifications": {
+    "title": "Notifications"
+  },
+  "help": {
+    "title": "Help Center"
+  }
+}

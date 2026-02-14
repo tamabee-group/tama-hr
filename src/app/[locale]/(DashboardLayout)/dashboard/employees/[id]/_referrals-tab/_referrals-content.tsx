@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ReferredCompany } from "@/types/employee-detail";
 import { getEmployeeReferrals } from "@/lib/apis/employee-referrals";
 import { formatCurrency } from "@/lib/utils/format-currency";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { CommissionStatus } from "@/types/enums";
 import { CompanyDetailDialog } from "./_company-detail-dialog";

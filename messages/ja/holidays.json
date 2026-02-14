@@ -4,7 +4,11 @@
   "addHoliday": "祝日を追加",
   "editHoliday": "祝日を編集",
   "deleteHoliday": "祝日を削除",
-  "importNational": "国民の祝日をインポート",
+  "syncNational": "祝日を同期",
+  "syncing": "同期中...",
+  "syncDescription": "{country}の祝日をGoogleカレンダーから同期",
+  "countryVi": "ベトナム",
+  "countryJa": "日本",
   "table": {
     "name": "祝日名",
     "date": "日付",
@@ -26,14 +30,16 @@
     "updateSuccess": "祝日を更新しました",
     "updateError": "祝日の更新に失敗しました",
     "deleteSuccess": "祝日を削除しました",
+    "deleteAllSuccess": "すべての祝日を削除しました",
     "deleteError": "祝日の削除に失敗しました",
-    "importSuccess": "国民の祝日をインポートしました",
-    "importError": "国民の祝日のインポートに失敗しました",
+    "syncSuccess": "国民の祝日を同期しました",
     "noHolidays": "祝日がありません"
   },
   "dialog": {
     "deleteTitle": "祝日を削除",
-    "deleteDescription": "この祝日を削除してもよろしいですか？"
+    "deleteDescription": "この祝日を削除してもよろしいですか？",
+    "deleteAllTitle": "すべての祝日を削除",
+    "deleteAllDescription": "すべての祝日を削除してもよろしいですか？この操作は元に戻せません。"
   },
   "filter": {
     "year": "年",

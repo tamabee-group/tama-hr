@@ -10,16 +10,19 @@ import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import {
   LeaveStatusBadge,
   LeaveTypeBadge,
-} from "@/app/[locale]/_components/_shared/_status-badge";
+} from "@/app/[locale]/_components/_shared/display/_status-badge";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { LeaveDetailDialog } from "./_leave-detail-dialog";
 import { RejectLeaveDialog } from "./_reject-leave-dialog";
 import { leaveApi } from "@/lib/apis/leave-api";
 import { LeaveRequest } from "@/types/attendance-records";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
+import { refreshPendingCounts } from "@/hooks/use-pending-counts";
+import { useNotificationHighlight } from "@/hooks/use-notification-highlight";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 const DEFAULT_PAGE = 0;
@@ -35,12 +38,22 @@ export function LeaveApprovalList() {
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
 
+  // Highlight từ notification click
+  const { highlightId, onHighlightHandled } = useNotificationHighlight();
+
   // State
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
   const [allRequests, setAllRequests] = useState<LeaveRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [page] = useState(DEFAULT_PAGE);
   const [activeTab, setActiveTab] = useState<"pending" | "all">("pending");
+  // Track xem đã xử lý highlight cho lần URL change hiện tại chưa
+  const [processedForCurrentUrl, setProcessedForCurrentUrl] = useState(false);
+
+  // Reset flag khi highlightId thay đổi
+  useEffect(() => {
+    setProcessedForCurrentUrl(false);
+  }, [highlightId]);
 
   // Dialog states
   const [selectedRequest, setSelectedRequest] = useState<LeaveRequest | null>(
@@ -83,6 +96,37 @@ export function LeaveApprovalList() {
     fetchData();
   }, [fetchPendingRequests, fetchAllRequests]);
 
+  // Subscribe to LEAVE notifications để auto-refresh
+  useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("LEAVE", () => {
+      fetchPendingRequests();
+      fetchAllRequests();
+    });
+    return unsubscribe;
+  }, [fetchPendingRequests, fetchAllRequests]);
+
+  // Auto-open dialog khi có highlightId từ notification click
+  useEffect(() => {
+    // Chỉ xử lý nếu chưa process cho URL hiện tại
+    if (highlightId && !processedForCurrentUrl && !loading) {
+      const allData = [...requests, ...allRequests];
+      const request = allData.find((r) => r.id === highlightId);
+      if (request) {
+        handleViewDetail(request);
+        setProcessedForCurrentUrl(true);
+        // Clear query param sau khi đã mở dialog
+        onHighlightHandled();
+      }
+    }
+  }, [
+    highlightId,
+    requests,
+    allRequests,
+    processedForCurrentUrl,
+    loading,
+    onHighlightHandled,
+  ]);
+
   // Handle view detail - open dialog
   const handleViewDetail = (request: LeaveRequest) => {
     setSelectedRequest(request);
@@ -98,6 +142,7 @@ export function LeaveApprovalList() {
       setDetailDialogOpen(false);
       fetchPendingRequests();
       fetchAllRequests();
+      refreshPendingCounts();
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -125,6 +170,7 @@ export function LeaveApprovalList() {
       setSelectedRequest(null);
       fetchPendingRequests();
       fetchAllRequests();
+      refreshPendingCounts();
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
       toast.error(getErrorMessage(errorCode, tErrors));
@@ -270,18 +316,20 @@ export function LeaveApprovalList() {
 
   return (
     <div className="space-y-4">
-      <Tabs
+      <GlassTabs
+        tabs={[
+          {
+            value: "pending",
+            label: `${t("pendingRequests")} (${requests.length})`,
+          },
+          { value: "all", label: tCommon("all") },
+        ]}
         value={activeTab}
-        onValueChange={(v) => setActiveTab(v as "pending" | "all")}
-      >
-        <TabsList>
-          <TabsTrigger value="pending">
-            {t("pendingRequests")} ({requests.length})
-          </TabsTrigger>
-          <TabsTrigger value="all">{tCommon("all")}</TabsTrigger>
-        </TabsList>
+        onChange={(v) => setActiveTab(v as "pending" | "all")}
+      />
 
-        <TabsContent value="pending" className="mt-4">
+      <div className="mt-4">
+        {activeTab === "pending" ? (
           <BaseTable
             columns={pendingColumns}
             data={requests}
@@ -290,10 +338,13 @@ export function LeaveApprovalList() {
             previousText={tCommon("previous")}
             nextText={tCommon("next")}
             onRowClick={handleViewDetail}
+            rowClassName={(row) =>
+              highlightId === row.id
+                ? "bg-primary/10 ring-1 ring-primary/30"
+                : ""
+            }
           />
-        </TabsContent>
-
-        <TabsContent value="all" className="mt-4">
+        ) : (
           <BaseTable
             columns={allColumns}
             data={allRequests}
@@ -302,9 +353,14 @@ export function LeaveApprovalList() {
             previousText={tCommon("previous")}
             nextText={tCommon("next")}
             onRowClick={handleViewDetail}
+            rowClassName={(row) =>
+              highlightId === row.id
+                ? "bg-primary/10 ring-1 ring-primary/30"
+                : ""
+            }
           />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
 
       {/* Leave Detail Dialog */}
       <LeaveDetailDialog

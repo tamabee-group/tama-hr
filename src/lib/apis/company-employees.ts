@@ -1,5 +1,6 @@
 import { apiClient } from "@/lib/utils/fetch-client";
 import { User } from "@/types/user";
+import { PaginatedResponse } from "@/types/api";
 
 export interface CreateCompanyEmployeeRequest {
   email: string;
@@ -140,3 +141,27 @@ export async function verifyEmployeeEmail(
 export async function deleteEmployee(employeeId: number): Promise<void> {
   return apiClient.delete(`/api/company/employees/${employeeId}`);
 }
+
+/**
+ * Lấy danh sách nhân viên (phân trang)
+ * @client-only
+ */
+export async function getEmployees(
+  page: number = 0,
+  size: number = 100,
+): Promise<PaginatedResponse<User>> {
+  return apiClient.get<PaginatedResponse<User>>(
+    `/api/company/employees?page=${page}&size=${size}`,
+  );
+}
+
+export const companyEmployeesApi = {
+  createCompanyEmployee,
+  updateCompanyEmployee,
+  uploadCompanyEmployeeAvatar,
+  getApprovers,
+  sendEmployeeVerificationCode,
+  verifyEmployeeEmail,
+  deleteEmployee,
+  getEmployees,
+};

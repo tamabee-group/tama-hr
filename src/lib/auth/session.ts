@@ -10,6 +10,28 @@ import { hasAccessToken } from "./token";
 import { getLocaleFromCookie } from "@/lib/utils/locale";
 
 /**
+ * Xóa auth cookies từ client side
+ * Xóa cả có domain và không domain để đảm bảo xóa sạch
+ * refreshToken là httpOnly nên chỉ backend mới xóa được (qua API logout)
+ * @client-only
+ */
+function clearAuthCookies(): void {
+  if (typeof document === "undefined") return;
+  const hostname = window.location.hostname;
+  // Xóa không chỉ định domain
+  document.cookie =
+    "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  // Xóa với domain hiện tại
+  document.cookie = `accessToken=; path=/; domain=${hostname}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  // Xóa với domain cha (ví dụ: .tamabee.local)
+  const parts = hostname.split(".");
+  if (parts.length >= 2) {
+    const parentDomain = parts.slice(-2).join(".");
+    document.cookie = `accessToken=; path=/; domain=.${parentDomain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  }
+}
+
+/**
  * Gọi API refresh token qua proxy
  * @client-only
  */
@@ -83,12 +105,21 @@ export async function fetchCurrentUser(): Promise<User> {
 }
 
 /**
- * Gọi API logout
+ * Gọi API logout - dùng fetch trực tiếp thay vì authFetch
+ * để browser có thể apply Set-Cookie headers (xóa refreshToken httpOnly)
  * @client-only
  */
 async function logoutApi(): Promise<void> {
   try {
-    await authFetch("/api/auth/logout", { method: "POST" });
+    const locale = getLocaleFromCookie();
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(locale && { "Accept-Language": locale }),
+      },
+    });
   } catch {
     // Bỏ qua lỗi khi logout
   }
@@ -160,18 +191,27 @@ export async function validateSession(): Promise<SessionResult> {
     }
   }
 
-  // Tất cả thất bại → xóa session
+  // Tất cả thất bại → xóa sạch session (localStorage + cookies)
   removeCurrentUser();
   setHasSession(false);
+  clearAuthCookies();
   return { user: null, status: "unauthenticated" };
 }
 
 /**
- * Đăng xuất: xóa localStorage và gọi API logout
+ * Đăng xuất: gọi API logout để xóa refreshToken (httpOnly),
+ * xóa localStorage và accessToken cookie
+ * Dùng try/finally để đảm bảo cleanup luôn chạy dù API fail
  * @client-only
  */
 export async function logout(): Promise<void> {
-  removeCurrentUser();
-  setHasSession(false);
-  await logoutApi();
+  try {
+    // Gọi API logout để backend xóa refreshToken cookie (httpOnly)
+    await logoutApi();
+  } finally {
+    // Luôn xóa client-side data dù API thành công hay thất bại
+    removeCurrentUser();
+    setHasSession(false);
+    clearAuthCookies();
+  }
 }

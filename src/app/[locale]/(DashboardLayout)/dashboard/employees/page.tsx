@@ -34,13 +34,11 @@ async function getEmployees(
 
 export default async function DashboardEmployeesPage() {
   const data = await getEmployees();
-  const t = await getTranslations("users");
   const tCommon = await getTranslations("common");
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+      <div className="flex justify-end">
         <Link href="/dashboard/employees/create">
           <Button>
             <Plus />

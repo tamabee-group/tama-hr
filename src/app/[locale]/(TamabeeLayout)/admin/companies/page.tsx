@@ -1,4 +1,3 @@
-import { getTranslations } from "next-intl/server";
 import { DataTable } from "./_components/data-table";
 import { Company } from "@/types/company";
 import { apiServer } from "@/lib/utils/fetch-server";
@@ -29,15 +28,10 @@ async function getCompanies(
 }
 
 export default async function AdminCompaniesPage() {
-  const t = await getTranslations("companies");
   const data = await getCompanies();
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-      </div>
-
       <DataTable data={data} />
     </div>
   );

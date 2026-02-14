@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ContractTable } from "./_contract-table";
-import { ExplanationPanel } from "../_components/_explanation-panel";
+import { ExplanationPanel } from "../../../_components/_explanation-panel";
 
 /**
  * Trang quản lý hợp đồng lao động
@@ -11,11 +11,6 @@ export default async function DashboardContractsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
-      </div>
-
       <ExplanationPanel
         title={t("guide.title")}
         description={t("guide.description")}

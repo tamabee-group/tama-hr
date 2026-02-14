@@ -47,6 +47,7 @@ export function PayrollApprovalDialog({
   // Form state
   const [paymentReference, setPaymentReference] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+  const [selectedRejectTemplate, setSelectedRejectTemplate] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -54,6 +55,7 @@ export function PayrollApprovalDialog({
   const resetForm = () => {
     setPaymentReference("");
     setRejectReason("");
+    setSelectedRejectTemplate("");
     setErrors({});
   };
 
@@ -166,32 +168,75 @@ export function PayrollApprovalDialog({
           {/* Payment Reference - only for pay action */}
           {action === "pay" && (
             <div className="grid gap-2">
-              <Label htmlFor="paymentReference">{t("paymentReference")}</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="paymentReference">
+                  {t("paymentReference")}
+                </Label>
+                <span className="text-xs text-muted-foreground">
+                  ({tCommon("optional")})
+                </span>
+              </div>
               <Input
                 id="paymentReference"
                 value={paymentReference}
                 onChange={(e) => setPaymentReference(e.target.value)}
                 placeholder={t("paymentReferencePlaceholder")}
               />
+              <p className="text-xs text-muted-foreground">
+                {t("paymentReferenceHint")}
+              </p>
             </div>
           )}
 
           {/* Reject Reason - only for reject action */}
           {action === "reject" && (
-            <div className="grid gap-2">
-              <Label htmlFor="rejectReason">{t("rejectReason")}</Label>
-              <Textarea
-                id="rejectReason"
-                value={rejectReason}
-                onChange={(e) => {
-                  setRejectReason(e.target.value);
-                  if (errors.rejectReason) {
-                    setErrors((prev) => ({ ...prev, rejectReason: "" }));
-                  }
-                }}
-                placeholder={t("rejectReasonPlaceholder")}
-                rows={3}
-              />
+            <div className="grid gap-3">
+              <Label>{t("rejectReason")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "wrongData",
+                  "missingEmployee",
+                  "wrongCalculation",
+                  "other",
+                ].map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      setSelectedRejectTemplate(key);
+                      if (key !== "other") {
+                        setRejectReason(t(`rejectTemplates.${key}`));
+                        if (errors.rejectReason) {
+                          setErrors((prev) => ({ ...prev, rejectReason: "" }));
+                        }
+                      } else {
+                        setRejectReason("");
+                      }
+                    }}
+                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+                      selectedRejectTemplate === key
+                        ? "bg-destructive/10 border-destructive text-destructive"
+                        : "border-border text-muted-foreground hover:border-foreground/50"
+                    }`}
+                  >
+                    {t(`rejectTemplates.${key}`)}
+                  </button>
+                ))}
+              </div>
+              {selectedRejectTemplate === "other" && (
+                <Textarea
+                  id="rejectReason"
+                  value={rejectReason}
+                  onChange={(e) => {
+                    setRejectReason(e.target.value);
+                    if (errors.rejectReason) {
+                      setErrors((prev) => ({ ...prev, rejectReason: "" }));
+                    }
+                  }}
+                  placeholder={t("rejectReasonPlaceholder")}
+                  rows={3}
+                />
+              )}
               {errors.rejectReason && (
                 <p className="text-sm text-destructive">
                   {errors.rejectReason}

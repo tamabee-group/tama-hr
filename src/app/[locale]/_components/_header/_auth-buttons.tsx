@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,8 +14,12 @@ import { UserMenu } from "./_user-menu";
  */
 export default function AuthButtons() {
   const t = useTranslations("header");
+  const pathname = usePathname();
   const { user, status, logout } = useAuth();
   const [loginOpen, setLoginOpen] = useState(false);
+
+  // Kiểm tra đang ở trang login không
+  const isLoginPage = pathname.includes("/login");
 
   // Đang loading, không hiển thị gì
   if (status === "loading") return null;
@@ -22,6 +27,11 @@ export default function AuthButtons() {
   // Đã đăng nhập, hiển thị menu user
   if (user) {
     return <UserMenu user={user} onLogout={logout} />;
+  }
+
+  // Đang ở trang login, không hiển thị nút
+  if (isLoginPage) {
+    return null;
   }
 
   // Chưa đăng nhập, hiển thị nút đăng nhập/đăng ký

@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
-import { CreditCard, RotateCcw } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
 import { Button } from "@/components/ui/button";
 
 import { payrollApi } from "@/lib/apis/payroll-period-api";
 import { PayrollItem } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatPayslip } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { useAuth } from "@/hooks/use-auth";
 
 interface PaymentStatusTableProps {
   records: PayrollItem[];
@@ -29,7 +30,8 @@ export function PaymentStatusTable({
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
-  const locale = useLocale() as SupportedLocale;
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // State
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -39,20 +41,6 @@ export function PaymentStatusTable({
     setLoadingId(id);
     try {
       await payrollApi.markAsPaid(id);
-      toast.success(t("messages.paymentSuccess"));
-      onRefresh?.();
-    } catch (error) {
-      toast.error(getErrorMessage((error as Error).message, tErrors));
-    } finally {
-      setLoadingId(null);
-    }
-  };
-
-  // Handle retry payment
-  const handleRetry = async (id: number) => {
-    setLoadingId(id);
-    try {
-      await payrollApi.retryPayment(id);
       toast.success(t("messages.paymentSuccess"));
       onRefresh?.();
     } catch (error) {
@@ -82,7 +70,7 @@ export function PaymentStatusTable({
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary)}
+          {formatPayslip(row.original.netSalary, companyLocale)}
         </span>
       ),
     },
@@ -110,7 +98,8 @@ export function PaymentStatusTable({
         const record = row.original;
         const isLoading = loadingId === record.id;
 
-        if (record.status === "PAID") {
+        // CONFIRMED là trạng thái cuối cùng, không cần action
+        if (record.status === "CONFIRMED") {
           return <span className="text-muted-foreground">-</span>;
         }
 

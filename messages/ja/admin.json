@@ -1,0 +1,20 @@
+{
+  "dashboard": { "title": "概要" },
+  "companies": { "title": "会社" },
+  "deposits": { "title": "入金" },
+  "plans": { "title": "プラン" },
+  "settings": { "title": "設定" },
+  "systemNotifications": { "title": "システム通知" },
+  "feedbacks": { "title": "フィードバック管理" },
+  "billing": { "title": "請求" },
+  "schedulers": {
+    "title": "スケジューラー",
+    "subPages": {
+      "payroll": "給与スケジューラー",
+      "billing": "請求スケジューラー",
+      "contracts": "契約期限切れ",
+      "cleanup": "会社クリーンアップ",
+      "tenants": "テナントクリーンアップ"
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -48,6 +48,11 @@ export function PayrollConfigForm({
 
   const [formData, setFormData] = useState<PayrollConfig>({ ...config });
 
+  // Đồng bộ formData khi config prop thay đổi (sau khi save + reload)
+  useEffect(() => {
+    setFormData({ ...config }); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [config]);
+
   // Kiểm tra có thay đổi không
   const hasChanges = useMemo(() => {
     return JSON.stringify(formData) !== JSON.stringify(config);
@@ -90,173 +95,154 @@ export function PayrollConfigForm({
       {/* Cột 1: Loại lương + Ngày thanh toán */}
       <div className="space-y-6">
         {/* Cấu hình loại lương */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">{t("payroll.salaryType")}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <GlassSection title={t("payroll.salaryType")}>
+          <div className="space-y-2">
+            <Label>{t("payroll.defaultSalaryType")}</Label>
+            <Select
+              value={formData.defaultSalaryType}
+              onValueChange={(value) =>
+                updateField("defaultSalaryType", value as SalaryType)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SALARY_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {tEnums(`salaryType.${type}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </GlassSection>
+
+        {/* Cấu hình ngày thanh toán */}
+        <GlassSection title={t("payroll.paymentSchedule")}>
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>{t("payroll.defaultSalaryType")}</Label>
+              <Label htmlFor="payDay" className="flex items-center gap-2">
+                {t("payroll.payDay")}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">{t("payroll.payDayTooltip")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
               <Select
-                value={formData.defaultSalaryType}
+                value={String(formData.payDay)}
                 onValueChange={(value) =>
-                  updateField("defaultSalaryType", value as SalaryType)
+                  updateField("payDay", parseInt(value))
                 }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {SALARY_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {tEnums(`salaryType.${type}`)}
+                  {dayOptions.map((day) => (
+                    <SelectItem key={day} value={String(day)}>
+                      {day}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Cấu hình ngày thanh toán */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">
-              {t("payroll.paymentSchedule")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="payDay" className="flex items-center gap-2">
-                  {t("payroll.payDay")}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">{t("payroll.payDayTooltip")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </Label>
-                <Select
-                  value={String(formData.payDay)}
-                  onValueChange={(value) =>
-                    updateField("payDay", parseInt(value))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {dayOptions.map((day) => (
-                      <SelectItem key={day} value={String(day)}>
-                        {day}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cutoffDay" className="flex items-center gap-2">
-                  {t("payroll.cutoffDay")}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          {t("payroll.cutoffDayTooltip")}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </Label>
-                <Select
-                  value={String(formData.cutoffDay)}
-                  onValueChange={(value) =>
-                    updateField("cutoffDay", parseInt(value))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {dayOptions.map((day) => (
-                      <SelectItem key={day} value={String(day)}>
-                        {day}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="cutoffDay" className="flex items-center gap-2">
+                {t("payroll.cutoffDay")}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">
+                        {t("payroll.cutoffDayTooltip")}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
+              <Select
+                value={String(formData.cutoffDay)}
+                onValueChange={(value) =>
+                  updateField("cutoffDay", parseInt(value))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {dayOptions.map((day) => (
+                    <SelectItem key={day} value={String(day)}>
+                      {day}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </GlassSection>
       </div>
 
       {/* Cột 2: Ngày công chuẩn */}
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">
-              {t("payroll.standardWorking")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="standardWorkingDaysPerMonth">
-                  {t("payroll.daysPerMonth")}
-                </Label>
-                <InputGroup>
-                  <InputGroupInput
-                    id="standardWorkingDaysPerMonth"
-                    type="number"
-                    min={1}
-                    max={31}
-                    value={formData.standardWorkingDaysPerMonth}
-                    onChange={(e) =>
-                      updateField(
-                        "standardWorkingDaysPerMonth",
-                        parseInt(e.target.value) || 22,
-                      )
-                    }
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupText>{t("payroll.days")}</InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="standardWorkingHoursPerDay">
-                  {t("payroll.hoursPerDay")}
-                </Label>
-                <InputGroup>
-                  <InputGroupInput
-                    id="standardWorkingHoursPerDay"
-                    type="number"
-                    min={1}
-                    max={24}
-                    value={formData.standardWorkingHoursPerDay}
-                    onChange={(e) =>
-                      updateField(
-                        "standardWorkingHoursPerDay",
-                        parseInt(e.target.value) || 8,
-                      )
-                    }
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupText>{t("payroll.hours")}</InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </div>
+        <GlassSection title={t("payroll.standardWorking")}>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="standardWorkingDaysPerMonth">
+                {t("payroll.daysPerMonth")}
+              </Label>
+              <InputGroup>
+                <InputGroupInput
+                  id="standardWorkingDaysPerMonth"
+                  type="number"
+                  min={1}
+                  max={31}
+                  value={formData.standardWorkingDaysPerMonth}
+                  onChange={(e) =>
+                    updateField(
+                      "standardWorkingDaysPerMonth",
+                      parseInt(e.target.value) || 22,
+                    )
+                  }
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupText>{t("payroll.days")}</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
             </div>
-          </CardContent>
-        </Card>
+            <div className="space-y-2">
+              <Label htmlFor="standardWorkingHoursPerDay">
+                {t("payroll.hoursPerDay")}
+              </Label>
+              <InputGroup>
+                <InputGroupInput
+                  id="standardWorkingHoursPerDay"
+                  type="number"
+                  min={1}
+                  max={24}
+                  value={formData.standardWorkingHoursPerDay}
+                  onChange={(e) =>
+                    updateField(
+                      "standardWorkingHoursPerDay",
+                      parseInt(e.target.value) || 8,
+                    )
+                  }
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupText>{t("payroll.hours")}</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+            </div>
+          </div>
+        </GlassSection>
       </div>
     </div>
   );

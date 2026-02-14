@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { PlanFeatureCreateRequest } from "@/types/plan";
 import {
   Plus,
@@ -96,132 +96,130 @@ export function PlanFeatureForm({
       ) : (
         <div className="space-y-3">
           {features.map((feature, index) => (
-            <Card key={index} className="relative">
-              <CardContent className="pt-4 pb-3">
-                <div className="flex gap-2">
-                  <div className="flex flex-col gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleMoveUp(index)}
-                      disabled={disabled || index === 0}
-                      title={t("feature.moveUp")}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </Button>
-                    <div className="flex items-center justify-center h-6 w-6">
-                      <GripVertical className="h-4 w-4 text-muted-foreground" />
+            <GlassCard key={index} className="relative p-4">
+              <div className="flex gap-2">
+                <div className="flex flex-col gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => handleMoveUp(index)}
+                    disabled={disabled || index === 0}
+                    title={t("feature.moveUp")}
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center justify-center h-6 w-6">
+                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => handleMoveDown(index)}
+                    disabled={disabled || index === features.length - 1}
+                    title={t("feature.moveDown")}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="flex-1 space-y-3">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">
+                        🇻🇳 {t("feature.featureVi")}
+                      </Label>
+                      <Input
+                        value={feature.featureVi}
+                        onChange={(e) =>
+                          handleUpdateFeature(
+                            index,
+                            "featureVi",
+                            e.target.value,
+                          )
+                        }
+                        placeholder={t("feature.featurePlaceholder")}
+                        disabled={disabled}
+                        className="h-8 text-sm"
+                      />
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleMoveDown(index)}
-                      disabled={disabled || index === features.length - 1}
-                      title={t("feature.moveDown")}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">
+                        🇺🇸 {t("feature.featureEn")}
+                      </Label>
+                      <Input
+                        value={feature.featureEn}
+                        onChange={(e) =>
+                          handleUpdateFeature(
+                            index,
+                            "featureEn",
+                            e.target.value,
+                          )
+                        }
+                        placeholder={t("feature.featurePlaceholder")}
+                        disabled={disabled}
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">
+                        🇯🇵 {t("feature.featureJa")}
+                      </Label>
+                      <Input
+                        value={feature.featureJa}
+                        onChange={(e) =>
+                          handleUpdateFeature(
+                            index,
+                            "featureJa",
+                            e.target.value,
+                          )
+                        }
+                        placeholder={t("feature.featurePlaceholder")}
+                        disabled={disabled}
+                        className="h-8 text-sm"
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex-1 space-y-3">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">
-                          🇻🇳 {t("feature.featureVi")}
-                        </Label>
-                        <Input
-                          value={feature.featureVi}
-                          onChange={(e) =>
-                            handleUpdateFeature(
-                              index,
-                              "featureVi",
-                              e.target.value,
-                            )
-                          }
-                          placeholder={t("feature.featurePlaceholder")}
-                          disabled={disabled}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">
-                          🇺🇸 {t("feature.featureEn")}
-                        </Label>
-                        <Input
-                          value={feature.featureEn}
-                          onChange={(e) =>
-                            handleUpdateFeature(
-                              index,
-                              "featureEn",
-                              e.target.value,
-                            )
-                          }
-                          placeholder={t("feature.featurePlaceholder")}
-                          disabled={disabled}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">
-                          🇯🇵 {t("feature.featureJa")}
-                        </Label>
-                        <Input
-                          value={feature.featureJa}
-                          onChange={(e) =>
-                            handleUpdateFeature(
-                              index,
-                              "featureJa",
-                              e.target.value,
-                            )
-                          }
-                          placeholder={t("feature.featurePlaceholder")}
-                          disabled={disabled}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          checked={feature.isHighlighted}
-                          onCheckedChange={(checked) =>
-                            handleUpdateFeature(index, "isHighlighted", checked)
-                          }
-                          disabled={disabled}
-                        />
-                        <Label className="text-sm flex items-center gap-1">
-                          <Star
-                            className={`h-3 w-3 ${
-                              feature.isHighlighted
-                                ? "fill-primary text-primary"
-                                : "text-muted-foreground"
-                            }`}
-                          />
-                          {t("feature.highlighted")}
-                        </Label>
-                      </div>
-
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveFeature(index)}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={feature.isHighlighted}
+                        onCheckedChange={(checked) =>
+                          handleUpdateFeature(index, "isHighlighted", checked)
+                        }
                         disabled={disabled}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        {t("feature.remove")}
-                      </Button>
+                      />
+                      <Label className="text-sm flex items-center gap-1">
+                        <Star
+                          className={`h-3 w-3 ${
+                            feature.isHighlighted
+                              ? "fill-primary text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                        {t("feature.highlighted")}
+                      </Label>
                     </div>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveFeature(index)}
+                      disabled={disabled}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      {t("feature.remove")}
+                    </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </GlassCard>
           ))}
         </div>
       )}

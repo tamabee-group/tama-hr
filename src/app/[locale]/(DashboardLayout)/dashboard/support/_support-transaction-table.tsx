@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { cn } from "@/lib/utils";
-import { formatDateTime } from "@/lib/utils/format-date";
+import { formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 
 type TabType = "ALL" | TransactionType;

@@ -7,18 +7,24 @@ import { Check, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { AdjustmentStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { AdjustmentStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { AdjustmentDetailDialog } from "./_adjustment-detail-dialog";
 import { RejectDialog, BulkRejectDialog } from "./_reject-dialog";
 
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
 import { AdjustmentRequest } from "@/types/attendance-records";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import {
+  formatDateWithDayOfWeek,
+  formatDateTime,
+} from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
+import { refreshPendingCounts } from "@/hooks/use-pending-counts";
+import { useNotificationHighlight } from "@/hooks/use-notification-highlight";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 const DEFAULT_PAGE = 0;
@@ -33,6 +39,9 @@ export function ApprovalList() {
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
+
+  // Highlight từ notification click
+  const { highlightId, onHighlightHandled } = useNotificationHighlight();
 
   // State cho tab pending
   const [pendingRequests, setPendingRequests] = useState<AdjustmentRequest[]>(
@@ -50,6 +59,13 @@ export function ApprovalList() {
 
   const [activeTab, setActiveTab] = useState<"pending" | "all">("pending");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  // Track xem đã xử lý highlight cho lần URL change hiện tại chưa
+  const [processedForCurrentUrl, setProcessedForCurrentUrl] = useState(false);
+
+  // Reset flag khi highlightId thay đổi
+  useEffect(() => {
+    setProcessedForCurrentUrl(false);
+  }, [highlightId]);
 
   // Dialog states
   const [selectedRequest, setSelectedRequest] =
@@ -103,6 +119,43 @@ export function ApprovalList() {
     fetchAllRequests();
   }, [fetchAllRequests]);
 
+  // Subscribe to real-time notifications để auto refresh
+  useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("ADJUSTMENT", () => {
+      fetchPendingRequests();
+      fetchAllRequests();
+    });
+    return unsubscribe;
+  }, [fetchPendingRequests, fetchAllRequests]);
+
+  // Auto-open dialog khi có highlightId từ notification click
+  useEffect(() => {
+    // Chỉ xử lý nếu chưa process cho URL hiện tại
+    if (
+      highlightId &&
+      !processedForCurrentUrl &&
+      !pendingLoading &&
+      !allLoading
+    ) {
+      const allData = [...pendingRequests, ...allRequests];
+      const request = allData.find((r) => r.id === highlightId);
+      if (request) {
+        handleRowClick(request);
+        setProcessedForCurrentUrl(true);
+        // Clear query param sau khi đã mở dialog
+        onHighlightHandled();
+      }
+    }
+  }, [
+    highlightId,
+    pendingRequests,
+    allRequests,
+    processedForCurrentUrl,
+    pendingLoading,
+    allLoading,
+    onHighlightHandled,
+  ]);
+
   // Reset selection when tab changes
   useEffect(() => {
     setSelectedIds([]);
@@ -118,6 +171,7 @@ export function ApprovalList() {
   const refreshData = () => {
     fetchPendingRequests();
     fetchAllRequests();
+    refreshPendingCounts();
   };
 
   // Handle approve single
@@ -264,6 +318,11 @@ export function ApprovalList() {
       size: 60,
     },
     {
+      accessorKey: "status",
+      header: tCommon("status"),
+      cell: ({ row }) => <AdjustmentStatusBadge status={row.original.status} />,
+    },
+    {
       accessorKey: "employeeName",
       header: t("table.employee"),
       cell: ({ row }) => (
@@ -273,7 +332,7 @@ export function ApprovalList() {
     {
       accessorKey: "workDate",
       header: t("adjustment.workDate"),
-      cell: ({ row }) => formatDate(row.original.workDate, locale),
+      cell: ({ row }) => formatDateWithDayOfWeek(row.original.workDate, locale),
     },
     {
       accessorKey: "assignedToName",
@@ -317,7 +376,7 @@ export function ApprovalList() {
     {
       accessorKey: "workDate",
       header: t("adjustment.workDate"),
-      cell: ({ row }) => formatDate(row.original.workDate, locale),
+      cell: ({ row }) => formatDateWithDayOfWeek(row.original.workDate, locale),
     },
     {
       accessorKey: "assignedToName",
@@ -346,59 +405,56 @@ export function ApprovalList() {
 
   return (
     <div className="space-y-4">
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as "pending" | "all")}
-      >
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="pending">
-              {t("adjustment.pendingRequests")}
-              {pendingRequests.length > 0 && (
-                <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                  {pendingRequests.length}
-                </span>
+      <div className="flex items-center justify-between">
+        <GlassTabs
+          tabs={[
+            {
+              value: "pending",
+              label: `${t("adjustment.pendingRequests")}${pendingRequests.length > 0 ? ` (${pendingRequests.length})` : ""}`,
+            },
+            { value: "all", label: t("adjustment.allRequests") },
+          ]}
+          value={activeTab}
+          onChange={(v) => setActiveTab(v as "pending" | "all")}
+        />
+
+        {/* Bulk actions - chỉ hiển thị ở tab pending */}
+        {activeTab === "pending" && selectedIds.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {selectedIds.length} {tCommon("rowsSelected")}
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-green-600"
+              onClick={handleBulkApprove}
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : (
+                <Check className="h-4 w-4 mr-1" />
               )}
-            </TabsTrigger>
-            <TabsTrigger value="all">{t("adjustment.allRequests")}</TabsTrigger>
-          </TabsList>
+              {t("adjustment.bulkApprove")}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-red-600"
+              onClick={handleBulkRejectClick}
+              disabled={isProcessing}
+            >
+              <X className="h-4 w-4 mr-1" />
+              {t("adjustment.bulkReject")}
+            </Button>
+          </div>
+        )}
+      </div>
 
-          {/* Bulk actions - chỉ hiển thị ở tab pending */}
-          {activeTab === "pending" && selectedIds.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                {selectedIds.length} {tCommon("rowsSelected")}
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-green-600"
-                onClick={handleBulkApprove}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                ) : (
-                  <Check className="h-4 w-4 mr-1" />
-                )}
-                {t("adjustment.bulkApprove")}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-red-600"
-                onClick={handleBulkRejectClick}
-                disabled={isProcessing}
-              >
-                <X className="h-4 w-4 mr-1" />
-                {t("adjustment.bulkReject")}
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <TabsContent value="pending" className="mt-4">
-          {pendingLoading ? (
+      <div className="mt-4">
+        {activeTab === "pending" ? (
+          pendingLoading ? (
             <div className="flex items-center justify-center p-8">
               <span className="text-muted-foreground">
                 {tCommon("loading")}
@@ -413,30 +469,34 @@ export function ApprovalList() {
               previousText={tCommon("previous")}
               nextText={tCommon("next")}
               onRowClick={handleRowClick}
+              rowClassName={(row) =>
+                highlightId === row.id
+                  ? "bg-primary/10 ring-1 ring-primary/30"
+                  : ""
+              }
             />
-          )}
-        </TabsContent>
-
-        <TabsContent value="all" className="mt-4">
-          {allLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <span className="text-muted-foreground">
-                {tCommon("loading")}
-              </span>
-            </div>
-          ) : (
-            <BaseTable
-              columns={allColumns}
-              data={allRequests}
-              showPagination={allTotalPages > 1}
-              noResultsText={t("adjustment.noRequests")}
-              previousText={tCommon("previous")}
-              nextText={tCommon("next")}
-              onRowClick={handleRowClick}
-            />
-          )}
-        </TabsContent>
-      </Tabs>
+          )
+        ) : allLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <span className="text-muted-foreground">{tCommon("loading")}</span>
+          </div>
+        ) : (
+          <BaseTable
+            columns={allColumns}
+            data={allRequests}
+            showPagination={allTotalPages > 1}
+            noResultsText={t("adjustment.noRequests")}
+            previousText={tCommon("previous")}
+            nextText={tCommon("next")}
+            onRowClick={handleRowClick}
+            rowClassName={(row) =>
+              highlightId === row.id
+                ? "bg-primary/10 ring-1 ring-primary/30"
+                : ""
+            }
+          />
+        )}
+      </div>
 
       {/* Detail Dialog */}
       <AdjustmentDetailDialog

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -19,13 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { DatePicker } from "@/components/ui/date-picker";
 
 import { holidayApi } from "@/lib/apis/holiday-api";
 import { Holiday, HolidayInput } from "@/types/attendance-records";
@@ -139,12 +133,14 @@ export function HolidayFormDialog({
           <DialogTitle>
             {isEdit ? t("editHoliday") : t("addHoliday")}
           </DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription className="sr-only">
+            {t("description")}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 mt-2">
           {/* Name */}
-          <div className="grid gap-2">
+          <div>
             <Label htmlFor="name">{t("form.name")}</Label>
             <Input
               id="name"
@@ -162,35 +158,17 @@ export function HolidayFormDialog({
           </div>
 
           {/* Date */}
-          <div className="grid gap-2">
+          <div>
             <Label>{t("form.date")}</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground",
-                    errors.date && "border-destructive",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : t("form.datePlaceholder")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(newDate) => {
-                    setDate(newDate);
-                    if (errors.date)
-                      setErrors((prev) => ({ ...prev, date: "" }));
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              value={date}
+              onChange={(newDate) => {
+                setDate(newDate);
+                if (errors.date) setErrors((prev) => ({ ...prev, date: "" }));
+              }}
+              placeholder={t("form.datePlaceholder")}
+              className={errors.date ? "border-destructive" : ""}
+            />
             {errors.date && (
               <span className="text-sm text-destructive">{errors.date}</span>
             )}
@@ -209,7 +187,7 @@ export function HolidayFormDialog({
           </div>
 
           {/* Description */}
-          <div className="grid gap-2">
+          <div>
             <Label htmlFor="description">{t("form.description")}</Label>
             <Textarea
               id="description"

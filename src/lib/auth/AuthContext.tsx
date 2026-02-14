@@ -23,6 +23,7 @@ import {
   SessionStatus,
 } from "./session";
 import { hasAccessToken } from "./token";
+import { resetNotificationWebSocket } from "@/hooks/use-notifications";
 
 export interface AuthContextType {
   user: User | null;
@@ -63,6 +64,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(null);
       setStatus("unauthenticated");
       setHasSession(false);
+      // Cleanup WebSocket khi session hết hạn
+      resetNotificationWebSocket();
     }
   }, []);
 
@@ -79,6 +82,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Sync session khi route thay đổi
   useEffect(() => {
     if (status === "loading") return;
+
+    // Không sync nếu đã logout (status = unauthenticated)
+    if (status === "unauthenticated") {
+      prevPathRef.current = pathname;
+      return;
+    }
 
     // Bỏ qua lần đầu tiên
     if (prevPathRef.current === null) {
@@ -116,11 +125,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setStatus("authenticated");
   }, []);
 
-  // Logout: xóa session và gọi API
+  // Logout: xóa session, cleanup WebSocket và gọi API
   const logout = useCallback(async () => {
-    await logoutSession();
-    setUser(null);
-    setStatus("unauthenticated");
+    try {
+      resetNotificationWebSocket();
+      await logoutSession();
+    } catch {
+      // Bỏ qua lỗi, đảm bảo state vẫn được reset
+    } finally {
+      setUser(null);
+      setStatus("unauthenticated");
+    }
   }, []);
 
   return (

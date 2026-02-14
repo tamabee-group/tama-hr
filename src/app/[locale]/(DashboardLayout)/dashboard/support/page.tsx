@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { WalletOverviewResponse } from "@/types/wallet";
 import { CompanySearch } from "./_company-search";
 import { CompanyDetail } from "./_company-detail";
@@ -12,7 +11,6 @@ import { CompanyDetail } from "./_company-detail";
  * - Xem thông tin wallet, transactions, deposits (read-only)
  */
 export default function EmployeeSupportPage() {
-  const t = useTranslations("support");
   const [selectedCompany, setSelectedCompany] =
     useState<WalletOverviewResponse | null>(null);
 
@@ -24,20 +22,9 @@ export default function EmployeeSupportPage() {
     setSelectedCompany(null);
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
-      </div>
-
-      {/* Content */}
-      {selectedCompany ? (
-        <CompanyDetail company={selectedCompany} onBack={handleBack} />
-      ) : (
-        <CompanySearch onSelectCompany={handleSelectCompany} />
-      )}
-    </div>
+  return selectedCompany ? (
+    <CompanyDetail company={selectedCompany} onBack={handleBack} />
+  ) : (
+    <CompanySearch onSelectCompany={handleSelectCompany} />
   );
 }

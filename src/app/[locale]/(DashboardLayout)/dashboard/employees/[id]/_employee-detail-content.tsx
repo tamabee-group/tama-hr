@@ -3,7 +3,7 @@
 import { useState, useCallback, Suspense, lazy } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Skeleton } from "@/components/ui/skeleton";
 import { User } from "@/types/user";
 import { EmployeeDetailTab } from "@/types/employee-detail";
@@ -106,120 +106,88 @@ export function EmployeeDetailContent({
 
   const showReferralsTab = isTamabeeEmployee(employee);
 
+  // Tạo danh sách tabs
+  const tabs = [
+    { value: EmployeeDetailTab.PERSONAL_INFO, label: t("tabs.personalInfo") },
+    { value: EmployeeDetailTab.ATTENDANCE, label: t("tabs.attendance") },
+    { value: EmployeeDetailTab.SALARY, label: t("tabs.salary") },
+    { value: EmployeeDetailTab.CONTRACTS, label: t("tabs.contracts") },
+    { value: EmployeeDetailTab.LEAVE, label: t("tabs.leave") },
+    { value: EmployeeDetailTab.DOCUMENTS, label: t("tabs.documents") },
+    ...(showReferralsTab
+      ? [{ value: EmployeeDetailTab.REFERRALS, label: t("tabs.referrals") }]
+      : []),
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <EmployeeHeader employee={employee} />
 
       {/* Tabs */}
-      <Tabs
-        value={currentTab}
-        onValueChange={handleTabChange}
-        className="w-full max-w-[1200px] mx-auto"
-      >
-        <TabsList className="w-full overflow-x-auto flex justify-start gap-1 h-auto p-1">
-          <TabsTrigger
-            value={EmployeeDetailTab.PERSONAL_INFO}
-            className="shrink-0"
-          >
-            {t("tabs.personalInfo")}
-          </TabsTrigger>
-          <TabsTrigger
-            value={EmployeeDetailTab.ATTENDANCE}
-            className="shrink-0"
-          >
-            {t("tabs.attendance")}
-          </TabsTrigger>
-          <TabsTrigger value={EmployeeDetailTab.SALARY} className="shrink-0">
-            {t("tabs.salary")}
-          </TabsTrigger>
-          <TabsTrigger value={EmployeeDetailTab.CONTRACTS} className="shrink-0">
-            {t("tabs.contracts")}
-          </TabsTrigger>
-          <TabsTrigger value={EmployeeDetailTab.LEAVE} className="shrink-0">
-            {t("tabs.leave")}
-          </TabsTrigger>
-          <TabsTrigger value={EmployeeDetailTab.DOCUMENTS} className="shrink-0">
-            {t("tabs.documents")}
-          </TabsTrigger>
-          {showReferralsTab && (
-            <TabsTrigger
-              value={EmployeeDetailTab.REFERRALS}
-              className="shrink-0"
-            >
-              {t("tabs.referrals")}
-            </TabsTrigger>
-          )}
-        </TabsList>
+      <div className="w-full max-w-[1200px] mx-auto space-y-6">
+        <GlassTabs tabs={tabs} value={currentTab} onChange={handleTabChange} />
 
         {/* Personal Info Tab */}
-        <TabsContent value={EmployeeDetailTab.PERSONAL_INFO} className="mt-6">
-          {loadedTabs.has(EmployeeDetailTab.PERSONAL_INFO) && (
+        {currentTab === EmployeeDetailTab.PERSONAL_INFO &&
+          loadedTabs.has(EmployeeDetailTab.PERSONAL_INFO) && (
             <Suspense fallback={<TabSkeleton />}>
               <PersonalInfoContent employee={employee} />
             </Suspense>
           )}
-        </TabsContent>
 
         {/* Attendance Tab */}
-        <TabsContent value={EmployeeDetailTab.ATTENDANCE} className="mt-6">
-          {loadedTabs.has(EmployeeDetailTab.ATTENDANCE) && (
+        {currentTab === EmployeeDetailTab.ATTENDANCE &&
+          loadedTabs.has(EmployeeDetailTab.ATTENDANCE) && (
             <Suspense fallback={<TabSkeleton />}>
               <AttendanceContent employeeId={employee.id} />
             </Suspense>
           )}
-        </TabsContent>
 
         {/* Salary Tab */}
-        <TabsContent value={EmployeeDetailTab.SALARY} className="mt-6">
-          {loadedTabs.has(EmployeeDetailTab.SALARY) && (
+        {currentTab === EmployeeDetailTab.SALARY &&
+          loadedTabs.has(EmployeeDetailTab.SALARY) && (
             <Suspense fallback={<TabSkeleton />}>
               <SalaryContent employeeId={employee.id} />
             </Suspense>
           )}
-        </TabsContent>
 
         {/* Contracts Tab */}
-        <TabsContent value={EmployeeDetailTab.CONTRACTS} className="mt-6">
-          {loadedTabs.has(EmployeeDetailTab.CONTRACTS) && (
+        {currentTab === EmployeeDetailTab.CONTRACTS &&
+          loadedTabs.has(EmployeeDetailTab.CONTRACTS) && (
             <Suspense fallback={<TabSkeleton />}>
               <ContractsContent employeeId={employee.id} employee={employee} />
             </Suspense>
           )}
-        </TabsContent>
 
         {/* Leave Tab */}
-        <TabsContent value={EmployeeDetailTab.LEAVE} className="mt-6">
-          {loadedTabs.has(EmployeeDetailTab.LEAVE) && (
+        {currentTab === EmployeeDetailTab.LEAVE &&
+          loadedTabs.has(EmployeeDetailTab.LEAVE) && (
             <Suspense fallback={<TabSkeleton />}>
               <LeaveContent employeeId={employee.id} />
             </Suspense>
           )}
-        </TabsContent>
 
         {/* Documents Tab */}
-        <TabsContent value={EmployeeDetailTab.DOCUMENTS} className="mt-6">
-          {loadedTabs.has(EmployeeDetailTab.DOCUMENTS) && (
+        {currentTab === EmployeeDetailTab.DOCUMENTS &&
+          loadedTabs.has(EmployeeDetailTab.DOCUMENTS) && (
             <Suspense fallback={<TabSkeleton />}>
               <DocumentsContent employeeId={employee.id} />
             </Suspense>
           )}
-        </TabsContent>
 
         {/* Referrals Tab - chỉ hiển thị cho nhân viên Tamabee */}
-        {showReferralsTab && (
-          <TabsContent value={EmployeeDetailTab.REFERRALS} className="mt-6">
-            {loadedTabs.has(EmployeeDetailTab.REFERRALS) && (
-              <Suspense fallback={<TabSkeleton />}>
-                <ReferralsContent
-                  employeeId={employee.id}
-                  referralCode={employee.profile?.referralCode || ""}
-                />
-              </Suspense>
-            )}
-          </TabsContent>
-        )}
-      </Tabs>
+        {showReferralsTab &&
+          currentTab === EmployeeDetailTab.REFERRALS &&
+          loadedTabs.has(EmployeeDetailTab.REFERRALS) && (
+            <Suspense fallback={<TabSkeleton />}>
+              <ReferralsContent
+                employeeId={employee.id}
+                referralCode={employee.profile?.referralCode || ""}
+              />
+            </Suspense>
+          )}
+      </div>
     </div>
   );
 }

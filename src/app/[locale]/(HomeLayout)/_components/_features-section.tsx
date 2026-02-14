@@ -44,7 +44,7 @@ export async function FeaturesSection() {
     <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900/50">
       <div className="max-w-6xl mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="md:text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("title")}</h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-3xl mx-auto">
             {t("subtitle")}
@@ -55,23 +55,23 @@ export async function FeaturesSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {mainFeatures.map((feature) => (
             <div key={feature.key} className="glow-card group">
-              <div className="p-6 h-full">
-                <div className="flex gap-6">
+              <div className="p-3 md:p-6 h-full">
+                <div className="flex gap-3 md:gap-6">
                   {/* Image */}
                   <Image
                     src={feature.image}
                     alt={t(`${feature.key}Title`)}
                     width={120}
                     height={120}
-                    className="object-cover aspect-square rounded-md border border-primary group-hover:scale-105 transition-transform duration-300"
+                    className="w-30 h-30 object-cover aspect-square rounded-md border border-primary group-hover:scale-105 transition-transform duration-300"
                   />
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+                    <h3 className="text-md md:text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                       {t(`${feature.key}Title`)}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                       {t(`${feature.key}Desc`)}
                     </p>
                   </div>

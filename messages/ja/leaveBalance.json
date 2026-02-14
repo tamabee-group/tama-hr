@@ -1,0 +1,38 @@
+{
+  "title": "有給休暇管理",
+  "bulkAllocate": "一括付与",
+  "filter": {
+    "year": "年度",
+    "search": "名前または社員コードで検索..."
+  },
+  "table": {
+    "employee": "社員",
+    "employeeCode": "社員コード",
+    "balanceFormat": "付与/使用/残り",
+    "noData": "有給休暇データがありません"
+  },
+  "dialog": {
+    "title": "有給休暇の更新",
+    "description": "社員の有給休暇日数を更新",
+    "year": "年度",
+    "totalDays": "付与日数",
+    "usedDays": "使用済み",
+    "remainingDays": "残り",
+    "days": "日",
+    "updateSuccess": "有給休暇を更新しました"
+  },
+  "bulkDialog": {
+    "title": "有給休暇の一括付与",
+    "description": "複数の社員に一括で有給休暇を付与",
+    "year": "年度",
+    "leaveType": "休暇種別",
+    "totalDays": "付与日数",
+    "applyTo": "対象",
+    "allEmployees": "全社員（{count}名）",
+    "selectEmployees": "社員を選択",
+    "selectAll": "全て選択",
+    "confirmation": "{count}名の社員に付与します",
+    "submit": "付与",
+    "success": "{count}名の社員に有給休暇を付与しました"
+  }
+}

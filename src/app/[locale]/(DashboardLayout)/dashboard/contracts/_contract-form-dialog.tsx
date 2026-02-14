@@ -35,7 +35,7 @@ import { createContract, updateContract } from "@/lib/apis/contract-api";
 import { getEmployeeSalaryConfigHistory } from "@/lib/apis/salary-config-api";
 
 import { getErrorMessage } from "@/lib/utils/get-error-message";
-import { formatDateForApi } from "@/lib/utils/format-date";
+import { formatDateForApi } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface ContractFormDialogProps {

@@ -17,6 +17,9 @@
   "wallet": "Wallet",
   "menu": {
     "dashboard": "Dashboard",
+    "management": "Management",
+    "hrManagement": "HR Management",
+    "platformManagement": "Platform Management",
     "platformAdmin": "Platform Admin",
     "companies": "Manage Companies",
     "customers": "Manage Customers",

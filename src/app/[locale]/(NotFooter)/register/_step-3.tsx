@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Lock, LockKeyhole } from "lucide-react";
 import { NextPage } from "next";
 import type { RegisterFormData } from "@/types/register";
@@ -59,14 +59,16 @@ const Step3: NextPage<Props> = ({
   useKeyDown({ onEnter: handleContinue });
 
   return (
-    <Card className="space-y-6 max-w-[450px] mx-auto px-6">
+    <GlassCard className="space-y-6 max-w-[450px] mx-auto p-6">
       <div className="text-center space-y-2">
         <div className="flex justify-center mb-4">
           <Lock className="h-12 w-12 text-primary" />
         </div>
 
-        <CardTitle className="text-2xl">{tRegister("passwordTitle")}</CardTitle>
-        <CardDescription>{tRegister("passwordDescription")}</CardDescription>
+        <h1 className="text-2xl font-semibold">{tRegister("passwordTitle")}</h1>
+        <p className="text-muted-foreground">
+          {tRegister("passwordDescription")}
+        </p>
       </div>
       <div className="space-y-4">
         <div>
@@ -118,7 +120,7 @@ const Step3: NextPage<Props> = ({
           {tRegister("continue")}
         </Button>
       </div>
-    </Card>
+    </GlassCard>
   );
 };
 

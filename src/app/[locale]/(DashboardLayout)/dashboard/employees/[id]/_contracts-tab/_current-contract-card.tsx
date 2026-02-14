@@ -5,7 +5,7 @@ import { Edit, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmploymentContract } from "@/types/attendance-records";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { cn } from "@/lib/utils";
 

@@ -9,10 +9,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { ReferredCompany } from "@/types/employee-detail";
 import { formatCurrency } from "@/lib/utils/format-currency";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import { formatDate, formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { CommissionStatus } from "@/types/enums";
 
@@ -58,13 +58,8 @@ export function CompanyDetailDialog({
 
         <div className="space-y-4 mt-6">
           {/* Thông tin công ty */}
-          <Card className="py-4 gap-0">
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t("detail.companyInfo")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+          <GlassSection title={t("detail.companyInfo")}>
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   {t("detail.companyName")}
@@ -127,17 +122,12 @@ export function CompanyDetailDialog({
                   {getEnumLabel("userStatus", company.status, tEnums)}
                 </Badge>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </GlassSection>
 
           {/* Thông tin tài chính */}
-          <Card className="py-4 gap-0">
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t("detail.financialInfo")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+          <GlassSection title={t("detail.financialInfo")}>
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   {t("detail.currentBalance")}
@@ -162,17 +152,12 @@ export function CompanyDetailDialog({
                   {formatCurrency(company.totalBilling)}
                 </span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </GlassSection>
 
           {/* Thông tin hoa hồng */}
-          <Card className="py-4 gap-0">
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t("detail.commissionInfo")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+          <GlassSection title={t("detail.commissionInfo")}>
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   {t("detail.commissionAmount")}
@@ -214,8 +199,8 @@ export function CompanyDetailDialog({
                     : t("detail.notPaid")}
                 </span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </GlassSection>
         </div>
       </DialogContent>
     </Dialog>

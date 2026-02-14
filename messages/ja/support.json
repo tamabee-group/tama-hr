@@ -1,4 +1,31 @@
 {
   "title": "カスタマーサポート",
-  "description": "会社のウォレットと取引情報を検索・表示"
+  "description": "会社のウォレットと取引情報を検索・表示",
+  "home": {
+    "title": "概要",
+    "companies": "紹介会社",
+    "pending": "保留中",
+    "paid": "支払済み",
+    "open": "未対応"
+  },
+  "referrals": {
+    "title": "紹介会社"
+  },
+  "commissions": {
+    "title": "コミッション"
+  },
+  "feedbacks": {
+    "title": "カスタマーフィードバック"
+  },
+  "sidebar": {
+    "main": "サポート",
+    "personal": "個人"
+  },
+  "navigation": {
+    "home": "概要",
+    "referrals": "紹介会社",
+    "commissions": "コミッション",
+    "feedbacks": "カスタマーフィードバック",
+    "myPortal": "マイポータル"
+  }
 }

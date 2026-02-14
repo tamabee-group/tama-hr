@@ -3,7 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  GlassSection,
+  GlassCard,
+} from "@/app/[locale]/_components/_glass-style";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaveRequest, LeaveBalance } from "@/types/attendance-records";
 import { PaginatedResponse } from "@/types/api";
@@ -81,19 +84,14 @@ export function LeaveContent({ employeeId }: LeaveContentProps) {
       <LeaveBalanceCards balances={leaveBalance} />
 
       {/* Leave Request History */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("leaveHistory")}</CardTitle>
-        </CardHeader>
-        <CardContent className="px-0">
-          <LeaveRequestTable
-            requests={leaveRequests}
-            page={page}
-            pageSize={pageSize}
-            onPageChange={setPage}
-          />
-        </CardContent>
-      </Card>
+      <GlassSection title={t("leaveHistory")}>
+        <LeaveRequestTable
+          requests={leaveRequests}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      </GlassSection>
     </div>
   );
 }
@@ -104,24 +102,18 @@ function LeaveSkeleton() {
       {/* Balance cards skeleton */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i}>
-            <CardContent className="pt-6">
-              <Skeleton className="h-4 w-24 mb-2" />
-              <Skeleton className="h-8 w-16" />
-            </CardContent>
-          </Card>
+          <GlassCard key={i} className="p-6">
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-8 w-16" />
+          </GlassCard>
         ))}
       </div>
 
       {/* Table skeleton */}
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
+      <GlassSection>
+        <Skeleton className="h-6 w-48 mb-4" />
+        <Skeleton className="h-64 w-full" />
+      </GlassSection>
     </div>
   );
 }

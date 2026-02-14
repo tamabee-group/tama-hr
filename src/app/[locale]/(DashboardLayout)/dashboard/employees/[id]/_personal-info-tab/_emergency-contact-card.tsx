@@ -1,13 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardAction,
-} from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { EmergencyContactSection } from "@/types/employee-detail";
 import { Pencil } from "lucide-react";
@@ -35,30 +29,28 @@ export function EmergencyContactCard({
   const tCommon = useTranslations("common");
 
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <CardTitle>{t("emergencyContact")}</CardTitle>
-        <CardAction>
-          <Button variant="ghost" size="sm" onClick={onEdit}>
-            <Pencil className="h-4 w-4 mr-1" />
-            {tCommon("edit")}
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="py-4">
-        <div className="grid gap-x-8 md:grid-cols-2">
-          <InfoRow label={tCommon("name")} value={emergencyContact?.name} />
-          <InfoRow label={tCommon("phone")} value={emergencyContact?.phone} />
-          <InfoRow
-            label={tCommon("relation")}
-            value={emergencyContact?.relation}
-          />
-          <InfoRow
-            label={tCommon("address")}
-            value={emergencyContact?.address}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <GlassSection>
+      {/* Header với title và action button */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-foreground">
+          {t("emergencyContact")}
+        </h3>
+        <Button variant="ghost" size="sm" onClick={onEdit}>
+          <Pencil className="h-4 w-4 mr-1" />
+          {tCommon("edit")}
+        </Button>
+      </div>
+
+      {/* Content */}
+      <div className="grid gap-x-8 md:grid-cols-2">
+        <InfoRow label={tCommon("name")} value={emergencyContact?.name} />
+        <InfoRow label={tCommon("phone")} value={emergencyContact?.phone} />
+        <InfoRow
+          label={tCommon("relation")}
+          value={emergencyContact?.relation}
+        />
+        <InfoRow label={tCommon("address")} value={emergencyContact?.address} />
+      </div>
+    </GlassSection>
   );
 }

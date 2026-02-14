@@ -2,12 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Edit, FileText } from "lucide-react";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import { PayrollItem } from "@/types/attendance-records";
@@ -15,10 +12,11 @@ import {
   PayrollPeriodStatus,
   PayrollItemStatus,
 } from "@/types/attendance-enums";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatPayslip } from "@/lib/utils/format-currency";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { PayrollItemDetailDialog } from "./_payroll-item-detail-dialog";
 import { PayrollAdjustmentDialog } from "./_payroll-adjustment-dialog";
+import { useAuth } from "@/hooks/use-auth";
 
 interface PayrollItemTableProps {
   periodId: number;
@@ -55,7 +53,8 @@ export function PayrollItemTable({
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
-  const router = useRouter();
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // Dialog state
   const [selectedItem, setSelectedItem] = useState<PayrollItem | null>(null);
@@ -82,7 +81,8 @@ export function PayrollItemTable({
     {
       accessorKey: "calculatedBaseSalary",
       header: t("table.baseSalary"),
-      cell: ({ row }) => formatCurrency(row.original.calculatedBaseSalary),
+      cell: ({ row }) =>
+        formatPayslip(row.original.calculatedBaseSalary, companyLocale),
     },
     {
       accessorKey: "totalOvertimePay",
@@ -91,7 +91,9 @@ export function PayrollItemTable({
         const overtime = row.original.totalOvertimePay;
         if (!overtime || overtime === 0) return "-";
         return (
-          <span className="text-blue-600">{formatCurrency(overtime)}</span>
+          <span className="text-blue-600">
+            {formatPayslip(overtime, companyLocale)}
+          </span>
         );
       },
     },
@@ -102,7 +104,9 @@ export function PayrollItemTable({
         const allowances = row.original.totalAllowances;
         if (!allowances || allowances === 0) return "-";
         return (
-          <span className="text-green-600">{formatCurrency(allowances)}</span>
+          <span className="text-green-600">
+            {formatPayslip(allowances, companyLocale)}
+          </span>
         );
       },
     },
@@ -113,21 +117,23 @@ export function PayrollItemTable({
         const deductions = row.original.totalDeductions;
         if (!deductions || deductions === 0) return "-";
         return (
-          <span className="text-red-600">-{formatCurrency(deductions)}</span>
+          <span className="text-red-600">
+            -{formatPayslip(deductions, companyLocale)}
+          </span>
         );
       },
     },
     {
       accessorKey: "grossSalary",
       header: t("table.grossSalary"),
-      cell: ({ row }) => formatCurrency(row.original.grossSalary),
+      cell: ({ row }) => formatPayslip(row.original.grossSalary, companyLocale),
     },
     {
       accessorKey: "netSalary",
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary)}
+          {formatPayslip(row.original.netSalary, companyLocale)}
         </span>
       ),
     },
@@ -140,50 +146,12 @@ export function PayrollItemTable({
         </Badge>
       ),
     },
-    {
-      id: "actions",
-      header: tCommon("actions"),
-      cell: ({ row }) => {
-        const item = row.original;
-
-        return (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedItem(item)}
-              title={tCommon("view")}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-            {!isLocked && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setAdjustItem(item)}
-                title={tCommon("edit")}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                router.push(
-                  `/dashboard/employees/${item.employeeId}?tab=salary`,
-                )
-              }
-              title={t("viewPayslips")}
-            >
-              <FileText className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-      size: 120,
-    },
   ];
+
+  // Handle row click
+  const handleRowClick = (item: PayrollItem) => {
+    setSelectedItem(item);
+  };
 
   return (
     <>
@@ -192,6 +160,7 @@ export function PayrollItemTable({
         data={items}
         showPagination={false}
         noResultsText={tCommon("noData")}
+        onRowClick={handleRowClick}
       />
 
       {/* Item Detail Dialog */}
@@ -199,8 +168,15 @@ export function PayrollItemTable({
         <PayrollItemDetailDialog
           open={!!selectedItem}
           onClose={() => setSelectedItem(null)}
-          periodId={periodId}
           item={selectedItem}
+          onAdjust={
+            !isLocked
+              ? () => {
+                  setAdjustItem(selectedItem);
+                  setSelectedItem(null);
+                }
+              : undefined
+          }
         />
       )}
 

@@ -51,7 +51,7 @@ const LogoText = ({ className }: { className?: string }) => {
   return (
     <span
       className={cn(
-        "text-xl md:text-2xl font-bold text-primary dark:text-[#69ebff] font-mono",
+        "text-2xl font-bold text-primary dark:text-[#69ebff] font-mono",
         className,
       )}
     >
@@ -60,11 +60,11 @@ const LogoText = ({ className }: { className?: string }) => {
   );
 };
 
-export const LogoFull = () => {
+export const LogoFull = ({ isShowText }: { isShowText?: boolean }) => {
   return (
     <div className="flex items-center gap-2">
       <Logo />
-      <LogoText className="hidden sm:inline-block" />
+      <LogoText className={cn(isShowText ? "" : "")} />
     </div>
   );
 };

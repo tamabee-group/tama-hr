@@ -1,0 +1,48 @@
+{
+  "title": "Quản lý phản hồi",
+  "table": {
+    "stt": "STT",
+    "type": "Loại",
+    "feedbackTitle": "Tiêu đề",
+    "sender": "Người gửi",
+    "company": "Công ty",
+    "status": "Trạng thái",
+    "createdAt": "Thời gian"
+  },
+  "filter": {
+    "allStatuses": "Tất cả trạng thái",
+    "allTypes": "Tất cả loại"
+  },
+  "detail": {
+    "title": "Chi tiết phản hồi",
+    "description": "Nội dung",
+    "attachments": "Ảnh đính kèm",
+    "sender": "Người gửi",
+    "company": "Công ty",
+    "email": "Email",
+    "createdAt": "Thời gian gửi",
+    "status": "Trạng thái",
+    "updateStatus": "Cập nhật trạng thái",
+    "statusUpdated": "Cập nhật trạng thái thành công",
+    "statusError": "Cập nhật trạng thái thất bại"
+  },
+  "reply": {
+    "title": "Phản hồi",
+    "placeholder": "Nhập nội dung phản hồi...",
+    "send": "Gửi phản hồi",
+    "sending": "Đang gửi...",
+    "success": "Gửi phản hồi thành công",
+    "error": "Gửi phản hồi thất bại",
+    "noReplies": "Chưa có phản hồi",
+    "noRepliesHint": "Hãy gửi phản hồi đầu tiên cho feedback này",
+    "useTemplate": "Mẫu phản hồi",
+    "selectTemplate": "Chọn mẫu phản hồi",
+    "templates": {
+      "received": "Cảm ơn bạn đã gửi phản hồi. Chúng tôi đã tiếp nhận và sẽ xử lý trong thời gian sớm nhất.",
+      "investigating": "Chúng tôi đang kiểm tra vấn đề bạn báo cáo. Sẽ cập nhật kết quả cho bạn sớm.",
+      "resolved": "Vấn đề bạn báo cáo đã được khắc phục. Vui lòng kiểm tra lại và cho chúng tôi biết nếu vẫn còn vấn đề.",
+      "needInfo": "Chúng tôi cần thêm thông tin để xử lý yêu cầu của bạn. Vui lòng cung cấp thêm chi tiết.",
+      "planned": "Cảm ơn đề xuất của bạn. Chúng tôi đã ghi nhận và sẽ xem xét trong các bản cập nhật tiếp theo."
+    }
+  }
+}

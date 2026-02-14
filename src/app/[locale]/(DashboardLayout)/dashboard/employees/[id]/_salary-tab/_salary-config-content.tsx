@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { Plus, Info, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import {
   Collapsible,
   CollapsibleContent,
@@ -144,39 +144,36 @@ export function SalaryConfigContent({ employeeId }: SalaryConfigContentProps) {
 
       <div className="flex flex-col-reverse lg:flex-row gap-6">
         {/* Left: History Table (flex-1) */}
-        <Card className="flex-1 min-w-0 pt-6 pb-0">
-          <CardHeader>
-            <CardTitle>{t("historyTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent className="px-0">
+        <GlassSection title={t("historyTitle")} className="flex-1 min-w-0">
+          <div className="-mx-6 -mb-6">
             <SalaryConfigHistory
               employeeId={employeeId}
               history={history}
               onEdit={handleEdit}
               onDeleted={fetchData}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </GlassSection>
 
         {/* Right: Current Config (fixed width) */}
-        <Card className="lg:w-[360px] shrink-0">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t("currentConfig")}</CardTitle>
+        <GlassSection className="lg:w-[360px] shrink-0">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">
+              {t("currentConfig")}
+            </h3>
             <Button onClick={handleCreate} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               {t("create")}
             </Button>
-          </CardHeader>
-          <CardContent>
-            {currentConfig ? (
-              <CurrentSalaryCard config={currentConfig} />
-            ) : (
-              <p className="text-muted-foreground text-center py-8">
-                {t("noConfig")}
-              </p>
-            )}
-          </CardContent>
-        </Card>
+          </div>
+          {currentConfig ? (
+            <CurrentSalaryCard config={currentConfig} />
+          ) : (
+            <p className="text-muted-foreground text-center py-8">
+              {t("noConfig")}
+            </p>
+          )}
+        </GlassSection>
       </div>
 
       {/* Form Dialog */}
@@ -199,24 +196,18 @@ export function SalaryConfigContent({ employeeId }: SalaryConfigContentProps) {
 function SalaryConfigSkeleton() {
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      <Card className="flex-1 min-w-0">
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-32 w-full" />
-        </CardContent>
-      </Card>
-      <Card className="lg:w-[360px] shrink-0">
-        <CardHeader>
-          <Skeleton className="h-6 w-40" />
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <GlassSection className="flex-1 min-w-0">
+        <Skeleton className="h-6 w-48 mb-4" />
+        <Skeleton className="h-32 w-full" />
+      </GlassSection>
+      <GlassSection className="lg:w-[360px] shrink-0">
+        <Skeleton className="h-6 w-40 mb-4" />
+        <div className="space-y-4">
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-2/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </GlassSection>
     </div>
   );
 }

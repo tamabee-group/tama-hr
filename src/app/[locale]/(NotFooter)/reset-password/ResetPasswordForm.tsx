@@ -1,6 +1,5 @@
 "use client";
 
-import { CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -69,7 +68,7 @@ export function ResetPasswordForm() {
   return (
     <div className="w-full max-w-sm flex flex-col gap-6 mt-8">
       <div className="text-center space-y-4">
-        <CardTitle className="text-2xl">{tReset("title")}</CardTitle>
+        <h1 className="text-2xl font-semibold">{tReset("title")}</h1>
         <p className="text-sm text-muted-foreground mb-10">
           {step === "password" && tReset("enterNewPassword")}
           {step === "success" && tReset("successMessage")}

@@ -3,18 +3,24 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft, Coffee } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AttendanceDayDetail } from "../../_attendance-day-detail";
-import { AdjustmentDialog } from "../../_adjustment-dialog";
-import { BreakTimeline } from "../../_break-timeline";
+import { Coffee } from "lucide-react";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
+import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
+import { AttendanceDayDetail } from "@/app/[locale]/_components/_shared";
+import { AdjustmentDialog } from "../../../../_components/_shared/attendance/_adjustment-dialog";
+import { BreakTimeline } from "../../attendance/[date]/_break-timeline";
 import { unifiedAttendanceApi } from "@/lib/apis/unified-attendance-api";
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
+import { getApprovers, ApproverInfo } from "@/lib/apis/company-employees";
+import { departmentApi } from "@/lib/apis/department-api";
+import { companySettingsApi } from "@/lib/apis/company-settings-api";
+import { useAuth } from "@/hooks/use-auth";
 import type {
   UnifiedAttendanceRecord,
   AdjustmentRequest,
 } from "@/types/attendance-records";
+import type { DefaultApprover } from "@/types/department";
+import type { BreakConfig } from "@/types/attendance-config";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 import { AdjustmentRequestCard } from "./_adjustment-request-card";
 
@@ -63,10 +69,10 @@ function isSameDay(date1: Date, date2: Date): boolean {
 export function AttendanceDayDetailContent({
   date,
 }: AttendanceDayDetailContentProps) {
-  const t = useTranslations("common");
   const tBreak = useTranslations("break");
   const locale = useLocale() as SupportedLocale;
   const router = useRouter();
+  const { user } = useAuth();
 
   const [record, setRecord] = React.useState<UnifiedAttendanceRecord | null>(
     null,
@@ -78,13 +84,21 @@ export function AttendanceDayDetailContent({
   const [isAdjustmentDialogOpen, setIsAdjustmentDialogOpen] =
     React.useState(false);
 
+  // Data cho AdjustmentDialog
+  const [approvers, setApprovers] = React.useState<ApproverInfo[]>([]);
+  const [defaultApprover, setDefaultApprover] =
+    React.useState<DefaultApprover | null>(null);
+  const [breakConfig, setBreakConfig] = React.useState<BreakConfig | null>(
+    null,
+  );
+
   const currentDate = parseDate(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const isToday = isSameDay(currentDate, today);
   const canGoPrevious = true; // Có thể thêm logic giới hạn nếu cần
-  const canGoNext = !isSameDay(currentDate, today);
+  const canGoNext = true;
 
   // Xử lý chuyển ngày
   const handleDateChange = React.useCallback(
@@ -125,9 +139,34 @@ export function AttendanceDayDetailContent({
     }
   }, [date]);
 
+  // Fetch data cho dialog (chỉ khi mở dialog)
+  const fetchDialogData = React.useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const [approversData, defaultApproverData, breakConfigData] =
+        await Promise.all([
+          getApprovers(),
+          departmentApi.getDefaultApprover(user.id),
+          companySettingsApi.getBreakConfig(),
+        ]);
+      setApprovers(approversData);
+      setDefaultApprover(defaultApproverData);
+      setBreakConfig(breakConfigData);
+    } catch (error) {
+      console.error("Error fetching dialog data:", error);
+    }
+  }, [user?.id]);
+
   React.useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Fetch dialog data khi mở dialog
+  React.useEffect(() => {
+    if (isAdjustmentDialogOpen && approvers.length === 0) {
+      fetchDialogData();
+    }
+  }, [isAdjustmentDialogOpen, approvers.length, fetchDialogData]);
 
   // Xử lý khi yêu cầu điều chỉnh thành công
   const handleAdjustmentSuccess = () => {
@@ -148,14 +187,7 @@ export function AttendanceDayDetailContent({
   return (
     <div className="space-y-4">
       {/* Back button */}
-      <Button
-        variant="ghost"
-        onClick={() => router.push(`/${locale}/dashboard/attendance/me`)}
-        className="touch-manipulation"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        {t("back")}
-      </Button>
+      <BackButton />
 
       {/* 2 columns layout on wide screens */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -165,7 +197,8 @@ export function AttendanceDayDetailContent({
             date={date}
             record={record}
             isLoading={isLoading}
-            onRequestAdjustment={() => setIsAdjustmentDialogOpen(true)}
+            mode="employee"
+            onAction={() => setIsAdjustmentDialogOpen(true)}
             minimumBreakRequired={minimumBreakRequired}
             hasPendingRequest={hasPendingRequest}
             hideBreakTimeline
@@ -190,20 +223,15 @@ export function AttendanceDayDetailContent({
               isCompliant={record.breakCompliant}
             />
           ) : (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Coffee className="h-4 w-4" />
-                  {tBreak("history.title")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <Coffee className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">{tBreak("history.noRecords")}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <GlassSection
+              title={tBreak("history.title")}
+              icon={<Coffee className="h-4 w-4" />}
+            >
+              <div className="text-center py-8 text-muted-foreground">
+                <Coffee className="h-10 w-10 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">{tBreak("history.noRecords")}</p>
+              </div>
+            </GlassSection>
           )}
         </div>
       </div>
@@ -221,8 +249,11 @@ export function AttendanceDayDetailContent({
         record={record}
         date={date}
         open={isAdjustmentDialogOpen}
-        onClose={() => setIsAdjustmentDialogOpen(false)}
+        onOpenChange={setIsAdjustmentDialogOpen}
         onSuccess={handleAdjustmentSuccess}
+        approvers={approvers}
+        defaultApprover={defaultApprover}
+        breakConfig={breakConfig}
       />
     </div>
   );

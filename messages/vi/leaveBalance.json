@@ -1,0 +1,38 @@
+{
+  "title": "Quản lý ngày phép",
+  "bulkAllocate": "Cấp phát hàng loạt",
+  "filter": {
+    "year": "Năm",
+    "search": "Tìm theo tên hoặc mã nhân viên..."
+  },
+  "table": {
+    "employee": "Nhân viên",
+    "employeeCode": "Mã NV",
+    "balanceFormat": "Cấp/Dùng/Còn",
+    "noData": "Không có dữ liệu ngày phép"
+  },
+  "dialog": {
+    "title": "Cập nhật ngày phép",
+    "description": "Cập nhật số ngày phép cho nhân viên",
+    "year": "Năm",
+    "totalDays": "Tổng ngày cấp",
+    "usedDays": "Đã sử dụng",
+    "remainingDays": "Còn lại",
+    "days": "ngày",
+    "updateSuccess": "Cập nhật ngày phép thành công"
+  },
+  "bulkDialog": {
+    "title": "Cấp phát ngày phép hàng loạt",
+    "description": "Cấp phát số ngày phép cho nhiều nhân viên cùng lúc",
+    "year": "Năm",
+    "leaveType": "Loại phép",
+    "totalDays": "Số ngày cấp",
+    "applyTo": "Áp dụng cho",
+    "allEmployees": "Tất cả nhân viên ({count} người)",
+    "selectEmployees": "Chọn nhân viên cụ thể",
+    "selectAll": "Chọn tất cả",
+    "confirmation": "Sẽ cập nhật cho {count} nhân viên",
+    "submit": "Cấp phát",
+    "success": "Đã cấp phát ngày phép cho {count} nhân viên"
+  }
+}

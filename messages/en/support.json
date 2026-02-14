@@ -1,4 +1,31 @@
 {
   "title": "Customer Support",
-  "description": "View company wallet and transactions"
+  "description": "View company wallet and transactions",
+  "home": {
+    "title": "Overview",
+    "companies": "referred companies",
+    "pending": "pending",
+    "paid": "paid",
+    "open": "open"
+  },
+  "referrals": {
+    "title": "Referred Companies"
+  },
+  "commissions": {
+    "title": "Commissions"
+  },
+  "feedbacks": {
+    "title": "Customer Feedbacks"
+  },
+  "sidebar": {
+    "main": "Support",
+    "personal": "Personal"
+  },
+  "navigation": {
+    "home": "Overview",
+    "referrals": "Referred Companies",
+    "commissions": "Commissions",
+    "feedbacks": "Customer Feedbacks",
+    "myPortal": "My Portal"
+  }
 }

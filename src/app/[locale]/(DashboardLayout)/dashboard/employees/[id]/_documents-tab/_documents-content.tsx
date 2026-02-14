@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Plus, Grid3X3, List, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import {
   Select,
   SelectContent,
@@ -144,11 +144,9 @@ export function DocumentsContent({ employeeId }: DocumentsContentProps) {
 
       {/* Documents display */}
       {filteredDocuments.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">{t("noDocuments")}</p>
-          </CardContent>
-        </Card>
+        <GlassCard className="py-12 text-center">
+          <p className="text-muted-foreground">{t("noDocuments")}</p>
+        </GlassCard>
       ) : viewMode === "grid" ? (
         <DocumentGrid documents={filteredDocuments} onDelete={handleDelete} />
       ) : (

@@ -1,32 +1,9 @@
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import { FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { EmployeeAttendancePageContent } from "./_page-content";
+import { HomeContent } from "./_home-content";
 
 /**
- * Trang chấm công cá nhân (My Attendance)
- * Server Component - hiển thị check-in section và calendar view
+ * Trang chủ Employee Portal - Chấm công cá nhân
+ * Server Component - render HomeContent
  */
-export default async function MyAttendancePage() {
-  const t = await getTranslations("attendance");
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-muted-foreground">{t("description")}</p>
-        </div>
-        <Button variant="outline" asChild>
-          <Link href="/dashboard/adjustments">
-            <FileText className="h-4 w-4 mr-2" />
-            {t("adjustmentHistory")}
-          </Link>
-        </Button>
-      </div>
-
-      <EmployeeAttendancePageContent />
-    </div>
-  );
+export default async function HomePage() {
+  return <HomeContent />;
 }

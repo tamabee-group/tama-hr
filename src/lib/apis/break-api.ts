@@ -13,6 +13,13 @@ import { apiClient } from "@/lib/utils/fetch-client";
 export interface StartBreakRequest {
   attendanceRecordId: number;
   note?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface EndBreakRequest {
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface BreakRecordResponse {
@@ -22,6 +29,10 @@ export interface BreakRecordResponse {
   breakEnd: string | null;
   breakMinutes: number;
   note: string | null;
+  breakStartLatitude?: number;
+  breakStartLongitude?: number;
+  breakEndLatitude?: number;
+  breakEndLongitude?: number;
 }
 
 // ============================================
@@ -47,9 +58,11 @@ export async function startBreak(
  */
 export async function endBreak(
   breakRecordId: number,
+  request?: EndBreakRequest,
 ): Promise<BreakRecordResponse> {
   return apiClient.post<BreakRecordResponse>(
     `/api/employee/attendance/break/${breakRecordId}/end`,
+    request,
   );
 }
 

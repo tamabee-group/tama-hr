@@ -57,9 +57,9 @@
     "MINUTES_60": "60 phút"
   },
   "roundingDirection": {
-    "UP": "Làm tròn lên",
-    "DOWN": "Làm tròn xuống",
-    "NEAREST": "Làm tròn gần nhất"
+    "UP": "Lên",
+    "DOWN": "Xuống",
+    "NEAREST": "Gần nhất"
   },
   "salaryType": {
     "MONTHLY": "Lương tháng",
@@ -72,11 +72,6 @@
     "ABSENT": "Vắng mặt",
     "LEAVE": "Nghỉ phép",
     "HOLIDAY": "Ngày lễ"
-  },
-  "payrollStatus": {
-    "DRAFT": "Nháp",
-    "FINALIZED": "Đã chốt",
-    "PAID": "Đã thanh toán"
   },
   "paymentStatus": {
     "PENDING": "Chờ thanh toán",
@@ -160,6 +155,13 @@
     "EXPIRED": "Hết hạn",
     "TERMINATED": "Đã chấm dứt"
   },
+  "documentType": {
+    "CONTRACT": "Hợp đồng",
+    "ID_CARD": "CMND/CCCD/Hộ chiếu",
+    "CERTIFICATE": "Chứng chỉ",
+    "RESUME": "Hồ sơ xin việc",
+    "OTHER": "Khác"
+  },
   "industry": {
     "technology": "Công nghệ thông tin",
     "manufacturing": "Sản xuất",
@@ -171,5 +173,28 @@
     "hospitality": "Khách sạn - Nhà hàng",
     "logistics": "Vận tải - Logistics",
     "other": "Khác"
+  },
+  "planChangeType": {
+    "INITIAL": "Đăng ký ban đầu",
+    "UPGRADE": "Nâng cấp",
+    "DOWNGRADE": "Hạ cấp",
+    "TRIAL_CHANGE": "Đổi trong trial",
+    "SCHEDULED_APPLY": "Áp dụng theo lịch"
+  },
+  "feedbackType": {
+    "BUG_REPORT": "Báo lỗi",
+    "FEATURE_REQUEST": "Đề xuất tính năng",
+    "GENERAL_FEEDBACK": "Góp ý chung",
+    "SUPPORT_REQUEST": "Yêu cầu hỗ trợ"
+  },
+  "feedbackStatus": {
+    "OPEN": "Mở",
+    "IN_PROGRESS": "Đang xử lý",
+    "RESOLVED": "Đã giải quyết",
+    "CLOSED": "Đã đóng"
+  },
+  "targetAudience": {
+    "COMPANY_ADMINS": "Quản trị viên công ty",
+    "ALL_USERS": "Tất cả người dùng"
   }
 }

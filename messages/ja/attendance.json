@@ -3,6 +3,7 @@
   "description": "従業員の勤怠記録を管理",
   "checkIn": "出勤",
   "checkOut": "退勤",
+  "compactInOut": "出退勤",
   "breakStart": "休憩開始",
   "breakEnd": "休憩終了",
   "currentStatus": "現在のステータス",
@@ -18,6 +19,8 @@
   "breakNonCompliant": "不適合",
   "todayAttendance": "本日の勤怠",
   "history": "勤怠履歴",
+  "viewDetail": "詳細を見る",
+  "viewLocation": "位置を見る",
   "noRecordsToday": "本日の勤怠記録はありません",
   "calendar": "勤怠カレンダー",
   "monthlyRecords": "月別勤怠記録",
@@ -29,6 +32,7 @@
     "date": "日付",
     "checkInTime": "出勤時間",
     "checkOutTime": "退勤時間",
+    "totalTime": "合計",
     "workingHours": "勤務時間",
     "overtime": "残業",
     "overtimeHours": "残業時間",
@@ -39,7 +43,8 @@
     "earlyLeaveMinutes": "早退",
     "breakDuration": "休憩時間",
     "netHours": "実働時間",
-    "break": "休憩"
+    "break": "休憩",
+    "note": "備考"
   },
   "status": {
     "notCheckedIn": "未出勤",
@@ -78,13 +83,14 @@
     "notCheckedIn": "まだ出勤していません",
     "locationRequired": "位置情報へのアクセスを許可してください",
     "outsideGeoFence": "許可されたエリア外にいます",
-    "deviceNotRegistered": "デバイスが登録されていません",
     "adjustmentSubmitted": "修正申請を送信しました",
     "adjustmentError": "修正申請の送信に失敗しました",
     "noRecords": "勤怠記録がありません",
+    "noBreakRecords": "休憩記録がありません",
     "noAdjustments": "修正申請がありません",
     "cancelSuccess": "修正申請をキャンセルしました",
-    "editSuccess": "勤怠を更新しました"
+    "editSuccess": "勤怠を更新しました",
+    "deleteSuccess": "勤怠データを削除しました"
   },
   "editDialog": {
     "title": "勤怠を編集",
@@ -93,7 +99,7 @@
     "reasonPlaceholder": "編集理由を入力...",
     "next": "続ける",
     "breakRecords": "休憩時間",
-    "totalBreak": "合計"
+    "totalBreak": "休憩"
   },
   "detail": {
     "title": "勤怠詳細",
@@ -106,6 +112,15 @@
   "dialog": {
     "cancelTitle": "修正申請をキャンセル",
     "cancelDescription": "この修正申請をキャンセルしてもよろしいですか？"
+  },
+  "viewMode": {
+    "recordsOnly": "出勤日のみ",
+    "fullMonth": "月全体",
+    "dayOff": "休み",
+    "weekend": "週末",
+    "holiday": "祝日",
+    "noRecord": "未出勤",
+    "cutoffPeriod": "締め期間: {start} - {end}"
   },
   "summary": {
     "title": "勤怠サマリー",
@@ -183,7 +198,55 @@
     "approverComment": "承認者コメント",
     "hasPendingRequest": "承認待ちのリクエストがあります",
     "departmentManager": "部門マネージャー",
-    "defaultApproverHint": "デフォルト: {name} (あなたの部門マネージャー)"
+    "defaultApproverHint": "デフォルト: {name} (あなたの部門マネージャー)",
+    "deleteBreak": "休憩を削除",
+    "deleteRecord": "この日のデータ削除を申請",
+    "deleteBreakTitle": "休憩削除の確認",
+    "deleteBreakDesc": "この休憩の削除申請が承認者に送信されます。よろしいですか？",
+    "deleteRecordTitle": "勤怠データ削除の確認",
+    "deleteRecordDesc": "この日のすべての勤怠データの削除申請が承認者に送信されます。よろしいですか？",
+    "deleteRecordDirectDesc": "この日の勤怠データがすべて完全に削除されます。よろしいですか？",
+    "deleteRecordRequest": "勤怠データ削除の申請",
+    "deleteRecordInfo": "申請が承認されると、この日のすべての勤怠データが削除されます。",
+    "deleteBreakRequest": "休憩削除の申請",
+    "deleteBreakInfo": "申請が承認されると、この休憩が削除されます。",
+    "rejectTemplate": "テンプレート",
+    "selectTemplate": "テンプレートを選択...",
+    "rejectTemplates": {
+      "invalidTime": "時間が無効です",
+      "insufficientEvidence": "証拠/理由が不十分です",
+      "notMatchPolicy": "会社の規定に合致しません",
+      "duplicateRequest": "重複した申請です",
+      "other": "その他の理由"
+    },
+    "requestInfo": "申請情報",
+    "correctionDetails": "修正詳細",
+    "originalEntry": "元のデータ",
+    "requestedCorrection": "修正申請",
+    "reasonForRequest": "申請理由",
+    "timelineSubmitted": "申請送信済み",
+    "timelineUnderReview": "審査中",
+    "timelineApproved": "承認済み",
+    "timelineRejected": "却下済み",
+    "timelineAwaitingApproval": "承認待ち",
+    "timelinePendingDecision": "最終決定待ち",
+    "breakAdjustments": "休憩時間の調整",
+    "deleteBreakLabel": "休憩{number}を削除",
+    "createBreakLabel": "休憩{number}を新規作成",
+    "breakNumber": "休憩{number}",
+    "allBreakRecords": "この日のすべての休憩",
+    "beingAdjusted": "調整中",
+    "noChange": "変更なし",
+    "newBreakStart": "休憩開始",
+    "newBreakEnd": "休憩終了",
+    "breakTimeHint": "休憩開始と終了時間を入力（任意）",
+    "breakInsufficientWarning": "休憩時間（{current}分）が最低必要時間（{minimum}分）に達していません",
+    "minutesRequired": "分必要",
+    "breakStartOutOfRange": "休憩開始時間は勤務時間内である必要があります",
+    "breakEndOutOfRange": "休憩終了時間は勤務時間内である必要があります",
+    "breakStartAfterEnd": "休憩開始時間は終了時間より前である必要があります",
+    "totalBreakTime": "合計休憩",
+    "totalWorkingTime": "合計勤務"
   },
   "filter": {
     "dateRange": "期間",

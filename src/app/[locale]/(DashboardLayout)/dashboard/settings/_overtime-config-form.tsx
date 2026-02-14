@@ -2,8 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -13,19 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { InfoPanel } from "@/components/ui/info-panel";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { HelpCircle } from "lucide-react";
+import { TimePicker, TimePreset } from "@/components/ui/time-picker";
 import { toast } from "sonner";
 import {
   OvertimeConfig,
@@ -35,6 +29,21 @@ import { companySettingsApi } from "@/lib/apis/company-settings-api";
 
 import { OvertimePreview } from "./_overtime-preview";
 import { MultiplierRow } from "./_overtime-table-row";
+
+// Presets cho giờ đêm
+const NIGHT_START_PRESETS: TimePreset[] = [
+  { label: "21:00", value: "21:00" },
+  { label: "22:00", value: "22:00" },
+  { label: "23:00", value: "23:00" },
+  { label: "00:00", value: "00:00" },
+];
+
+const NIGHT_END_PRESETS: TimePreset[] = [
+  { label: "04:00", value: "04:00" },
+  { label: "05:00", value: "05:00" },
+  { label: "06:00", value: "06:00" },
+  { label: "07:00", value: "07:00" },
+];
 
 interface OvertimeConfigFormProps {
   config: OvertimeConfig;
@@ -77,9 +86,15 @@ export function OvertimeConfigForm({
   const t = useTranslations("companySettings");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
+  const quickSelectLabel = tCommon("quickSelect");
 
   const [formData, setFormData] = useState<OvertimeConfig>({ ...config });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Đồng bộ formData khi config prop thay đổi (sau khi save + reload)
+  useEffect(() => {
+    setFormData({ ...config }); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [config]);
 
   // Kiểm tra có thay đổi không
   const hasChanges = useMemo(() => {
@@ -213,11 +228,8 @@ export function OvertimeConfigForm({
       {/* Cột 1 */}
       <div className="space-y-6">
         {/* Bật/tắt tăng ca */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">{t("overtime.general")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <GlassSection title={t("overtime.general")}>
+          <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Switch
                 id="overtimeEnabled"
@@ -271,108 +283,92 @@ export function OvertimeConfigForm({
                 </div>
               </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </GlassSection>
 
         {formData.overtimeEnabled && (
           <>
             {/* Cấu hình giờ đêm */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {t("overtime.nightShift")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nightStartTime">
-                      {t("overtime.nightStartTime")}
-                    </Label>
-                    <Input
-                      id="nightStartTime"
-                      type="time"
-                      value={formData.nightStartTime}
-                      onChange={(e) =>
-                        updateField("nightStartTime", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nightEndTime">
-                      {t("overtime.nightEndTime")}
-                    </Label>
-                    <Input
-                      id="nightEndTime"
-                      type="time"
-                      value={formData.nightEndTime}
-                      onChange={(e) =>
-                        updateField("nightEndTime", e.target.value)
-                      }
-                    />
-                  </div>
+            <GlassSection title={t("overtime.nightShift")}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nightStartTime">
+                    {t("overtime.nightStartTime")}
+                  </Label>
+                  <TimePicker
+                    id="nightStartTime"
+                    value={formData.nightStartTime}
+                    onChange={(value) => updateField("nightStartTime", value)}
+                    presets={NIGHT_START_PRESETS}
+                    quickSelectLabel={quickSelectLabel}
+                  />
                 </div>
-              </CardContent>
-            </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="nightEndTime">
+                    {t("overtime.nightEndTime")}
+                  </Label>
+                  <TimePicker
+                    id="nightEndTime"
+                    value={formData.nightEndTime}
+                    onChange={(value) => updateField("nightEndTime", value)}
+                    presets={NIGHT_END_PRESETS}
+                    quickSelectLabel={quickSelectLabel}
+                  />
+                </div>
+              </div>
+            </GlassSection>
 
             {/* Giới hạn tăng ca */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {t("overtime.limits")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="maxOvertimeHoursPerDay">
-                      {t("overtime.perDay")}
-                    </Label>
-                    <InputGroup>
-                      <InputGroupInput
-                        id="maxOvertimeHoursPerDay"
-                        type="number"
-                        min={0}
-                        max={24}
-                        value={formData.maxOvertimeHoursPerDay}
-                        onChange={(e) =>
-                          updateField(
-                            "maxOvertimeHoursPerDay",
-                            parseInt(e.target.value) || 0,
-                          )
-                        }
-                      />
-                      <InputGroupAddon align="inline-end">
-                        <InputGroupText>{tCommon("hours")}</InputGroupText>
-                      </InputGroupAddon>
-                    </InputGroup>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="maxOvertimeHoursPerMonth">
-                      {t("overtime.perMonth")}
-                    </Label>
-                    <InputGroup>
-                      <InputGroupInput
-                        id="maxOvertimeHoursPerMonth"
-                        type="number"
-                        min={0}
-                        max={744}
-                        value={formData.maxOvertimeHoursPerMonth}
-                        onChange={(e) =>
-                          updateField(
-                            "maxOvertimeHoursPerMonth",
-                            parseInt(e.target.value) || 0,
-                          )
-                        }
-                      />
-                      <InputGroupAddon align="inline-end">
-                        <InputGroupText>{tCommon("hours")}</InputGroupText>
-                      </InputGroupAddon>
-                    </InputGroup>
-                  </div>
+            <GlassSection title={t("overtime.limits")}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="maxOvertimeHoursPerDay">
+                    {t("overtime.perDay")}
+                  </Label>
+                  <InputGroup>
+                    <InputGroupInput
+                      id="maxOvertimeHoursPerDay"
+                      type="number"
+                      min={0}
+                      max={24}
+                      value={formData.maxOvertimeHoursPerDay}
+                      onChange={(e) =>
+                        updateField(
+                          "maxOvertimeHoursPerDay",
+                          parseInt(e.target.value) || 0,
+                        )
+                      }
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupText>{tCommon("hours")}</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="maxOvertimeHoursPerMonth">
+                    {t("overtime.perMonth")}
+                  </Label>
+                  <InputGroup>
+                    <InputGroupInput
+                      id="maxOvertimeHoursPerMonth"
+                      type="number"
+                      min={0}
+                      max={744}
+                      value={formData.maxOvertimeHoursPerMonth}
+                      onChange={(e) =>
+                        updateField(
+                          "maxOvertimeHoursPerMonth",
+                          parseInt(e.target.value) || 0,
+                        )
+                      }
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupText>{tCommon("hours")}</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </div>
+              </div>
+            </GlassSection>
           </>
         )}
       </div>
@@ -382,13 +378,8 @@ export function OvertimeConfigForm({
         {formData.overtimeEnabled && (
           <>
             {/* Cấu hình hệ số tăng ca */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {t("overtime.multipliers")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <GlassSection title={t("overtime.multipliers")}>
+              <div className="space-y-4">
                 {/* Row 1: Sử dụng theo luật + Khu vực */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
                   <div className="flex items-center gap-3">
@@ -397,23 +388,8 @@ export function OvertimeConfigForm({
                       checked={formData.useLegalMinimum}
                       onCheckedChange={handleUseLegalMinimumChange}
                     />
-                    <Label
-                      htmlFor="useLegalMinimum"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
+                    <Label htmlFor="useLegalMinimum" className="cursor-pointer">
                       {t("overtime.useLegalMinimum")}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">
-                              {t("overtime.useLegalMinimumTooltip")}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </Label>
                   </div>
 
@@ -430,6 +406,17 @@ export function OvertimeConfigForm({
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Info panel */}
+                <InfoPanel
+                  title={tCommon("viewExplanation")}
+                  items={[
+                    {
+                      label: t("overtime.useLegalMinimum"),
+                      description: t("overtime.useLegalMinimumTooltip"),
+                    },
+                  ]}
+                />
 
                 {/* Bảng hệ số */}
                 <div className="border rounded-lg overflow-hidden">
@@ -493,8 +480,8 @@ export function OvertimeConfigForm({
                     </tbody>
                   </table>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </GlassSection>
 
             {/* Preview section */}
             <OvertimePreview config={formData} />

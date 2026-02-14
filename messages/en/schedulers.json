@@ -1,0 +1,94 @@
+{
+  "title": "System Admin",
+  "description": "Manage and monitor manual APIs for Tamabee Admin",
+  "overview": "API Overview",
+  "subPages": {
+    "payroll": "Payroll Scheduler",
+    "billing": "Billing Scheduler",
+    "contracts": "Contract Expiry Scheduler",
+    "cleanup": "Company Cleanup Scheduler",
+    "tenants": "Tenant Cleanup Scheduler"
+  },
+  "groups": {
+    "payroll": "Process payroll payment and rollback payroll periods",
+    "billing": "Process monthly billing for companies",
+    "contracts": "Check and update expired contract statuses",
+    "cleanup": "Clean up inactive companies",
+    "tenants": "Archive inactive tenant databases"
+  },
+  "exportCsv": "Export CSV",
+  "refreshLogs": "Refresh Logs",
+  "quickActions": "Quick Actions",
+  "execute": "Execute",
+  "noLogs": "No logs yet. Execute an API to see logs here.",
+  "filters": {
+    "tenant": "Company Tenant",
+    "allTenants": "All Tenants",
+    "timeRange": "Last 24 Hours",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days",
+    "method": "Method: ALL",
+    "status": "Status: Any",
+    "errorsOnly": "Errors Only"
+  },
+  "table": {
+    "status": "Status",
+    "timestamp": "Timestamp",
+    "company": "Company",
+    "endpoint": "Function / Endpoint",
+    "method": "Method",
+    "latency": "Latency",
+    "requestPayload": "Request Payload",
+    "responseLog": "JSON Response Log",
+    "copy": "Copy",
+    "rerunApi": "Re-run API"
+  },
+  "actions": {
+    "payrollPayment": {
+      "title": "Payroll Payment Scheduler",
+      "description": "Process automatic payroll payment for companies on payment day",
+      "endpoint": "/api/admin/schedulers/payroll-payment",
+      "method": "POST"
+    },
+    "billing": {
+      "title": "Monthly Billing Scheduler",
+      "description": "Process monthly billing for all companies due for payment",
+      "endpoint": "/api/admin/schedulers/billing",
+      "method": "POST"
+    },
+    "contractExpiry": {
+      "title": "Contract Expiry Scheduler",
+      "description": "Check and update expired contract statuses, deactivate employees without active contracts",
+      "endpoint": "/api/admin/schedulers/contract-expiry"
+    },
+    "companyCleanup": {
+      "title": "Company Cleanup Scheduler",
+      "description": "Permanently delete inactive companies past retention period",
+      "endpoint": "/api/admin/schedulers/company-cleanup"
+    },
+    "tenantCleanup": {
+      "title": "Tenant Cleanup Scheduler",
+      "description": "Archive tenant databases inactive past retention period (default 90 days)",
+      "endpoint": "/api/admin/schedulers/tenant-cleanup"
+    },
+    "rollbackPayroll": {
+      "title": "Rollback Payroll to DRAFT",
+      "description": "Reset payroll periods status to DRAFT for testing purposes",
+      "endpoint": "/api/admin/schedulers/rollback-payroll",
+      "companyId": "Company",
+      "allCompanies": "All Companies",
+      "year": "Year",
+      "month": "Month"
+    }
+  },
+  "status": {
+    "success": "Success",
+    "error": "Error",
+    "pending": "Pending"
+  },
+  "messages": {
+    "executeSuccess": "API executed successfully",
+    "executeError": "Failed to execute API",
+    "copySuccess": "Copied to clipboard"
+  }
+}

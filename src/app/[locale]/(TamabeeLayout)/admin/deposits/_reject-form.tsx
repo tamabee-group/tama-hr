@@ -96,7 +96,7 @@ export function RejectForm({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <VisuallyHidden>
           <DialogTitle>{t("dialog.rejectTitle")}</DialogTitle>
         </VisuallyHidden>

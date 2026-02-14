@@ -1,0 +1,44 @@
+{
+  "title": "Thông báo hệ thống",
+  "table": {
+    "title": "Tiêu đề",
+    "targetAudience": "Đối tượng nhận",
+    "createdBy": "Người tạo",
+    "createdAt": "Thời gian tạo",
+    "stt": "STT"
+  },
+  "dialog": {
+    "title": "Tạo thông báo hệ thống",
+    "titleVi": "Tiêu đề (Tiếng Việt)",
+    "titleEn": "Tiêu đề (English)",
+    "titleJa": "Tiêu đề (日本語)",
+    "contentVi": "Nội dung (Tiếng Việt)",
+    "contentEn": "Nội dung (English)",
+    "contentJa": "Nội dung (日本語)",
+    "targetAudience": "Đối tượng nhận",
+    "selectAudience": "Chọn đối tượng nhận",
+    "preview": "Xem trước",
+    "edit": "Chỉnh sửa",
+    "send": "Gửi thông báo",
+    "sending": "Đang gửi...",
+    "success": "Gửi thông báo thành công",
+    "error": "Gửi thông báo thất bại",
+    "useTemplate": "Dùng mẫu",
+    "selectTemplate": "Chọn mẫu thông báo",
+    "templates": {
+      "maintenance": "Bảo trì hệ thống",
+      "update": "Cập nhật tính năng",
+      "policy": "Thay đổi chính sách"
+    }
+  },
+  "detail": {
+    "title": "Chi tiết thông báo",
+    "tabVi": "Tiếng Việt",
+    "tabEn": "English",
+    "tabJa": "日本語",
+    "targetAudience": "Đối tượng nhận",
+    "createdBy": "Người tạo",
+    "createdAt": "Thời gian tạo"
+  },
+  "create": "Tạo thông báo"
+}

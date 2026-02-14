@@ -16,7 +16,6 @@ import {
   ROUNDING_DIRECTIONS,
   SALARY_TYPES,
   ATTENDANCE_STATUSES,
-  PAYROLL_STATUSES,
   PAYMENT_STATUSES,
   ADJUSTMENT_STATUSES,
   SELECTION_STATUSES,
@@ -26,6 +25,8 @@ import {
   LEAVE_TYPES,
   LEAVE_STATUSES,
   BREAK_TYPES,
+  PAYROLL_PERIOD_STATUSES,
+  PAYROLL_ITEM_STATUSES,
 } from "@/types/attendance-enums";
 
 type MessageObject = Record<string, unknown>;
@@ -348,7 +349,8 @@ describe("Message File Structure Properties", () => {
       { name: "roundingDirection", values: ROUNDING_DIRECTIONS },
       { name: "salaryType", values: SALARY_TYPES },
       { name: "attendanceStatus", values: ATTENDANCE_STATUSES },
-      { name: "payrollStatus", values: PAYROLL_STATUSES },
+      { name: "payrollPeriodStatus", values: PAYROLL_PERIOD_STATUSES },
+      { name: "payrollItemStatus", values: PAYROLL_ITEM_STATUSES },
       { name: "paymentStatus", values: PAYMENT_STATUSES },
       { name: "adjustmentStatus", values: ADJUSTMENT_STATUSES },
       { name: "selectionStatus", values: SELECTION_STATUSES },

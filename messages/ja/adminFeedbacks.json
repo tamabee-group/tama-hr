@@ -1,0 +1,48 @@
+{
+  "title": "フィードバック管理",
+  "table": {
+    "stt": "番号",
+    "type": "種類",
+    "feedbackTitle": "タイトル",
+    "sender": "送信者",
+    "company": "会社",
+    "status": "ステータス",
+    "createdAt": "作成日時"
+  },
+  "filter": {
+    "allStatuses": "すべてのステータス",
+    "allTypes": "すべての種類"
+  },
+  "detail": {
+    "title": "フィードバック詳細",
+    "description": "内容",
+    "attachments": "添付画像",
+    "sender": "送信者",
+    "company": "会社",
+    "email": "メール",
+    "createdAt": "送信日時",
+    "status": "ステータス",
+    "updateStatus": "ステータス更新",
+    "statusUpdated": "ステータスを更新しました",
+    "statusError": "ステータスの更新に失敗しました"
+  },
+  "reply": {
+    "title": "返信",
+    "placeholder": "返信内容を入力...",
+    "send": "返信を送信",
+    "sending": "送信中...",
+    "success": "返信を送信しました",
+    "error": "返信の送信に失敗しました",
+    "noReplies": "返信はまだありません",
+    "noRepliesHint": "このフィードバックに最初の返信を送信してください",
+    "useTemplate": "テンプレート返信",
+    "selectTemplate": "テンプレートを選択",
+    "templates": {
+      "received": "フィードバックをいただきありがとうございます。受け付けましたので、できるだけ早く対応いたします。",
+      "investigating": "ご報告いただいた問題を調査中です。結果が分かり次第ご連絡いたします。",
+      "resolved": "ご報告いただいた問題は解決しました。再度ご確認いただき、問題が続く場合はお知らせください。",
+      "needInfo": "ご要望を処理するために追加情報が必要です。詳細をお知らせください。",
+      "planned": "ご提案ありがとうございます。記録し、今後のアップデートで検討いたします。"
+    }
+  }
+}

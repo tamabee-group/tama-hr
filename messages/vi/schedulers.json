@@ -1,0 +1,94 @@
+{
+  "title": "System Admin",
+  "description": "Quản lý và giám sát các API thủ công cho Tamabee Admin",
+  "overview": "Tổng quan API",
+  "subPages": {
+    "payroll": "Payroll Scheduler",
+    "billing": "Billing Scheduler",
+    "contracts": "Contract Expiry Scheduler",
+    "cleanup": "Company Cleanup Scheduler",
+    "tenants": "Tenant Cleanup Scheduler"
+  },
+  "groups": {
+    "payroll": "Xử lý thanh toán lương và rollback payroll periods",
+    "billing": "Xử lý billing hàng tháng cho các công ty",
+    "contracts": "Kiểm tra và cập nhật hợp đồng hết hạn",
+    "cleanup": "Dọn dẹp các công ty INACTIVE",
+    "tenants": "Archive tenant databases không hoạt động"
+  },
+  "exportCsv": "Export CSV",
+  "refreshLogs": "Làm mới Logs",
+  "quickActions": "Thao tác nhanh",
+  "execute": "Thực thi",
+  "noLogs": "Chưa có logs. Thực thi một API để xem logs tại đây.",
+  "filters": {
+    "tenant": "Company Tenant",
+    "allTenants": "Tất cả Tenants",
+    "timeRange": "24 giờ qua",
+    "last7Days": "7 ngày qua",
+    "last30Days": "30 ngày qua",
+    "method": "Method: TẤT CẢ",
+    "status": "Status: Tất cả",
+    "errorsOnly": "Chỉ Errors"
+  },
+  "table": {
+    "status": "Trạng thái",
+    "timestamp": "Thời gian",
+    "company": "Công ty",
+    "endpoint": "Function / Endpoint",
+    "method": "Method",
+    "latency": "Latency",
+    "requestPayload": "Request Payload",
+    "responseLog": "JSON Response Log",
+    "copy": "Copy",
+    "rerunApi": "Chạy lại API"
+  },
+  "actions": {
+    "payrollPayment": {
+      "title": "Payroll Payment Scheduler",
+      "description": "Xử lý thanh toán lương tự động cho các công ty đến ngày trả lương",
+      "endpoint": "/api/admin/schedulers/payroll-payment",
+      "method": "POST"
+    },
+    "billing": {
+      "title": "Monthly Billing Scheduler",
+      "description": "Xử lý billing hàng tháng cho tất cả công ty đến hạn thanh toán",
+      "endpoint": "/api/admin/schedulers/billing",
+      "method": "POST"
+    },
+    "contractExpiry": {
+      "title": "Contract Expiry Scheduler",
+      "description": "Kiểm tra và cập nhật trạng thái hợp đồng hết hạn, vô hiệu hóa nhân viên không còn hợp đồng",
+      "endpoint": "/api/admin/schedulers/contract-expiry"
+    },
+    "companyCleanup": {
+      "title": "Company Cleanup Scheduler",
+      "description": "Xóa vĩnh viễn các công ty INACTIVE đã quá thời gian retention",
+      "endpoint": "/api/admin/schedulers/company-cleanup"
+    },
+    "tenantCleanup": {
+      "title": "Tenant Cleanup Scheduler",
+      "description": "Archive tenant databases đã inactive quá thời gian retention (mặc định 90 ngày)",
+      "endpoint": "/api/admin/schedulers/tenant-cleanup"
+    },
+    "rollbackPayroll": {
+      "title": "Rollback Payroll về DRAFT",
+      "description": "Reset trạng thái payroll periods về DRAFT để test lại (chỉ dùng cho testing)",
+      "endpoint": "/api/admin/schedulers/rollback-payroll",
+      "companyId": "Công ty",
+      "allCompanies": "Tất cả công ty",
+      "year": "Năm",
+      "month": "Tháng"
+    }
+  },
+  "status": {
+    "success": "Thành công",
+    "error": "Lỗi",
+    "pending": "Đang chờ"
+  },
+  "messages": {
+    "executeSuccess": "API đã thực thi thành công",
+    "executeError": "Thực thi API thất bại",
+    "copySuccess": "Đã copy vào clipboard"
+  }
+}

@@ -1,0 +1,334 @@
+{
+  "navigation": {
+    "home": "ホーム",
+    "attendance": "勤怠",
+    "schedule": "勤務スケジュール",
+    "leave": "休暇申請",
+    "payroll": "給与明細",
+    "profile": "マイプロフィール",
+    "contract": "契約",
+    "documents": "書類",
+    "adjustments": "調整履歴",
+    "commissions": "コミッション",
+    "notifications": "通知",
+    "helpCenter": "ヘルプセンター",
+    "support": "カスタマーサポート",
+    "platformAdmin": "プラットフォーム管理",
+    "ariaLabel": "メインナビゲーション",
+    "dashboard": "ダッシュボード"
+  },
+  "mobileNav": {
+    "home": "ホーム",
+    "schedule": "予定",
+    "leave": "休暇",
+    "payroll": "給与",
+    "profile": "情報",
+    "ariaLabel": "メインナビゲーション"
+  },
+  "sidebar": {
+    "main": "メイン",
+    "personal": "個人",
+    "history": "履歴",
+    "support": "サポート",
+    "management": "管理"
+  },
+  "home": {
+    "title": "ホーム",
+    "description": "日々の勤怠を管理",
+    "todayAttendance": "本日の勤怠",
+    "checkIn": "出勤",
+    "checkOut": "退勤",
+    "breakStart": "休憩開始",
+    "breakEnd": "休憩終了",
+    "history": "本日の履歴",
+    "calendar": "勤怠カレンダー",
+    "noRecordsToday": "本日の記録はありません",
+    "checkInSuccess": "出勤しました",
+    "checkOutSuccess": "退勤しました",
+    "breakStartSuccess": "休憩を開始しました",
+    "breakEndSuccess": "休憩を終了しました",
+    "gpsRequired": "勤怠記録には位置情報の共有を有効にしてください",
+    "schedule": {
+      "todayShifts": "本日のシフト",
+      "nextShiftLabel": "次のシフト",
+      "tomorrow": "明日",
+      "noShiftToday": "本日はシフトがありません",
+      "noShiftScheduled": "今週のシフトはまだ割り当てられていません",
+      "completed": "完了",
+      "current": "現在",
+      "upcoming": "予定",
+      "viewDetail": "詳細を見る"
+    },
+    "nextShift": {
+      "title": "{shiftNumber}回目のシフトを確認",
+      "description": "{time}に退勤しました。新しいシフトを開始しますか？",
+      "warning": "シフト間の休憩記録が自動的に作成されます。",
+      "confirm": "出勤を確認",
+      "cancel": "キャンセル"
+    },
+    "inactiveOverlay": {
+      "title": "アカウントが無効です",
+      "message": "現在アカウントが無効な状態です。ステータスの確認または雇用契約の設定について、管理者にお問い合わせください。"
+    },
+    "outsideGeofence": {
+      "title": "許可エリア外です",
+      "description": "許可された勤怠エリア内にいません。続行しますか？",
+      "confirm": "続行",
+      "cancel": "キャンセル"
+    }
+  },
+  "schedule": {
+    "title": "勤務スケジュール",
+    "description": "シフトスケジュールと交換リクエストを確認",
+    "thisWeek": "今週",
+    "thisMonth": "今月",
+    "prevMonth": "先月",
+    "nextMonth": "来月",
+    "shifts": "シフト",
+    "requestSwap": "交換リクエスト",
+    "history": "履歴",
+    "noShifts": "シフトなし",
+    "noShiftsDescription": "この期間にシフトが割り当てられていません",
+    "swappedWith": "交換相手",
+    "noSwapHistory": "交換履歴なし",
+    "noSwapHistoryDescription": "まだ交換リクエストがありません",
+    "status": {
+      "past": "終了",
+      "current": "進行中",
+      "next": "次回"
+    },
+    "swapRequest": "交換リクエスト",
+    "yourShift": "あなたのシフト",
+    "targetShift": "交換希望シフト",
+    "requestedAt": "リクエスト日時",
+    "cancelSwap": "リクエストをキャンセル",
+    "cancelSwapTitle": "交換リクエストをキャンセル",
+    "cancelSwapDescription": "この交換リクエストをキャンセルしてもよろしいですか？",
+    "swapCancelSuccess": "交換リクエストをキャンセルしました",
+    "swapCancelError": "交換リクエストのキャンセルに失敗しました",
+    "rejectionReason": "却下理由",
+    "approvedBy": "承認者",
+    "selectYourShift": "あなたのシフトを選択",
+    "selectTargetShift": "交換希望シフトを選択",
+    "reason": "交換理由",
+    "reasonPlaceholder": "交換理由を入力...",
+    "submitSwap": "リクエストを送信",
+    "swapSuccess": "交換リクエストを送信しました",
+    "swapError": "交換リクエストの送信に失敗しました",
+    "noAvailableShifts": "交換可能なシフトがありません",
+    "loadError": "スケジュールの読み込みに失敗しました"
+  },
+  "contract": {
+    "title": "マイ契約",
+    "description": "雇用契約を確認",
+    "current": "現在の契約",
+    "history": "契約履歴",
+    "noContract": "契約なし",
+    "noContractDescription": "現在有効な雇用契約がありません",
+    "noHistory": "履歴なし",
+    "noHistoryDescription": "過去の契約が見つかりません",
+    "type": "契約形態",
+    "period": "契約期間",
+    "startDate": "開始日",
+    "endDate": "終了日",
+    "remaining": "残り",
+    "expiresIn": "残り{days}日",
+    "expiringWarning": "契約がまもなく満了します。人事部にご連絡ください。",
+    "viewDetail": "詳細を見る",
+    "viewContract": "契約を見る",
+    "detail": "契約詳細",
+    "terminationInfo": "解約情報",
+    "notes": "備考",
+    "loadError": "契約の読み込みに失敗しました"
+  },
+  "payroll": {
+    "title": "マイ給与明細",
+    "description": "給与履歴を確認し、給与明細をダウンロード",
+    "filter": {
+      "year": "年",
+      "status": "ステータス",
+      "all": "すべて"
+    },
+    "empty": "給与明細がありません"
+  },
+  "profile": {
+    "title": "マイプロフィール",
+    "description": "個人情報を管理",
+    "completion": "プロフィール完成度",
+    "tabs": {
+      "basic": "基本",
+      "work": "勤務",
+      "bank": "銀行",
+      "emergency": "緊急"
+    },
+    "fields": {
+      "avatar": "プロフィール写真",
+      "name": "氏名",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "dob": "生年月日",
+      "gender": "性別",
+      "address": "住所",
+      "zipCode": "郵便番号"
+    },
+    "workInfo": {
+      "employeeCode": "社員番号",
+      "department": "部署",
+      "jobTitle": "役職",
+      "joiningDate": "入社日",
+      "contractType": "契約形態",
+      "manager": "直属の上司"
+    },
+    "bankInfo": {
+      "accountType": "銀行口座タイプ",
+      "japanBankType": "日本の銀行タイプ",
+      "bankName": "銀行名",
+      "accountNumber": "口座番号",
+      "accountHolderName": "口座名義",
+      "bankCode": "銀行コード",
+      "branchCode": "支店コード",
+      "branchName": "支店名",
+      "accountCategory": "口座種別",
+      "symbol": "記号",
+      "number": "番号",
+      "types": {
+        "vietnam": "ベトナムの銀行",
+        "japan": "日本の銀行"
+      },
+      "japanTypes": {
+        "normal": "一般銀行",
+        "yucho": "ゆうちょ銀行"
+      },
+      "categories": {
+        "futsu": "普通",
+        "toza": "当座"
+      },
+      "placeholders": {
+        "selectAccountType": "銀行口座タイプを選択",
+        "selectJapanBankType": "日本の銀行タイプを選択",
+        "bankName": "銀行名を入力",
+        "accountNumber": "口座番号を入力",
+        "accountHolderName": "口座名義を入力",
+        "bankCode": "銀行コードを入力（4桁）",
+        "branchCode": "支店コードを入力（3桁）",
+        "branchName": "支店名を入力",
+        "selectCategory": "口座種別を選択",
+        "symbol": "記号を入力（5桁）",
+        "number": "番号を入力（8桁）"
+      }
+    },
+    "placeholders": {
+      "name": "氏名を入力",
+      "phone": "電話番号を入力",
+      "address": "住所を入力",
+      "zipCode": "郵便番号を入力",
+      "selectGender": "性別を選択",
+      "selectDob": "生年月日を選択"
+    },
+    "messages": {
+      "saveSuccess": "プロフィールを更新しました",
+      "saveError": "プロフィールの更新に失敗しました"
+    },
+    "emergencyContact": {
+      "contactName": "連絡先氏名",
+      "phone": "電話番号",
+      "relationship": "続柄",
+      "address": "住所",
+      "placeholders": {
+        "contactName": "連絡先氏名を入力",
+        "phone": "電話番号を入力",
+        "relationship": "例：配偶者、親、兄弟姉妹",
+        "address": "連絡先住所を入力"
+      }
+    },
+    "actions": {
+      "save": "変更を保存"
+    }
+  },
+  "leave": {
+    "title": "休暇",
+    "description": "休暇申請を管理し、残日数を確認",
+    "balance": "休暇残日数",
+    "used": "使用済み",
+    "pending": "申請中",
+    "remaining": "残り",
+    "requestLeave": "休暇申請",
+    "history": "履歴",
+    "type": "休暇タイプ",
+    "selectType": "休暇タイプを選択",
+    "dateRange": "期間",
+    "selectDateRange": "開始日と終了日を選択",
+    "totalDays": "合計日数",
+    "days": "日",
+    "reason": "理由",
+    "reasonPlaceholder": "休暇の理由を入力...",
+    "approver": "承認者",
+    "selectApprover": "承認者を選択",
+    "departmentManager": "部門マネージャー",
+    "defaultApproverHint": "デフォルト: {name}",
+    "submit": "申請する",
+    "requestSuccess": "休暇申請を送信しました",
+    "requestError": "休暇申請の送信に失敗しました",
+    "invalidDateRange": "終了日は開始日より後である必要があります",
+    "insufficientBalance": "休暇残日数が不足しています",
+    "noHistory": "申請なし",
+    "noHistoryDescription": "まだ休暇申請がありません",
+    "cancelTitle": "休暇申請をキャンセル",
+    "cancelDescription": "この休暇申請をキャンセルしてもよろしいですか？",
+    "cancelSuccess": "申請をキャンセルしました",
+    "rejectionReason": "却下理由",
+    "detailTitle": "休暇申請の詳細"
+  },
+  "documents": {
+    "title": "マイドキュメント",
+    "description": "個人書類を管理",
+    "upload": "ドキュメントをアップロード",
+    "empty": "ドキュメントなし",
+    "emptyDescription": "まだドキュメントをアップロードしていません",
+    "totalDocuments": "{count}件のドキュメント",
+    "documentType": "ドキュメントタイプ",
+    "selectType": "ドキュメントタイプを選択",
+    "dropzone": "ファイルをドロップするか、クリックして選択",
+    "selectFile": "ファイルを選択",
+    "acceptedTypes": "JPG、PNG、WebP、PDF（最大10MB）",
+    "invalidFileType": "無効なファイル形式です。JPG、PNG、WebP、またはPDFをアップロードしてください",
+    "fileTooLarge": "ファイルが大きすぎます。最大サイズは10MBです",
+    "removeFile": "ファイルを削除",
+    "uploading": "アップロード中...",
+    "uploadButton": "アップロード",
+    "uploadSuccess": "ドキュメントをアップロードしました",
+    "uploadError": "ドキュメントのアップロードに失敗しました",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "deleting": "削除中...",
+    "deleteSuccess": "ドキュメントを削除しました",
+    "deleteError": "ドキュメントの削除に失敗しました",
+    "confirmDeleteTitle": "ドキュメントを削除",
+    "confirmDeleteDescription": "「{name}」を削除してもよろしいですか？この操作は元に戻せません。",
+    "loadError": "ドキュメントの読み込みに失敗しました",
+    "close": "閉じる",
+    "download": "ダウンロード",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "rotate": "回転",
+    "previewNotAvailable": "このファイル形式はプレビューできません"
+  },
+  "attendance": {
+    "title": "勤怠",
+    "detail": "勤怠詳細",
+    "description": "日々の勤怠詳細を確認",
+    "back": "戻る"
+  },
+  "adjustments": {
+    "title": "調整"
+  },
+  "commissions": {
+    "title": "コミッション"
+  },
+  "notifications": {
+    "title": "通知"
+  },
+  "help": {
+    "title": "ヘルプセンター"
+  }
+}

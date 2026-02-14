@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowLeft, Check, X, Loader2 } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
 
+import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  GlassSection,
+  GlassCard,
+} from "@/app/[locale]/_components/_glass-style";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -16,18 +20,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AdjustmentStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
-import { TimeDisplay } from "@/app/[locale]/_components/_shared/_time-display";
+import { AdjustmentStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
+import { TimeDisplay } from "@/app/[locale]/_components/_shared/display/_time-display";
 
 import { AdjustmentRequest } from "@/types/attendance-records";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import {
+  formatDateWithDayOfWeek,
+  formatDateTime,
+} from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface AdjustmentDetailProps {
   request: AdjustmentRequest;
   onApprove: (comment?: string) => Promise<void>;
   onReject: (reason: string) => Promise<void>;
-  onBack: () => void;
 }
 
 /**
@@ -39,7 +45,6 @@ export function AdjustmentDetail({
   request,
   onApprove,
   onReject,
-  onBack,
 }: AdjustmentDetailProps) {
   const t = useTranslations("attendance");
   const tCommon = useTranslations("common");
@@ -80,22 +85,14 @@ export function AdjustmentDetail({
   return (
     <div className="space-y-6">
       {/* Header with back button */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {tCommon("back")}
-        </Button>
-      </div>
+      <BackButton />
 
       {/* Request Info Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>{t("adjustment.title")}</CardTitle>
-            <AdjustmentStatusBadge status={request.status} />
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <GlassSection
+        title={t("adjustment.title")}
+        headerAction={<AdjustmentStatusBadge status={request.status} />}
+      >
+        <div className="space-y-6">
           {/* Employee & Date Info */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
@@ -109,7 +106,7 @@ export function AdjustmentDetail({
                 {t("adjustment.workDate")}
               </p>
               <p className="font-medium">
-                {formatDate(request.workDate, locale)}
+                {formatDateWithDayOfWeek(request.workDate, locale)}
               </p>
             </div>
             <div>
@@ -135,48 +132,44 @@ export function AdjustmentDetail({
             <h3 className="font-medium mb-4">{t("adjustment.comparison")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Original Time */}
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-3">
-                    {t("adjustment.original")}
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">{t("checkIn")}:</span>
-                      <TimeDisplay time={request.originalCheckIn} />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">{t("checkOut")}:</span>
-                      <TimeDisplay time={request.originalCheckOut} />
-                    </div>
+              <GlassCard className="p-4 bg-muted/50">
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">
+                  {t("adjustment.original")}
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{t("checkIn")}:</span>
+                    <TimeDisplay time={request.originalCheckIn} />
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{t("checkOut")}:</span>
+                    <TimeDisplay time={request.originalCheckOut} />
+                  </div>
+                </div>
+              </GlassCard>
 
               {/* Requested Time */}
-              <Card className="border-blue-200 bg-blue-50/50">
-                <CardContent className="pt-4">
-                  <h4 className="text-sm font-medium text-blue-600 mb-3">
-                    {t("adjustment.requested")}
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">{t("checkIn")}:</span>
-                      <TimeDisplay
-                        time={request.requestedCheckIn}
-                        className="text-blue-600 font-medium"
-                      />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">{t("checkOut")}:</span>
-                      <TimeDisplay
-                        time={request.requestedCheckOut}
-                        className="text-blue-600 font-medium"
-                      />
-                    </div>
+              <GlassCard className="p-4 border-blue-200 bg-blue-50/50">
+                <h4 className="text-sm font-medium text-blue-600 mb-3">
+                  {t("adjustment.requested")}
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{t("checkIn")}:</span>
+                    <TimeDisplay
+                      time={request.requestedCheckIn}
+                      className="text-blue-600 font-medium"
+                    />
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">{t("checkOut")}:</span>
+                    <TimeDisplay
+                      time={request.requestedCheckOut}
+                      className="text-blue-600 font-medium"
+                    />
+                  </div>
+                </div>
+              </GlassCard>
             </div>
           </div>
 
@@ -218,8 +211,8 @@ export function AdjustmentDetail({
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </GlassSection>
 
       {/* Approve Dialog */}
       <Dialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>

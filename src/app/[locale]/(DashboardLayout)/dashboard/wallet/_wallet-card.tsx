@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { Button } from "@/components/ui/button";
 import { Gift } from "lucide-react";
 

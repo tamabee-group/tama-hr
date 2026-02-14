@@ -1,26 +1,19 @@
 import {
   CompanySettings,
-  WorkModeConfig,
   AttendanceConfig,
   PayrollConfig,
   OvertimeConfig,
   BreakConfig,
-  AllowanceConfig,
-  DeductionConfig,
-  WorkMode,
 } from "@/types/attendance-config";
 
 /**
  * Các loại cấu hình có thể thiếu
  */
 export type IncompleteSettingType =
-  | "workMode"
   | "attendance"
   | "payroll"
   | "overtime"
-  | "break"
-  | "allowance"
-  | "deduction";
+  | "break";
 
 /**
  * Thông tin về cấu hình còn thiếu
@@ -38,44 +31,6 @@ export interface SettingsCompletenessResult {
   isComplete: boolean;
   incompleteSettings: IncompleteSetting[];
   completionPercentage: number;
-}
-
-/**
- * Kiểm tra work mode config có đầy đủ không
- */
-function checkWorkModeConfig(
-  config: WorkModeConfig | null,
-): IncompleteSetting[] {
-  const issues: IncompleteSetting[] = [];
-
-  if (!config) {
-    issues.push({
-      type: "workMode",
-      fieldKey: "mode",
-      severity: "error",
-    });
-    return issues;
-  }
-
-  // Nếu là FIXED_HOURS mode, cần có default hours
-  if (config.mode === WorkMode.FIXED_HOURS) {
-    if (!config.defaultWorkStartTime) {
-      issues.push({
-        type: "workMode",
-        fieldKey: "defaultWorkStartTime",
-        severity: "warning",
-      });
-    }
-    if (!config.defaultWorkEndTime) {
-      issues.push({
-        type: "workMode",
-        fieldKey: "defaultWorkEndTime",
-        severity: "warning",
-      });
-    }
-  }
-
-  return issues;
 }
 
 /**
@@ -189,61 +144,14 @@ function checkBreakConfig(config: BreakConfig | null): IncompleteSetting[] {
 }
 
 /**
- * Kiểm tra allowance config có đầy đủ không
- */
-function checkAllowanceConfig(
-  config: AllowanceConfig | null,
-): IncompleteSetting[] {
-  const issues: IncompleteSetting[] = [];
-
-  if (!config) {
-    issues.push({
-      type: "allowance",
-      fieldKey: "config",
-      severity: "error",
-    });
-    return issues;
-  }
-
-  // Allowance config có thể rỗng (không bắt buộc phải có allowances)
-  return issues;
-}
-
-/**
- * Kiểm tra deduction config có đầy đủ không
- */
-function checkDeductionConfig(
-  config: DeductionConfig | null,
-): IncompleteSetting[] {
-  const issues: IncompleteSetting[] = [];
-
-  if (!config) {
-    issues.push({
-      type: "deduction",
-      fieldKey: "config",
-      severity: "error",
-    });
-    return issues;
-  }
-
-  // Deduction config có thể rỗng (không bắt buộc phải có deductions)
-  return issues;
-}
-
-/**
  * Kiểm tra độ hoàn thiện của tất cả settings
  * @param settings - Company settings
- * @param workModeConfig - Work mode config
  * @returns Kết quả kiểm tra
  */
 export function checkSettingsCompleteness(
   settings: CompanySettings | null,
-  workModeConfig: WorkModeConfig | null,
 ): SettingsCompletenessResult {
   const incompleteSettings: IncompleteSetting[] = [];
-
-  // Kiểm tra work mode
-  incompleteSettings.push(...checkWorkModeConfig(workModeConfig));
 
   if (settings) {
     // Kiểm tra attendance
@@ -259,12 +167,6 @@ export function checkSettingsCompleteness(
 
     // Kiểm tra break
     incompleteSettings.push(...checkBreakConfig(settings.breakConfig));
-
-    // Kiểm tra allowance
-    incompleteSettings.push(...checkAllowanceConfig(settings.allowanceConfig));
-
-    // Kiểm tra deduction
-    incompleteSettings.push(...checkDeductionConfig(settings.deductionConfig));
   } else {
     // Nếu không có settings, tất cả đều thiếu
     incompleteSettings.push(
@@ -272,13 +174,11 @@ export function checkSettingsCompleteness(
       { type: "payroll", fieldKey: "config", severity: "error" },
       { type: "overtime", fieldKey: "config", severity: "error" },
       { type: "break", fieldKey: "config", severity: "error" },
-      { type: "allowance", fieldKey: "config", severity: "error" },
-      { type: "deduction", fieldKey: "config", severity: "error" },
     );
   }
 
   // Tính completion percentage
-  const totalChecks = 7; // workMode, attendance, payroll, overtime, break, allowance, deduction
+  const totalChecks = 4; // attendance, payroll, overtime, break
   const errorCount = incompleteSettings.filter(
     (s) => s.severity === "error",
   ).length;

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
+import { FallbackImage } from "@/app/[locale]/_components/image";
 
 interface ImageModalProps {
   open: boolean;

@@ -3,6 +3,7 @@ import {
   UnifiedAttendanceRecord,
   AdjustmentRequest,
 } from "@/types/attendance-records";
+import { AttendanceLocation } from "@/types/attendance-config";
 import { PaginatedResponse } from "@/types/api";
 
 /**
@@ -25,7 +26,6 @@ const DEFAULT_LIMIT = 10;
 export interface CheckInRequest {
   latitude?: number;
   longitude?: number;
-  deviceId?: string;
 }
 
 export interface CheckInResponse {
@@ -37,7 +37,6 @@ export interface CheckInResponse {
 export interface CheckOutRequest {
   latitude?: number;
   longitude?: number;
-  deviceId?: string;
 }
 
 export interface CheckOutResponse {
@@ -114,10 +113,13 @@ export async function checkOut(
  * Bắt đầu giờ nghỉ
  * @client-only
  */
-export async function startBreak(): Promise<StartBreakResponse> {
+export async function startBreak(data?: {
+  latitude?: number;
+  longitude?: number;
+}): Promise<StartBreakResponse> {
   return apiClient.post<StartBreakResponse>(
     "/api/employee/attendance/break/start",
-    {},
+    data || {},
   );
 }
 
@@ -125,10 +127,13 @@ export async function startBreak(): Promise<StartBreakResponse> {
  * Kết thúc giờ nghỉ
  * @client-only
  */
-export async function endBreak(breakId: number): Promise<EndBreakResponse> {
+export async function endBreak(
+  breakId: number,
+  data?: { latitude?: number; longitude?: number },
+): Promise<EndBreakResponse> {
   return apiClient.post<EndBreakResponse>(
     `/api/employee/attendance/break/${breakId}/end`,
-    {},
+    data || {},
   );
 }
 
@@ -180,9 +185,36 @@ export async function getAttendanceByMonth(
 export async function submitAdjustmentRequest(
   data: AdjustmentRequestPayload,
 ): Promise<void> {
-  return apiClient.post<void>(
-    "/api/employee/attendance/adjustment-request",
-    data,
+  return apiClient.post<void>("/api/employee/attendance-adjustments", data);
+}
+
+/**
+ * Lấy danh sách yêu cầu điều chỉnh theo ngày làm việc
+ * @client-only
+ */
+export async function getAdjustmentRequestsByDate(
+  date: string,
+): Promise<AdjustmentRequest[]> {
+  return apiClient.get<AdjustmentRequest[]>(
+    `/api/employee/attendance-adjustments/by-date/${date}`,
+  );
+}
+
+/**
+ * Hủy yêu cầu điều chỉnh (chỉ khi PENDING)
+ * @client-only
+ */
+export async function cancelAdjustmentRequest(id: number): Promise<void> {
+  return apiClient.delete<void>(`/api/employee/attendance-adjustments/${id}`);
+}
+
+/**
+ * Lấy danh sách vị trí chấm công đang hoạt động
+ * @client-only
+ */
+export async function getActiveLocations(): Promise<AttendanceLocation[]> {
+  return apiClient.get<AttendanceLocation[]>(
+    "/api/employee/attendance/locations/active",
   );
 }
 
@@ -272,6 +304,10 @@ export const unifiedAttendanceApi = {
   getAttendanceByDate,
   getAttendanceByMonth,
   submitAdjustmentRequest,
+  getAdjustmentRequestsByDate,
+  cancelAdjustmentRequest,
+  // Employee locations
+  getActiveLocations,
   // Company unified attendance
   getCompanyAttendance,
   getCompanyAttendanceById,

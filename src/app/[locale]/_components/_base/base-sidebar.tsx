@@ -7,7 +7,7 @@ import {
   useCallback,
   startTransition,
 } from "react";
-import { ShieldCheck } from "lucide-react";
+import { EllipsisVertical, ShieldCheck } from "lucide-react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -25,6 +25,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarMenuBadge,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -38,7 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type {
   SidebarGroup as SidebarGroupType,
   SidebarHeaderConfig,
@@ -68,10 +69,21 @@ function isMenuItemActive(pathname: string, itemUrl: string): boolean {
     return true;
   }
 
+  // Các root paths chỉ active khi exact match
+  const exactMatchPaths = [
+    "/dashboard",
+    "/me",
+    "/admin",
+    "/admin/system",
+    "/support",
+  ];
+  if (exactMatchPaths.includes(itemUrl)) {
+    return false;
+  }
+
   // Kiểm tra nếu đang ở sub-route của item
   // Ví dụ: /dashboard/employees/123 active cho /dashboard/employees
-  // Nhưng /dashboard KHÔNG active cho /dashboard/employees
-  if (itemUrl !== "/dashboard" && pathWithoutLocale.startsWith(itemUrl + "/")) {
+  if (pathWithoutLocale.startsWith(itemUrl + "/")) {
     return true;
   }
 
@@ -314,7 +326,11 @@ export function BaseSidebar({
                         >
                           <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
-                              <SidebarMenuButton>
+                              <SidebarMenuButton
+                                isActive={filteredSubItems.some((sub) =>
+                                  isMenuItemActive(pathname, sub.url),
+                                )}
+                              >
                                 {item.icon}
                                 <span>{item.title}</span>
                                 {showAdminBadge && isAdminOnlyItem(item) && (
@@ -358,6 +374,11 @@ export function BaseSidebar({
                               )}
                             </Link>
                           </SidebarMenuButton>
+                          {item.badgeCount != null && item.badgeCount > 0 && (
+                            <SidebarMenuBadge className="bg-amber-500 text-white text-[11px] font-medium rounded-full min-w-5 h-5 flex items-center justify-center">
+                              {item.badgeCount}
+                            </SidebarMenuBadge>
+                          )}
                         </SidebarMenuItem>
                       );
                     })}
@@ -401,7 +422,7 @@ export function BaseSidebar({
                     {user?.role ? tEnums(`userRole.${user.role}`) : ""}
                   </span>
                 </div>
-                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                <EllipsisVertical className="h-4 w-4 text-muted-foreground" />
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

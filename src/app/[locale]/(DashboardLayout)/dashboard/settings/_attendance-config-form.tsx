@@ -2,40 +2,22 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { InfoPanel } from "@/components/ui/info-panel";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { HelpCircle } from "lucide-react";
+import { TimePicker } from "@/components/ui/time-picker";
 import { toast } from "sonner";
 import { AttendanceConfig, BreakConfig } from "@/types/attendance-config";
-import {
-  ROUNDING_INTERVALS,
-  ROUNDING_DIRECTIONS,
-  RoundingInterval,
-  RoundingDirection,
-} from "@/types/attendance-enums";
 import { companySettingsApi } from "@/lib/apis/company-settings-api";
 import { BreakSection } from "./_break-section";
+import { RoundingSection } from "./_rounding-section";
 
 interface AttendanceConfigFormProps {
   config: AttendanceConfig;
@@ -54,12 +36,21 @@ export function AttendanceConfigForm({
 }: AttendanceConfigFormProps) {
   const t = useTranslations("companySettings");
   const tCommon = useTranslations("common");
-  const tEnums = useTranslations("enums");
+  const quickSelectLabel = tCommon("quickSelect");
 
   const [formData, setFormData] = useState<AttendanceConfig>({ ...config });
   const [breakFormData, setBreakFormData] = useState<BreakConfig>({
     ...breakConfig,
   });
+
+  // Đồng bộ formData khi config prop thay đổi (sau khi save + reload)
+  useEffect(() => {
+    setFormData({ ...config }); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [config]);
+
+  useEffect(() => {
+    setBreakFormData({ ...breakConfig }); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [breakConfig]);
 
   // Kiểm tra có thay đổi không
   const hasChanges = useMemo(() => {
@@ -78,7 +69,6 @@ export function AttendanceConfigForm({
   // Hàm save để parent gọi
   const handleSave = useCallback(async () => {
     try {
-      // Save cả attendance config và break config
       await Promise.all([
         companySettingsApi.updateAttendanceConfig(formData),
         companySettingsApi.updateBreakConfig(breakFormData),
@@ -110,45 +100,72 @@ export function AttendanceConfigForm({
     setBreakFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Thông tin giải thích cho section Vị trí
+  const locationInfo = [
+    {
+      label: t("attendance.requireGeoLocation"),
+      description: t("attendance.geoLocationTooltip"),
+    },
+  ];
+
+  // Thông tin giải thích cho section Phương thức chấm công
+  const checkInMethodInfo = [
+    {
+      label: t("attendance.allowMobileCheckIn"),
+      description: t("attendance.allowMobileCheckInDesc"),
+    },
+    {
+      label: t("attendance.allowWebCheckIn"),
+      description: t("attendance.allowWebCheckInDesc"),
+    },
+  ];
+
+  // Thông tin giải thích cho section Thời gian cho phép
+  const graceTimeInfo = [
+    {
+      label: t("attendance.lateGraceMinutes"),
+      description: t("attendance.lateGraceTooltip"),
+    },
+    {
+      label: t("attendance.earlyLeaveGraceMinutes"),
+      description: t("attendance.earlyLeaveGraceTooltip"),
+    },
+  ];
+
   return (
     <>
       <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6">
         {/* Cột 1 */}
         <div className="space-y-6">
-          {/* Giờ làm việc mặc định + Thời gian cho phép */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {t("attendance.workingHours")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          {/* Giờ làm việc mặc định */}
+          <GlassSection title={t("attendance.workingHours")}>
+            <div className="space-y-4">
               {/* Row 1: Giờ bắt đầu, kết thúc, nghỉ */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="defaultWorkStartTime">
                     {t("attendance.defaultWorkStartTime")}
                   </Label>
-                  <Input
+                  <TimePicker
                     id="defaultWorkStartTime"
-                    type="time"
                     value={formData.defaultWorkStartTime}
-                    onChange={(e) =>
-                      updateField("defaultWorkStartTime", e.target.value)
+                    onChange={(value) =>
+                      updateField("defaultWorkStartTime", value)
                     }
+                    quickSelectLabel={quickSelectLabel}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="defaultWorkEndTime">
                     {t("attendance.defaultWorkEndTime")}
                   </Label>
-                  <Input
+                  <TimePicker
                     id="defaultWorkEndTime"
-                    type="time"
                     value={formData.defaultWorkEndTime}
-                    onChange={(e) =>
-                      updateField("defaultWorkEndTime", e.target.value)
+                    onChange={(value) =>
+                      updateField("defaultWorkEndTime", value)
                     }
+                    quickSelectLabel={quickSelectLabel}
                   />
                 </div>
                 <div className="space-y-2">
@@ -177,25 +194,10 @@ export function AttendanceConfigForm({
               </div>
 
               {/* Row 2: Thời gian cho phép đi muộn/về sớm */}
-              <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="lateGraceMinutes"
-                    className="flex items-center gap-2"
-                  >
+                  <Label htmlFor="lateGraceMinutes">
                     {t("attendance.lateGraceMinutes")}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            {t("attendance.lateGraceTooltip")}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </Label>
                   <InputGroup>
                     <InputGroupInput
@@ -217,23 +219,8 @@ export function AttendanceConfigForm({
                   </InputGroup>
                 </div>
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="earlyLeaveGraceMinutes"
-                    className="flex items-center gap-2"
-                  >
+                  <Label htmlFor="earlyLeaveGraceMinutes">
                     {t("attendance.earlyLeaveGraceMinutes")}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            {t("attendance.earlyLeaveGraceTooltip")}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </Label>
                   <InputGroup>
                     <InputGroupInput
@@ -255,101 +242,22 @@ export function AttendanceConfigForm({
                   </InputGroup>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Cấu hình thiết bị và vị trí */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {t("attendance.deviceLocation")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {/* Row 1: Các toggle chính */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <Switch
-                    id="requireDeviceRegistration"
-                    checked={formData.requireDeviceRegistration}
-                    onCheckedChange={(checked) =>
-                      updateField("requireDeviceRegistration", checked)
-                    }
-                  />
-                  <Label
-                    htmlFor="requireDeviceRegistration"
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    {t("attendance.requireDeviceRegistration")}
-                  </Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          {t("attendance.deviceRegistrationTooltip")}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+              {/* Info panel cho thời gian cho phép */}
+              <InfoPanel
+                title={tCommon("viewExplanation")}
+                items={graceTimeInfo}
+              />
+            </div>
+          </GlassSection>
 
-                <div className="flex items-center gap-3">
-                  <Switch
-                    id="requireGeoLocation"
-                    checked={formData.requireGeoLocation}
-                    onCheckedChange={(checked) =>
-                      updateField("requireGeoLocation", checked)
-                    }
-                  />
-                  <Label
-                    htmlFor="requireGeoLocation"
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    {t("attendance.requireGeoLocation")}
-                  </Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          {t("attendance.geoLocationTooltip")}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
-
-              {/* Bán kính GPS (chỉ hiện khi bật GPS) */}
-              {formData.requireGeoLocation && (
-                <div className="space-y-2">
-                  <Label htmlFor="geoFenceRadiusMeters">
-                    {t("attendance.geoFenceRadiusMeters")}
-                  </Label>
-                  <Input
-                    id="geoFenceRadiusMeters"
-                    type="number"
-                    min={0}
-                    max={10000}
-                    value={formData.geoFenceRadiusMeters}
-                    onChange={(e) =>
-                      updateField(
-                        "geoFenceRadiusMeters",
-                        parseInt(e.target.value),
-                      )
-                    }
-                    className="max-w-[200px]"
-                  />
-                </div>
-              )}
-
-              {/* Row 2: Cho phép chấm công */}
-              <div className="grid md:grid-cols-2 gap-4 pt-2">
+          {/* Phương thức chấm công */}
+          <GlassSection title={t("attendance.checkInMethod")}>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {t("attendance.checkInMethodDesc")}
+              </p>
+              <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-center gap-3">
                   <Switch
                     id="allowMobileCheckIn"
@@ -379,236 +287,129 @@ export function AttendanceConfigForm({
                   </Label>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+
+              <InfoPanel
+                title={tCommon("viewExplanation")}
+                items={checkInMethodInfo}
+              />
+            </div>
+          </GlassSection>
+
+          {/* Cấu hình nghỉ cuối tuần và ngày lễ */}
+          <GlassSection title={t("attendance.weekendHolidayOff")}>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="saturdayOff"
+                    checked={formData.saturdayOff}
+                    onCheckedChange={(checked) =>
+                      updateField("saturdayOff", checked)
+                    }
+                  />
+                  <Label htmlFor="saturdayOff" className="cursor-pointer">
+                    {t("attendance.saturdayOff")}
+                  </Label>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="sundayOff"
+                    checked={formData.sundayOff}
+                    onCheckedChange={(checked) =>
+                      updateField("sundayOff", checked)
+                    }
+                  />
+                  <Label htmlFor="sundayOff" className="cursor-pointer">
+                    {t("attendance.sundayOff")}
+                  </Label>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="holidayOff"
+                    checked={formData.holidayOff}
+                    onCheckedChange={(checked) =>
+                      updateField("holidayOff", checked)
+                    }
+                  />
+                  <Label htmlFor="holidayOff" className="cursor-pointer">
+                    {t("attendance.holidayOff")}
+                  </Label>
+                </div>
+              </div>
+            </div>
+          </GlassSection>
         </div>
 
         {/* Cột 2 */}
         <div className="space-y-6">
-          {/* Cấu hình làm tròn thời gian - Unified Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                {t("attendance.rounding")}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">
-                        {t("attendance.roundingTooltip")}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Switch
-                  id="enableRounding"
-                  checked={formData.enableRounding}
-                  onCheckedChange={(checked) =>
-                    updateField("enableRounding", checked)
-                  }
-                />
-                <Label htmlFor="enableRounding" className="cursor-pointer">
-                  {t("attendance.rounding")}
-                </Label>
-              </div>
-
-              {formData.enableRounding && (
-                <div className="space-y-3 pt-2">
-                  {/* Check-in Rounding */}
-                  <RoundingRow
-                    label={t("attendance.checkInRounding")}
-                    enabled={formData.enableCheckInRounding}
-                    onEnabledChange={(checked) =>
-                      updateField("enableCheckInRounding", checked)
-                    }
-                    interval={
-                      formData.checkInRounding?.interval || "MINUTES_15"
-                    }
-                    direction={formData.checkInRounding?.direction || "NEAREST"}
-                    onIntervalChange={(value) =>
-                      updateField("checkInRounding", {
-                        interval: value as RoundingInterval,
-                        direction:
-                          formData.checkInRounding?.direction || "NEAREST",
-                      })
-                    }
-                    onDirectionChange={(value) =>
-                      updateField("checkInRounding", {
-                        interval:
-                          formData.checkInRounding?.interval || "MINUTES_15",
-                        direction: value as RoundingDirection,
-                      })
-                    }
-                    tEnums={tEnums}
-                  />
-
-                  {/* Check-out Rounding */}
-                  <RoundingRow
-                    label={t("attendance.checkOutRounding")}
-                    enabled={formData.enableCheckOutRounding}
-                    onEnabledChange={(checked) =>
-                      updateField("enableCheckOutRounding", checked)
-                    }
-                    interval={
-                      formData.checkOutRounding?.interval || "MINUTES_15"
-                    }
-                    direction={
-                      formData.checkOutRounding?.direction || "NEAREST"
-                    }
-                    onIntervalChange={(value) =>
-                      updateField("checkOutRounding", {
-                        interval: value as RoundingInterval,
-                        direction:
-                          formData.checkOutRounding?.direction || "NEAREST",
-                      })
-                    }
-                    onDirectionChange={(value) =>
-                      updateField("checkOutRounding", {
-                        interval:
-                          formData.checkOutRounding?.interval || "MINUTES_15",
-                        direction: value as RoundingDirection,
-                      })
-                    }
-                    tEnums={tEnums}
-                  />
-
-                  {/* Break Start Rounding */}
-                  <RoundingRow
-                    label={t("attendance.breakStartRounding")}
-                    enabled={formData.enableBreakStartRounding}
-                    onEnabledChange={(checked) =>
-                      updateField("enableBreakStartRounding", checked)
-                    }
-                    interval={
-                      formData.breakStartRounding?.interval || "MINUTES_15"
-                    }
-                    direction={
-                      formData.breakStartRounding?.direction || "NEAREST"
-                    }
-                    onIntervalChange={(value) =>
-                      updateField("breakStartRounding", {
-                        interval: value as RoundingInterval,
-                        direction:
-                          formData.breakStartRounding?.direction || "NEAREST",
-                      })
-                    }
-                    onDirectionChange={(value) =>
-                      updateField("breakStartRounding", {
-                        interval:
-                          formData.breakStartRounding?.interval || "MINUTES_15",
-                        direction: value as RoundingDirection,
-                      })
-                    }
-                    tEnums={tEnums}
-                  />
-
-                  {/* Break End Rounding */}
-                  <RoundingRow
-                    label={t("attendance.breakEndRounding")}
-                    enabled={formData.enableBreakEndRounding}
-                    onEnabledChange={(checked) =>
-                      updateField("enableBreakEndRounding", checked)
-                    }
-                    interval={
-                      formData.breakEndRounding?.interval || "MINUTES_15"
-                    }
-                    direction={
-                      formData.breakEndRounding?.direction || "NEAREST"
-                    }
-                    onIntervalChange={(value) =>
-                      updateField("breakEndRounding", {
-                        interval: value as RoundingInterval,
-                        direction:
-                          formData.breakEndRounding?.direction || "NEAREST",
-                      })
-                    }
-                    onDirectionChange={(value) =>
-                      updateField("breakEndRounding", {
-                        interval:
-                          formData.breakEndRounding?.interval || "MINUTES_15",
-                        direction: value as RoundingDirection,
-                      })
-                    }
-                    tEnums={tEnums}
-                  />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Cấu hình làm tròn thời gian */}
+          <RoundingSection formData={formData} updateField={updateField} />
         </div>
       </div>
 
       {/* Cấu hình giờ giải lao */}
       <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-4">
-          {t("break.sectionTitle")}
-        </h2>
         <BreakSection config={breakFormData} onUpdate={updateBreakField} />
       </div>
+
+      {/* Cấu hình vị trí chấm công */}
+      <div className="mt-6">
+        <GlassSection title={t("attendance.locationSettings")}>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="requireGeoLocation"
+                  checked={formData.requireGeoLocation}
+                  onCheckedChange={(checked) =>
+                    updateField("requireGeoLocation", checked)
+                  }
+                />
+                <Label htmlFor="requireGeoLocation" className="cursor-pointer">
+                  {t("attendance.requireGeoLocation")}
+                </Label>
+              </div>
+            </div>
+
+            {/* Bán kính mặc định (chỉ hiện khi bật GPS) */}
+            {formData.requireGeoLocation && (
+              <div className="space-y-2">
+                <Label htmlFor="geoFenceRadiusMeters">
+                  {t("attendance.geoFenceRadiusMeters")}
+                </Label>
+                <InputGroup className="max-w-[240px]">
+                  <InputGroupInput
+                    id="geoFenceRadiusMeters"
+                    type="number"
+                    min={0}
+                    max={10000}
+                    value={formData.geoFenceRadiusMeters}
+                    onChange={(e) =>
+                      updateField(
+                        "geoFenceRadiusMeters",
+                        parseInt(e.target.value),
+                      )
+                    }
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupText>m</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+                <p className="text-xs text-muted-foreground">
+                  {t("attendance.geoFenceRadiusMetersDesc")}
+                </p>
+              </div>
+            )}
+
+            <InfoPanel
+              title={tCommon("viewExplanation")}
+              items={locationInfo}
+            />
+          </div>
+        </GlassSection>
+      </div>
     </>
-  );
-}
-
-// Helper component cho rounding row
-interface RoundingRowProps {
-  label: string;
-  enabled: boolean;
-  onEnabledChange: (checked: boolean) => void;
-  interval: string;
-  direction: string;
-  onIntervalChange: (value: string) => void;
-  onDirectionChange: (value: string) => void;
-  tEnums: ReturnType<typeof useTranslations<"enums">>;
-}
-
-function RoundingRow({
-  label,
-  enabled,
-  onEnabledChange,
-  interval,
-  direction,
-  onIntervalChange,
-  onDirectionChange,
-  tEnums,
-}: RoundingRowProps) {
-  return (
-    <div className="flex items-center gap-4 p-3 border rounded-lg">
-      <Switch checked={enabled} onCheckedChange={onEnabledChange} />
-      <span className="font-medium min-w-[100px]">{label}</span>
-      {enabled && (
-        <div className="flex gap-2 flex-1">
-          <Select value={interval} onValueChange={onIntervalChange}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ROUNDING_INTERVALS.map((int) => (
-                <SelectItem key={int} value={int}>
-                  {tEnums(`roundingInterval.${int}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={direction} onValueChange={onDirectionChange}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ROUNDING_DIRECTIONS.map((dir) => (
-                <SelectItem key={dir} value={dir}>
-                  {tEnums(`roundingDirection.${dir}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-    </div>
   );
 }

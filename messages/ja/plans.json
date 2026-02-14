@@ -18,6 +18,34 @@
   "unlimited": "無制限",
   "features": "機能",
   "exceedsLimit": "従業員数がプラン上限を超えています",
+  "scheduledDowngrade": "{effectiveDate}に{planName}へのダウングレードが予定されています。別のプランを選択すると、予定されているダウングレードはキャンセルされます。",
+  "guide": {
+    "title": "プラン変更ガイド",
+    "description": "公平性を確保するため、請求期間中に使用した最高プランに基づいて課金されます。",
+    "tip1": "アップグレードは即時有効になります",
+    "tip2": "ダウングレードは翌月1日から有効になります",
+    "tip3": "請求は期間中に使用した最高プラン価格で計算されます",
+    "tip4": "間違えた場合、10日以内（または月末まで）にアップグレードをキャンセルできます"
+  },
+  "cancelUpgrade": {
+    "message": "{deadline}までに{planName}に戻すことができます",
+    "button": "アップグレードをキャンセル"
+  },
+  "confirm": {
+    "upgradeTitle": "プランをアップグレード",
+    "downgradeTitle": "プランをダウングレード",
+    "changeTitle": "プランを変更",
+    "newPlan": "新しいプラン",
+    "upgradeImmediate": "✓ アップグレードは即時有効になります",
+    "upgradeBillingNote": "次回の請求は、期間中に使用した最高プランの価格で計算されます。",
+    "upgradeGracePeriod": "💡 10日以内（または月末まで）にアップグレードをキャンセルできます",
+    "downgradeScheduled": "⏱ ダウングレードは{effectiveDate}から有効になります",
+    "downgradeBillingNote": "有効日まで現在のプランを引き続きご利用いただけます。今回の請求期間は現在のプラン価格で計算されます。",
+    "trialChange": "✓ 変更は即時有効になります（無料トライアル中）",
+    "cancelScheduledDowngrade": "⚠ 予定されていたダウングレードはキャンセルされます",
+    "cancel": "キャンセル",
+    "confirm": "確認"
+  },
   "table": {
     "name": "プラン名",
     "price": "価格",
@@ -72,7 +100,10 @@
     "deleteError": "プランの削除に失敗しました",
     "planInUse": "プランは使用中のため削除できません",
     "changeSuccess": "プランを変更しました",
-    "changeError": "プランの変更に失敗しました"
+    "changeError": "プランの変更に失敗しました",
+    "downgradeScheduled": "プランのダウングレードが予定されました",
+    "cancelUpgradeSuccess": "アップグレードをキャンセルしました",
+    "cancelUpgradeError": "アップグレードのキャンセルに失敗しました"
   },
   "dialog": {
     "deleteTitle": "プランを削除",
@@ -82,5 +113,15 @@
     "required": "この項目は必須です",
     "invalidPrice": "価格は0以上である必要があります",
     "invalidMaxEmployees": "最大従業員数は0より大きくなければなりません"
+  },
+  "history": {
+    "title": "プラン変更履歴",
+    "date": "日付",
+    "changeType": "変更タイプ",
+    "fromPlan": "変更前",
+    "toPlan": "変更後",
+    "price": "価格",
+    "effectiveDate": "有効日",
+    "noHistory": "変更履歴がありません"
   }
 }

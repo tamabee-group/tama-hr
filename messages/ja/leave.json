@@ -16,6 +16,7 @@
     "startDate": "開始日",
     "endDate": "終了日",
     "days": "日数",
+    "daysUnit": "日",
     "reason": "理由",
     "status": "ステータス",
     "approvedBy": "承認者",

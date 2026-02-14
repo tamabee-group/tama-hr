@@ -141,3 +141,63 @@ export function parseCurrency(formatted: string): number {
   const cleaned = formatted.replace(/[^\d-]/g, "");
   return parseInt(cleaned, 10) || 0;
 }
+
+/**
+ * Format tiền lương nhân viên theo locale của company
+ * Dùng cho payslip và payroll (KHÔNG dùng formatCurrency)
+ *
+ * @param amount - Số tiền cần format
+ * @param companyLocale - Locale của company (vi, en, ja hoặc vi_VN, en_US, ja_JP)
+ * @returns Chuỗi tiền tệ đã format theo locale
+ *
+ * @example
+ * formatPayslip(350000, "ja") // "¥350,000"
+ * formatPayslip(350000, "vi") // "350.000 ₫"
+ * formatPayslip(350000, "en") // "$350,000"
+ */
+export function formatPayslip(
+  amount: number | null | undefined,
+  companyLocale: string = "ja",
+): string {
+  // Normalize locale: "ja_JP" -> "ja", "vi_VN" -> "vi", etc.
+  const normalizedLocale = companyLocale.split("_")[0].toLowerCase();
+
+  if (amount === null || amount === undefined || isNaN(amount)) {
+    return getZeroAmount(normalizedLocale);
+  }
+
+  // Map company locale to Intl locale and currency
+  const localeMap: Record<string, { locale: string; currency: string }> = {
+    ja: { locale: "ja-JP", currency: "JPY" },
+    vi: { locale: "vi-VN", currency: "VND" },
+    en: { locale: "en-US", currency: "USD" },
+  };
+
+  const config = localeMap[normalizedLocale] || localeMap["ja"]; // Default to JPY
+
+  try {
+    return new Intl.NumberFormat(config.locale, {
+      style: "currency",
+      currency: config.currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch {
+    return getZeroAmount(normalizedLocale);
+  }
+}
+
+/**
+ * Helper function để lấy giá trị 0 theo locale
+ */
+function getZeroAmount(locale: string): string {
+  // Normalize locale
+  const normalizedLocale = locale.split("_")[0].toLowerCase();
+
+  const zeroMap: Record<string, string> = {
+    ja: "¥0",
+    vi: "0 ₫",
+    en: "$0",
+  };
+  return zeroMap[normalizedLocale] || "¥0";
+}

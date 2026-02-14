@@ -10,8 +10,9 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Lock } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
+import { Mail } from "lucide-react";
 import { login } from "@/lib/apis/auth";
 import { useAuth, fetchCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
@@ -86,11 +87,11 @@ export function LoginForm() {
 
       toast.success(t("loginSuccess"));
 
-      // Redirect về trang trước đó hoặc dashboard
+      // Redirect về trang trước đó hoặc /me
       // Không redirect về login/register pages
-      let redirect = searchParams.get("redirect") || "/dashboard";
+      let redirect = searchParams.get("redirect") || "/me";
       if (redirect.includes("/login") || redirect.includes("/register")) {
-        redirect = "/dashboard";
+        redirect = "/me";
       }
       router.push(redirect);
     } catch (error) {
@@ -102,62 +103,57 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl">{tDialog("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="identifier">{tDialog("identifier")}</Label>
-            <InputGroup>
-              <InputGroupInput
-                id="identifier"
-                type="email"
-                value={formData.identifier}
-                onChange={(e) =>
-                  setFormData({ ...formData, identifier: e.target.value })
-                }
-                placeholder={tDialog("identifierPlaceholder")}
-                autoComplete="off"
-                required
-              />
-              <InputGroupAddon>
-                <Mail className="h-4 w-4" />
-              </InputGroupAddon>
-            </InputGroup>
+    <GlassCard className="w-full max-w-md p-6">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-semibold">{tDialog("title")}</h1>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="identifier">{tDialog("identifier")}</Label>
+          <InputGroup>
+            <InputGroupInput
+              id="identifier"
+              type="text"
+              textTransform="none"
+              value={formData.identifier}
+              onChange={(e) =>
+                setFormData({ ...formData, identifier: e.target.value })
+              }
+              placeholder={tDialog("identifierPlaceholder")}
+              autoComplete="off"
+              required
+            />
+            <InputGroupAddon>
+              <Mail className="h-4 w-4" />
+            </InputGroupAddon>
+          </InputGroup>
+        </div>
+        <div>
+          <Label htmlFor="password">{t("password")}</Label>
+          <PasswordInput
+            id="password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            placeholder={tDialog("passwordPlaceholder")}
+            autoComplete="off"
+            required
+          />
+          <div className="flex justify-end mt-2">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              {t("forgotPassword.title")}?
+            </Link>
           </div>
-          <div>
-            <Label htmlFor="password">{t("password")}</Label>
-            <InputGroup>
-              <InputGroupInput
-                id="password"
-                type="password"
-                isPassword
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                placeholder={tDialog("passwordPlaceholder")}
-                autoComplete="off"
-                required
-              />
-              <InputGroupAddon>
-                <Lock className="h-4 w-4" />
-              </InputGroupAddon>
-            </InputGroup>
-            <div className="flex justify-end mt-2">
-              <Link
-                href="/forgot-password"
-                className="text-sm text-primary hover:underline"
-              >
-                {t("forgotPassword.title")}?
-              </Link>
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? t("loggingIn") : t("login")}
-          </Button>
+        </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? t("loggingIn") : t("login")}
+        </Button>
+        {/* Chỉ hiển thị link đăng ký trên master domain (tamabee) */}
+        {tenantDomain === "tamabee" && (
           <div className="text-center text-sm">
             {tDialog("noAccount")}{" "}
             <Link
@@ -167,8 +163,8 @@ export function LoginForm() {
               {tHeader("register")}
             </Link>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        )}
+      </form>
+    </GlassCard>
   );
 }

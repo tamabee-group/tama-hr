@@ -31,7 +31,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { EmployeeDocument } from "@/types/employee-detail";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { formatFileSize } from "@/lib/utils/format-file-size";
 
 interface DocumentListProps {

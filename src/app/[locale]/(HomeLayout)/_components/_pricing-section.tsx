@@ -81,7 +81,7 @@ export function PricingSection({ settings }: PricingSectionProps) {
     <section id="pricing" className="py-20 bg-background relative z-10">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mb-12">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             {t("title")}
           </h2>
@@ -101,7 +101,7 @@ export function PricingSection({ settings }: PricingSectionProps) {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-[300px]"
+              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-[400px]"
             >
               <PlanCard
                 plan={plan}

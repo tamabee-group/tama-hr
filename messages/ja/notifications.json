@@ -1,17 +1,45 @@
 {
   "title": "通知",
-  "empty": "新しい通知はありません",
   "markAllRead": "すべて既読にする",
-  "viewAll": "すべて表示",
+  "viewAll": "すべての通知を表示",
+  "noNotifications": "通知はありません",
   "markAsRead": "既読にする",
-  "types": {
-    "adjustmentApproved": "修正申請が承認されました",
-    "adjustmentRejected": "修正申請が却下されました",
-    "leaveApproved": "休暇申請が承認されました",
-    "leaveRejected": "休暇申請が却下されました",
-    "salaryNotification": "給与通知",
-    "scheduleApproved": "スケジュールが承認されました",
-    "scheduleRejected": "スケジュールが却下されました",
-    "general": "一般通知"
+  "unread": "未読",
+  "codes": {
+    "WELCOME_COMPANY": "{companyName}様、Tamabee HRへようこそ！",
+    "WELCOME_EMPLOYEE": "{companyName}へようこそ！",
+    "PAYROLL_PERIOD_CREATED": "給与期間{periodName}が作成されました",
+    "PAYROLL_CONFIRMED": "{year}年{month}月の給与明細が確定しました",
+    "PAYROLL_SUBMITTED": "{year}年{month}月の給与期間が承認申請されました",
+    "PAYROLL_REJECTED": "{year}年{month}月の給与期間が却下されました",
+    "PAYROLL_PAID": "{year}年{month}月の給与が支払われました",
+    "DEPOSIT_APPROVED": "{amount}の入金申請が承認されました",
+    "DEPOSIT_REJECTED": "{amount}の入金申請が却下されました",
+    "DEPOSIT_SUBMITTED": "{companyName}が{amount}の入金申請を提出しました",
+    "LOW_BALANCE_WARNING": "ウォレット残高が{balance}です。チャージしてください",
+    "LEAVE_SUBMITTED": "{employeeName}さんが{startDate}から{endDate}までの休暇申請を提出しました",
+    "LEAVE_SUBMITTED_SINGLE": "{employeeName}さんが{startDate}の休暇申請を提出しました",
+    "LEAVE_APPROVED": "{startDate}から{endDate}までの休暇申請が承認されました",
+    "LEAVE_APPROVED_SINGLE": "{startDate}の休暇申請が承認されました",
+    "LEAVE_REJECTED": "{startDate}から{endDate}までの休暇申請が却下されました",
+    "LEAVE_REJECTED_SINGLE": "{startDate}の休暇申請が却下されました",
+    "ADJUSTMENT_SUBMITTED": "{employeeName}さんが{date}の勤怠修正申請を提出しました",
+    "ADJUSTMENT_APPROVED": "{date}の勤怠修正申請が承認されました",
+    "ADJUSTMENT_REJECTED": "{date}の勤怠修正申請が却下されました",
+    "ATTENDANCE_ADJUSTED": "{adjustedBy}さんがあなたの{workDate}の勤怠を修正しました",
+    "SYSTEM_ANNOUNCEMENT": "{message}",
+    "FEEDBACK_SUBMITTED": "{userName}さんがフィードバックを送信しました：{title}",
+    "FEEDBACK_REPLIED": "フィードバック「{title}」に{repliedByName}さんから新しい返信があります"
+  },
+  "timeAgo": {
+    "justNow": "たった今",
+    "minutesAgo": "{count}分前",
+    "hoursAgo": "{count}時間前",
+    "daysAgo": "{count}日前"
+  },
+  "detail": {
+    "notFound": "通知が見つかりません",
+    "notFoundDescription": "この通知は存在しないか、閲覧権限がありません。",
+    "backToList": "一覧に戻る"
   }
 }

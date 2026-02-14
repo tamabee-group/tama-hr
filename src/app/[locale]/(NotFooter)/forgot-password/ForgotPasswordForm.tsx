@@ -1,6 +1,5 @@
 "use client";
 
-import { CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ClearableInput } from "@/components/ui/clearable-input";
@@ -44,7 +43,7 @@ export function ForgotPasswordForm() {
   return (
     <div className="w-full max-w-sm flex flex-col gap-6 mt-8">
       <div className="text-center space-y-4">
-        <CardTitle className="text-2xl">{tForgot("title")}</CardTitle>
+        <h1 className="text-2xl font-semibold">{tForgot("title")}</h1>
         <p className="text-sm text-muted-foreground mb-10">
           {step === "email" && tForgot("emailStep")}
           {step === "sent" && tForgot("sentStep")}

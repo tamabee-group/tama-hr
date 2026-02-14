@@ -4,11 +4,11 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Geist, Geist_Mono, Kanit } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./_components/_theme-provider";
+import { ThemeProvider } from "./_components/theme";
 import { Toaster } from "@/components/ui/sonner";
 import { setRequestLocale } from "next-intl/server";
 import { AuthProvider } from "@/lib/auth";
-import { PlanFeaturesProvider } from "@/providers/plan-features-provider";
+import { WelcomeSplash } from "./_components/_welcome-splash";
 import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
@@ -53,7 +53,7 @@ export default async function RootLayout({ children, params }: Props) {
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
       <head />
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${kanit.variable} antialiased`}
@@ -68,14 +68,9 @@ export default async function RootLayout({ children, params }: Props) {
           >
             <NextTopLoader />
             <AuthProvider>
-              <PlanFeaturesProvider>
-                <Toaster
-                  position="top-right"
-                  duration={2000}
-                  richColors={true}
-                />
-                {children}
-              </PlanFeaturesProvider>
+              <WelcomeSplash />
+              <Toaster position="top-right" duration={2000} richColors={true} />
+              {children}
             </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

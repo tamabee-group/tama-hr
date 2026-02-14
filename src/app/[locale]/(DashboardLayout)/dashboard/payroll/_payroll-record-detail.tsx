@@ -7,7 +7,7 @@ import { ArrowLeft, Download } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { PayslipCard } from "@/app/[locale]/_components/_shared/payslip-card";
+import { PayslipCard } from "@/app/[locale]/_components/_shared/payroll/payslip-card";
 
 import { payrollApi } from "@/lib/apis/payroll-period-api";
 import { PayrollItem } from "@/types/attendance-records";

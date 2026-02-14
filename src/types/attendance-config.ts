@@ -5,53 +5,8 @@ import {
   RoundingInterval,
   RoundingDirection,
   SalaryType,
-  AllowanceType,
-  DeductionType,
   BreakType,
 } from "./attendance-enums";
-
-// ============================================
-// Work Mode Types
-// ============================================
-
-/**
- * Chế độ làm việc của công ty
- * - FIXED_HOURS: Giờ cố định - nhân viên làm việc theo giờ cố định hàng ngày
- * - FLEXIBLE_SHIFT: Linh hoạt/Theo ca - nhân viên có thể được phân vào các ca làm việc khác nhau
- */
-export const WorkMode = {
-  FIXED_HOURS: "FIXED_HOURS",
-  FLEXIBLE_SHIFT: "FLEXIBLE_SHIFT",
-} as const;
-
-export type WorkMode = (typeof WorkMode)[keyof typeof WorkMode];
-
-/**
- * Cấu hình chế độ làm việc của công ty
- */
-export interface WorkModeConfig {
-  mode: WorkMode;
-  // Chỉ dùng khi mode = FIXED_HOURS
-  defaultWorkStartTime: string | null; // "09:00"
-  defaultWorkEndTime: string | null; // "18:00"
-  defaultBreakMinutes: number | null;
-  // Metadata
-  lastModeChangeAt?: string;
-  lastModeChangeBy?: string;
-}
-
-/**
- * Audit log khi work mode thay đổi
- */
-export interface WorkModeChangeLog {
-  id: number;
-  companyId: number;
-  previousMode: WorkMode;
-  newMode: WorkMode;
-  changedBy: string;
-  changedAt: string;
-  reason?: string;
-}
 
 // ============================================
 // Rounding Configuration
@@ -82,11 +37,14 @@ export interface AttendanceConfig {
   breakEndRounding?: RoundingConfig;
   lateGraceMinutes: number;
   earlyLeaveGraceMinutes: number;
-  requireDeviceRegistration: boolean;
   requireGeoLocation: boolean;
   geoFenceRadiusMeters: number;
   allowMobileCheckIn: boolean;
   allowWebCheckIn: boolean;
+  // Cấu hình nghỉ cuối tuần và ngày lễ
+  saturdayOff: boolean;
+  sundayOff: boolean;
+  holidayOff: boolean;
 }
 
 // ============================================
@@ -158,7 +116,6 @@ export interface BreakConfig {
   minimumBreakMinutes: number;
   maximumBreakMinutes: number;
   useLegalMinimum: boolean;
-  breakTrackingEnabled: boolean;
   locale: string;
   fixedBreakMode: boolean;
   breakPeriodsPerAttendance: number;
@@ -172,63 +129,28 @@ export interface BreakConfig {
 }
 
 // ============================================
-// Allowance Configuration
-// ============================================
-
-export interface AllowanceCondition {
-  field: string;
-  operator: "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "in";
-  value: string | number | string[] | number[];
-}
-
-export interface AllowanceRule {
-  id?: string;
-  code?: string;
-  name: string;
-  type: AllowanceType;
-  amount: number;
-  taxable: boolean;
-  order?: number;
-  condition?: AllowanceCondition;
-}
-
-export interface AllowanceConfig {
-  allowances: AllowanceRule[];
-}
-
-// ============================================
-// Deduction Configuration
-// ============================================
-
-export interface DeductionRule {
-  id?: string;
-  code?: string;
-  name: string;
-  type: DeductionType;
-  amount?: number;
-  percentage?: number;
-  order: number;
-}
-
-export interface DeductionConfig {
-  deductions: DeductionRule[];
-  enableLatePenalty: boolean;
-  latePenaltyPerMinute: number;
-  enableEarlyLeavePenalty: boolean;
-  earlyLeavePenaltyPerMinute: number;
-  enableAbsenceDeduction: boolean;
-}
-
-// ============================================
 // Company Settings (Combined)
 // ============================================
 
 export interface CompanySettings {
-  workModeConfig: WorkModeConfig;
   attendanceConfig: AttendanceConfig;
   payrollConfig: PayrollConfig;
   overtimeConfig: OvertimeConfig;
   breakConfig: BreakConfig;
-  allowanceConfig: AllowanceConfig;
-  deductionConfig: DeductionConfig;
+}
+
+// ============================================
+// Attendance Location
+// ============================================
+
+export interface AttendanceLocation {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  radiusMeters: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

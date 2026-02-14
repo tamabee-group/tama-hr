@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { WalletOverviewResponse, getWalletPlanName } from "@/types/wallet";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { cn } from "@/lib/utils";
 import { Calendar, Building2 } from "lucide-react";
 
@@ -25,19 +25,21 @@ export function SupportWalletCard({
   const planName = getWalletPlanName(company, currentLocale);
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center justify-between">
-          <span>{t("card.title")}</span>
-          {company.companyName && (
-            <span className="text-sm font-normal text-muted-foreground flex items-center gap-1">
-              <Building2 className="h-4 w-4" />
-              {company.companyName}
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <GlassSection className="h-full">
+      {/* Header với title và company name */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-foreground">
+          {t("card.title")}
+        </h3>
+        {company.companyName && (
+          <span className="text-sm text-muted-foreground flex items-center gap-1">
+            <Building2 className="h-4 w-4" />
+            {company.companyName}
+          </span>
+        )}
+      </div>
+
+      <div className="space-y-4">
         {/* Số dư */}
         <div>
           <p className="text-sm text-muted-foreground">{t("card.balance")}</p>
@@ -86,7 +88,7 @@ export function SupportWalletCard({
             {t("card.freeTrialActive")}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </GlassSection>
   );
 }

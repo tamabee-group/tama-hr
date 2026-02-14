@@ -8,12 +8,18 @@ import {
   Building,
   Package,
   CalendarDays,
+  CalendarCheck,
   FileText,
   UserCircle,
   Receipt,
   ClipboardList,
-  CreditCard,
   Network,
+  User,
+  Wrench,
+  Server,
+  Bell,
+  MessageSquare,
+  LifeBuoy,
 } from "lucide-react";
 import type { UserRole } from "@/types/enums";
 
@@ -25,7 +31,6 @@ export interface MenuItem {
   labelKey: string;
   icon: LucideIcon;
   href: string;
-  featureCode?: string;
   roles?: UserRole[];
   children?: MenuItem[];
   badgeKey?: string;
@@ -55,9 +60,6 @@ const MANAGEMENT_ROLES: UserRole[] = [
 
 /** Roles Admin only */
 const ADMIN_ROLES: UserRole[] = ["ADMIN_TAMABEE", "ADMIN_COMPANY"];
-
-/** Roles Tamabee (Admin và Manager) */
-const TAMABEE_ADMIN_ROLES: UserRole[] = ["ADMIN_TAMABEE", "MANAGER_TAMABEE"];
 
 /** Roles Company (tất cả nhân viên công ty) */
 const COMPANY_ROLES: UserRole[] = [
@@ -91,13 +93,6 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     badgeKey: "pendingDeposits",
   },
   {
-    code: "billing",
-    labelKey: "sidebar.items.billing",
-    icon: CreditCard,
-    href: "/admin/billing",
-    roles: ["ADMIN_TAMABEE"],
-  },
-  {
     code: "plans",
     labelKey: "sidebar.items.plans",
     icon: Package,
@@ -105,11 +100,99 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     roles: ["ADMIN_TAMABEE"],
   },
   {
+    code: "system",
+    labelKey: "sidebar.items.systemAdmin",
+    icon: Server,
+    href: "/admin/system",
+    roles: ["ADMIN_TAMABEE"],
+    children: [
+      {
+        code: "system-schedulers",
+        labelKey: "sidebar.items.schedulers",
+        icon: Clock,
+        href: "/admin/system",
+      },
+      {
+        code: "system-payroll",
+        labelKey: "sidebar.items.payrollScheduler",
+        icon: Wallet,
+        href: "/admin/system/payroll",
+      },
+      {
+        code: "system-billing",
+        labelKey: "sidebar.items.billing",
+        icon: Wallet,
+        href: "/admin/system/billing",
+      },
+      {
+        code: "system-contracts",
+        labelKey: "sidebar.items.contractExpiry",
+        icon: FileText,
+        href: "/admin/system/contracts",
+      },
+      {
+        code: "system-cleanup",
+        labelKey: "sidebar.items.companyCleanup",
+        icon: Building,
+        href: "/admin/system/cleanup",
+      },
+      {
+        code: "system-tenants",
+        labelKey: "sidebar.items.tenantCleanup",
+        icon: Wrench,
+        href: "/admin/system/tenants",
+      },
+    ],
+  },
+  {
+    code: "system-notifications",
+    labelKey: "sidebar.items.systemNotifications",
+    icon: Bell,
+    href: "/admin/system-notifications",
+  },
+  {
+    code: "feedbacks",
+    labelKey: "sidebar.items.feedbacks",
+    icon: MessageSquare,
+    href: "/admin/feedbacks",
+  },
+  {
     code: "settings",
     labelKey: "sidebar.items.settings",
     icon: Settings,
     href: "/admin/settings",
     roles: ["ADMIN_TAMABEE"],
+  },
+];
+// ============================================================================
+// SUPPORT MENU (SupportLayout - /support/*)
+// Dành cho EMPLOYEE_TAMABEE - hỗ trợ khách hàng
+// ============================================================================
+
+export const SUPPORT_MENU_ITEMS: MenuItem[] = [
+  {
+    code: "support-home",
+    labelKey: "navigation.home",
+    icon: LayoutDashboard,
+    href: "/support",
+  },
+  {
+    code: "support-referrals",
+    labelKey: "navigation.referrals",
+    icon: Building,
+    href: "/support/referrals",
+  },
+  {
+    code: "support-commissions",
+    labelKey: "navigation.commissions",
+    icon: Receipt,
+    href: "/support/commissions",
+  },
+  {
+    code: "support-feedbacks",
+    labelKey: "navigation.feedbacks",
+    icon: MessageSquare,
+    href: "/support/feedbacks",
   },
 ];
 
@@ -127,35 +210,30 @@ export const PERSONAL_MENU_ITEMS: MenuItem[] = [
     labelKey: "sidebar.items.myAttendance",
     icon: Clock,
     href: "/me",
-    featureCode: "ATTENDANCE",
   },
   {
     code: "my-schedule",
     labelKey: "sidebar.items.mySchedule",
     icon: CalendarDays,
     href: "/me/schedule",
-    featureCode: "ATTENDANCE",
   },
   {
     code: "my-adjustments",
     labelKey: "sidebar.items.myAdjustments",
     icon: ClipboardList,
     href: "/me/adjustments",
-    featureCode: "ATTENDANCE",
   },
   {
     code: "my-leave",
     labelKey: "sidebar.items.myLeave",
     icon: FileText,
     href: "/me/leave",
-    featureCode: "LEAVE",
   },
   {
     code: "my-payslip",
     labelKey: "sidebar.items.myPayroll",
     icon: Wallet,
     href: "/me/payroll",
-    featureCode: "PAYROLL",
   },
   {
     code: "my-commissions",
@@ -186,20 +264,13 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         icon: LayoutDashboard,
         href: "/dashboard",
       },
-      {
-        code: "platform-admin",
-        labelKey: "sidebar.items.platformAdmin",
-        icon: Building,
-        href: "/admin/companies",
-        roles: TAMABEE_ADMIN_ROLES,
-      },
     ],
   },
 
-  // ========== QUẢN LÝ NHÂN SỰ (HR Management) ==========
+  // ========== NHÂN SỰ ==========
   {
-    code: "hr-management",
-    labelKey: "sidebar.groups.hrManagement",
+    code: "hr-group",
+    labelKey: "sidebar.groups.hr",
     roles: MANAGEMENT_ROLES,
     items: [
       {
@@ -217,11 +288,26 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         roles: MANAGEMENT_ROLES,
       },
       {
+        code: "contracts",
+        labelKey: "sidebar.items.contracts",
+        icon: FileText,
+        href: "/dashboard/contracts",
+        roles: MANAGEMENT_ROLES,
+      },
+    ],
+  },
+
+  // ========== CHẤM CÔNG & LỊCH ==========
+  {
+    code: "attendance-group",
+    labelKey: "sidebar.groups.attendance",
+    roles: MANAGEMENT_ROLES,
+    items: [
+      {
         code: "team-attendance",
         labelKey: "sidebar.items.attendanceRecords",
         icon: Clock,
         href: "/dashboard/attendance",
-        featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
       },
       {
@@ -229,7 +315,6 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         labelKey: "sidebar.items.adjustments",
         icon: ClipboardList,
         href: "/dashboard/adjustments",
-        featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
       },
       {
@@ -237,52 +322,43 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         labelKey: "sidebar.items.shifts",
         icon: CalendarDays,
         href: "/dashboard/shifts",
-        featureCode: "ATTENDANCE",
         roles: MANAGEMENT_ROLES,
       },
+    ],
+  },
+
+  // ========== LƯƠNG & NGHỈ PHÉP ==========
+  {
+    code: "payroll-leave-group",
+    labelKey: "sidebar.groups.payrollLeave",
+    roles: MANAGEMENT_ROLES,
+    items: [
       {
         code: "payroll-management",
         labelKey: "sidebar.items.payrollRecords",
         icon: Wallet,
         href: "/dashboard/payroll",
-        featureCode: "PAYROLL",
-        roles: ADMIN_ROLES,
-        children: [
-          {
-            code: "payroll-periods",
-            labelKey: "sidebar.items.payrollPeriods",
-            icon: Wallet,
-            href: "/dashboard/payroll",
-          },
-          {
-            code: "payslips",
-            labelKey: "sidebar.items.payslips",
-            icon: FileText,
-            href: "/dashboard/payslip",
-          },
-        ],
+        roles: MANAGEMENT_ROLES,
       },
       {
         code: "leave-requests",
         labelKey: "sidebar.items.leaveRequests",
         icon: FileText,
-        href: "/dashboard/leave/requests",
-        featureCode: "LEAVE",
+        href: "/dashboard/leaves",
         roles: MANAGEMENT_ROLES,
       },
       {
-        code: "contracts",
-        labelKey: "sidebar.items.contracts",
-        icon: FileText,
-        href: "/dashboard/contracts",
+        code: "leave-balances",
+        labelKey: "sidebar.items.leaveBalances",
+        icon: CalendarDays,
+        href: "/dashboard/leave-balances",
         roles: MANAGEMENT_ROLES,
       },
       {
-        code: "reports",
-        labelKey: "sidebar.items.reports",
-        icon: FileText,
-        href: "/dashboard/reports",
-        featureCode: "REPORTS",
+        code: "holidays",
+        labelKey: "sidebar.items.holidays",
+        icon: CalendarCheck,
+        href: "/dashboard/holidays",
         roles: MANAGEMENT_ROLES,
       },
     ],
@@ -298,21 +374,49 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         labelKey: "sidebar.items.company",
         icon: UserCircle,
         href: "/dashboard/profile",
-        roles: COMPANY_ROLES,
+        roles: [...COMPANY_ROLES, "ADMIN_TAMABEE", "MANAGER_TAMABEE"],
       },
       {
         code: "wallet",
         labelKey: "sidebar.items.wallet",
         icon: Wallet,
         href: "/dashboard/wallet",
-        roles: ADMIN_ROLES,
+        roles: ["ADMIN_COMPANY"],
       },
       {
         code: "settings",
-        labelKey: "sidebar.items.settings",
-        icon: Settings,
+        labelKey: "sidebar.items.companySettings",
+        icon: Wrench,
         href: "/dashboard/settings",
         roles: ADMIN_ROLES,
+      },
+    ],
+  },
+
+  // ========== QUẢN LÝ (cross-layout navigation) ==========
+  {
+    code: "management-group",
+    labelKey: "sidebar.groups.management",
+    items: [
+      {
+        code: "platform-admin",
+        labelKey: "sidebar.items.platformAdmin",
+        icon: Building,
+        href: "/admin/companies",
+        roles: ["ADMIN_TAMABEE", "MANAGER_TAMABEE"],
+      },
+      {
+        code: "customer-support",
+        labelKey: "sidebar.items.customerSupport",
+        icon: LifeBuoy,
+        href: "/support",
+        roles: ["ADMIN_TAMABEE", "MANAGER_TAMABEE"],
+      },
+      {
+        code: "my-portal",
+        labelKey: "sidebar.items.myPortal",
+        icon: User,
+        href: "/me",
       },
     ],
   },

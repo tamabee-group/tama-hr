@@ -1,17 +1,45 @@
 {
   "title": "Thông báo",
-  "empty": "Không có thông báo mới",
-  "markAllRead": "Đánh dấu tất cả đã đọc",
-  "viewAll": "Xem tất cả",
-  "markAsRead": "Đánh dấu đã đọc",
-  "types": {
-    "adjustmentApproved": "Yêu cầu điều chỉnh đã được duyệt",
-    "adjustmentRejected": "Yêu cầu điều chỉnh bị từ chối",
-    "leaveApproved": "Yêu cầu nghỉ phép đã được duyệt",
-    "leaveRejected": "Yêu cầu nghỉ phép bị từ chối",
-    "salaryNotification": "Thông báo lương",
-    "scheduleApproved": "Lịch làm việc đã được duyệt",
-    "scheduleRejected": "Lịch làm việc bị từ chối",
-    "general": "Thông báo chung"
+  "markAllRead": "Đánh dấu tất cả đã xem",
+  "viewAll": "Xem tất cả thông báo",
+  "noNotifications": "Không có thông báo",
+  "markAsRead": "Đánh dấu đã xem",
+  "unread": "Chưa xem",
+  "codes": {
+    "WELCOME_COMPANY": "Chào mừng {companyName} đến với Tamabee HR!",
+    "WELCOME_EMPLOYEE": "Chào mừng bạn đến với {companyName}!",
+    "PAYROLL_PERIOD_CREATED": "Kỳ lương {periodName} đã được tạo",
+    "PAYROLL_CONFIRMED": "Phiếu lương tháng {month}/{year} đã được xác nhận",
+    "PAYROLL_SUBMITTED": "Kỳ lương tháng {month}/{year} đã được gửi duyệt",
+    "PAYROLL_REJECTED": "Kỳ lương tháng {month}/{year} đã bị từ chối",
+    "PAYROLL_PAID": "Lương tháng {month}/{year} đã được thanh toán",
+    "DEPOSIT_APPROVED": "Yêu cầu nạp tiền {amount} đã được duyệt",
+    "DEPOSIT_REJECTED": "Yêu cầu nạp tiền {amount} đã bị từ chối",
+    "DEPOSIT_SUBMITTED": "{companyName} đã gửi yêu cầu nạp tiền {amount}",
+    "LOW_BALANCE_WARNING": "Số dư ví còn {balance}, vui lòng nạp thêm",
+    "LEAVE_SUBMITTED": "{employeeName} đã gửi đơn xin nghỉ phép từ {startDate} đến {endDate}",
+    "LEAVE_SUBMITTED_SINGLE": "{employeeName} đã gửi đơn xin nghỉ phép ngày {startDate}",
+    "LEAVE_APPROVED": "Đơn xin nghỉ phép từ {startDate} đến {endDate} đã được duyệt",
+    "LEAVE_APPROVED_SINGLE": "Đơn xin nghỉ phép ngày {startDate} đã được duyệt",
+    "LEAVE_REJECTED": "Đơn xin nghỉ phép từ {startDate} đến {endDate} đã bị từ chối",
+    "LEAVE_REJECTED_SINGLE": "Đơn xin nghỉ phép ngày {startDate} đã bị từ chối",
+    "ADJUSTMENT_SUBMITTED": "{employeeName} đã gửi yêu cầu điều chỉnh chấm công ngày {date}",
+    "ADJUSTMENT_APPROVED": "Yêu cầu điều chỉnh chấm công ngày {date} đã được duyệt",
+    "ADJUSTMENT_REJECTED": "Yêu cầu điều chỉnh chấm công ngày {date} đã bị từ chối",
+    "ATTENDANCE_ADJUSTED": "{adjustedBy} đã điều chỉnh chấm công ngày {workDate} của bạn",
+    "SYSTEM_ANNOUNCEMENT": "{message}",
+    "FEEDBACK_SUBMITTED": "{userName} đã gửi góp ý: {title}",
+    "FEEDBACK_REPLIED": "Góp ý \"{title}\" đã có phản hồi mới từ {repliedByName}"
+  },
+  "timeAgo": {
+    "justNow": "Vừa xong",
+    "minutesAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "daysAgo": "{count} ngày trước"
+  },
+  "detail": {
+    "notFound": "Không tìm thấy thông báo",
+    "notFoundDescription": "Thông báo này không tồn tại hoặc bạn không có quyền xem.",
+    "backToList": "Quay lại danh sách"
   }
 }

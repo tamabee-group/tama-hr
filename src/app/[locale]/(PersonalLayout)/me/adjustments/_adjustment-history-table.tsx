@@ -27,11 +27,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Pagination } from "@/app/[locale]/_components/_base/_pagination";
+import { AdjustmentDetailDialog } from "./_adjustment-detail-dialog";
 
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import {
+  formatDateWithDayOfWeek,
+  formatDateTime,
+} from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
+import { useNotificationHighlight } from "@/hooks/use-notification-highlight";
 import type { AdjustmentRequest } from "@/types/attendance-records";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
@@ -54,6 +60,11 @@ export function AdjustmentHistoryTable() {
   const [totalPages, setTotalPages] = React.useState(0);
   const [cancelId, setCancelId] = React.useState<number | null>(null);
   const [isCancelling, setIsCancelling] = React.useState(false);
+  const [selectedRequest, setSelectedRequest] =
+    React.useState<AdjustmentRequest | null>(null);
+
+  // Highlight từ notification click
+  const { highlightId, onHighlightHandled } = useNotificationHighlight();
 
   // Fetch adjustments
   const fetchAdjustments = React.useCallback(async () => {
@@ -76,6 +87,38 @@ export function AdjustmentHistoryTable() {
   React.useEffect(() => {
     fetchAdjustments();
   }, [fetchAdjustments]);
+
+  // Subscribe to ADJUSTMENT notifications để auto-refresh
+  React.useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("ADJUSTMENT", () => {
+      fetchAdjustments();
+    });
+    return unsubscribe;
+  }, [fetchAdjustments]);
+
+  // Auto-open dialog khi navigate từ notification (?id=)
+  React.useEffect(() => {
+    if (!highlightId || isLoading) return;
+
+    // Tìm trong danh sách hiện tại
+    const found = adjustments.find((adj) => adj.id === highlightId);
+    if (found) {
+      setSelectedRequest(found);
+      onHighlightHandled();
+      return;
+    }
+
+    // Không tìm thấy trong page hiện tại → fetch trực tiếp từ API
+    adjustmentApi
+      .getMyAdjustmentById(highlightId)
+      .then((data) => {
+        setSelectedRequest(data);
+        onHighlightHandled();
+      })
+      .catch(() => {
+        onHighlightHandled();
+      });
+  }, [highlightId, isLoading, adjustments, onHighlightHandled]);
 
   // Handle cancel
   const handleCancel = async () => {
@@ -111,7 +154,7 @@ export function AdjustmentHistoryTable() {
 
   // Format adjustment name
   const formatAdjustmentName = (adj: AdjustmentRequest) => {
-    const date = formatDate(adj.workDate, locale);
+    const date = formatDateWithDayOfWeek(adj.workDate, locale);
     return `${t("adjustment.title")} (${date})`;
   };
 
@@ -154,7 +197,11 @@ export function AdjustmentHistoryTable() {
           </TableHeader>
           <TableBody>
             {adjustments.map((adj) => (
-              <TableRow key={adj.id}>
+              <TableRow
+                key={adj.id}
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => setSelectedRequest(adj)}
+              >
                 <TableCell>
                   <Badge variant={getStatusVariant(adj.status)}>
                     {getEnumLabel("adjustmentStatus", adj.status, tEnums)}
@@ -162,7 +209,7 @@ export function AdjustmentHistoryTable() {
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
-                    <p className="font-medium text-primary hover:underline cursor-pointer">
+                    <p className="font-medium text-primary hover:underline">
                       {formatAdjustmentName(adj)}
                     </p>
                     {adj.reason && (
@@ -185,7 +232,10 @@ export function AdjustmentHistoryTable() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => setCancelId(adj.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCancelId(adj.id);
+                      }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -232,6 +282,16 @@ export function AdjustmentHistoryTable() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog chi tiết yêu cầu điều chỉnh */}
+      <AdjustmentDetailDialog
+        request={selectedRequest}
+        open={!!selectedRequest}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRequest(null);
+        }}
+        onCancelSuccess={fetchAdjustments}
+      />
     </div>
   );
 }

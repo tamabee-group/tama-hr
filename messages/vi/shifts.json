@@ -9,6 +9,14 @@
   "noTemplates": "Chưa có mẫu ca nào",
   "templateName": "Tên ca",
   "templateNamePlaceholder": "Nhập tên ca...",
+  "shiftNames": {
+    "morning": "Ca sáng",
+    "noon": "Ca trưa",
+    "afternoon": "Ca chiều",
+    "evening": "Ca tối",
+    "night": "Ca đêm",
+    "fullDay": "Ca cả ngày"
+  },
   "startTime": "Giờ bắt đầu",
   "endTime": "Giờ kết thúc",
   "breakMinutes": "Thời gian nghỉ",
@@ -130,16 +138,17 @@
     "templatesDesc": "Mẫu ca là các khung giờ làm việc cố định có thể tái sử dụng để phân công cho nhân viên.",
     "templatesTip1": "Tạo mẫu ca với tên rõ ràng (ví dụ: Ca sáng, Ca chiều, Ca đêm) và thiết lập giờ bắt đầu, kết thúc, thời gian nghỉ",
     "templatesTip2": "Cấu hình hệ số lương nếu ca có phụ cấp đặc biệt (ví dụ: ca đêm x1.5)",
-    "templatesNote": "Mẫu ca cần thiết cho cả 2 chế độ làm việc. Khi phân công ca cho nhân viên, bạn phải chọn một mẫu ca có sẵn.",
     "assignmentsTitle": "Hướng dẫn Phân công ca",
     "assignmentsDesc": "Phân công ca làm việc cụ thể cho từng nhân viên theo ngày.",
     "assignmentsTip1": "Chọn nhân viên (có thể chọn nhiều), chọn mẫu ca, chọn ngày làm việc (có thể chọn nhiều ngày)",
     "assignmentsTip2": "Hệ thống sẽ tự động kiểm tra trùng lặp khi phân công",
-    "assignmentsNote": "Nhân viên có thể làm nhiều ca trong 1 ngày (ví dụ: ca sáng 9h-12h và ca tối 17h-21h) miễn các ca không trùng giờ. Khi chấm công, hệ thống sẽ tự động tạo bản ghi giờ nghỉ cho khoảng thời gian giữa các ca.",
     "swapsTitle": "Hướng dẫn Yêu cầu đổi ca",
     "swapsDesc": "Quản lý các yêu cầu đổi ca giữa nhân viên.",
     "swapsTip1": "Nhân viên gửi yêu cầu đổi ca với lý do cụ thể, chọn ca muốn đổi và ca muốn nhận",
-    "swapsTip2": "Quản lý xem xét và duyệt/từ chối yêu cầu. Sau khi duyệt, hệ thống tự động cập nhật phân công ca",
-    "swapsNote": "Chỉ có thể đổi ca trong cùng ngày hoặc tuần (tùy cấu hình). Yêu cầu đã duyệt không thể hoàn tác."
+    "swapsTip2": "Quản lý xem xét và duyệt/từ chối yêu cầu. Sau khi duyệt, hệ thống tự động cập nhật phân công ca"
+  },
+  "overnightShift": {
+    "title": "Ca qua đêm",
+    "description": "Bạn đang tạo ca qua đêm (bắt đầu {startTime} và kết thúc {endTime} ngày hôm sau). Xác nhận tiếp tục?"
   }
 }

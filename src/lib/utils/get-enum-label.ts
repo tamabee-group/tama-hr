@@ -35,7 +35,6 @@ export type EnumName =
   | "locale"
   | "scheduleType"
   | "attendanceStatus"
-  | "payrollStatus"
   | "paymentStatus"
   | "adjustmentStatus"
   | "selectionStatus"
@@ -50,7 +49,11 @@ export type EnumName =
   | "payrollPeriodStatus"
   | "payrollItemStatus"
   | "contractType"
-  | "contractStatus";
+  | "contractStatus"
+  | "documentType"
+  | "feedbackType"
+  | "feedbackStatus"
+  | "targetAudience";
 
 /**
  * Lấy translated label cho enum value

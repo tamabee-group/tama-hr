@@ -1,0 +1,334 @@
+{
+  "navigation": {
+    "home": "Trang chủ",
+    "attendance": "Chấm công",
+    "schedule": "Lịch làm việc",
+    "leave": "Nghỉ phép",
+    "payroll": "Bảng lương",
+    "profile": "Hồ sơ cá nhân",
+    "contract": "Hợp đồng",
+    "documents": "Tài liệu",
+    "adjustments": "Điều chỉnh",
+    "commissions": "Hoa hồng",
+    "notifications": "Thông báo",
+    "helpCenter": "Trung tâm hỗ trợ",
+    "support": "Hỗ trợ khách hàng",
+    "platformAdmin": "Quản trị hệ thống",
+    "ariaLabel": "Điều hướng chính",
+    "dashboard": "Trang quản lý"
+  },
+  "mobileNav": {
+    "home": "Home",
+    "schedule": "Lịch",
+    "leave": "Nghỉ",
+    "payroll": "Lương",
+    "profile": "Hồ sơ",
+    "ariaLabel": "Điều hướng chính"
+  },
+  "sidebar": {
+    "main": "Chính",
+    "personal": "Cá nhân",
+    "history": "Lịch sử",
+    "support": "Hỗ trợ",
+    "management": "Quản lý"
+  },
+  "home": {
+    "title": "Trang chủ",
+    "description": "Quản lý chấm công hàng ngày",
+    "todayAttendance": "Chấm công hôm nay",
+    "checkIn": "Vào làm",
+    "checkOut": "Tan làm",
+    "breakStart": "Bắt đầu nghỉ",
+    "breakEnd": "Kết thúc nghỉ",
+    "history": "Lịch sử hôm nay",
+    "calendar": "Lịch chấm công",
+    "noRecordsToday": "Chưa có bản ghi nào hôm nay",
+    "checkInSuccess": "Vào làm thành công",
+    "checkOutSuccess": "Tan làm thành công",
+    "breakStartSuccess": "Bắt đầu nghỉ thành công",
+    "breakEndSuccess": "Kết thúc nghỉ thành công",
+    "gpsRequired": "Vui lòng bật chia sẻ vị trí để chấm công",
+    "schedule": {
+      "todayShifts": "Ca làm việc hôm nay",
+      "nextShiftLabel": "Ca tiếp theo",
+      "tomorrow": "Ngày mai",
+      "noShiftToday": "Hôm nay bạn không có ca làm việc",
+      "noShiftScheduled": "Bạn chưa được phân ca trong tuần này",
+      "completed": "Đã xong",
+      "current": "Hiện tại",
+      "upcoming": "Sắp tới",
+      "viewDetail": "Xem chi tiết"
+    },
+    "nextShift": {
+      "title": "Xác nhận ca thứ {shiftNumber}",
+      "description": "Bạn đã tan làm lúc {time}. Bạn có muốn bắt đầu ca làm việc mới?",
+      "warning": "Hành động này sẽ tự động tạo bản ghi nghỉ giữa các ca.",
+      "confirm": "Xác nhận vào làm",
+      "cancel": "Hủy"
+    },
+    "inactiveOverlay": {
+      "title": "Tài khoản không hoạt động",
+      "message": "Tài khoản của bạn hiện không ở trạng thái hoạt động. Vui lòng liên hệ quản lý để kiểm tra trạng thái hoặc thiết lập hợp đồng lao động."
+    },
+    "outsideGeofence": {
+      "title": "Ngoài phạm vi chấm công",
+      "description": "Bạn không ở trong phạm vi chấm công cho phép. Bạn có muốn tiếp tục?",
+      "confirm": "Tiếp tục",
+      "cancel": "Hủy"
+    }
+  },
+  "schedule": {
+    "title": "Lịch làm việc",
+    "description": "Xem lịch ca làm việc và yêu cầu đổi ca",
+    "thisWeek": "Tuần này",
+    "thisMonth": "Tháng này",
+    "prevMonth": "Tháng trước",
+    "nextMonth": "Tháng sau",
+    "shifts": "Ca làm việc",
+    "requestSwap": "Yêu cầu đổi ca",
+    "history": "Lịch sử",
+    "noShifts": "Không có ca làm việc",
+    "noShiftsDescription": "Bạn chưa được phân ca trong khoảng thời gian này",
+    "swappedWith": "Đổi ca với",
+    "noSwapHistory": "Không có lịch sử đổi ca",
+    "noSwapHistoryDescription": "Bạn chưa có yêu cầu đổi ca nào",
+    "status": {
+      "past": "Đã qua",
+      "current": "Đang diễn ra",
+      "next": "Tiếp theo"
+    },
+    "swapRequest": "Yêu cầu đổi ca",
+    "yourShift": "Ca của bạn",
+    "targetShift": "Ca muốn đổi",
+    "requestedAt": "Yêu cầu lúc",
+    "cancelSwap": "Hủy yêu cầu",
+    "cancelSwapTitle": "Hủy yêu cầu đổi ca",
+    "cancelSwapDescription": "Bạn có chắc chắn muốn hủy yêu cầu đổi ca này?",
+    "swapCancelSuccess": "Hủy yêu cầu đổi ca thành công",
+    "swapCancelError": "Hủy yêu cầu đổi ca thất bại",
+    "rejectionReason": "Lý do từ chối",
+    "approvedBy": "Được duyệt bởi",
+    "selectYourShift": "Chọn ca của bạn",
+    "selectTargetShift": "Chọn ca muốn đổi",
+    "reason": "Lý do đổi ca",
+    "reasonPlaceholder": "Nhập lý do đổi ca...",
+    "submitSwap": "Gửi yêu cầu",
+    "swapSuccess": "Gửi yêu cầu đổi ca thành công",
+    "swapError": "Gửi yêu cầu đổi ca thất bại",
+    "noAvailableShifts": "Không có ca có thể đổi",
+    "loadError": "Không thể tải lịch làm việc"
+  },
+  "contract": {
+    "title": "Hợp đồng",
+    "description": "Xem hợp đồng lao động",
+    "current": "Hợp đồng hiện tại",
+    "history": "Lịch sử hợp đồng",
+    "noContract": "Không có hợp đồng",
+    "noContractDescription": "Bạn chưa có hợp đồng lao động đang hoạt động",
+    "noHistory": "Không có lịch sử",
+    "noHistoryDescription": "Không tìm thấy hợp đồng trước đó",
+    "type": "Loại hợp đồng",
+    "period": "Thời hạn hợp đồng",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "remaining": "Còn lại",
+    "expiresIn": "Còn {days} ngày",
+    "expiringWarning": "Hợp đồng của bạn sắp hết hạn. Vui lòng liên hệ HR.",
+    "viewDetail": "Xem chi tiết",
+    "viewContract": "Xem hợp đồng",
+    "detail": "Chi tiết hợp đồng",
+    "terminationInfo": "Thông tin chấm dứt",
+    "notes": "Ghi chú",
+    "loadError": "Không thể tải hợp đồng"
+  },
+  "payroll": {
+    "title": "Bảng lương",
+    "description": "Xem lịch sử lương và tải phiếu lương",
+    "filter": {
+      "year": "Năm",
+      "status": "Trạng thái",
+      "all": "Tất cả"
+    },
+    "empty": "Không có phiếu lương nào"
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "description": "Quản lý thông tin cá nhân",
+    "completion": "Hoàn thành hồ sơ",
+    "tabs": {
+      "basic": "Cơ bản",
+      "work": "Công việc",
+      "bank": "Ngân hàng",
+      "emergency": "Khẩn cấp"
+    },
+    "fields": {
+      "avatar": "Ảnh đại diện",
+      "name": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "dob": "Ngày sinh",
+      "gender": "Giới tính",
+      "address": "Địa chỉ",
+      "zipCode": "Mã bưu điện"
+    },
+    "workInfo": {
+      "employeeCode": "Mã nhân viên",
+      "department": "Phòng ban",
+      "jobTitle": "Chức vụ",
+      "joiningDate": "Ngày vào làm",
+      "contractType": "Loại hợp đồng",
+      "manager": "Quản lý trực tiếp"
+    },
+    "bankInfo": {
+      "accountType": "Loại tài khoản ngân hàng",
+      "japanBankType": "Loại ngân hàng Nhật",
+      "bankName": "Tên ngân hàng",
+      "accountNumber": "Số tài khoản",
+      "accountHolderName": "Tên chủ tài khoản",
+      "bankCode": "Mã ngân hàng",
+      "branchCode": "Mã chi nhánh",
+      "branchName": "Tên chi nhánh",
+      "accountCategory": "Loại tài khoản",
+      "symbol": "Ký hiệu (記号)",
+      "number": "Số (番号)",
+      "types": {
+        "vietnam": "Ngân hàng Việt Nam",
+        "japan": "Ngân hàng Nhật Bản"
+      },
+      "japanTypes": {
+        "normal": "Ngân hàng thông thường",
+        "yucho": "Ngân hàng Yucho (ゆうちょ銀行)"
+      },
+      "categories": {
+        "futsu": "Thông thường (普通)",
+        "toza": "Vãng lai (当座)"
+      },
+      "placeholders": {
+        "selectAccountType": "Chọn loại tài khoản ngân hàng",
+        "selectJapanBankType": "Chọn loại ngân hàng Nhật",
+        "bankName": "Nhập tên ngân hàng",
+        "accountNumber": "Nhập số tài khoản",
+        "accountHolderName": "Nhập tên chủ tài khoản",
+        "bankCode": "Nhập mã ngân hàng (4 số)",
+        "branchCode": "Nhập mã chi nhánh (3 số)",
+        "branchName": "Nhập tên chi nhánh",
+        "selectCategory": "Chọn loại tài khoản",
+        "symbol": "Nhập ký hiệu (5 số)",
+        "number": "Nhập số (8 số)"
+      }
+    },
+    "placeholders": {
+      "name": "Nhập họ và tên",
+      "phone": "Nhập số điện thoại",
+      "address": "Nhập địa chỉ",
+      "zipCode": "Nhập mã bưu điện",
+      "selectGender": "Chọn giới tính",
+      "selectDob": "Chọn ngày sinh"
+    },
+    "messages": {
+      "saveSuccess": "Cập nhật hồ sơ thành công",
+      "saveError": "Cập nhật hồ sơ thất bại"
+    },
+    "emergencyContact": {
+      "contactName": "Tên người liên hệ",
+      "phone": "Số điện thoại",
+      "relationship": "Mối quan hệ",
+      "address": "Địa chỉ",
+      "placeholders": {
+        "contactName": "Nhập tên người liên hệ",
+        "phone": "Nhập số điện thoại",
+        "relationship": "VD: Vợ/Chồng, Bố/Mẹ, Anh/Chị/Em",
+        "address": "Nhập địa chỉ người liên hệ"
+      }
+    },
+    "actions": {
+      "save": "Lưu thay đổi"
+    }
+  },
+  "leave": {
+    "title": "Nghỉ phép",
+    "description": "Quản lý nghỉ phép và xem số ngày còn lại",
+    "balance": "Số ngày phép",
+    "used": "Đã dùng",
+    "pending": "Đang chờ",
+    "remaining": "Còn lại",
+    "requestLeave": "Tạo yêu cầu nghỉ",
+    "history": "Lịch sử",
+    "type": "Loại nghỉ phép",
+    "selectType": "Chọn loại nghỉ phép",
+    "dateRange": "Thời gian nghỉ",
+    "selectDateRange": "Chọn ngày bắt đầu và kết thúc",
+    "totalDays": "Tổng số ngày",
+    "days": "ngày",
+    "reason": "Lý do",
+    "reasonPlaceholder": "Nhập lý do nghỉ phép...",
+    "approver": "Người phê duyệt",
+    "selectApprover": "Chọn người phê duyệt",
+    "departmentManager": "Quản lý phòng ban",
+    "defaultApproverHint": "Mặc định: {name}",
+    "submit": "Gửi yêu cầu",
+    "requestSuccess": "Gửi yêu cầu nghỉ phép thành công",
+    "requestError": "Gửi yêu cầu nghỉ phép thất bại",
+    "invalidDateRange": "Ngày kết thúc phải sau ngày bắt đầu",
+    "insufficientBalance": "Số ngày phép không đủ",
+    "noHistory": "Chưa có yêu cầu",
+    "noHistoryDescription": "Bạn chưa tạo yêu cầu nghỉ phép nào",
+    "cancelTitle": "Hủy yêu cầu nghỉ phép",
+    "cancelDescription": "Bạn có chắc chắn muốn hủy yêu cầu nghỉ phép này?",
+    "cancelSuccess": "Hủy yêu cầu thành công",
+    "rejectionReason": "Lý do từ chối",
+    "detailTitle": "Chi tiết yêu cầu nghỉ phép"
+  },
+  "documents": {
+    "title": "Tài liệu",
+    "description": "Quản lý tài liệu cá nhân",
+    "upload": "Tải lên tài liệu",
+    "empty": "Chưa có tài liệu",
+    "emptyDescription": "Bạn chưa tải lên tài liệu nào",
+    "totalDocuments": "{count} tài liệu",
+    "documentType": "Loại tài liệu",
+    "selectType": "Chọn loại tài liệu",
+    "dropzone": "Kéo thả file vào đây hoặc nhấn để chọn",
+    "selectFile": "Chọn file",
+    "acceptedTypes": "JPG, PNG, WebP, PDF (tối đa 10MB)",
+    "invalidFileType": "Loại file không hợp lệ. Vui lòng tải lên JPG, PNG, WebP hoặc PDF",
+    "fileTooLarge": "File quá lớn. Kích thước tối đa là 10MB",
+    "removeFile": "Xóa file",
+    "uploading": "Đang tải lên...",
+    "uploadButton": "Tải lên",
+    "uploadSuccess": "Tải lên tài liệu thành công",
+    "uploadError": "Tải lên tài liệu thất bại",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "deleting": "Đang xóa...",
+    "deleteSuccess": "Xóa tài liệu thành công",
+    "deleteError": "Xóa tài liệu thất bại",
+    "confirmDeleteTitle": "Xóa tài liệu",
+    "confirmDeleteDescription": "Bạn có chắc chắn muốn xóa \"{name}\"? Hành động này không thể hoàn tác.",
+    "loadError": "Không thể tải tài liệu",
+    "close": "Đóng",
+    "download": "Tải xuống",
+    "zoomIn": "Phóng to",
+    "zoomOut": "Thu nhỏ",
+    "rotate": "Xoay",
+    "previewNotAvailable": "Không thể xem trước loại file này"
+  },
+  "attendance": {
+    "title": "Chấm công",
+    "detail": "Chi tiết chấm công",
+    "description": "Xem chi tiết chấm công theo ngày",
+    "back": "Quay lại"
+  },
+  "adjustments": {
+    "title": "Điều chỉnh"
+  },
+  "commissions": {
+    "title": "Hoa hồng"
+  },
+  "notifications": {
+    "title": "Thông báo"
+  },
+  "help": {
+    "title": "Trung tâm hỗ trợ"
+  }
+}

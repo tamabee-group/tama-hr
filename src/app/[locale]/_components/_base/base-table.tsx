@@ -62,6 +62,8 @@ interface BaseTableProps<TData, TValue> {
   columnsText?: string;
   // Row click handler
   onRowClick?: (row: TData) => void;
+  // Custom row className
+  rowClassName?: (row: TData) => string;
 }
 
 export function BaseTable<TData, TValue>({
@@ -81,6 +83,7 @@ export function BaseTable<TData, TValue>({
   nextText = "Next",
   columnsText = "Columns",
   onRowClick,
+  rowClassName,
 }: BaseTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -219,9 +222,7 @@ export function BaseTable<TData, TValue>({
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => onRowClick?.(row.original)}
-                    className={
-                      onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
-                    }
+                    className={`${onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${rowClassName?.(row.original) || ""}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

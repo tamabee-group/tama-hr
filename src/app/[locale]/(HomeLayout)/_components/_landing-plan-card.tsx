@@ -8,14 +8,7 @@ import {
   LocaleKey,
 } from "@/types/plan";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { Check, Users, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -45,15 +38,19 @@ export function LandingPlanCard({
   );
 
   return (
-    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
-      <CardHeader>
-        <CardTitle className="text-xl">
+    <GlassCard className="flex flex-col h-full p-6 hover:shadow-xl transition-shadow duration-300">
+      {/* Header */}
+      <div className="space-y-1.5 mb-4">
+        <h3 className="text-xl font-semibold leading-none tracking-tight">
           {getPlanName(plan, localeKey)}
-        </CardTitle>
-        <CardDescription>{getPlanDescription(plan, localeKey)}</CardDescription>
-      </CardHeader>
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          {getPlanDescription(plan, localeKey)}
+        </p>
+      </div>
 
-      <CardContent className="flex-1 space-y-4">
+      {/* Content */}
+      <div className="flex-1 space-y-4">
         <div className="flex items-baseline gap-1">
           {plan.monthlyPrice === 0 ? (
             <span className="text-3xl font-bold text-green-600">
@@ -100,13 +97,14 @@ export function LandingPlanCard({
             </ul>
           </div>
         )}
-      </CardContent>
+      </div>
 
-      <CardFooter className="pt-4">
+      {/* Footer */}
+      <div className="pt-4 mt-4 border-t border-gray-200/50 dark:border-white/10">
         <Button onClick={onSelect} className="w-full" size="lg">
           {t("registerNow")}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </GlassCard>
   );
 }

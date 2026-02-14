@@ -9,8 +9,9 @@ import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { Button } from "@/components/ui/button";
 
 import { PayrollItem } from "@/types/attendance-records";
-import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
+import { formatPayslip } from "@/lib/utils/format-currency";
+import { useAuth } from "@/hooks/use-auth";
 
 import { payrollPeriodApi } from "@/lib/apis/payroll-period-api";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
@@ -28,6 +29,8 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "ja_JP";
 
   const [payslips, setPayslips] = useState<PayrollItem[]>([]);
   const [page, setPage] = useState(0);
@@ -74,7 +77,8 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
     {
       accessorKey: "baseSalary",
       header: t("table.baseSalary"),
-      cell: ({ row }) => formatCurrency(row.original.calculatedBaseSalary),
+      cell: ({ row }) =>
+        formatPayslip(row.original.calculatedBaseSalary, companyLocale),
     },
     {
       accessorKey: "totalOvertimePay",
@@ -83,7 +87,9 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
         const overtime = row.original.totalOvertimePay;
         if (!overtime || overtime === 0) return "-";
         return (
-          <span className="text-blue-600">{formatCurrency(overtime)}</span>
+          <span className="text-blue-600">
+            {formatPayslip(overtime, companyLocale)}
+          </span>
         );
       },
     },
@@ -94,7 +100,9 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
         const allowances = row.original.totalAllowances;
         if (!allowances || allowances === 0) return "-";
         return (
-          <span className="text-green-600">{formatCurrency(allowances)}</span>
+          <span className="text-green-600">
+            {formatPayslip(allowances, companyLocale)}
+          </span>
         );
       },
     },
@@ -105,7 +113,9 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
         const deductions = row.original.totalDeductions;
         if (!deductions || deductions === 0) return "-";
         return (
-          <span className="text-red-600">-{formatCurrency(deductions)}</span>
+          <span className="text-red-600">
+            -{formatPayslip(deductions, companyLocale)}
+          </span>
         );
       },
     },
@@ -114,7 +124,7 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary)}
+          {formatPayslip(row.original.netSalary, companyLocale)}
         </span>
       ),
     },
@@ -160,7 +170,6 @@ export function PayslipHistoryTable({ employeeId }: PayslipHistoryTableProps) {
         <PayrollItemDetailDialog
           open={!!selectedItem}
           onClose={() => setSelectedItem(null)}
-          periodId={selectedItem.payrollPeriodId}
           item={selectedItem}
         />
       )}

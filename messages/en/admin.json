@@ -1,0 +1,20 @@
+{
+  "dashboard": { "title": "Overview" },
+  "companies": { "title": "Companies" },
+  "deposits": { "title": "Deposits" },
+  "plans": { "title": "Plans" },
+  "settings": { "title": "Settings" },
+  "systemNotifications": { "title": "System Notifications" },
+  "feedbacks": { "title": "Feedback Management" },
+  "billing": { "title": "Billing" },
+  "schedulers": {
+    "title": "Schedulers",
+    "subPages": {
+      "payroll": "Payroll Scheduler",
+      "billing": "Billing Scheduler",
+      "contracts": "Contract Expiry",
+      "cleanup": "Company Cleanup",
+      "tenants": "Tenant Cleanup"
+    }
+  }
+}

@@ -4,7 +4,11 @@
   "addHoliday": "Add Holiday",
   "editHoliday": "Edit Holiday",
   "deleteHoliday": "Delete Holiday",
-  "importNational": "Import National Holidays",
+  "syncNational": "Sync Holidays",
+  "syncing": "Syncing...",
+  "syncDescription": "Sync national holidays ({country}) from Google Calendar",
+  "countryVi": "Vietnam",
+  "countryJa": "Japan",
   "table": {
     "name": "Holiday Name",
     "date": "Date",
@@ -26,14 +30,16 @@
     "updateSuccess": "Holiday updated successfully",
     "updateError": "Failed to update holiday",
     "deleteSuccess": "Holiday deleted successfully",
+    "deleteAllSuccess": "All holidays deleted successfully",
     "deleteError": "Failed to delete holiday",
-    "importSuccess": "National holidays imported successfully",
-    "importError": "Failed to import national holidays",
+    "syncSuccess": "National holidays synced successfully",
     "noHolidays": "No holidays found"
   },
   "dialog": {
     "deleteTitle": "Delete Holiday",
-    "deleteDescription": "Are you sure you want to delete this holiday?"
+    "deleteDescription": "Are you sure you want to delete this holiday?",
+    "deleteAllTitle": "Delete All Holidays",
+    "deleteAllDescription": "Are you sure you want to delete all holidays? This action cannot be undone."
   },
   "filter": {
     "year": "Year",

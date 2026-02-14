@@ -41,15 +41,21 @@ export class ApiError extends Error {
 }
 
 /**
- * Clear tất cả auth cookies và redirect về login
+ * Clear tất cả auth cookies và localStorage, redirect về login
  * Được gọi khi API trả về 401 (sau khi proxy đã thử refresh token)
+ * hoặc 502 (backend không khả dụng)
  */
 function handleUnauthorized(): void {
-  // Clear cookies
+  // Clear cookies - xóa với nhiều domain variants để đảm bảo
   document.cookie =
     "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-  document.cookie =
-    "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  const hostname = window.location.hostname;
+  document.cookie = `accessToken=; path=/; domain=${hostname}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  const parts = hostname.split(".");
+  if (parts.length >= 2) {
+    const parentDomain = parts.slice(-2).join(".");
+    document.cookie = `accessToken=; path=/; domain=.${parentDomain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  }
 
   // Clear localStorage
   localStorage.removeItem("currentUser");
@@ -141,10 +147,21 @@ async function fetchClient<T = unknown>(
       403: "Không có quyền truy cập",
       404: "Không tìm thấy tài nguyên",
       500: "Lỗi server",
+      502: "API không khả dụng",
+      503: "API đang bảo trì",
     };
     throw new ApiError(
       errorMessages[response.status] || `Lỗi HTTP ${response.status}`,
       response.status,
+    );
+  }
+
+  // Kiểm tra response có phải HTML không (502/503 từ nginx trả HTML)
+  const trimmed = text.trimStart();
+  if (trimmed.startsWith("<") || trimmed.startsWith("<!")) {
+    throw new ApiError(
+      response.status === 503 ? "API đang bảo trì" : "API không khả dụng",
+      response.status || 502,
     );
   }
 
@@ -273,5 +290,39 @@ export const apiClient = {
     }
 
     return result.data;
+  },
+
+  /**
+   * Download file (trả về Blob thay vì JSON)
+   * Gọi qua proxy để proxy xử lý refresh token
+   * @client-only
+   */
+  download: async (
+    endpoint: string,
+    options?: Omit<FetchOptions, "body">,
+  ): Promise<Blob> => {
+    const url = toProxyUrl(endpoint);
+    const locale = getLocaleFromCookie();
+
+    const headers: HeadersInit = {
+      ...(locale && { "Accept-Language": locale }),
+    };
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+      headers,
+      ...options,
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        handleUnauthorized();
+        throw new ApiError("Phiên đăng nhập hết hạn", 401);
+      }
+      throw new ApiError(`Lỗi download: ${response.status}`, response.status);
+    }
+
+    return response.blob();
   },
 };

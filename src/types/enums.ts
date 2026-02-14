@@ -125,3 +125,23 @@ export const COMMISSION_STATUS_COLORS: Record<
 export const COMPANY_STATUSES = ["ACTIVE", "INACTIVE"] as const;
 
 export type CompanyStatus = (typeof COMPANY_STATUSES)[number];
+
+// ============================================
+// Salary Item Type Enums
+// ============================================
+
+export const SALARY_ITEM_TYPES = ["ALLOWANCE", "DEDUCTION"] as const;
+
+export type SalaryItemType = (typeof SALARY_ITEM_TYPES)[number];
+
+// ============================================
+// Adjustment Request Type Enums
+// ============================================
+
+export const ADJUSTMENT_REQUEST_TYPES = [
+  "ADJUST",
+  "DELETE_BREAK",
+  "DELETE_RECORD",
+] as const;
+
+export type AdjustmentRequestType = (typeof ADJUSTMENT_REQUEST_TYPES)[number];

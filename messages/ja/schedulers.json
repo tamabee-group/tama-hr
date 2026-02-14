@@ -1,0 +1,94 @@
+{
+  "title": "システム管理",
+  "description": "Tamabee管理者向けの手動API管理と監視",
+  "overview": "API一覧",
+  "subPages": {
+    "payroll": "給与スケジューラー",
+    "billing": "請求スケジューラー",
+    "contracts": "契約期限切れスケジューラー",
+    "cleanup": "会社クリーンアップスケジューラー",
+    "tenants": "テナントクリーンアップスケジューラー"
+  },
+  "groups": {
+    "payroll": "給与支払い処理と給与期間のロールバック",
+    "billing": "会社の月次請求処理",
+    "contracts": "期限切れ契約のステータス確認・更新",
+    "cleanup": "非アクティブ会社のクリーンアップ",
+    "tenants": "非アクティブテナントDBのアーカイブ"
+  },
+  "exportCsv": "CSVエクスポート",
+  "refreshLogs": "ログ更新",
+  "quickActions": "クイックアクション",
+  "execute": "実行",
+  "noLogs": "ログがまだありません。APIを実行するとここにログが表示されます。",
+  "filters": {
+    "tenant": "会社テナント",
+    "allTenants": "全テナント",
+    "timeRange": "過去24時間",
+    "last7Days": "過去7日間",
+    "last30Days": "過去30日間",
+    "method": "メソッド: すべて",
+    "status": "ステータス: すべて",
+    "errorsOnly": "エラーのみ"
+  },
+  "table": {
+    "status": "ステータス",
+    "timestamp": "タイムスタンプ",
+    "company": "会社",
+    "endpoint": "機能 / エンドポイント",
+    "method": "メソッド",
+    "latency": "レイテンシ",
+    "requestPayload": "リクエストペイロード",
+    "responseLog": "JSONレスポンスログ",
+    "copy": "コピー",
+    "rerunApi": "API再実行"
+  },
+  "actions": {
+    "payrollPayment": {
+      "title": "給与支払いスケジューラー",
+      "description": "支払日に会社の自動給与支払い処理",
+      "endpoint": "/api/admin/schedulers/payroll-payment",
+      "method": "POST"
+    },
+    "billing": {
+      "title": "月次請求スケジューラー",
+      "description": "支払期限が来たすべての会社の月次請求処理",
+      "endpoint": "/api/admin/schedulers/billing",
+      "method": "POST"
+    },
+    "contractExpiry": {
+      "title": "契約期限切れスケジューラー",
+      "description": "期限切れ契約のステータスを確認・更新し、有効な契約がない社員を無効化",
+      "endpoint": "/api/admin/schedulers/contract-expiry"
+    },
+    "companyCleanup": {
+      "title": "会社クリーンアップスケジューラー",
+      "description": "保持期間を過ぎた非アクティブ会社を完全削除",
+      "endpoint": "/api/admin/schedulers/company-cleanup"
+    },
+    "tenantCleanup": {
+      "title": "テナントクリーンアップスケジューラー",
+      "description": "保持期間を過ぎた非アクティブテナントDBをアーカイブ（デフォルト90日）",
+      "endpoint": "/api/admin/schedulers/tenant-cleanup"
+    },
+    "rollbackPayroll": {
+      "title": "給与をDRAFTにロールバック",
+      "description": "テスト目的で給与期間のステータスをDRAFTにリセット",
+      "endpoint": "/api/admin/schedulers/rollback-payroll",
+      "companyId": "会社",
+      "allCompanies": "全会社",
+      "year": "年",
+      "month": "月"
+    }
+  },
+  "status": {
+    "success": "成功",
+    "error": "エラー",
+    "pending": "保留中"
+  },
+  "messages": {
+    "executeSuccess": "APIが正常に実行されました",
+    "executeError": "APIの実行に失敗しました",
+    "copySuccess": "クリップボードにコピーしました"
+  }
+}

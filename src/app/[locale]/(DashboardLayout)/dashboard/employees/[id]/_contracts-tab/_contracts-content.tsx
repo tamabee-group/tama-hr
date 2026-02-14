@@ -5,7 +5,10 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  GlassSection,
+  GlassCard,
+} from "@/app/[locale]/_components/_glass-style";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmploymentContract } from "@/types/attendance-records";
 import { User } from "@/types/user";
@@ -16,7 +19,7 @@ import {
 import { ContractFormDialog } from "../../../contracts/_contract-form-dialog";
 import { ContractHistory } from "./_contract-history";
 import { CurrentContractCard } from "./_current-contract-card";
-import { ExplanationPanel } from "../../../_components/_explanation-panel";
+import { ExplanationPanel } from "../../../../../_components/_explanation-panel";
 
 interface ContractsContentProps {
   employeeId: number;
@@ -114,42 +117,40 @@ export function ContractsContent({
 
       <div className="flex flex-col-reverse lg:flex-row gap-6">
         {/* Left: History Table */}
-        <Card className="flex-1 min-w-0 pt-6 pb-0">
-          <CardHeader>
-            <CardTitle>{t("historyTitle") || "Lịch sử hợp đồng"}</CardTitle>
-          </CardHeader>
-          <CardContent className="px-0">
-            <ContractHistory
-              employeeId={employeeId}
-              history={history}
-              onEdit={handleEdit}
-              onDeleted={fetchData}
-            />
-          </CardContent>
-        </Card>
+        <GlassSection
+          title={t("historyTitle") || "Lịch sử hợp đồng"}
+          className="flex-1 min-w-0"
+        >
+          <ContractHistory
+            employeeId={employeeId}
+            history={history}
+            onEdit={handleEdit}
+            onDeleted={fetchData}
+          />
+        </GlassSection>
 
         {/* Right: Current Contract */}
-        <Card className="lg:w-[360px] shrink-0">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t("currentContract") || "Hợp đồng hiện tại"}</CardTitle>
+        <GlassSection
+          title={t("currentContract") || "Hợp đồng hiện tại"}
+          className="lg:w-[360px] shrink-0"
+          headerAction={
             <Button onClick={handleCreate} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               {t("create")}
             </Button>
-          </CardHeader>
-          <CardContent>
-            {currentContract ? (
-              <CurrentContractCard
-                contract={currentContract}
-                onEdit={handleEdit}
-              />
-            ) : (
-              <p className="text-muted-foreground text-center py-8">
-                {t("noContracts")}
-              </p>
-            )}
-          </CardContent>
-        </Card>
+          }
+        >
+          {currentContract ? (
+            <CurrentContractCard
+              contract={currentContract}
+              onEdit={handleEdit}
+            />
+          ) : (
+            <p className="text-muted-foreground text-center py-8">
+              {t("noContracts")}
+            </p>
+          )}
+        </GlassSection>
       </div>
 
       {/* Form Dialog */}
@@ -171,24 +172,18 @@ export function ContractsContent({
 function ContractsSkeleton() {
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      <Card className="flex-1 min-w-0">
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-32 w-full" />
-        </CardContent>
-      </Card>
-      <Card className="lg:w-[360px] shrink-0">
-        <CardHeader>
-          <Skeleton className="h-6 w-40" />
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <GlassCard className="flex-1 min-w-0 p-6">
+        <Skeleton className="h-6 w-48 mb-4" />
+        <Skeleton className="h-32 w-full" />
+      </GlassCard>
+      <GlassCard className="lg:w-[360px] shrink-0 p-6">
+        <Skeleton className="h-6 w-40 mb-4" />
+        <div className="space-y-4">
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-2/3" />
-        </CardContent>
-      </Card>
+        </div>
+      </GlassCard>
     </div>
   );
 }

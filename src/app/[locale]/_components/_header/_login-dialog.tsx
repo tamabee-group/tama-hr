@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -17,7 +17,8 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Mail, Lock } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Mail } from "lucide-react";
 import { login } from "@/lib/apis/auth";
 import { useAuth, fetchCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
@@ -28,6 +29,37 @@ interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onLoginSuccess?: () => void;
+}
+
+/**
+ * Lấy tenant domain từ subdomain
+ * Ví dụ: tenant-japan.tamabee.local -> tenant-japan
+ */
+function getTenantDomain(): string {
+  if (typeof window === "undefined") {
+    return "tamabee";
+  }
+
+  const host = window.location.host;
+
+  // localhost hoặc 127.0.0.1 → master domain
+  if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) {
+    return "tamabee";
+  }
+
+  const hostParts = host.split(".");
+
+  // Cần ít nhất 3 phần: subdomain.tamabee.local
+  if (hostParts.length >= 3) {
+    const subdomain = hostParts[0];
+    if (subdomain === "tamabee") {
+      return "tamabee";
+    }
+    return subdomain;
+  }
+
+  // Root domain (tamabee.local) -> default tenant
+  return "tamabee";
 }
 
 /**
@@ -52,6 +84,12 @@ export function LoginDialog({
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [tenantDomain, setTenantDomain] = useState("tamabee");
+
+  // Lấy tenant domain từ subdomain
+  useEffect(() => {
+    setTenantDomain(getTenantDomain());
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +103,7 @@ export function LoginDialog({
       toast.success(t("loginSuccess"));
       onOpenChange(false);
       onLoginSuccess?.();
-      router.push("/");
+      router.push("/me");
     } catch (error) {
       const message = getErrorMessage(error, tErrors, t("loginFailed"));
       toast.error(message);
@@ -95,7 +133,8 @@ export function LoginDialog({
             <InputGroup>
               <InputGroupInput
                 id="dialog-identifier"
-                type="email"
+                type="text"
+                textTransform="none"
                 value={formData.identifier}
                 onChange={(e) =>
                   setFormData({ ...formData, identifier: e.target.value })
@@ -111,23 +150,16 @@ export function LoginDialog({
           </div>
           <div>
             <Label htmlFor="dialog-password">{t("password")}</Label>
-            <InputGroup>
-              <InputGroupInput
-                id="dialog-password"
-                type="password"
-                isPassword
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                placeholder={tDialog("passwordPlaceholder")}
-                autoComplete="off"
-                required
-              />
-              <InputGroupAddon>
-                <Lock className="h-4 w-4" />
-              </InputGroupAddon>
-            </InputGroup>
+            <PasswordInput
+              id="dialog-password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              placeholder={tDialog("passwordPlaceholder")}
+              autoComplete="off"
+              required
+            />
             <div className="flex justify-end mt-2">
               <Link
                 href={`/${locale}/forgot-password`}
@@ -141,16 +173,19 @@ export function LoginDialog({
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("loggingIn") : t("login")}
           </Button>
-          <div className="text-center text-sm">
-            {tDialog("noAccount")}{" "}
-            <Link
-              href={`/${locale}/register`}
-              className="text-primary hover:underline font-medium"
-              onClick={() => onOpenChange(false)}
-            >
-              {tHeader("register")}
-            </Link>
-          </div>
+          {/* Chỉ hiển thị link đăng ký trên master domain (tamabee) */}
+          {tenantDomain === "tamabee" && (
+            <div className="text-center text-sm">
+              {tDialog("noAccount")}{" "}
+              <Link
+                href={`/${locale}/register`}
+                className="text-primary hover:underline font-medium"
+                onClick={() => onOpenChange(false)}
+              >
+                {tHeader("register")}
+              </Link>
+            </div>
+          )}
         </form>
       </DialogContent>
     </Dialog>

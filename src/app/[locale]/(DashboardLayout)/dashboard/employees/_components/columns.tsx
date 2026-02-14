@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFileUrl } from "@/lib/utils/file-url";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
-import { User, UserRole } from "@/types/user";
+import { User } from "@/types/user";
 
 interface ColumnLabels {
   employeeCode: string;
@@ -104,26 +104,9 @@ export function createColumns(labels: ColumnLabels): ColumnDef<User>[] {
       cell: ({ row }) => row.original.profile?.name || "-",
     },
     {
-      accessorKey: "email",
-      header: labels.email,
-    },
-    {
-      accessorKey: "role",
-      header: labels.role,
-      cell: ({ row }) => {
-        const role = row.getValue("role") as UserRole;
-        return labels.roleLabels[role] || role;
-      },
-    },
-    {
       accessorKey: "departmentName",
       header: labels.department,
       cell: ({ row }) => row.original.departmentName || "-",
-    },
-    {
-      id: "phone",
-      header: labels.phone,
-      cell: ({ row }) => row.original.profile?.phone || "-",
     },
     {
       accessorKey: "status",

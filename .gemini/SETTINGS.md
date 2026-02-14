@@ -38,13 +38,13 @@ src/
 
 ### File Naming
 
-| Type               | Pattern             | Example              |
-| ------------------ | ------------------- | -------------------- |
-| Page               | `page.tsx`          | `page.tsx`           |
-| Internal component | `_kebab-case.tsx`   | `_deposit-table.tsx` |
-| Shared component   | `kebab-case.tsx`    | `base-table.tsx`     |
-| Hook               | `use-kebab-case.ts` | `use-auth.ts`        |
-| Utility            | `kebab-case.ts`     | `format-date.ts`     |
+| Type               | Pattern             | Example               |
+| ------------------ | ------------------- | --------------------- |
+| Page               | `page.tsx`          | `page.tsx`            |
+| Internal component | `_kebab-case.tsx`   | `_deposit-table.tsx`  |
+| Shared component   | `kebab-case.tsx`    | `base-table.tsx`      |
+| Hook               | `use-kebab-case.ts` | `use-auth.ts`         |
+| Utility            | `kebab-case.ts`     | `format-date-time.ts` |
 
 ### Server vs Client Components
 

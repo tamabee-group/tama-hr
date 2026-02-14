@@ -25,7 +25,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ShiftAssignment } from "@/types/attendance-records";
-import { formatDate, formatTime, getDayOfWeek } from "@/lib/utils/format-date";
+import {
+  formatDateWithDayOfWeek,
+  formatTime,
+} from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { deleteShiftAssignment } from "@/lib/apis/shift-api";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
@@ -144,8 +147,9 @@ export function ShiftDetailDialog({
                     {t("table.date")}
                   </span>
                   <div className="flex items-center gap-2 text-sm font-medium text-right">
-                    <div>（{getDayOfWeek(assignment.workDate, locale)}）</div>
-                    <div>{formatDate(assignment.workDate, locale)}</div>
+                    <div>
+                      {formatDateWithDayOfWeek(assignment.workDate, locale)}
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between">

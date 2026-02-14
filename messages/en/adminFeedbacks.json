@@ -1,0 +1,48 @@
+{
+  "title": "Feedback Management",
+  "table": {
+    "stt": "No.",
+    "type": "Type",
+    "feedbackTitle": "Title",
+    "sender": "Sender",
+    "company": "Company",
+    "status": "Status",
+    "createdAt": "Created At"
+  },
+  "filter": {
+    "allStatuses": "All statuses",
+    "allTypes": "All types"
+  },
+  "detail": {
+    "title": "Feedback Detail",
+    "description": "Description",
+    "attachments": "Attachments",
+    "sender": "Sender",
+    "company": "Company",
+    "email": "Email",
+    "createdAt": "Created At",
+    "status": "Status",
+    "updateStatus": "Update Status",
+    "statusUpdated": "Status updated successfully",
+    "statusError": "Failed to update status"
+  },
+  "reply": {
+    "title": "Replies",
+    "placeholder": "Enter reply content...",
+    "send": "Send Reply",
+    "sending": "Sending...",
+    "success": "Reply sent successfully",
+    "error": "Failed to send reply",
+    "noReplies": "No replies yet",
+    "noRepliesHint": "Send the first reply for this feedback",
+    "useTemplate": "Quick Reply",
+    "selectTemplate": "Select a template",
+    "templates": {
+      "received": "Thank you for your feedback. We have received it and will process it as soon as possible.",
+      "investigating": "We are investigating the issue you reported. We will update you with the results shortly.",
+      "resolved": "The issue you reported has been resolved. Please check again and let us know if the problem persists.",
+      "needInfo": "We need more information to process your request. Please provide additional details.",
+      "planned": "Thank you for your suggestion. We have noted it and will consider it in upcoming updates."
+    }
+  }
+}

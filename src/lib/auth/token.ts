@@ -39,6 +39,7 @@ export function hasRefreshToken(): boolean {
 export async function refreshAccessTokenWithCookie(
   refreshToken: string,
   locale?: string,
+  host?: string,
 ): Promise<{ success: boolean; cookies?: string[] }> {
   try {
     const headers: HeadersInit = {
@@ -48,6 +49,11 @@ export async function refreshAccessTokenWithCookie(
 
     if (locale) {
       headers["Accept-Language"] = locale;
+    }
+
+    // Forward host để backend xác định tenant
+    if (host) {
+      headers["X-Forwarded-Host"] = host;
     }
 
     const response = await fetch(`${API_URL}/api/auth/refresh-token`, {

@@ -1,13 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardAction,
-} from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { BankDetailsSection } from "@/types/employee-detail";
 import { Pencil } from "lucide-react";
@@ -38,68 +32,65 @@ export function BankDetailsCard({ bankDetails, onEdit }: BankDetailsCardProps) {
   const isYucho = isJapan && bankDetails?.japanBankType === "yucho";
 
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <CardTitle>{t("bankDetails")}</CardTitle>
-        <CardAction>
-          <Button variant="ghost" size="sm" onClick={onEdit}>
-            <Pencil className="h-4 w-4 mr-1" />
-            {tCommon("edit")}
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="py-4">
-        <div className="grid gap-x-8 md:grid-cols-2">
-          <InfoRow label={tCommon("bankName")} value={bankDetails?.bankName} />
-          <InfoRow
-            label={tCommon("bankAccountName")}
-            value={bankDetails?.bankAccountName}
-          />
-          {isJapan ? (
-            isYucho ? (
-              <>
-                {/* ゆうちょ銀行 fields */}
-                <InfoRow
-                  label={tCommon("bankSymbol")}
-                  value={bankDetails?.bankSymbol}
-                />
-                <InfoRow
-                  label={tCommon("bankNumber")}
-                  value={bankDetails?.bankNumber}
-                />
-              </>
-            ) : (
-              <>
-                {/* Ngân hàng Nhật thông thường */}
-                <InfoRow
-                  label={tCommon("bankCode")}
-                  value={bankDetails?.bankCode}
-                />
-                <InfoRow
-                  label={tCommon("bankBranchCode")}
-                  value={bankDetails?.bankBranchCode}
-                />
-                <InfoRow
-                  label={tCommon("bankBranchName")}
-                  value={bankDetails?.bankBranchName}
-                />
-                <InfoRow
-                  label={tCommon("bankAccount")}
-                  value={bankDetails?.bankAccount}
-                />
-              </>
-            )
+    <GlassSection
+      title={t("bankDetails")}
+      headerAction={
+        <Button variant="ghost" size="sm" onClick={onEdit}>
+          <Pencil className="h-4 w-4 mr-1" />
+          {tCommon("edit")}
+        </Button>
+      }
+    >
+      <div className="grid gap-x-8 md:grid-cols-2">
+        <InfoRow label={tCommon("bankName")} value={bankDetails?.bankName} />
+        <InfoRow
+          label={tCommon("bankAccountName")}
+          value={bankDetails?.bankAccountName}
+        />
+        {isJapan ? (
+          isYucho ? (
+            <>
+              {/* ゆうちょ銀行 fields */}
+              <InfoRow
+                label={tCommon("bankSymbol")}
+                value={bankDetails?.bankSymbol}
+              />
+              <InfoRow
+                label={tCommon("bankNumber")}
+                value={bankDetails?.bankNumber}
+              />
+            </>
           ) : (
             <>
-              {/* Ngân hàng Việt Nam - chỉ có số tài khoản */}
+              {/* Ngân hàng Nhật thông thường */}
+              <InfoRow
+                label={tCommon("bankCode")}
+                value={bankDetails?.bankCode}
+              />
+              <InfoRow
+                label={tCommon("bankBranchCode")}
+                value={bankDetails?.bankBranchCode}
+              />
+              <InfoRow
+                label={tCommon("bankBranchName")}
+                value={bankDetails?.bankBranchName}
+              />
               <InfoRow
                 label={tCommon("bankAccount")}
                 value={bankDetails?.bankAccount}
               />
             </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          )
+        ) : (
+          <>
+            {/* Ngân hàng Việt Nam - chỉ có số tài khoản */}
+            <InfoRow
+              label={tCommon("bankAccount")}
+              value={bankDetails?.bankAccount}
+            />
+          </>
+        )}
+      </div>
+    </GlassSection>
   );
 }

@@ -4,10 +4,11 @@ import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { User } from "@/types/user";
 import { createColumns } from "./columns";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
+import { Input } from "@/components/ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -22,6 +23,18 @@ export function DataTable<TData extends User, TValue>({
   const t = useTranslations("users");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter data theo mã nhân viên hoặc tên
+  const filteredData = useMemo(() => {
+    if (!searchTerm.trim()) return data;
+    const term = searchTerm.toLowerCase().trim();
+    return data.filter((user) => {
+      const employeeCode = user.employeeCode?.toLowerCase() || "";
+      const name = user.profile?.name?.toLowerCase() || "";
+      return employeeCode.includes(term) || name.includes(term);
+    });
+  }, [data, searchTerm]);
 
   // Tạo columns với translations
   const translatedColumns = useMemo(() => {
@@ -57,8 +70,6 @@ export function DataTable<TData extends User, TValue>({
     if (isMobile) {
       return {
         employeeCode: true,
-        email: false,
-        phone: false,
         departmentName: false,
         status: true,
         createdAt: false,
@@ -66,15 +77,12 @@ export function DataTable<TData extends User, TValue>({
     }
     if (!isMd) {
       return {
-        email: true,
-        phone: false,
         departmentName: false,
         createdAt: false,
       } as VisibilityState;
     }
     if (!isLg) {
       return {
-        phone: false,
         createdAt: false,
       } as VisibilityState;
     }
@@ -90,12 +98,18 @@ export function DataTable<TData extends User, TValue>({
   }
 
   return (
-    <BaseTable
-      columns={translatedColumns}
-      data={data}
-      filterColumn="email"
-      filterPlaceholder={t("searchEmail")}
-      initialColumnVisibility={columnVisibility}
-    />
+    <div className="space-y-4">
+      <Input
+        placeholder={t("searchPlaceholder")}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="max-w-sm"
+      />
+      <BaseTable
+        columns={translatedColumns}
+        data={filteredData}
+        initialColumnVisibility={columnVisibility}
+      />
+    </div>
   );
 }

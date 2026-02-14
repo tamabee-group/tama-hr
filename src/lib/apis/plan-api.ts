@@ -120,22 +120,6 @@ export async function deletePlan(id: number): Promise<void> {
 }
 
 // ============================================
-// Company APIs - Dành cho tenant users
-// ============================================
-
-/**
- * Lấy danh sách features của plan hiện tại
- * @client-only
- */
-export async function getPlanFeatures(planId: number): Promise<{
-  planId: number;
-  planName: string;
-  features: { code: string; enabled: boolean }[];
-}> {
-  return apiClient.get(`/api/plans/${planId}/features`);
-}
-
-// ============================================
 // Plan API object - Export tất cả functions
 // ============================================
 
@@ -151,7 +135,4 @@ export const planApi = {
   create,
   update,
   delete: deletePlan,
-
-  // Company APIs
-  getPlanFeatures,
 };

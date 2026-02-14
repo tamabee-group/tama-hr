@@ -3,6 +3,7 @@
   "description": "Manage employee attendance",
   "checkIn": "Check In",
   "checkOut": "Check Out",
+  "compactInOut": "In / Out",
   "breakStart": "Break Start",
   "breakEnd": "Break End",
   "currentStatus": "Current Status",
@@ -18,6 +19,8 @@
   "breakNonCompliant": "Non-compliant",
   "todayAttendance": "Today's Attendance",
   "history": "Attendance History",
+  "viewDetail": "View Detail",
+  "viewLocation": "View Location",
   "noRecordsToday": "No attendance records today",
   "calendar": "Attendance Calendar",
   "monthlyRecords": "Monthly Records",
@@ -29,6 +32,7 @@
     "date": "Date",
     "checkInTime": "Check In",
     "checkOutTime": "Check Out",
+    "totalTime": "Total",
     "workingHours": "Working Hours",
     "overtime": "Overtime",
     "overtimeHours": "Overtime Hours",
@@ -39,7 +43,8 @@
     "earlyLeaveMinutes": "Early Leave",
     "breakDuration": "Break Duration",
     "netHours": "Net Hours",
-    "break": "Break"
+    "break": "Break",
+    "note": "Note"
   },
   "status": {
     "notCheckedIn": "Not Checked In",
@@ -78,13 +83,14 @@
     "notCheckedIn": "You have not checked in yet",
     "locationRequired": "Please allow location access",
     "outsideGeoFence": "You are outside the allowed area",
-    "deviceNotRegistered": "Device is not registered",
     "adjustmentSubmitted": "Adjustment request submitted",
     "adjustmentError": "Failed to submit adjustment request",
     "noRecords": "No attendance records",
+    "noBreakRecords": "No break records",
     "noAdjustments": "No adjustment requests yet",
     "cancelSuccess": "Adjustment request cancelled",
-    "editSuccess": "Attendance updated successfully"
+    "editSuccess": "Attendance updated successfully",
+    "deleteSuccess": "Attendance record deleted successfully"
   },
   "editDialog": {
     "title": "Edit Attendance",
@@ -93,7 +99,7 @@
     "reasonPlaceholder": "Enter reason for edit...",
     "next": "Continue",
     "breakRecords": "Break Times",
-    "totalBreak": "Total"
+    "totalBreak": "Break"
   },
   "detail": {
     "title": "Attendance Detail",
@@ -106,6 +112,15 @@
   "dialog": {
     "cancelTitle": "Cancel Adjustment Request",
     "cancelDescription": "Are you sure you want to cancel this adjustment request?"
+  },
+  "viewMode": {
+    "recordsOnly": "Records Only",
+    "fullMonth": "Full Month",
+    "dayOff": "Day Off",
+    "weekend": "Weekend",
+    "holiday": "Holiday",
+    "noRecord": "No Record",
+    "cutoffPeriod": "Period: {start} - {end}"
   },
   "summary": {
     "title": "Attendance Summary",
@@ -183,7 +198,55 @@
     "approverComment": "Approver Comment",
     "hasPendingRequest": "There is already a pending request",
     "departmentManager": "Department Manager",
-    "defaultApproverHint": "Default: {name} (your department manager)"
+    "defaultApproverHint": "Default: {name} (your department manager)",
+    "deleteBreak": "Delete break",
+    "deleteRecord": "Request to delete this day's data",
+    "deleteBreakTitle": "Confirm delete break",
+    "deleteBreakDesc": "A request to delete this break will be sent to the approver. Are you sure?",
+    "deleteRecordTitle": "Confirm delete attendance data",
+    "deleteRecordDesc": "A request to delete all attendance data for this day will be sent to the approver. Are you sure?",
+    "deleteRecordDirectDesc": "All attendance data for this day will be permanently deleted. Are you sure?",
+    "deleteRecordRequest": "Request to delete attendance data",
+    "deleteRecordInfo": "All attendance data for this day will be deleted if the request is approved.",
+    "deleteBreakRequest": "Request to delete break",
+    "deleteBreakInfo": "This break will be deleted if the request is approved.",
+    "rejectTemplate": "Template",
+    "selectTemplate": "Select template...",
+    "rejectTemplates": {
+      "invalidTime": "Invalid time",
+      "insufficientEvidence": "Insufficient evidence/reason",
+      "notMatchPolicy": "Does not match company policy",
+      "duplicateRequest": "Duplicate request",
+      "other": "Other reason"
+    },
+    "requestInfo": "Request Info",
+    "correctionDetails": "Correction Details",
+    "originalEntry": "Original Entry",
+    "requestedCorrection": "Requested Correction",
+    "reasonForRequest": "Reason for Request",
+    "timelineSubmitted": "Request Submitted",
+    "timelineUnderReview": "Under Review",
+    "timelineApproved": "Approved",
+    "timelineRejected": "Rejected",
+    "timelineAwaitingApproval": "Awaiting Approval",
+    "timelinePendingDecision": "Pending final decision",
+    "breakAdjustments": "Break Adjustments",
+    "deleteBreakLabel": "Delete break #{number}",
+    "createBreakLabel": "Create new break #{number}",
+    "breakNumber": "Break #{number}",
+    "allBreakRecords": "All breaks for this day",
+    "beingAdjusted": "being adjusted",
+    "noChange": "No change",
+    "newBreakStart": "Break Start",
+    "newBreakEnd": "Break End",
+    "breakTimeHint": "Enter break start and end times (optional)",
+    "breakInsufficientWarning": "Break time ({current} min) is less than the minimum required ({minimum} min)",
+    "minutesRequired": " min required",
+    "breakStartOutOfRange": "Break start time must be within attendance hours",
+    "breakEndOutOfRange": "Break end time must be within attendance hours",
+    "breakStartAfterEnd": "Break start time must be before end time",
+    "totalBreakTime": "Total Break",
+    "totalWorkingTime": "Total Working"
   },
   "filter": {
     "dateRange": "Date Range",

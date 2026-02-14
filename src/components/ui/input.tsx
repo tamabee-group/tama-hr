@@ -15,8 +15,11 @@ function transformText(value: string, transform: TextTransform): string {
   switch (transform) {
     case "capitalize": // Viết hoa chữ cái đầu tiên trong ô
       return value.charAt(0).toUpperCase() + value.slice(1);
-    case "words": // Viết hoa chữ cái đầu mỗi từ
-      return value.replace(/\b\w/g, (char) => char.toUpperCase());
+    case "words": // Viết hoa chữ cái đầu mỗi từ (hỗ trợ Unicode/tiếng Việt)
+      return value.replace(
+        /(^|\s)(\S)/g,
+        (_, space, char) => space + char.toUpperCase(),
+      );
     case "uppercase": // Viết hoa hết
       return value.toUpperCase();
     case "lowercase": // Viết thường hết
@@ -45,6 +48,7 @@ function Input({
       textTransform !== "none" &&
       type !== "email" &&
       type !== "password" &&
+      type !== "file" &&
       !isPassword
     ) {
       e.target.value = transformText(e.target.value, textTransform);

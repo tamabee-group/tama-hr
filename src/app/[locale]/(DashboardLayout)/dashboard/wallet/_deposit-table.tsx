@@ -4,16 +4,16 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
+import { FallbackImage } from "@/app/[locale]/_components/image";
 import { DepositRequestResponse } from "@/types/deposit";
-import { DepositStatusBadge } from "@/app/[locale]/_components/_status-badge";
+import { DepositStatusBadge } from "@/app/[locale]/_components/_shared/display";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { DepositStatus } from "@/types/enums";
 import { Button } from "@/components/ui/button";
-import { Eye, X, Plus } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getFileUrl } from "@/lib/utils/file-url";
-import { formatDateTime } from "@/lib/utils/format-date";
+import { formatDateTime } from "@/lib/utils/format-date-time";
 
 type TabStatus = "ALL" | DepositStatus;
 
@@ -56,6 +56,11 @@ export function DepositTable({
 
   const columns: ColumnDef<DepositRequestResponse>[] = [
     {
+      id: "index",
+      header: "#",
+      cell: ({ row }) => <div>{row.index + 1}</div>,
+    },
+    {
       accessorKey: "amount",
       header: t("table.amount"),
       cell: ({ row }) => (
@@ -92,6 +97,14 @@ export function DepositTable({
       cell: ({ row }) => formatDateTime(row.getValue("createdAt"), locale),
     },
     {
+      accessorKey: "processedAt",
+      header: t("table.processedAt"),
+      cell: ({ row }) => {
+        const processedAt = row.getValue("processedAt") as string | null;
+        return processedAt ? formatDateTime(processedAt, locale) : "-";
+      },
+    },
+    {
       id: "actions",
       header: "",
       cell: ({ row }) => {
@@ -99,19 +112,7 @@ export function DepositTable({
         const isPending = deposit.status === "PENDING";
 
         return (
-          <div className="flex items-center gap-2">
-            {onViewImage && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  onViewImage(getFileUrl(deposit.transferProofUrl))
-                }
-              >
-                <Eye className="h-4 w-4 mr-1" />
-                {t("actions.viewImage")}
-              </Button>
-            )}
+          <div>
             {isPending && onCancel && (
               <Button
                 variant="ghost"

@@ -1,0 +1,44 @@
+{
+  "title": "System Notifications",
+  "table": {
+    "title": "Title",
+    "targetAudience": "Target Audience",
+    "createdBy": "Created By",
+    "createdAt": "Created At",
+    "stt": "No."
+  },
+  "dialog": {
+    "title": "Create System Notification",
+    "titleVi": "Title (Vietnamese)",
+    "titleEn": "Title (English)",
+    "titleJa": "Title (Japanese)",
+    "contentVi": "Content (Vietnamese)",
+    "contentEn": "Content (English)",
+    "contentJa": "Content (Japanese)",
+    "targetAudience": "Target Audience",
+    "selectAudience": "Select target audience",
+    "preview": "Preview",
+    "edit": "Edit",
+    "send": "Send Notification",
+    "sending": "Sending...",
+    "success": "Notification sent successfully",
+    "error": "Failed to send notification",
+    "useTemplate": "Use Template",
+    "selectTemplate": "Select a template",
+    "templates": {
+      "maintenance": "System Maintenance",
+      "update": "Feature Update",
+      "policy": "Policy Change"
+    }
+  },
+  "detail": {
+    "title": "Notification Detail",
+    "tabVi": "Vietnamese",
+    "tabEn": "English",
+    "tabJa": "Japanese",
+    "targetAudience": "Target Audience",
+    "createdBy": "Created By",
+    "createdAt": "Created At"
+  },
+  "create": "Create Notification"
+}

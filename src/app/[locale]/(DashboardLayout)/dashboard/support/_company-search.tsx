@@ -7,7 +7,7 @@ import { walletApi } from "@/lib/apis/wallet-api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Search, Building2, Wallet, Gift } from "lucide-react";
 import { toast } from "sonner";
 
@@ -96,42 +96,41 @@ export function CompanySearch({ onSelectCompany }: CompanySearchProps) {
       ) : companies.length > 0 ? (
         <div className="space-y-2">
           {companies.map((company) => (
-            <Card
+            <GlassCard
               key={company.id}
-              className="cursor-pointer hover:bg-muted/50 transition-colors"
+              variant="interactive"
               onClick={() => onSelectCompany(company)}
+              className="p-4"
             >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Building2 className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{company.companyName}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {getWalletPlanName(company, locale) ||
-                          tCommon("noResults")}
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Building2 className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex items-center gap-4">
-                    {company.isFreeTrialActive && (
-                      <div className="flex items-center gap-1 text-green-600 text-sm">
-                        <Gift className="h-4 w-4" />
-                        <span>{tWallet("status.freeTrial")}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-1 text-primary">
-                      <Wallet className="h-4 w-4" />
-                      <span className="font-medium">
-                        {formatCurrency(company.balance)}
-                      </span>
-                    </div>
+                  <div>
+                    <p className="font-medium">{company.companyName}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {getWalletPlanName(company, locale) ||
+                        tCommon("noResults")}
+                    </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center gap-4">
+                  {company.isFreeTrialActive && (
+                    <div className="flex items-center gap-1 text-green-600 text-sm">
+                      <Gift className="h-4 w-4" />
+                      <span>{tWallet("status.freeTrial")}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1 text-primary">
+                    <Wallet className="h-4 w-4" />
+                    <span className="font-medium">
+                      {formatCurrency(company.balance)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
           ))}
         </div>
       ) : null}

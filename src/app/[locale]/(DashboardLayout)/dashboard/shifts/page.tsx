@@ -1,5 +1,5 @@
 import { apiServer } from "@/lib/utils/fetch-server";
-import { formatTime } from "@/lib/utils/format-date";
+import { formatTime } from "@/lib/utils/format-date-time";
 import { AttendanceConfig } from "@/types/attendance-config";
 import { ShiftsTabs } from "./_shifts-tabs";
 

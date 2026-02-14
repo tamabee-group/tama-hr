@@ -10,7 +10,9 @@
     "work": "業務",
     "attendance": "勤怠",
     "hr": "人事",
-    "attendancePayroll": "勤怠・給与"
+    "attendancePayroll": "勤怠・給与",
+    "personal": "個人",
+    "payrollLeave": "給与・休暇"
   },
   "items": {
     "home": "ホーム",
@@ -28,6 +30,7 @@
     "commissions": "コミッション",
     "billing": "請求",
     "settings": "設定",
+    "companySettings": "会社設定",
     "company": "会社",
     "companyInfo": "会社情報",
     "support": "サポート",
@@ -42,8 +45,8 @@
     "payslips": "給与明細",
     "holidays": "祝日",
     "leaveRequests": "休暇申請",
+    "leaveBalances": "休暇残高管理",
     "leave": "休暇",
-    "reports": "レポート",
     "myAttendance": "マイ勤怠",
     "mySchedule": "マイスケジュール",
     "myAdjustments": "調整申請",
@@ -51,6 +54,16 @@
     "myLeave": "マイ休暇",
     "myProfile": "マイプロフィール",
     "shifts": "シフト管理",
-    "contracts": "契約"
+    "contracts": "契約",
+    "systemAdmin": "システム管理",
+    "schedulers": "スケジューラー",
+    "payrollScheduler": "給与",
+    "contractExpiry": "契約期限切れ",
+    "companyCleanup": "会社クリーンアップ",
+    "tenantCleanup": "テナントクリーンアップ",
+    "myPortal": "マイポータル",
+    "customerSupport": "カスタマーサポート",
+    "systemNotifications": "システム通知",
+    "feedbacks": "フィードバック"
   }
 }

@@ -7,21 +7,24 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  GlassCard,
+  GlassSection,
+} from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { AttendanceStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { AttendanceStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
 import {
   TimeDisplay,
   DurationDisplay,
-} from "@/app/[locale]/_components/_shared/_time-display";
+} from "@/app/[locale]/_components/_shared/display/_time-display";
 
 import { attendanceApi } from "@/lib/apis/attendance-api";
 import {
   AttendanceRecord,
   AttendanceSummary,
 } from "@/types/attendance-records";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDateWithDayOfWeek } from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
@@ -72,7 +75,13 @@ export function EmployeeAttendanceContent({
 
   // Handle view detail
   const handleViewDetail = (id: number) => {
-    router.push(`/${locale}/dashboard/attendance/${id}`);
+    // Tìm record theo id để lấy workDate
+    const record = records.find((r) => r.id === id);
+    if (record) {
+      router.push(
+        `/${locale}/dashboard/attendance/${record.workDate}?employeeId=${employeeId}`,
+      );
+    }
   };
 
   // Handle month change
@@ -105,7 +114,7 @@ export function EmployeeAttendanceContent({
     {
       accessorKey: "workDate",
       header: t("table.date"),
-      cell: ({ row }) => formatDate(row.original.workDate, locale),
+      cell: ({ row }) => formatDateWithDayOfWeek(row.original.workDate, locale),
     },
     {
       accessorKey: "roundedCheckIn",
@@ -188,58 +197,50 @@ export function EmployeeAttendanceContent({
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.workingDays")}
-              </p>
-              <p className="text-2xl font-bold">
-                {summary.presentDays}/{summary.totalWorkingDays}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalHours")}
-              </p>
-              <DurationDisplay
-                minutes={summary.totalWorkingMinutes}
-                className="text-2xl font-bold"
-              />
-            </CardContent>
-          </Card>
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.overtime")}
-              </p>
-              <DurationDisplay
-                minutes={summary.totalOvertimeMinutes}
-                className="text-2xl font-bold text-blue-600"
-              />
-            </CardContent>
-          </Card>
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.lateMinutes")}
-              </p>
-              <p className="text-2xl font-bold text-red-600">
-                {summary.totalLateMinutes} {tCommon("minutes")}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.workingDays")}
+            </p>
+            <p className="text-2xl font-bold">
+              {summary.presentDays}/{summary.totalWorkingDays}
+            </p>
+          </GlassCard>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalHours")}
+            </p>
+            <DurationDisplay
+              minutes={summary.totalWorkingMinutes}
+              className="text-2xl font-bold"
+            />
+          </GlassCard>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.overtime")}
+            </p>
+            <DurationDisplay
+              minutes={summary.totalOvertimeMinutes}
+              className="text-2xl font-bold text-blue-600"
+            />
+          </GlassCard>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.lateMinutes")}
+            </p>
+            <p className="text-2xl font-bold text-red-600">
+              {summary.totalLateMinutes} {tCommon("minutes")}
+            </p>
+          </GlassCard>
         </div>
       )}
 
       {/* Month Navigation */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between py-4">
-          <CardTitle className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5" />
-            {t("monthlyRecords")}
-          </CardTitle>
+      <GlassSection>
+        <div className="flex flex-row items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold">{t("monthlyRecords")}</h3>
+          </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handlePreviousMonth}>
               {tCommon("previous")}
@@ -251,16 +252,14 @@ export function EmployeeAttendanceContent({
               {tCommon("next")}
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          <BaseTable
-            columns={columns}
-            data={records}
-            showPagination={false}
-            noResultsText={t("messages.noRecords")}
-          />
-        </CardContent>
-      </Card>
+        </div>
+        <BaseTable
+          columns={columns}
+          data={records}
+          showPagination={false}
+          noResultsText={t("messages.noRecords")}
+        />
+      </GlassSection>
     </div>
   );
 }

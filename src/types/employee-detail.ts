@@ -79,10 +79,10 @@ export interface EmployeeDocument {
   id: number;
   fileName: string;
   fileUrl: string;
-  fileType: string;
+  fileType: string; // mimeType từ backend
   fileSize: number;
   documentType: DocumentType;
-  createdAt: string;
+  createdAt: string; // uploadedAt từ backend
 }
 
 // ============================================

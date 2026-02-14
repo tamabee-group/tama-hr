@@ -3,7 +3,6 @@
 
 import {
   AttendanceStatus,
-  PayrollStatus,
   PaymentStatus,
   AdjustmentStatus,
   SelectionStatus,
@@ -79,6 +78,11 @@ export interface BreakRecord {
   effectiveBreakMinutes?: number;
   notes?: string;
   isActive?: boolean;
+  // Location info
+  breakStartLatitude?: number;
+  breakStartLongitude?: number;
+  breakEndLatitude?: number;
+  breakEndLongitude?: number;
 }
 
 // ============================================
@@ -111,6 +115,11 @@ export interface AttendanceRecord {
   breakRecords?: BreakRecord[];
   shiftInfo?: ShiftInfo;
   appliedSettings?: AppliedSettingsSnapshot;
+  // Location info
+  checkInLatitude?: number;
+  checkInLongitude?: number;
+  checkOutLatitude?: number;
+  checkOutLongitude?: number;
   adjustmentReason?: string;
   adjustedBy?: number;
   adjustedAt?: string;
@@ -146,6 +155,11 @@ export interface UnifiedAttendanceRecord {
   status: AttendanceStatus;
   appliedSettings: AppliedSettingsSnapshot;
   shiftInfo?: ShiftInfo;
+  // Location info
+  checkInLatitude?: number;
+  checkInLongitude?: number;
+  checkOutLatitude?: number;
+  checkOutLongitude?: number;
 }
 
 // ============================================
@@ -203,7 +217,7 @@ export interface PayrollRecord {
   totalDeductions: number;
   grossSalary: number;
   netSalary: number;
-  status: PayrollStatus;
+  status: PayrollPeriodStatus;
   paymentStatus: PaymentStatus;
   paidAt?: string;
 }
@@ -225,6 +239,22 @@ export interface PayrollSummary {
 }
 
 // ============================================
+// Break Item Response (Chi tiết điều chỉnh break)
+// ============================================
+
+export interface BreakItemResponse {
+  id: number;
+  breakRecordId?: number; // NULL khi actionType = CREATE
+  breakNumber?: number;
+  actionType: "ADJUST" | "DELETE" | "CREATE";
+  originalBreakStart?: string;
+  originalBreakEnd?: string;
+  requestedBreakStart?: string;
+  requestedBreakEnd?: string;
+  createdAt?: string;
+}
+
+// ============================================
 // Adjustment Request
 // ============================================
 
@@ -234,6 +264,7 @@ export interface AdjustmentRequest {
   employeeName: string;
   attendanceRecordId: number;
   workDate: string;
+  requestType?: "ADJUST" | "DELETE_RECORD"; // Loại yêu cầu
   // Người được gán xử lý
   assignedTo?: number;
   assignedToName?: string;
@@ -242,11 +273,10 @@ export interface AdjustmentRequest {
   originalCheckOut?: string;
   requestedCheckIn?: string;
   requestedCheckOut?: string;
-  // Break times
-  originalBreakStart?: string;
-  originalBreakEnd?: string;
-  requestedBreakStart?: string;
-  requestedBreakEnd?: string;
+  // Break items (nhiều break trong 1 request)
+  breakItems?: BreakItemResponse[];
+  // Tất cả break records của ngày (để người duyệt có cái nhìn đầy đủ)
+  allBreakRecords?: BreakRecord[];
   reason: string;
   status: AdjustmentStatus;
   approvedBy?: number;
@@ -425,57 +455,6 @@ export interface AttendanceSummary {
   totalLateMinutes: number;
   totalEarlyLeaveMinutes: number;
   totalBreakMinutes: number;
-}
-
-// ============================================
-// Report Types
-// ============================================
-
-export interface ReportFilters {
-  startDate: string;
-  endDate: string;
-  departmentId?: number;
-  employeeId?: number;
-  status?: string;
-}
-
-export interface ReportData {
-  headers: string[];
-  rows: (string | number)[][];
-  summary?: Record<string, number>;
-}
-
-export interface ChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor?: string | string[];
-    borderColor?: string | string[];
-  }[];
-}
-
-// ============================================
-// Break Report Types
-// ============================================
-
-export interface BreakReportData {
-  date?: string;
-  month?: string;
-  employees: {
-    employeeId: number;
-    employeeName: string;
-    breakRecords: BreakRecord[];
-    totalBreakMinutes: number;
-    isCompliant: boolean;
-  }[];
-  summary: {
-    totalEmployees: number;
-    compliantCount: number;
-    nonCompliantCount: number;
-    complianceRate: number;
-    averageBreakMinutes: number;
-  };
 }
 
 // ============================================
@@ -687,6 +666,7 @@ export interface PayrollPeriod {
   approverName?: string;
   paidAt?: string;
   paymentReference?: string;
+  rejectionReason?: string;
   totalBaseSalary?: number;
   totalOvertimePay?: number;
   totalAllowances?: number;
@@ -710,11 +690,13 @@ export interface PayrollItem {
   employeeCode?: string;
   year?: number;
   month?: number;
+  paidAt?: string;
   salaryType: SalaryType;
   baseSalary: number;
   calculatedBaseSalary: number;
   workingDays: number;
   workingHours: number;
+  workingMinutes: number;
   // Overtime breakdown
   regularOvertimeMinutes: number;
   nightOvertimeMinutes: number;

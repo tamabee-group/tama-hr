@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,29 +42,24 @@ interface BankInfoFormProps {
 export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
   const t = useTranslations("users.bankInfo");
 
-  const handleTabChange = (value: string) => {
-    onChange({ bankAccountType: value as BankAccountType });
-  };
-
   return (
     <div className="border-t pt-4 sm:border sm:rounded-lg sm:p-4 space-y-4">
       <h3 className="font-semibold text-sm">{t("title")}</h3>
 
-      <Tabs
+      <GlassTabs
+        tabs={[
+          { value: "VN", label: t("vietnam") },
+          { value: "JP", label: t("japan") },
+        ]}
         value={data.bankAccountType || "VN"}
-        onValueChange={handleTabChange}
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="VN" disabled={!isEditing}>
-            {t("vietnam")}
-          </TabsTrigger>
-          <TabsTrigger value="JP" disabled={!isEditing}>
-            {t("japan")}
-          </TabsTrigger>
-        </TabsList>
+        onChange={(value) =>
+          onChange({ bankAccountType: value as BankAccountType })
+        }
+      />
 
-        {/* Tab Việt Nam */}
-        <TabsContent value="VN" className="space-y-3 mt-4">
+      {/* Tab Việt Nam */}
+      {(data.bankAccountType || "VN") === "VN" && (
+        <div className="space-y-3 mt-4">
           <div>
             <Label className="text-muted-foreground text-xs">
               {t("bankName")}
@@ -102,10 +97,12 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
               textTransform="uppercase"
             />
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Tab Nhật Bản */}
-        <TabsContent value="JP" className="space-y-3 mt-4">
+      {/* Tab Nhật Bản */}
+      {data.bankAccountType === "JP" && (
+        <div className="space-y-3 mt-4">
           {/* Chọn loại ngân hàng */}
           <RadioGroup
             value={data.japanBankType || "normal"}
@@ -295,8 +292,8 @@ export function BankInfoForm({ data, onChange, isEditing }: BankInfoFormProps) {
               </div>
             </>
           )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
 
       <p className="text-xs text-muted-foreground text-center italic bg-secondary py-1 rounded-xs">
         {t("salaryAccountNote")}

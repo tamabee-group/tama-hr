@@ -7,10 +7,10 @@ import { Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { AdjustmentStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
-import { TimeDisplay } from "@/app/[locale]/_components/_shared/_time-display";
+import { AdjustmentStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
+import { TimeDisplay } from "@/app/[locale]/_components/_shared/display/_time-display";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,8 +24,13 @@ import {
 
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
 import { AdjustmentRequest } from "@/types/attendance-records";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import {
+  formatDateWithDayOfWeek,
+  formatDateTime,
+} from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { useNotificationHighlight } from "@/hooks/use-notification-highlight";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 const DEFAULT_PAGE = 0;
@@ -40,6 +45,9 @@ export function MyAdjustments() {
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
+
+  // Highlight từ notification click
+  const { highlightId, onHighlightHandled } = useNotificationHighlight();
 
   // State
   const [requests, setRequests] = useState<AdjustmentRequest[]>([]);
@@ -78,6 +86,22 @@ export function MyAdjustments() {
     fetchRequests();
   }, [fetchRequests]);
 
+  // Subscribe to ADJUSTMENT notifications để auto-refresh
+  useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("ADJUSTMENT", () => {
+      fetchRequests();
+    });
+    return unsubscribe;
+  }, [fetchRequests]);
+
+  // Clear highlight sau khi data đã load
+  useEffect(() => {
+    if (highlightId && !loading && requests.length > 0) {
+      // Scroll đến row được highlight (nếu cần)
+      onHighlightHandled();
+    }
+  }, [highlightId, loading, requests, onHighlightHandled]);
+
   // Handle cancel click
   const handleCancelClick = (id: number) => {
     setCancelingId(id);
@@ -113,7 +137,7 @@ export function MyAdjustments() {
     {
       accessorKey: "workDate",
       header: t("adjustment.workDate"),
-      cell: ({ row }) => formatDate(row.original.workDate, locale),
+      cell: ({ row }) => formatDateWithDayOfWeek(row.original.workDate, locale),
     },
     {
       id: "originalTime",
@@ -236,39 +260,28 @@ export function MyAdjustments() {
 
   return (
     <div className="space-y-4">
-      <Tabs
+      <GlassTabs
+        tabs={[
+          { value: "all", label: t("adjustment.allRequests") },
+          { value: "pending", label: t("adjustment.pendingRequests") },
+        ]}
         value={activeTab}
-        onValueChange={(v) => setActiveTab(v as "all" | "pending")}
-      >
-        <TabsList>
-          <TabsTrigger value="all">{t("adjustment.allRequests")}</TabsTrigger>
-          <TabsTrigger value="pending">
-            {t("adjustment.pendingRequests")}
-          </TabsTrigger>
-        </TabsList>
+        onChange={(v) => setActiveTab(v as "all" | "pending")}
+      />
 
-        <TabsContent value="all" className="mt-4">
-          <BaseTable
-            columns={columns}
-            data={requests}
-            showPagination={true}
-            noResultsText={t("adjustment.noRequests")}
-            previousText={tCommon("previous")}
-            nextText={tCommon("next")}
-          />
-        </TabsContent>
-
-        <TabsContent value="pending" className="mt-4">
-          <BaseTable
-            columns={columns}
-            data={requests}
-            showPagination={true}
-            noResultsText={t("adjustment.noRequests")}
-            previousText={tCommon("previous")}
-            nextText={tCommon("next")}
-          />
-        </TabsContent>
-      </Tabs>
+      <div className="mt-4">
+        <BaseTable
+          columns={columns}
+          data={requests}
+          showPagination={true}
+          noResultsText={t("adjustment.noRequests")}
+          previousText={tCommon("previous")}
+          nextText={tCommon("next")}
+          rowClassName={(row) =>
+            highlightId === row.id ? "bg-primary/10 ring-1 ring-primary/30" : ""
+          }
+        />
+      </div>
 
       {/* Cancel Confirmation Dialog */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

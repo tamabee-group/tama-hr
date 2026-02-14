@@ -6,7 +6,7 @@ import { WalletOverviewResponse } from "@/types/wallet";
 import { SupportWalletCard } from "./_support-wallet-card";
 import { SupportTransactionTable } from "./_support-transaction-table";
 import { SupportDepositTable } from "./_support-deposit-table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, History, Receipt } from "lucide-react";
 
@@ -35,26 +35,32 @@ export function CompanyDetail({ company, onBack }: CompanyDetailProps) {
       <SupportWalletCard company={company} />
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="transactions" className="flex items-center gap-2">
-            <History className="h-4 w-4" />
-            {t("transactions")}
-          </TabsTrigger>
-          <TabsTrigger value="deposits" className="flex items-center gap-2">
-            <Receipt className="h-4 w-4" />
-            {t("deposit")}
-          </TabsTrigger>
-        </TabsList>
+      <div className="space-y-4">
+        <GlassTabs
+          tabs={[
+            {
+              value: "transactions",
+              label: t("transactions"),
+              icon: <History className="h-4 w-4" />,
+            },
+            {
+              value: "deposits",
+              label: t("deposit"),
+              icon: <Receipt className="h-4 w-4" />,
+            },
+          ]}
+          value={activeTab}
+          onChange={setActiveTab}
+        />
 
-        <TabsContent value="transactions" className="mt-6">
-          <SupportTransactionTable companyId={company.companyId} />
-        </TabsContent>
-
-        <TabsContent value="deposits" className="mt-6">
-          <SupportDepositTable companyId={company.companyId} />
-        </TabsContent>
-      </Tabs>
+        <div className="mt-6">
+          {activeTab === "transactions" ? (
+            <SupportTransactionTable companyId={company.companyId} />
+          ) : (
+            <SupportDepositTable companyId={company.companyId} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

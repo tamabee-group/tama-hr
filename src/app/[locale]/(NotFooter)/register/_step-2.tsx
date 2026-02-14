@@ -6,7 +6,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { BadgeCheck, Mail } from "lucide-react";
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
@@ -107,21 +107,21 @@ const Step2: NextPage<Props> = ({
 
   if (verified) {
     return (
-      <Card className="space-y-6 max-w-[450px] mx-auto">
+      <GlassCard className="space-y-6 max-w-[450px] mx-auto p-6">
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-4 ">
             <BadgeCheck className="h-12 w-12 text-green-600 dark:text" />
           </div>
-          <CardTitle className="text-2xl text-green-600 dark:text">
+          <h1 className="text-2xl font-semibold text-green-600 dark:text">
             {tRegister("verifySuccess")}
-          </CardTitle>
-          <CardDescription>
+          </h1>
+          <p className="text-muted-foreground">
             {tRegister("verifySuccessDesc")}
             <br />
             <span className="font-semibold text-foreground">
               {formData.email}
             </span>
-          </CardDescription>
+          </p>
         </div>
         <div className="flex gap-3 max-w-md mx-auto">
           <Button onClick={handleBack} variant="outline" className="flex-1">
@@ -131,24 +131,24 @@ const Step2: NextPage<Props> = ({
             {tCommon("next")}
           </Button>
         </div>
-      </Card>
+      </GlassCard>
     );
   }
 
   return (
-    <Card className="space-y-6 max-w-[500px] mx-auto">
+    <GlassCard className="space-y-6 max-w-[500px] mx-auto p-6">
       <div className="text-center space-y-2">
         <div className="flex justify-center mb-4">
           <Mail className="h-12 w-12 text-primary" />
         </div>
-        <CardTitle className="text-2xl">{tRegister("verifyTitle")}</CardTitle>
-        <CardDescription>
+        <h1 className="text-2xl font-semibold">{tRegister("verifyTitle")}</h1>
+        <p className="text-muted-foreground">
           {tRegister("verifyDescription")}
           <br />
           <span className="font-semibold text-foreground">
             {formData.email}
           </span>
-        </CardDescription>
+        </p>
       </div>
       <div className="flex flex-col items-center gap-4">
         <InputOTP
@@ -206,7 +206,7 @@ const Step2: NextPage<Props> = ({
           </Button>
         </div>
       </div>
-    </Card>
+    </GlassCard>
   );
 };
 

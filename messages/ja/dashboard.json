@@ -1,0 +1,51 @@
+{
+  "home": { "title": "概要" },
+  "employees": {
+    "title": "従業員",
+    "detail": "従業員詳細",
+    "create": "従業員追加"
+  },
+  "attendance": { "title": "勤怠", "detail": "勤怠詳細" },
+  "payroll": {
+    "title": "給与",
+    "periodDetail": "給与期間詳細",
+    "recordDetail": "従業員給与詳細"
+  },
+  "settings": { "title": "設定" },
+  "leaves": { "title": "休暇" },
+  "leaveBalance": { "title": "休暇残高" },
+  "contracts": { "title": "契約" },
+  "shifts": { "title": "シフト" },
+  "holidays": { "title": "祝日" },
+  "departments": { "title": "部署" },
+  "adjustments": { "title": "調整", "detail": "調整詳細" },
+  "profile": { "title": "プロフィール" },
+  "wallet": { "title": "ウォレット" },
+  "plans": { "title": "プラン" },
+  "support": { "title": "サポート" },
+  "payslip": { "title": "給与明細" },
+  "stats": {
+    "totalEmployees": "従業員数",
+    "activeEmployees": "在籍中",
+    "inactiveEmployees": "休止中",
+    "todayAttendance": "本日の勤怠",
+    "present": "出勤",
+    "absent": "欠勤",
+    "late": "遅刻",
+    "onLeave": "休暇中",
+    "pendingRequests": "承認待ち",
+    "pendingLeave": "休暇申請待ち",
+    "pendingAdjustment": "調整申請待ち",
+    "weeklyAttendance": "直近7日間の勤怠",
+    "monthlyLeave": "今月の休暇",
+    "approved": "承認済み",
+    "rejected": "却下",
+    "pending": "保留中",
+    "people": "人",
+    "requests": "件",
+    "noData": "データなし",
+    "payrollOverview": "給与推移（6ヶ月）",
+    "grossSalary": "総支給額",
+    "netSalary": "手取り額"
+  }
+}

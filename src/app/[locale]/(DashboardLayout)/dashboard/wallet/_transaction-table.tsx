@@ -8,7 +8,7 @@ import { WalletTransactionResponse } from "@/types/wallet";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { TransactionType } from "@/types/enums";
 import { cn } from "@/lib/utils";
-import { formatDateTime } from "@/lib/utils/format-date";
+import { formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 
 type TabType = "ALL" | TransactionType;
@@ -46,6 +46,11 @@ export function TransactionTable({
   }, [data, activeTab]);
 
   const columns: ColumnDef<WalletTransactionResponse>[] = [
+    {
+      id: "index",
+      header: "#",
+      cell: ({ row }) => <div>{row.index + 1}</div>,
+    },
     {
       accessorKey: "transactionType",
       header: t("table.type"),

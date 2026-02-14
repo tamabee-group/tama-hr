@@ -1,0 +1,20 @@
+{
+  "dashboard": { "title": "Tổng quan" },
+  "companies": { "title": "Công ty" },
+  "deposits": { "title": "Nạp tiền" },
+  "plans": { "title": "Gói dịch vụ" },
+  "settings": { "title": "Cài đặt" },
+  "systemNotifications": { "title": "Thông báo hệ thống" },
+  "feedbacks": { "title": "Quản lý phản hồi" },
+  "billing": { "title": "Thanh toán" },
+  "schedulers": {
+    "title": "Lập lịch",
+    "subPages": {
+      "payroll": "Payroll Scheduler",
+      "billing": "Billing Scheduler",
+      "contracts": "Contract Expiry",
+      "cleanup": "Company Cleanup",
+      "tenants": "Tenant Cleanup"
+    }
+  }
+}

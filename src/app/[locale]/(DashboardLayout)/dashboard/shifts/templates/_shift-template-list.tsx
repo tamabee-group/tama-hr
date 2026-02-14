@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { formatTime } from "@/lib/utils/format-date";
+import { formatTime } from "@/lib/utils/format-date-time";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -34,7 +34,7 @@ import {
   deleteShiftTemplate,
 } from "@/lib/apis/shift-api";
 import { ShiftTemplateFormDialog } from "./_shift-template-form-dialog";
-import { ExplanationPanel } from "../../_components/_explanation-panel";
+import { ExplanationPanel } from "../../../../_components/_explanation-panel";
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_LIMIT = 20;
@@ -144,95 +144,90 @@ export function ShiftTemplateList({
           t("explanations.templatesTip1"),
           t("explanations.templatesTip2"),
         ]}
-        workModeNote={t("explanations.templatesNote")}
         defaultCollapsed={true}
         className="mb-4"
       />
 
-      <Card>
-        <CardContent>
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-sm text-muted-foreground">
-              {tCommon("total")}: {templates.length}
-            </div>
-            <Button onClick={handleCreate}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t("createTemplate")}
-            </Button>
+      <GlassCard className="p-6">
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-sm text-muted-foreground">
+            {tCommon("total")}: {templates.length}
           </div>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t("createTemplate")}
+          </Button>
+        </div>
 
-          {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {tCommon("loading")}
-            </div>
-          ) : templates.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {t("noTemplates")}
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[60px]">#</TableHead>
-                  <TableHead>{t("table.name")}</TableHead>
-                  <TableHead>{t("table.time")}</TableHead>
-                  <TableHead>{t("table.break")}</TableHead>
-                  <TableHead>{t("multiplier")}</TableHead>
-                  <TableHead>{t("table.status")}</TableHead>
-                  <TableHead className="w-[100px]">
-                    {tCommon("actions")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {templates.map((template, index) => (
-                  <TableRow key={template.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-medium">
-                      {template.name}
-                    </TableCell>
-                    <TableCell>
-                      {formatTime(template.startTime)} -{" "}
-                      {formatTime(template.endTime)}
-                    </TableCell>
-                    <TableCell>
-                      {template.breakMinutes} {tCommon("minutes")}
-                    </TableCell>
-                    <TableCell>x{template.multiplier}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={template.isActive ? "default" : "secondary"}
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            {tCommon("loading")}
+          </div>
+        ) : templates.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            {t("noTemplates")}
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[60px]">#</TableHead>
+                <TableHead>{t("table.name")}</TableHead>
+                <TableHead>{t("table.time")}</TableHead>
+                <TableHead>{t("table.break")}</TableHead>
+                <TableHead>{t("multiplier")}</TableHead>
+                <TableHead>{t("table.status")}</TableHead>
+                <TableHead className="w-[100px]">
+                  {tCommon("actions")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {templates.map((template, index) => (
+                <TableRow key={template.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell className="font-medium">{template.name}</TableCell>
+                  <TableCell>
+                    {formatTime(template.startTime)} -{" "}
+                    {formatTime(template.endTime)}
+                  </TableCell>
+                  <TableCell>
+                    {template.breakMinutes} {tCommon("minutes")}
+                  </TableCell>
+                  <TableCell>x{template.multiplier}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={template.isActive ? "default" : "secondary"}
+                    >
+                      {template.isActive
+                        ? tCommon("active")
+                        : tCommon("inactive")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(template)}
                       >
-                        {template.isActive
-                          ? tCommon("active")
-                          : tCommon("inactive")}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(template)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeletingTemplate(template)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeletingTemplate(template)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </GlassCard>
 
       {/* Form Dialog */}
       <ShiftTemplateFormDialog

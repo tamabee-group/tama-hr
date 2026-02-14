@@ -39,7 +39,7 @@ import {
   createSalaryConfig,
   updateSalaryConfig,
 } from "@/lib/apis/salary-config-api";
-import { formatDateForApi, formatDate } from "@/lib/utils/format-date";
+import { formatDateForApi, formatDate } from "@/lib/utils/format-date-time";
 import {
   formatCurrency,
   type SupportedLocale,

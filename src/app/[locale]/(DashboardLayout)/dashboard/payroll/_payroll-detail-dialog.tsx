@@ -13,10 +13,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
 
 import { PayrollPreviewRecord } from "@/lib/apis/payroll-period-api";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatPayslip } from "@/lib/utils/format-currency";
+import { useAuth } from "@/hooks/use-auth";
+
+// System item codes được tạo tự động bởi backend
+const SYSTEM_ITEM_CODES = ["OVERTIME", "SHORTFALL"];
 
 interface PayrollDetailDialogProps {
   record: PayrollPreviewRecord | null;
@@ -37,8 +41,18 @@ export function PayrollDetailDialog({
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   if (!record) return null;
+
+  // Lấy tên item, ưu tiên translation cho system items
+  const getItemName = (code: string, name: string) => {
+    if (SYSTEM_ITEM_CODES.includes(code)) {
+      return t(`systemItems.${code}`);
+    }
+    return name;
+  };
 
   // Handle view full detail page
   const handleViewFullDetail = () => {
@@ -62,7 +76,7 @@ export function PayrollDetailDialog({
           {/* Lương cơ bản */}
           <div className="flex justify-between">
             <span>{t("breakdown.baseSalary")}</span>
-            <span>{formatCurrency(record.baseSalary)}</span>
+            <span>{formatPayslip(record.baseSalary, companyLocale)}</span>
           </div>
 
           {/* Làm thêm giờ */}
@@ -71,22 +85,27 @@ export function PayrollDetailDialog({
               label={t("breakdown.regularOvertime")}
               value={record.regularOvertimePay}
               hours={Math.round((record.regularOvertimeMinutes || 0) / 60)}
+              companyLocale={companyLocale}
             />
             {/* Night Work removed as it's not in PayrollItem */}
             <BreakdownRow
               label={t("breakdown.nightOvertime")}
               value={record.nightOvertimePay}
               hours={Math.round((record.nightOvertimeMinutes || 0) / 60)}
+              companyLocale={companyLocale}
             />
             {(record.holidayOvertimePay || 0) > 0 && (
               <BreakdownRow
                 label={t("breakdown.holidayOvertime")}
                 value={record.holidayOvertimePay}
+                companyLocale={companyLocale}
               />
             )}
             <div className="flex justify-between">
               <span>{t("breakdown.totalOvertime")}</span>
-              <span>{formatCurrency(record.totalOvertimePay || 0)}</span>
+              <span>
+                {formatPayslip(record.totalOvertimePay || 0, companyLocale)}
+              </span>
             </div>
           </div>
 
@@ -101,8 +120,9 @@ export function PayrollDetailDialog({
               record.allowanceDetails.map((item, index) => (
                 <BreakdownRow
                   key={index}
-                  label={item.name}
+                  label={getItemName(item.code, item.name)}
                   value={item.amount}
+                  companyLocale={companyLocale}
                 />
               ))
             ) : (
@@ -110,7 +130,9 @@ export function PayrollDetailDialog({
             )}
             <div className="flex justify-between font-medium text-green-600">
               <span>{t("breakdown.totalAllowances")}</span>
-              <span>{formatCurrency(record.totalAllowances || 0)}</span>
+              <span>
+                {formatPayslip(record.totalAllowances || 0, companyLocale)}
+              </span>
             </div>
           </div>
 
@@ -125,9 +147,10 @@ export function PayrollDetailDialog({
               record.deductionDetails.map((item, index) => (
                 <BreakdownRow
                   key={index}
-                  label={item.name}
+                  label={getItemName(item.code, item.name)}
                   value={-item.amount}
                   negative
+                  companyLocale={companyLocale}
                 />
               ))
             ) : (
@@ -135,7 +158,9 @@ export function PayrollDetailDialog({
             )}
             <div className="flex justify-between font-medium text-red-600">
               <span>{t("breakdown.totalDeductions")}</span>
-              <span>-{formatCurrency(record.totalDeductions || 0)}</span>
+              <span>
+                -{formatPayslip(record.totalDeductions || 0, companyLocale)}
+              </span>
             </div>
           </div>
 
@@ -146,13 +171,13 @@ export function PayrollDetailDialog({
             <div className="flex justify-between">
               <span>{t("breakdown.grossSalary")}</span>
               <span className="font-medium">
-                {formatCurrency(record.grossSalary || 0)}
+                {formatPayslip(record.grossSalary || 0, companyLocale)}
               </span>
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>{t("breakdown.netSalary")}</span>
               <span className="text-green-600">
-                {formatCurrency(record.netSalary || 0)}
+                {formatPayslip(record.netSalary || 0, companyLocale)}
               </span>
             </div>
           </div>
@@ -180,9 +205,16 @@ interface BreakdownRowProps {
   value: number;
   hours?: number;
   negative?: boolean;
+  companyLocale: string;
 }
 
-function BreakdownRow({ label, value, hours, negative }: BreakdownRowProps) {
+function BreakdownRow({
+  label,
+  value,
+  hours,
+  negative,
+  companyLocale,
+}: BreakdownRowProps) {
   if (!value || value === 0) return null;
 
   return (
@@ -195,7 +227,7 @@ function BreakdownRow({ label, value, hours, negative }: BreakdownRowProps) {
       </span>
       <span className={negative ? "text-red-600" : ""}>
         {negative ? "-" : ""}
-        {formatCurrency(Math.abs(value))}
+        {formatPayslip(Math.abs(value), companyLocale)}
       </span>
     </div>
   );

@@ -7,7 +7,7 @@ import { Check, X, Loader2 } from "lucide-react";
 import {
   LeaveStatusBadge,
   LeaveTypeBadge,
-} from "@/app/[locale]/_components/_shared/_status-badge";
+} from "@/app/[locale]/_components/_shared/display/_status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,7 +30,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { LeaveRequest } from "@/types/attendance-records";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import { formatDate, formatDateTime } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface LeaveDetailDialogProps {
@@ -78,19 +78,21 @@ export function LeaveDetailDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="md:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex gap-3">
               {t("title")}
               <LeaveStatusBadge status={request.status} />
             </DialogTitle>
-            <DialogDescription>{request.employeeName}</DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
+          <DialogDescription className="mt-2 text-md">
+            {request.employeeName}
+          </DialogDescription>
+          <div className="space-y-4 py-6">
             {/* Leave Type & Days */}
             <div className="flex items-center justify-between">
               <LeaveTypeBadge type={request.leaveType} />
               <span className="font-medium">
-                {request.totalDays} {t("table.days").toLowerCase()}
+                {request.totalDays} {t("table.daysUnit")}
               </span>
             </div>
 
@@ -175,21 +177,13 @@ export function LeaveDetailDialog({
             )}
           </div>
 
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            {isPending ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  className="w-full sm:w-auto"
-                >
-                  {tCommon("cancel")}
-                </Button>
+          <DialogFooter>
+            {isPending && (
+              <div className="flex justify-end flex-row gap-4">
                 <Button
                   variant="destructive"
                   onClick={() => onReject(request)}
                   disabled={isProcessing}
-                  className="w-full sm:w-auto"
                 >
                   <X className="h-4 w-4 mr-1" />
                   {t("reject")}
@@ -197,7 +191,7 @@ export function LeaveDetailDialog({
                 <Button
                   onClick={handleApproveClick}
                   disabled={isProcessing}
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700"
                 >
                   {isProcessing ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-1" />
@@ -206,15 +200,7 @@ export function LeaveDetailDialog({
                   )}
                   {t("approve")}
                 </Button>
-              </>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto"
-              >
-                {tCommon("close")}
-              </Button>
+              </div>
             )}
           </DialogFooter>
         </DialogContent>

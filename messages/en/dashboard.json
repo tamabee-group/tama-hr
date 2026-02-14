@@ -1,0 +1,51 @@
+{
+  "home": { "title": "Overview" },
+  "employees": {
+    "title": "Employees",
+    "detail": "Employee Detail",
+    "create": "Add Employee"
+  },
+  "attendance": { "title": "Attendance", "detail": "Attendance Detail" },
+  "payroll": {
+    "title": "Payroll",
+    "periodDetail": "Payroll Period Detail",
+    "recordDetail": "Employee Payroll Detail"
+  },
+  "settings": { "title": "Settings" },
+  "leaves": { "title": "Leaves" },
+  "leaveBalance": { "title": "Leave Balance" },
+  "contracts": { "title": "Contracts" },
+  "shifts": { "title": "Shifts" },
+  "holidays": { "title": "Holidays" },
+  "departments": { "title": "Departments" },
+  "adjustments": { "title": "Adjustments", "detail": "Adjustment Detail" },
+  "profile": { "title": "Profile" },
+  "wallet": { "title": "Wallet" },
+  "plans": { "title": "Plans" },
+  "support": { "title": "Support" },
+  "payslip": { "title": "Payslip" },
+  "stats": {
+    "totalEmployees": "Total Employees",
+    "activeEmployees": "Active",
+    "inactiveEmployees": "Inactive",
+    "todayAttendance": "Today's Attendance",
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "onLeave": "On Leave",
+    "pendingRequests": "Pending Requests",
+    "pendingLeave": "Pending Leave",
+    "pendingAdjustment": "Pending Adjustments",
+    "weeklyAttendance": "Last 7 Days Attendance",
+    "monthlyLeave": "This Month's Leave",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "pending": "Pending",
+    "people": "people",
+    "requests": "requests",
+    "noData": "No data yet",
+    "payrollOverview": "Payroll Overview (6 Months)",
+    "grossSalary": "Gross Salary",
+    "netSalary": "Net Salary"
+  }
+}

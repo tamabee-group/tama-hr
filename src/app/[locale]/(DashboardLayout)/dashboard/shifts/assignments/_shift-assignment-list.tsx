@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import { Plus, ChevronLeft, ChevronRight, Trash, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover,
@@ -13,15 +12,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ShiftAssignment } from "@/types/attendance-records";
 import { getShiftAssignments } from "@/lib/apis/shift-api";
-import { formatDate, getDayOfWeek } from "@/lib/utils/format-date";
+import { formatDate, getDayOfWeek } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { ShiftAssignmentDialog } from "./_shift-assignment-dialog";
 import { BatchDeleteDialog } from "./_batch-delete-dialog";
 import { ShiftDetailDialog } from "./_shift-detail-dialog";
-import { ExplanationPanel } from "../../_components/_explanation-panel";
+import { ExplanationPanel } from "../../../../_components/_explanation-panel";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 import { cn } from "@/lib/utils";
 
@@ -259,246 +265,242 @@ export function ShiftAssignmentList() {
           t("explanations.assignmentsTip1"),
           t("explanations.assignmentsTip2"),
         ]}
-        workModeNote={t("explanations.assignmentsNote")}
         defaultCollapsed={true}
         className="mb-4"
       />
 
-      <Card className="md:py-6 md:shadow-sm md:border py-0 shadow-none border-none">
-        <CardContent className="px-0 md:px-6">
-          {/* Filter Controls */}
-          <div className="flex flex-col justify-between items-center md:flex-row gap-4 mb-6">
-            <div className="flex flex-col md:flex-row md:justify-between gap-4">
-              {/* Filter Mode Tabs */}
-              <Tabs
-                value={filterMode}
-                onValueChange={(value) =>
-                  handleFilterModeChange(value as FilterMode)
-                }
-              >
-                <TabsList className="w-full md:w-fit">
-                  <TabsTrigger value="month">{t("filterMonth")}</TabsTrigger>
-                  <TabsTrigger value="week">{t("filterWeek")}</TabsTrigger>
-                  <TabsTrigger value="day">{t("filterDay")}</TabsTrigger>
-                </TabsList>
-              </Tabs>
+      <GlassCard className="p-0 md:p-6">
+        {/* Filter Controls */}
+        <div className="flex flex-col justify-between items-center md:flex-row gap-4 mb-6">
+          <div className="flex flex-col md:flex-row md:justify-between gap-4">
+            {/* Filter Mode Select */}
+            <Select
+              value={filterMode}
+              onValueChange={(value) =>
+                handleFilterModeChange(value as FilterMode)
+              }
+            >
+              <SelectTrigger className="w-[120px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="month">{t("filterMonth")}</SelectItem>
+                <SelectItem value="week">{t("filterWeek")}</SelectItem>
+                <SelectItem value="day">{t("filterDay")}</SelectItem>
+              </SelectContent>
+            </Select>
 
-              {/* Navigation */}
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrevious}
-                  className="shrink-0"
-                >
-                  <ChevronLeft />
-                </Button>
-
-                <Popover
-                  open={isDatePickerOpen}
-                  onOpenChange={setIsDatePickerOpen}
-                >
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="justify-start"
-                    >
-                      <Calendar className="h-4 w-4 mr-2 shrink-0" />
-                      <span className="truncate">{formatDisplayDate()}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <div className="p-3 border-b">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleToday}
-                        className="w-full"
-                      >
-                        {tCommon("today")}
-                      </Button>
-                    </div>
-                    <CalendarComponent
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      month={selectedDate}
-                      onMonthChange={setSelectedDate}
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNext}
-                  className="shrink-0"
-                >
-                  <ChevronRight />
-                </Button>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2">
+            {/* Navigation */}
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setIsBatchDeleteOpen(true)}
+                onClick={handlePrevious}
+                className="shrink-0"
               >
-                <Trash className="h-4 w-4 mr-2" />
-                {t("batchDelete")}
+                <ChevronLeft />
               </Button>
+
+              <Popover
+                open={isDatePickerOpen}
+                onOpenChange={setIsDatePickerOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="justify-start"
+                  >
+                    <Calendar className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="truncate">{formatDisplayDate()}</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <div className="p-3 border-b">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleToday}
+                      className="w-full"
+                    >
+                      {tCommon("today")}
+                    </Button>
+                  </div>
+                  <CalendarComponent
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    month={selectedDate}
+                    onMonthChange={setSelectedDate}
+                  />
+                </PopoverContent>
+              </Popover>
+
               <Button
                 type="button"
+                variant="outline"
                 size="sm"
-                onClick={() => setIsFormOpen(true)}
+                onClick={handleNext}
+                className="shrink-0"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                {t("createAssignment")}
+                <ChevronRight />
               </Button>
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {tCommon("loading")}
-            </div>
-          ) : assignments.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {t("noAssignments")}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {groupedAssignments.map(([date, items]) => {
-                const today = isToday(date);
-                return (
-                  <div key={date} className="space-y-2">
-                    {/* Header ngày */}
-                    <div
-                      className={`flex items-center gap-2 py-2 border-b ${
-                        today ? "border-primary" : ""
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsBatchDeleteOpen(true)}
+            >
+              <Trash className="h-4 w-4 mr-2" />
+              {t("batchDelete")}
+            </Button>
+            <Button type="button" size="sm" onClick={() => setIsFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {t("createAssignment")}
+            </Button>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            {tCommon("loading")}
+          </div>
+        ) : assignments.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            {t("noAssignments")}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {groupedAssignments.map(([date, items]) => {
+              const today = isToday(date);
+              return (
+                <div key={date} className="space-y-2">
+                  {/* Header ngày */}
+                  <div
+                    className={`flex items-center gap-2 py-2 border-b ${
+                      today ? "border-primary" : ""
+                    }`}
+                  >
+                    <span
+                      className={`font-semibold ${
+                        today ? "text-primary" : "text-primary"
                       }`}
                     >
-                      <span
-                        className={`font-semibold ${
-                          today ? "text-primary" : "text-primary"
-                        }`}
-                      >
-                        {getDayOfWeek(date, locale)}
-                      </span>
-                      <span
-                        className={`text-sm ${
-                          today
-                            ? "text-primary font-medium"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {formatDate(date, locale)}
-                      </span>
-                      {today && (
-                        <Badge variant="default" className="text-xs">
-                          {tCommon("today")}
-                        </Badge>
-                      )}
-                      <Badge variant="secondary" className="ml-auto">
-                        {items.length}
+                      {getDayOfWeek(date, locale)}
+                    </span>
+                    <span
+                      className={`text-sm ${
+                        today
+                          ? "text-primary font-medium"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {formatDate(date, locale)}
+                    </span>
+                    {today && (
+                      <Badge variant="default" className="text-xs">
+                        {tCommon("today")}
                       </Badge>
-                    </div>
+                    )}
+                    <Badge variant="secondary" className="ml-auto">
+                      {items.length}
+                    </Badge>
+                  </div>
 
-                    {/* Danh sách assignments trong ngày */}
-                    <div className="space-y-2">
-                      {items.map((assignment) => (
-                        <div
-                          key={assignment.id}
-                          className={cn(
-                            "flex items-center justify-between p-3 rounded-lg border bg-card hover:inset-shadow-2xs transition-colors cursor-pointer",
-                            today && "border-primary bg-primary/10",
-                          )}
-                          onClick={() => setViewingAssignment(assignment)}
-                        >
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <div className="font-medium">
-                                {assignment.employeeName}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {assignment.shiftName ||
-                                  assignment.shiftTemplate?.name}{" "}
-                                •{" "}
-                                {formatTime(
-                                  assignment.shiftStartTime ||
-                                    assignment.shiftTemplate?.startTime,
-                                )}{" "}
-                                -{" "}
-                                {formatTime(
-                                  assignment.shiftEndTime ||
-                                    assignment.shiftTemplate?.endTime,
-                                )}
-                              </div>
+                  {/* Danh sách assignments trong ngày */}
+                  <div className="space-y-2">
+                    {items.map((assignment) => (
+                      <div
+                        key={assignment.id}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-lg border bg-card hover:inset-shadow-2xs transition-colors cursor-pointer",
+                          today && "border-primary bg-primary/10",
+                        )}
+                        onClick={() => setViewingAssignment(assignment)}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <div className="font-medium">
+                              {assignment.employeeName}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {assignment.shiftName ||
+                                assignment.shiftTemplate?.name}{" "}
+                              •{" "}
+                              {formatTime(
+                                assignment.shiftStartTime ||
+                                  assignment.shiftTemplate?.startTime,
+                              )}{" "}
+                              -{" "}
+                              {formatTime(
+                                assignment.shiftEndTime ||
+                                  assignment.shiftTemplate?.endTime,
+                              )}
                             </div>
                           </div>
-
-                          <Badge
-                            variant={
-                              assignment.status === "COMPLETED"
-                                ? "default"
-                                : assignment.status === "SWAPPED"
-                                  ? "secondary"
-                                  : assignment.status === "CANCELLED"
-                                    ? "destructive"
-                                    : "outline"
-                            }
-                          >
-                            {getEnumLabel(
-                              "shiftAssignmentStatus",
-                              assignment.status,
-                              tEnums,
-                            )}
-                          </Badge>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-end gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.max(0, p - 1))}
-                    disabled={page === 0}
-                  >
-                    <ChevronLeft />
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {page + 1} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setPage((p) => Math.min(totalPages - 1, p + 1))
-                    }
-                    disabled={page >= totalPages - 1}
-                  >
-                    <ChevronRight />
-                  </Button>
+                        <Badge
+                          variant={
+                            assignment.status === "COMPLETED"
+                              ? "default"
+                              : assignment.status === "SWAPPED"
+                                ? "secondary"
+                                : assignment.status === "CANCELLED"
+                                  ? "destructive"
+                                  : "outline"
+                          }
+                        >
+                          {getEnumLabel(
+                            "shiftAssignmentStatus",
+                            assignment.status,
+                            tEnums,
+                          )}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              );
+            })}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-end gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                >
+                  <ChevronLeft />
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  {page + 1} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                  }
+                  disabled={page >= totalPages - 1}
+                >
+                  <ChevronRight />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </GlassCard>
 
       {/* Assignment Dialog */}
       <ShiftAssignmentDialog

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LoginDialog } from "@/app/[locale]/_components/_header/_login-dialog";
 import { ClearableInput } from "@/components/ui/clearable-input";
-import { CardDescription, CardTitle } from "@/components/ui/card";
+
 import {
   Building2,
   User,
@@ -227,10 +227,10 @@ const Step1: NextPage<Props> = ({
     <div className="grid md:grid-cols-2 md:border md:p-6 md:rounded-xl md:shadow-md">
       <div className="md:col-span-2 space-y-6">
         <div className="space-y-2 text-center">
-          <CardTitle className="text-2xl">{tRegister("title")}</CardTitle>
-          <CardDescription className="text-sm">
+          <h1 className="text-2xl font-semibold">{tRegister("title")}</h1>
+          <p className="text-sm text-muted-foreground">
             {tRegister("description")}
-          </CardDescription>
+          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

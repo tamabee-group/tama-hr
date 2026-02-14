@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ShiftSwapRequest } from "@/types/attendance-records";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDateWithDayOfWeek } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface SwapApprovalDialogProps {
@@ -136,7 +136,10 @@ function SwapApprovalForm({
             </span>
             <span>
               {swapRequest.requesterShift.shiftName} -{" "}
-              {formatDate(swapRequest.requesterShift.workDate, locale)}{" "}
+              {formatDateWithDayOfWeek(
+                swapRequest.requesterShift.workDate,
+                locale,
+              )}{" "}
               {formatTime(swapRequest.requesterShift.shiftStartTime || "")}
             </span>
           </div>
@@ -152,7 +155,10 @@ function SwapApprovalForm({
             <span className="text-muted-foreground">{t("targetShift")}:</span>
             <span>
               {swapRequest.targetShift.shiftName} -{" "}
-              {formatDate(swapRequest.targetShift.workDate, locale)}{" "}
+              {formatDateWithDayOfWeek(
+                swapRequest.targetShift.workDate,
+                locale,
+              )}{" "}
               {formatTime(swapRequest.targetShift.shiftStartTime || "")}
             </span>
           </div>

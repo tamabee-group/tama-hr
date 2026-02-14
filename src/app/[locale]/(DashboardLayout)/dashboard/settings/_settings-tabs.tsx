@@ -2,10 +2,15 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  GlassNav,
+  GlassNavItem,
+  GlassTabs,
+  GlassTabItem,
+} from "@/app/[locale]/_components/_glass-style";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,29 +21,38 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
 import { companySettingsApi } from "@/lib/apis/company-settings-api";
-import { CompanySettings, BreakConfig } from "@/types/attendance-config";
+import {
+  CompanySettings,
+  BreakConfig,
+  AttendanceLocation,
+} from "@/types/attendance-config";
+import {
+  attendanceLocationApi,
+  CreateAttendanceLocationRequest,
+  UpdateAttendanceLocationRequest,
+} from "@/lib/apis/attendance-location-api";
 import { toast } from "sonner";
 import { AttendanceConfigForm } from "./_attendance-config-form";
 import { PayrollConfigForm } from "./_payroll-config-form";
 import { OvertimeConfigForm } from "./_overtime-config-form";
-import { AllowanceConfigForm } from "./_allowance-config-form";
-import { DeductionConfigForm } from "./_deduction-config-form";
+import { SalaryItemTemplateConfig } from "./_salary-item-template-config";
 import { ConfigurationSummaryCard } from "./_configuration-summary-card";
-import {
-  Clock,
-  Wallet,
-  Timer,
-  Gift,
-  MinusCircle,
-  LucideIcon,
-  Save,
-} from "lucide-react";
+import { LocationManagementSection } from "./_location-management-section";
+import { LocationDialog } from "./_location-dialog";
+import { Clock, Wallet, Timer, Gift, LucideIcon, Save } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
-import { ExplanationPanel } from "../_components/_explanation-panel";
+import { ExplanationPanel } from "../../../_components/_explanation-panel";
 
-type TabKey = "attendance" | "payroll" | "overtime" | "allowance" | "deduction";
+type TabKey = "attendance" | "payroll" | "overtime" | "allowanceDeduction";
+
+const STORAGE_KEY = "company-settings-tab";
+const VALID_TABS: TabKey[] = [
+  "attendance",
+  "payroll",
+  "overtime",
+  "allowanceDeduction",
+];
 
 interface TabItem {
   key: TabKey;
@@ -49,9 +63,30 @@ const TAB_ITEMS: TabItem[] = [
   { key: "attendance", icon: Clock },
   { key: "payroll", icon: Wallet },
   { key: "overtime", icon: Timer },
-  { key: "allowance", icon: Gift },
-  { key: "deduction", icon: MinusCircle },
+  { key: "allowanceDeduction", icon: Gift },
 ];
+
+/**
+ * Tạo nav items cho GlassNav từ TAB_ITEMS
+ */
+function createNavItems(t: ReturnType<typeof useTranslations>): GlassNavItem[] {
+  return TAB_ITEMS.map((item) => ({
+    key: item.key,
+    label: t(`tabs.${item.key}`),
+    icon: item.icon,
+  }));
+}
+
+/**
+ * Tạo tab items cho GlassTabs (mobile)
+ */
+function createTabItems(t: ReturnType<typeof useTranslations>): GlassTabItem[] {
+  return TAB_ITEMS.map((item) => ({
+    value: item.key,
+    label: t(`tabs.${item.key}`),
+    icon: <item.icon className="h-4 w-4" />,
+  }));
+}
 
 /**
  * Cấu hình explanation panel cho mỗi tab
@@ -78,15 +113,9 @@ const TAB_EXPLANATIONS: Record<TabKey, TabExplanation> = {
     descKey: "explanations.overtimeDesc",
     tipsKeys: ["explanations.overtimeTip1", "explanations.overtimeTip2"],
   },
-  allowance: {
-    titleKey: "explanations.allowanceTitle",
-    descKey: "explanations.allowanceDesc",
-    tipsKeys: ["explanations.allowanceTip1"],
-  },
-  deduction: {
-    titleKey: "explanations.deductionTitle",
-    descKey: "explanations.deductionDesc",
-    tipsKeys: ["explanations.deductionTip1"],
+  allowanceDeduction: {
+    titleKey: "explanations.allowanceDeductionTitle",
+    descKey: "explanations.allowanceDeductionDesc",
   },
 };
 
@@ -101,7 +130,6 @@ function getDefaultBreakConfig(): BreakConfig {
     minimumBreakMinutes: 45,
     maximumBreakMinutes: 90,
     useLegalMinimum: true,
-    breakTrackingEnabled: true,
     locale: "ja",
     fixedBreakMode: false,
     breakPeriodsPerAttendance: 1,
@@ -122,13 +150,15 @@ export interface SettingsFormRef {
 
 /**
  * Component tabs cho cấu hình công ty
- * - Mobile: Horizontal scroll tabs
- * - Tablet: 2 columns grid navigation
- * - Desktop: Content trái + Sidebar phải
+ * Layout: Sidebar trái (240px) + Content phải
+ * Mobile: GlassTabs horizontal
  */
 export function SettingsTabs() {
   const t = useTranslations("companySettings");
   const tCommon = useTranslations("common");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [settings, setSettings] = useState<CompanySettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -137,8 +167,37 @@ export function SettingsTabs() {
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+  // State cho locations
+  const [locations, setLocations] = useState<AttendanceLocation[]>([]);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [editingLocation, setEditingLocation] =
+    useState<AttendanceLocation | null>(null);
+
   // Ref để gọi save từ form con
   const formSaveRef = useRef<(() => Promise<void>) | null>(null);
+
+  // Đọc tab từ URL hoặc localStorage khi mount
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab") as TabKey | null;
+    if (tabFromUrl && VALID_TABS.includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+      localStorage.setItem(STORAGE_KEY, tabFromUrl);
+    } else {
+      const savedTab = localStorage.getItem(STORAGE_KEY) as TabKey | null;
+      if (savedTab && VALID_TABS.includes(savedTab)) {
+        setActiveTab(savedTab);
+      }
+    }
+  }, [searchParams]);
+
+  // Xử lý chuyển tab
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    localStorage.setItem(STORAGE_KEY, tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
@@ -153,9 +212,20 @@ export function SettingsTabs() {
     }
   }, [tCommon]);
 
+  // Tải danh sách vị trí chấm công
+  const loadLocations = useCallback(async () => {
+    try {
+      const data = await attendanceLocationApi.getLocations(0, 100);
+      setLocations(data.content);
+    } catch (error) {
+      console.error("Failed to load locations:", error);
+    }
+  }, []);
+
   useEffect(() => {
     loadSettings();
-  }, [loadSettings]);
+    loadLocations();
+  }, [loadSettings, loadLocations]);
 
   const handleSaveSuccess = () => {
     setHasChanges(false);
@@ -179,9 +249,36 @@ export function SettingsTabs() {
     }
   };
 
-  /**
-   * Render explanation panel cho tab hiện tại
-   */
+  // Xử lý tạo/cập nhật location
+  const handleLocationSubmit = async (
+    data: CreateAttendanceLocationRequest | UpdateAttendanceLocationRequest,
+  ) => {
+    if (editingLocation) {
+      await attendanceLocationApi.updateLocation(editingLocation.id, data);
+      toast.success(tCommon("updateSuccess"));
+    } else {
+      await attendanceLocationApi.createLocation(
+        data as CreateAttendanceLocationRequest,
+      );
+      toast.success(tCommon("createSuccess"));
+    }
+    setLocationDialogOpen(false);
+    setEditingLocation(null);
+    loadLocations();
+  };
+
+  // Mở dialog thêm location mới
+  const handleAddLocation = () => {
+    setEditingLocation(null);
+    setLocationDialogOpen(true);
+  };
+
+  // Mở dialog sửa location
+  const handleEditLocation = (location: AttendanceLocation) => {
+    setEditingLocation(location);
+    setLocationDialogOpen(true);
+  };
+
   const renderExplanationPanel = () => {
     const explanation = TAB_EXPLANATIONS[activeTab];
     if (!explanation) return null;
@@ -208,56 +305,57 @@ export function SettingsTabs() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header: Title + Save button - sticky ngay dưới header chính */}
-      <div className="sticky top-[50px] z-10 -mx-4 px-4 py-3 bg-background border-b flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <Button onClick={handleSaveClick} disabled={isSaving || !hasChanges}>
-          {isSaving ? <Spinner /> : <Save />}
-          {tCommon("save")}
-        </Button>
+    <div className="min-h-screen">
+      {/* Header với glass effect */}
+      <div className="sticky top-0 z-20 -mx-4 px-4 py-4 backdrop-blur-xl bg-background/80 border-b border-border/50">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <Button
+            onClick={handleSaveClick}
+            disabled={isSaving || !hasChanges}
+            className="gap-2"
+          >
+            {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
+            {tCommon("save")}
+          </Button>
+        </div>
       </div>
 
-      {/* Mobile & Tablet: Horizontal scroll tabs */}
-      <ScrollArea className="md:hidden w-full">
-        <div className="flex gap-2 pb-3">
-          {TAB_ITEMS.map((item) => (
-            <Button
-              key={item.key}
-              variant={activeTab === item.key ? "default" : "outline"}
-              size="sm"
-              className={cn(
-                "shrink-0 gap-2",
-                activeTab === item.key && "shadow-sm",
-              )}
-              onClick={() => setActiveTab(item.key)}
-            >
-              <item.icon className="h-4 w-4" />
-              <span className="hidden sm:inline">{t(`tabs.${item.key}`)}</span>
-              <span className="sm:hidden">{t(`tabs.${item.key}`)}</span>
-            </Button>
-          ))}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      {/* Mobile: GlassTabs */}
+      <div className="lg:hidden py-4">
+        <GlassTabs
+          tabs={createTabItems(t)}
+          value={activeTab}
+          onChange={(value) => handleTabChange(value as TabKey)}
+        />
+      </div>
 
-      {/* Desktop: Content + Sidebar layout */}
-      <div className="flex gap-6">
+      {/* Main layout: Content + Sidebar */}
+      <div className="flex gap-8 py-6">
         {/* Content area */}
-        <div className="flex-1 min-w-0">
-          {/* Explanation Panel cho tab hiện tại */}
+        <main className="flex-1 min-w-0">
           {renderExplanationPanel()}
 
           {activeTab === "attendance" && (
-            <AttendanceConfigForm
-              config={settings.attendanceConfig}
-              breakConfig={settings.breakConfig || getDefaultBreakConfig()}
-              onSaveSuccess={handleSaveSuccess}
-              onChangesUpdate={setHasChanges}
-              setSaveHandler={(handler) => {
-                formSaveRef.current = handler;
-              }}
-            />
+            <>
+              <AttendanceConfigForm
+                config={settings.attendanceConfig}
+                breakConfig={settings.breakConfig || getDefaultBreakConfig()}
+                onSaveSuccess={handleSaveSuccess}
+                onChangesUpdate={setHasChanges}
+                setSaveHandler={(handler) => {
+                  formSaveRef.current = handler;
+                }}
+              />
+              <div className="mt-6 space-y-6">
+                <LocationManagementSection
+                  locations={locations}
+                  onRefresh={loadLocations}
+                  onEdit={handleEditLocation}
+                  onAdd={handleAddLocation}
+                />
+              </div>
+            </>
           )}
           {activeTab === "payroll" && (
             <PayrollConfigForm
@@ -279,9 +377,8 @@ export function SettingsTabs() {
               }}
             />
           )}
-          {activeTab === "allowance" && (
-            <AllowanceConfigForm
-              config={settings.allowanceConfig || { allowances: [] }}
+          {activeTab === "allowanceDeduction" && (
+            <SalaryItemTemplateConfig
               onSaveSuccess={handleSaveSuccess}
               onChangesUpdate={setHasChanges}
               setSaveHandler={(handler) => {
@@ -289,48 +386,31 @@ export function SettingsTabs() {
               }}
             />
           )}
-          {activeTab === "deduction" && (
-            <DeductionConfigForm
-              config={settings.deductionConfig || { deductions: [] }}
-              onSaveSuccess={handleSaveSuccess}
-              onChangesUpdate={setHasChanges}
-              setSaveHandler={(handler) => {
-                formSaveRef.current = handler;
-              }}
+        </main>
+
+        {/* Sidebar - Desktop only (bên phải) */}
+        <aside className="hidden lg:block w-60 shrink-0">
+          <div className="sticky top-24 space-y-4">
+            {/* Navigation */}
+            <GlassNav
+              items={createNavItems(t)}
+              activeKey={activeTab}
+              onSelect={(key: string) => handleTabChange(key as TabKey)}
             />
-          )}
-        </div>
 
-        {/* Desktop: Sidebar navigation - bên phải, sticky dưới title */}
-        <div className="hidden md:flex flex-col gap-2 w-56 shrink-0 sticky top-[120px] h-fit">
-          {/* Navigation Card */}
-          <Card className="py-3">
-            <CardContent className="px-3">
-              <nav className="flex flex-col gap-1">
-                {TAB_ITEMS.map((item) => (
-                  <Button
-                    key={item.key}
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "justify-start gap-3 h-10",
-                      activeTab === item.key &&
-                        "bg-primary/10 text-primary font-medium",
-                    )}
-                    onClick={() => setActiveTab(item.key)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {t(`tabs.${item.key}`)}
-                  </Button>
-                ))}
-              </nav>
-            </CardContent>
-          </Card>
-
-          {/* Configuration Summary Card */}
-          <ConfigurationSummaryCard settings={settings} />
-        </div>
+            {/* Summary Card */}
+            <ConfigurationSummaryCard settings={settings} />
+          </div>
+        </aside>
       </div>
+
+      {/* Dialog tạo/sửa vị trí chấm công */}
+      <LocationDialog
+        open={locationDialogOpen}
+        onOpenChange={setLocationDialogOpen}
+        location={editingLocation}
+        onSubmit={handleLocationSubmit}
+      />
 
       {/* Dialog xác nhận */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -355,37 +435,35 @@ export function SettingsTabs() {
 
 function SettingsTabsSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen">
       {/* Header skeleton */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
+      <div className="sticky top-0 z-20 -mx-4 px-4 py-4 backdrop-blur-xl bg-background/80 border-b">
+        <div className="flex items-center justify-between">
           <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-10 w-24" />
         </div>
-        <Skeleton className="h-10 w-20" />
       </div>
 
       {/* Mobile tabs skeleton */}
-      <div className="md:hidden">
-        <div className="flex gap-2 overflow-hidden">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-9 w-24 shrink-0" />
-          ))}
-        </div>
+      <div className="lg:hidden py-4">
+        <Skeleton className="h-12 w-full rounded-2xl" />
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex gap-8 py-6">
         {/* Content skeleton */}
-        <div className="flex-1 space-y-6">
-          <Skeleton className="h-48 w-full rounded-lg" />
-          <Skeleton className="h-32 w-full rounded-lg" />
-          <Skeleton className="h-40 w-full rounded-lg" />
-        </div>
+        <main className="flex-1 space-y-6">
+          <Skeleton className="h-48 w-full rounded-2xl" />
+          <Skeleton className="h-32 w-full rounded-2xl" />
+          <Skeleton className="h-40 w-full rounded-2xl" />
+        </main>
 
-        {/* Desktop sidebar skeleton */}
-        <div className="hidden md:block w-56 shrink-0">
-          <Skeleton className="h-64 w-full rounded-lg" />
-        </div>
+        {/* Sidebar skeleton (bên phải) */}
+        <aside className="hidden lg:block w-60 shrink-0">
+          <div className="space-y-4">
+            <Skeleton className="h-48 w-full rounded-2xl" />
+            <Skeleton className="h-40 w-full rounded-2xl" />
+          </div>
+        </aside>
       </div>
     </div>
   );

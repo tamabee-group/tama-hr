@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -130,6 +131,15 @@ html {
     font-family: var(--font-kanit), sans-serif;
   }
 
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* html::-webkit-scrollbar {
     width: 6px;
   } */
@@ -240,4 +250,20 @@ html {
 
 .animate-float-simple {
   animation: float-simple 3s ease-in-out infinite;
+}
+
+/* Animation lắc chuông khi có thông báo chưa đọc */
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-12deg); }
+  30% { transform: rotate(10deg); }
+  40% { transform: rotate(-8deg); }
+  50% { transform: rotate(4deg); }
+  60% { transform: rotate(0deg); }
+}
+
+.animate-bell-shake {
+  animation: bell-shake 1.5s ease-in-out infinite;
+  transform-origin: top center;
 }

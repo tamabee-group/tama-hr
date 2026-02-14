@@ -23,7 +23,8 @@ import {
   PayrollAdjustmentInput,
 } from "@/types/attendance-records";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatPayslip } from "@/lib/utils/format-currency";
+import { useAuth } from "@/hooks/use-auth";
 
 interface PayrollAdjustmentDialogProps {
   open: boolean;
@@ -48,6 +49,8 @@ export function PayrollAdjustmentDialog({
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tValidation = useTranslations("validation");
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // Form state
   const [adjustmentAmount, setAdjustmentAmount] = useState("");
@@ -138,7 +141,7 @@ export function PayrollAdjustmentDialog({
                 {t("breakdown.currentNetSalary")}
               </span>
               <span className="font-bold text-green-600">
-                {formatCurrency(item.netSalary)}
+                {formatPayslip(item.netSalary, companyLocale)}
               </span>
             </div>
           </div>
@@ -203,7 +206,7 @@ export function PayrollAdjustmentDialog({
                   {t("breakdown.newNetSalary")}
                 </span>
                 <span className="text-lg font-bold text-blue-600">
-                  {formatCurrency(calculateNewNetSalary())}
+                  {formatPayslip(calculateNewNetSalary(), companyLocale)}
                 </span>
               </div>
             </div>

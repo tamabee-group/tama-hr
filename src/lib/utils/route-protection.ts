@@ -5,6 +5,13 @@ import { TAMABEE_ADMIN_ROLES } from "@/types/auth";
 const LOCALES = ["vi", "en", "ja"];
 
 /**
+ * Kết quả kiểm tra quyền truy cập route
+ */
+export type RouteAccessResult =
+  | { allowed: true }
+  | { allowed: false; reason: "unauthorized_role" | "missing_tenant_domain" };
+
+/**
  * Loại bỏ locale prefix từ pathname
  * /vi/admin/companies -> /admin/companies
  * /admin/companies -> /admin/companies
@@ -38,20 +45,20 @@ export function isDashboardRoute(pathname: string): boolean {
 }
 
 /**
- * Kết quả kiểm tra quyền truy cập route
+ * Kiểm tra path có phải support route không
+ * Support routes: /support, /support/*, /vi/support, /vi/support/*
  */
-export type RouteAccessResult =
-  | { allowed: true }
-  | { allowed: false; reason: "unauthorized_role" | "missing_tenant_domain" };
+export function isSupportRoute(pathname: string): boolean {
+  const pathWithoutLocale = removeLocalePrefix(pathname);
+  return (
+    pathWithoutLocale === "/support" ||
+    pathWithoutLocale.startsWith("/support/")
+  );
+}
 
 /**
  * Kiểm tra quyền truy cập admin route
  * Chỉ ADMIN_TAMABEE và MANAGER_TAMABEE được phép truy cập
- *
- * Property 5: Admin Route Protection
- * For any request to /admin/* routes, the middleware SHALL allow access
- * only for users with ADMIN_TAMABEE or MANAGER_TAMABEE role.
- * All other roles SHALL be redirected to /unauthorized.
  */
 export function checkAdminRouteAccess(role: UserRole): RouteAccessResult {
   if (TAMABEE_ADMIN_ROLES.includes(role)) {
@@ -63,11 +70,6 @@ export function checkAdminRouteAccess(role: UserRole): RouteAccessResult {
 /**
  * Kiểm tra quyền truy cập dashboard route
  * Cần có tenantDomain (kể cả "tamabee")
- *
- * Property 6: Dashboard Route Protection
- * For any request to /dashboard/* routes, the middleware SHALL allow access
- * only for users with valid tenantDomain in JWT (including "tamabee").
- * Users without tenantDomain SHALL be redirected to /unauthorized.
  */
 export function checkDashboardRouteAccess(
   tenantDomain: string | null | undefined,
@@ -76,6 +78,22 @@ export function checkDashboardRouteAccess(
     return { allowed: true };
   }
   return { allowed: false, reason: "missing_tenant_domain" };
+}
+
+/**
+ * Kiểm tra quyền truy cập support route
+ * Tất cả Tamabee roles được phép truy cập
+ */
+export function checkSupportRouteAccess(role: UserRole): RouteAccessResult {
+  const allowedRoles: UserRole[] = [
+    "EMPLOYEE_TAMABEE",
+    "ADMIN_TAMABEE",
+    "MANAGER_TAMABEE",
+  ];
+  if (allowedRoles.includes(role)) {
+    return { allowed: true };
+  }
+  return { allowed: false, reason: "unauthorized_role" };
 }
 
 /**
@@ -90,6 +108,11 @@ export function checkRouteAccess(
   // Admin routes - chỉ Tamabee admin
   if (isAdminRoute(pathname)) {
     return checkAdminRouteAccess(role);
+  }
+
+  // Support routes - Tamabee employees
+  if (isSupportRoute(pathname)) {
+    return checkSupportRouteAccess(role);
   }
 
   // Dashboard routes - cần tenantDomain

@@ -18,12 +18,13 @@ import {
 } from "@/components/ui/select";
 
 import { contractApi } from "@/lib/apis/contract-api";
+import { companyEmployeesApi } from "@/lib/apis/company-employees";
 import { EmploymentContract } from "@/types/attendance-records";
 import {
   CONTRACT_TYPE_COLORS,
   CONTRACT_STATUS_COLORS,
 } from "@/types/attendance-enums";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { SupportedLocale } from "@/lib/utils/format-currency";
@@ -47,6 +48,9 @@ export function ContractTable() {
 
   // State
   const [allContracts, setAllContracts] = useState<EmploymentContract[]>([]);
+  const [allEmployees, setAllEmployees] = useState<
+    Array<{ id: number; code: string; name: string }>
+  >([]);
   const [loading, setLoading] = useState(true);
 
   // Filter state
@@ -62,12 +66,23 @@ export function ContractTable() {
   const [selectedEmployeeIdForCreate, setSelectedEmployeeIdForCreate] =
     useState<number | null>(null);
 
-  // Fetch contracts từ API
-  const fetchContracts = useCallback(async () => {
+  // Fetch contracts và employees từ API
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await contractApi.getContracts(0, DEFAULT_LIMIT, {});
-      setAllContracts(data.content);
+      const [contractsData, employeesData] = await Promise.all([
+        contractApi.getContracts(0, DEFAULT_LIMIT, {}),
+        companyEmployeesApi.getEmployees(0, 200),
+      ]);
+      setAllContracts(contractsData.content);
+      // Map employees thành format cần thiết
+      setAllEmployees(
+        employeesData.content.map((emp) => ({
+          id: emp.id,
+          code: emp.employeeCode || "",
+          name: emp.profile?.name || emp.email,
+        })),
+      );
     } catch (error) {
       toast.error(getErrorMessage((error as Error).message, tErrors));
     } finally {
@@ -76,11 +91,11 @@ export function ContractTable() {
   }, [tErrors]);
 
   useEffect(() => {
-    fetchContracts();
-  }, [fetchContracts]);
+    fetchData();
+  }, [fetchData]);
 
-  // Lấy danh sách nhân viên unique từ contracts
-  const employeeOptions = useMemo(() => {
+  // Lấy danh sách nhân viên unique từ contracts (cho filter)
+  const employeeFilterOptions = useMemo(() => {
     const uniqueEmployees = new Map<
       number,
       { id: number; code: string; name: string }
@@ -154,7 +169,7 @@ export function ContractTable() {
   const handleSuccess = () => {
     setShowCreateDialog(false);
     setShowDetailDialog(false);
-    fetchContracts();
+    fetchData();
   };
 
   // Kiểm tra contract sắp hết hạn (trong 30 ngày)
@@ -261,11 +276,11 @@ export function ContractTable() {
       <ExpiringContractsBadge onViewContract={handleViewDetail} />
 
       {/* Filters & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-4">
           {/* Type Filter */}
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-full sm:w-[200px]">
               <SelectValue placeholder={t("contractType")} />
             </SelectTrigger>
             <SelectContent>
@@ -279,7 +294,7 @@ export function ContractTable() {
 
           {/* Status Filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-full sm:w-[200px]">
               <SelectValue placeholder={tCommon("status")} />
             </SelectTrigger>
             <SelectContent>
@@ -294,12 +309,12 @@ export function ContractTable() {
 
           {/* Employee Filter */}
           <Select value={filterEmployee} onValueChange={setFilterEmployee}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full sm:w-[200px] col-span-2 sm:col-span-1">
               <SelectValue placeholder={t("selectEmployee")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{tCommon("all")}</SelectItem>
-              {employeeOptions.map((emp) => (
+              {employeeFilterOptions.map((emp) => (
                 <SelectItem key={emp.id} value={emp.id.toString()}>
                   {emp.code} - {emp.name}
                 </SelectItem>
@@ -309,7 +324,10 @@ export function ContractTable() {
         </div>
 
         {/* Create Button */}
-        <Button onClick={() => setShowCreateDialog(true)}>
+        <Button
+          onClick={() => setShowCreateDialog(true)}
+          className="w-full sm:w-auto"
+        >
           <Plus className="h-4 w-4 mr-2" />
           {t("create")}
         </Button>
@@ -339,7 +357,7 @@ export function ContractTable() {
           setSelectedEmployeeIdForCreate(null);
         }}
         onSuccess={handleSuccess}
-        availableEmployees={employeeOptions}
+        availableEmployees={allEmployees}
         currentContract={currentContractForSelectedEmployee}
         onEmployeeChange={setSelectedEmployeeIdForCreate}
       />

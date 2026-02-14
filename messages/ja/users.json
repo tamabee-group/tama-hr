@@ -11,7 +11,7 @@
   "payroll": "給与",
   "featureUpdating": "機能は更新中です",
   "noUsers": "ユーザーがまだいません",
-  "searchEmail": "メールを検索...",
+  "searchPlaceholder": "コードまたは名前で検索...",
   "referralCode": "紹介コード",
   "viewAttendance": "勤怠を見る",
   "viewPayroll": "給与を見る",

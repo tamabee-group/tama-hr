@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ClearableInput } from "@/components/ui/clearable-input";
-import { CardDescription, CardTitle } from "@/components/ui/card";
 import {
   CheckCircle2,
   Building2,
@@ -54,8 +53,10 @@ const Step4: NextPage<Props> = ({
         <div className="flex justify-center mb-4">
           <CheckCircle2 className="h-12 w-12 text-primary" />
         </div>
-        <CardTitle className="text-2xl">{tRegister("confirmTitle")}</CardTitle>
-        <CardDescription>{tRegister("confirmDescription")}</CardDescription>
+        <h1 className="text-2xl font-semibold">{tRegister("confirmTitle")}</h1>
+        <p className="text-muted-foreground">
+          {tRegister("confirmDescription")}
+        </p>
       </div>
 
       <div>

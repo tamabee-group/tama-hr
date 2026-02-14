@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { Loader2, CalendarIcon, Send } from "lucide-react";
 import { toast } from "sonner";
-import { format, differenceInDays, addDays } from "date-fns";
+import { differenceInDays, addDays } from "date-fns";
 import { DateRange } from "react-day-picker";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassCard } from "../../../_components/_glass-style/_glass-card";
+import { ReasonTemplateSelect } from "@/app/[locale]/_components/_shared/_reason-template-select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -25,7 +24,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
 import { leaveApi, CreateLeaveRequest } from "@/lib/apis/leave-api";
 import { departmentApi } from "@/lib/apis/department-api";
 import { getApprovers, ApproverInfo } from "@/lib/apis/company-employees";
@@ -34,17 +32,32 @@ import { DefaultApprover } from "@/types/department";
 import { LEAVE_TYPES, LeaveType } from "@/types/attendance-enums";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { useAuth } from "@/hooks/use-auth";
+import { formatDate, formatDateForApi } from "@/lib/utils/format-date-time";
+import type { SupportedLocale } from "@/lib/utils/format-currency";
 
-/**
- * Component form tạo yêu cầu nghỉ phép
- * Responsive design: vertical stacking trên mobile, full-width inputs
- */
-export function LeaveRequestForm() {
-  const t = useTranslations("leave");
+// ============================================
+// Types
+// ============================================
+
+interface LeaveRequestFormProps {
+  balances: LeaveBalance[];
+  onSuccess: () => void;
+}
+
+// ============================================
+// Component
+// ============================================
+
+export function LeaveRequestForm({
+  balances,
+  onSuccess,
+}: LeaveRequestFormProps) {
+  const t = useTranslations("portal.leave");
   const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
   const tErrors = useTranslations("errors");
   const { user } = useAuth();
+  const locale = useLocale() as SupportedLocale;
 
   // Form state
   const [leaveType, setLeaveType] = useState<LeaveType | "">("");
@@ -54,28 +67,11 @@ export function LeaveRequestForm() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Balance state
-  const [balances, setBalances] = useState<LeaveBalance[]>([]);
-  const [loadingBalance, setLoadingBalance] = useState(true);
-
   // Approver state
   const [approvers, setApprovers] = useState<ApproverInfo[]>([]);
   const [defaultApprover, setDefaultApprover] =
     useState<DefaultApprover | null>(null);
   const [loadingApprovers, setLoadingApprovers] = useState(true);
-
-  // Fetch leave balance
-  const fetchBalance = useCallback(async () => {
-    setLoadingBalance(true);
-    try {
-      const data = await leaveApi.getMyLeaveBalance();
-      setBalances(data);
-    } catch (error) {
-      console.error("Failed to fetch balance:", error);
-    } finally {
-      setLoadingBalance(false);
-    }
-  }, []);
 
   // Fetch approvers và default approver
   const fetchApprovers = useCallback(async () => {
@@ -102,9 +98,8 @@ export function LeaveRequestForm() {
   }, [user?.id]);
 
   useEffect(() => {
-    fetchBalance();
     fetchApprovers();
-  }, [fetchBalance, fetchApprovers]);
+  }, [fetchApprovers]);
 
   // Calculate total days
   const totalDays =
@@ -142,11 +137,11 @@ export function LeaveRequestForm() {
     }
 
     if (dateRange?.from && dateRange?.to && dateRange.from > dateRange.to) {
-      newErrors.dateRange = t("messages.invalidDateRange");
+      newErrors.dateRange = t("invalidDateRange");
     }
 
     if (!isBalanceSufficient) {
-      newErrors.balance = t("messages.insufficientBalance");
+      newErrors.balance = t("insufficientBalance");
     }
 
     setErrors(newErrors);
@@ -159,8 +154,8 @@ export function LeaveRequestForm() {
 
     const data: CreateLeaveRequest = {
       leaveType: leaveType as LeaveType,
-      startDate: format(dateRange!.from!, "yyyy-MM-dd"),
-      endDate: format(dateRange!.to!, "yyyy-MM-dd"),
+      startDate: formatDateForApi(dateRange!.from!)!,
+      endDate: formatDateForApi(dateRange!.to!)!,
       reason: reason.trim(),
       approverId: approverId || undefined,
     };
@@ -168,7 +163,7 @@ export function LeaveRequestForm() {
     try {
       setIsProcessing(true);
       await leaveApi.createLeaveRequest(data);
-      toast.success(t("messages.requestSuccess"));
+      toast.success(t("requestSuccess"));
 
       // Reset form
       setLeaveType("");
@@ -180,29 +175,26 @@ export function LeaveRequestForm() {
       }
       setErrors({});
 
-      // Refresh balance
-      fetchBalance();
+      onSuccess();
     } catch (error) {
       const errorCode = (error as { errorCode?: string })?.errorCode;
-      toast.error(
-        getErrorMessage(errorCode, tErrors, t("messages.requestError")),
-      );
+      toast.error(getErrorMessage(errorCode, tErrors, t("requestError")));
     } finally {
       setIsProcessing(false);
     }
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3 sm:pb-6">
-        <CardTitle className="text-base sm:text-lg">
-          {t("requestLeave")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 sm:space-y-5">
-        {/* Leave Type - Full width */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <Label className="text-sm">{t("form.type")}</Label>
+    <GlassCard className="p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <Send className="h-5 w-5 text-primary" />
+        <h3 className="font-semibold">{t("requestLeave")}</h3>
+      </div>
+
+      <div className="space-y-5">
+        {/* Leave Type */}
+        <div className="space-y-2">
+          <Label className="text-sm">{t("type")}</Label>
           <Select
             value={leaveType}
             onValueChange={(value) => {
@@ -213,11 +205,11 @@ export function LeaveRequestForm() {
           >
             <SelectTrigger
               className={cn(
-                "w-full h-10 sm:h-9",
-                errors.leaveType && "border-destructive",
+                "w-full h-11 rounded-xl bg-white/50 dark:bg-white/5 border-0",
+                errors.leaveType && "ring-2 ring-destructive",
               )}
             >
-              <SelectValue placeholder={t("form.typePlaceholder")} />
+              <SelectValue placeholder={t("selectType")} />
             </SelectTrigger>
             <SelectContent>
               {LEAVE_TYPES.map((type) => (
@@ -228,33 +220,27 @@ export function LeaveRequestForm() {
             </SelectContent>
           </Select>
           {errors.leaveType && (
-            <span className="text-xs sm:text-sm text-destructive">
-              {errors.leaveType}
-            </span>
+            <span className="text-xs text-destructive">{errors.leaveType}</span>
           )}
-
-          {/* Show balance for selected type */}
-          {currentBalance && !loadingBalance && (
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              {t("balance.remaining")}: {currentBalance.remainingDays} /{" "}
+          {currentBalance && (
+            <p className="text-xs text-muted-foreground">
+              {t("remaining")}: {currentBalance.remainingDays} /{" "}
               {currentBalance.totalDays}
             </p>
           )}
         </div>
 
-        {/* Date Range - Full width */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <Label className="text-sm">
-            {t("form.startDate")} - {t("form.endDate")}
-          </Label>
+        {/* Date Range */}
+        <div className="space-y-2">
+          <Label className="text-sm">{t("dateRange")}</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full h-10 sm:h-9 justify-start text-left font-normal",
+                  "w-full h-11 justify-start text-left font-normal rounded-xl bg-white/50 dark:bg-white/5 border-0",
                   !dateRange && "text-muted-foreground",
-                  errors.dateRange && "border-destructive",
+                  errors.dateRange && "ring-2 ring-destructive",
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
@@ -262,14 +248,14 @@ export function LeaveRequestForm() {
                   {dateRange?.from ? (
                     dateRange.to ? (
                       <>
-                        {format(dateRange.from, "PPP")} -{" "}
-                        {format(dateRange.to, "PPP")}
+                        {formatDate(dateRange.from, locale)} -{" "}
+                        {formatDate(dateRange.to, locale)}
                       </>
                     ) : (
-                      format(dateRange.from, "PPP")
+                      formatDate(dateRange.from, locale)
                     )
                   ) : (
-                    t("form.startDate")
+                    t("selectDateRange")
                   )}
                 </span>
               </Button>
@@ -306,52 +292,35 @@ export function LeaveRequestForm() {
             </PopoverContent>
           </Popover>
           {errors.dateRange && (
-            <span className="text-xs sm:text-sm text-destructive">
-              {errors.dateRange}
-            </span>
+            <span className="text-xs text-destructive">{errors.dateRange}</span>
           )}
-
-          {/* Show total days */}
           {totalDays > 0 && (
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              {t("table.days")}: {totalDays}
+            <p className="text-xs text-muted-foreground">
+              {t("totalDays")}: {totalDays}
             </p>
           )}
-
-          {/* Balance warning */}
           {errors.balance && (
-            <span className="text-xs sm:text-sm text-destructive">
-              {errors.balance}
-            </span>
+            <span className="text-xs text-destructive">{errors.balance}</span>
           )}
         </div>
 
-        {/* Reason - Full width */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <Label className="text-sm">{t("form.reason")}</Label>
-          <Textarea
+        {/* Reason */}
+        <div className="space-y-2">
+          <Label className="text-sm">{t("reason")}</Label>
+          <ReasonTemplateSelect
+            category="leave"
             value={reason}
-            onChange={(e) => {
-              setReason(e.target.value);
+            onChange={(value) => {
+              setReason(value);
               if (errors.reason) setErrors((prev) => ({ ...prev, reason: "" }));
             }}
-            placeholder={t("form.reasonPlaceholder")}
-            rows={3}
-            className={cn(
-              "w-full resize-none",
-              errors.reason && "border-destructive",
-            )}
+            error={errors.reason}
           />
-          {errors.reason && (
-            <span className="text-xs sm:text-sm text-destructive">
-              {errors.reason}
-            </span>
-          )}
         </div>
 
-        {/* Approver - Full width */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <Label className="text-sm">{t("form.approver")}</Label>
+        {/* Approver */}
+        <div className="space-y-2">
+          <Label className="text-sm">{t("approver")}</Label>
           <Select
             value={approverId?.toString() || ""}
             onValueChange={(value) => {
@@ -363,11 +332,11 @@ export function LeaveRequestForm() {
           >
             <SelectTrigger
               className={cn(
-                "w-full h-10 sm:h-9",
-                errors.approver && "border-destructive",
+                "w-full h-11 rounded-xl bg-white/50 dark:bg-white/5 border-0",
+                errors.approver && "ring-2 ring-destructive",
               )}
             >
-              <SelectValue placeholder={t("form.approverPlaceholder")} />
+              <SelectValue placeholder={t("selectApprover")} />
             </SelectTrigger>
             <SelectContent>
               {approvers.map((approver) => (
@@ -375,7 +344,7 @@ export function LeaveRequestForm() {
                   {approver.name}
                   {defaultApprover?.id === approver.id && (
                     <span className="text-muted-foreground ml-1">
-                      ({t("form.departmentManager")})
+                      ({t("departmentManager")})
                     </span>
                   )}
                 </SelectItem>
@@ -383,27 +352,25 @@ export function LeaveRequestForm() {
             </SelectContent>
           </Select>
           {errors.approver && (
-            <span className="text-xs sm:text-sm text-destructive">
-              {errors.approver}
-            </span>
+            <span className="text-xs text-destructive">{errors.approver}</span>
           )}
           {defaultApprover && (
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              {t("form.defaultApproverHint", { name: defaultApprover.name })}
+            <p className="text-xs text-muted-foreground">
+              {t("defaultApproverHint", { name: defaultApprover.name })}
             </p>
           )}
         </div>
 
-        {/* Submit - Full width, larger touch target on mobile */}
+        {/* Submit Button */}
         <Button
           onClick={handleSubmit}
           disabled={isProcessing}
-          className="w-full min-h-[44px] sm:min-h-[36px] text-sm sm:text-base"
+          className="w-full h-12 rounded-xl text-base"
         >
           {isProcessing && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-          {t("form.submit")}
+          {t("submit")}
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </GlassCard>
   );
 }

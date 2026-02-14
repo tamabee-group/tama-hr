@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { formatTime } from "@/lib/utils/format-date";
+import { formatTime } from "@/lib/utils/format-date-time";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,16 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,8 +32,29 @@ import {
   InputGroupAddon,
   InputGroupText,
 } from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { TimePicker } from "@/components/ui/time-picker";
 import { ShiftTemplate, ShiftTemplateInput } from "@/types/attendance-records";
 import { X } from "lucide-react";
+
+// Danh sách key tên ca mặc định
+const SHIFT_NAME_PRESET_KEYS = [
+  "morning",
+  "noon",
+  "afternoon",
+  "evening",
+  "night",
+  "fullDay",
+];
+
+// Giá trị đặc biệt cho "Khác"
+const OTHER_VALUE = "__OTHER__";
 
 interface ShiftTemplateFormDialogProps {
   open: boolean;
@@ -83,6 +114,13 @@ export function ShiftTemplateFormDialog({
 }: ShiftTemplateFormDialogProps) {
   const t = useTranslations("shifts");
   const tCommon = useTranslations("common");
+  const quickSelectLabel = tCommon("quickSelect");
+
+  // Tạo danh sách preset names từ translations
+  const shiftNamePresets = SHIFT_NAME_PRESET_KEYS.map((key) => ({
+    key,
+    label: t(`shiftNames.${key}`),
+  }));
 
   const [formData, setFormData] = useState<ShiftTemplateInput>(() =>
     getFormDataFromTemplate(
@@ -93,19 +131,32 @@ export function ShiftTemplateFormDialog({
     ),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isCustomName, setIsCustomName] = useState(false);
+  const [showOvernightConfirm, setShowOvernightConfirm] = useState(false);
+
+  // Kiểm tra ca qua đêm (endTime < startTime)
+  const isOvernightShift = (start: string, end: string): boolean => {
+    if (!start || !end) return false;
+    return end < start;
+  };
+
+  // Kiểm tra xem tên có trong danh sách preset không
+  const isPresetName = (name: string) =>
+    shiftNamePresets.some((preset) => preset.label === name);
 
   // Reset form khi template thay đổi
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFormData(
-      getFormDataFromTemplate(
-        template,
-        defaultStartTime,
-        defaultEndTime,
-        defaultBreakMinutes,
-      ),
+    const newFormData = getFormDataFromTemplate(
+      template,
+      defaultStartTime,
+      defaultEndTime,
+      defaultBreakMinutes,
     );
+    setFormData(newFormData);
+    // Kiểm tra xem tên có trong danh sách preset không
+    setIsCustomName(newFormData.name !== "" && !isPresetName(newFormData.name));
     setErrors({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template, open, defaultStartTime, defaultEndTime, defaultBreakMinutes]);
 
   // Xử lý thay đổi field
@@ -147,6 +198,17 @@ export function ShiftTemplateFormDialog({
   const handleSubmit = () => {
     if (!validate()) return;
 
+    // Kiểm tra ca qua đêm
+    if (isOvernightShift(formData.startTime, formData.endTime)) {
+      setShowOvernightConfirm(true);
+      return;
+    }
+
+    performSubmit();
+  };
+
+  // Thực hiện submit
+  const performSubmit = () => {
     // Format time to HH:mm:ss
     const data: ShiftTemplateInput = {
       ...formData,
@@ -161,6 +223,7 @@ export function ShiftTemplateFormDialog({
     };
 
     onSubmit(data);
+    setShowOvernightConfirm(false);
   };
 
   return (
@@ -177,15 +240,43 @@ export function ShiftTemplateFormDialog({
 
         <div className="space-y-4 mt-6">
           {/* Tên ca */}
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="name">{t("templateName")}</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              placeholder={t("templateNamePlaceholder")}
-              className={errors.name ? "border-destructive" : ""}
-            />
+            <Select
+              value={isCustomName ? OTHER_VALUE : formData.name}
+              onValueChange={(value) => {
+                if (value === OTHER_VALUE) {
+                  setIsCustomName(true);
+                  handleChange("name", "");
+                } else {
+                  setIsCustomName(false);
+                  handleChange("name", value);
+                }
+              }}
+            >
+              <SelectTrigger
+                id="name"
+                className={errors.name ? "border-destructive" : ""}
+              >
+                <SelectValue placeholder={t("templateNamePlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {shiftNamePresets.map((preset) => (
+                  <SelectItem key={preset.key} value={preset.label}>
+                    {preset.label}
+                  </SelectItem>
+                ))}
+                <SelectItem value={OTHER_VALUE}>{tCommon("other")}</SelectItem>
+              </SelectContent>
+            </Select>
+            {isCustomName && (
+              <Input
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder={t("templateNamePlaceholder")}
+                className={errors.name ? "border-destructive" : ""}
+              />
+            )}
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name}</p>
             )}
@@ -195,11 +286,11 @@ export function ShiftTemplateFormDialog({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startTime">{t("startTime")}</Label>
-              <Input
+              <TimePicker
                 id="startTime"
-                type="time"
                 value={formData.startTime}
-                onChange={(e) => handleChange("startTime", e.target.value)}
+                onChange={(value) => handleChange("startTime", value)}
+                quickSelectLabel={quickSelectLabel}
                 className={errors.startTime ? "border-destructive" : ""}
               />
               {errors.startTime && (
@@ -208,11 +299,11 @@ export function ShiftTemplateFormDialog({
             </div>
             <div>
               <Label htmlFor="endTime">{t("endTime")}</Label>
-              <Input
+              <TimePicker
                 id="endTime"
-                type="time"
                 value={formData.endTime}
-                onChange={(e) => handleChange("endTime", e.target.value)}
+                onChange={(value) => handleChange("endTime", value)}
+                quickSelectLabel={quickSelectLabel}
                 className={errors.endTime ? "border-destructive" : ""}
               />
               {errors.endTime && (
@@ -311,6 +402,30 @@ export function ShiftTemplateFormDialog({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {/* Alert xác nhận ca qua đêm */}
+      <AlertDialog
+        open={showOvernightConfirm}
+        onOpenChange={setShowOvernightConfirm}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("overnightShift.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("overnightShift.description", {
+                startTime: formData.startTime,
+                endTime: formData.endTime,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={performSubmit}>
+              {tCommon("confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

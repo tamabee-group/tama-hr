@@ -1,4 +1,3 @@
-import { getTranslations } from "next-intl/server";
 import { apiServer } from "@/lib/utils/fetch-server";
 import { Company } from "@/types/company";
 import { CompanyProfileForm } from "./_company-profile-form";
@@ -12,19 +11,9 @@ const EDIT_ROLES = [
 ];
 
 export default async function ProfilePage() {
-  const t = await getTranslations("companies");
-
-  const [company, user] = await Promise.all([
-    apiServer.get<Company>("/api/company/profile"),
-    apiServer.get<User>("/api/auth/me"),
-  ]);
-
+  const user = await apiServer.get<User>("/api/auth/me");
+  const company = await apiServer.get<Company>("/api/company/profile");
   const canEdit = EDIT_ROLES.includes(user.role);
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t("companyInfo")}</h1>
-      <CompanyProfileForm company={company} canEdit={canEdit} />
-    </div>
-  );
+  return <CompanyProfileForm company={company} canEdit={canEdit} />;
 }

@@ -12,8 +12,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+
+// Template lý do từ chối
+const REJECTION_TEMPLATES = [
+  "invalidTime",
+  "insufficientEvidence",
+  "notMatchPolicy",
+  "duplicateRequest",
+  "other",
+] as const;
 
 interface RejectDialogProps {
   open: boolean;
@@ -38,6 +54,12 @@ export function RejectDialog({
   const t = useTranslations("attendance");
   const tCommon = useTranslations("common");
 
+  // Xử lý chọn template
+  const handleTemplateChange = (templateKey: string) => {
+    const templateText = t(`adjustment.rejectTemplates.${templateKey}`);
+    onReasonChange(templateText);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -48,6 +70,23 @@ export function RejectDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
+          {/* Template select */}
+          <div className="space-y-2">
+            <Label>{t("adjustment.rejectTemplate")}</Label>
+            <Select onValueChange={handleTemplateChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("adjustment.selectTemplate")} />
+              </SelectTrigger>
+              <SelectContent>
+                {REJECTION_TEMPLATES.map((template) => (
+                  <SelectItem key={template} value={template}>
+                    {t(`adjustment.rejectTemplates.${template}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label>{t("adjustment.rejectionReason")}</Label>
             <Textarea
@@ -105,6 +144,12 @@ export function BulkRejectDialog({
   const t = useTranslations("attendance");
   const tCommon = useTranslations("common");
 
+  // Xử lý chọn template
+  const handleTemplateChange = (templateKey: string) => {
+    const templateText = t(`adjustment.rejectTemplates.${templateKey}`);
+    onReasonChange(templateText);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -116,6 +161,23 @@ export function BulkRejectDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
+          {/* Template select */}
+          <div className="space-y-2">
+            <Label>{t("adjustment.rejectTemplate")}</Label>
+            <Select onValueChange={handleTemplateChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("adjustment.selectTemplate")} />
+              </SelectTrigger>
+              <SelectContent>
+                {REJECTION_TEMPLATES.map((template) => (
+                  <SelectItem key={template} value={template}>
+                    {t(`adjustment.rejectTemplates.${template}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label>{t("adjustment.rejectionReason")}</Label>
             <Textarea

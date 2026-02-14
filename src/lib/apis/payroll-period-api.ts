@@ -327,6 +327,14 @@ export async function exportPayrollPdf(periodId: number): Promise<Blob> {
   return response.blob();
 }
 
+/**
+ * Download tất cả payslip PDF của một period dưới dạng ZIP
+ * @client-only
+ */
+export async function downloadAllPayslipsZip(periodId: number): Promise<Blob> {
+  return apiClient.download(`${BASE_URL}/periods/${periodId}/download-all`);
+}
+
 // ============================================
 // Export API object
 // ============================================
@@ -336,9 +344,15 @@ const getEmployeePayslips = async (
   employeeId: number,
   page: number = 0,
   size: number = 20,
+  status?: string,
 ): Promise<PaginatedResponse<PayrollItem>> => {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("size", size.toString());
+  if (status) params.append("status", status);
+
   return apiClient.get<PaginatedResponse<PayrollItem>>(
-    `${BASE_URL}/employee/${employeeId}/payslips?page=${page}&size=${size}`,
+    `${BASE_URL}/employee/${employeeId}/payslips?${params.toString()}`,
   );
 };
 
@@ -491,14 +505,10 @@ async function getPayrollById(id: number): Promise<PayrollItem | null> {
 
 /**
  * Compatibility: Download company payslip PDF
+ * Sử dụng apiClient.download để đảm bảo đi qua proxy với đầy đủ auth
  */
 async function downloadCompanyPayslipPdf(itemId: number): Promise<Blob> {
-  const response = await fetch(`${BASE_URL}/items/${itemId}/download`, {
-    method: "GET",
-    credentials: "include",
-  });
-  if (!response.ok) throw new Error("Failed to download payslip");
-  return response.blob();
+  return apiClient.download(`${BASE_URL}/items/${itemId}/download`);
 }
 
 /**
@@ -508,8 +518,9 @@ async function getEmployeePayrollHistory(
   employeeId: number,
   page: number = 0,
   size: number = 10,
+  status?: string,
 ): Promise<PaginatedResponse<PayrollItem>> {
-  return getEmployeePayslips(employeeId, page, size);
+  return getEmployeePayslips(employeeId, page, size, status);
 }
 
 /**
@@ -562,16 +573,33 @@ async function exportPdf(period: YearMonth): Promise<Blob> {
   throw new Error("Period not found");
 }
 
+/**
+ * Lấy chi tiết payroll item
+ */
+export async function getPayrollItemDetail(
+  itemId: number,
+): Promise<PayrollItem> {
+  const response = await apiClient.get<PayrollItem>(
+    `/api/company/payroll/items/${itemId}`,
+  );
+  return response;
+}
+
+// ============================================
+// Export all functions
+// ============================================
+
 export const payrollPeriodApi = {
   // Payroll Periods
   getPayrollPeriods,
   getPayrollPeriodById,
   getPayrollPeriodByYearMonth,
+  getPayrollPeriodSummary,
   createPayrollPeriod,
   deletePayrollPeriod,
-  getPayrollPeriodSummary,
-  // Workflow
+  // Calculation
   recalculatePayroll,
+  // Workflow
   submitForReview,
   approvePayroll,
   rejectPayroll,
@@ -579,6 +607,7 @@ export const payrollPeriodApi = {
   // Payroll Items
   getPayrollItems,
   getPayrollItemById,
+  getPayrollItemDetail,
   adjustPayrollItem,
   getPayrollItemAdjustments,
   getEmployeePayslips,
@@ -586,6 +615,7 @@ export const payrollPeriodApi = {
   // Export
   exportPayrollCsv,
   exportPayrollPdf,
+  downloadAllPayslipsZip,
 };
 
 // Compatibility export for old payrollApi
@@ -593,6 +623,7 @@ export const payrollApi = {
   getPayrollSummary,
   getPayrollRecords,
   getPayrollById,
+  getPayrollItemDetail,
   finalizePayroll,
   previewPayroll,
   downloadCompanyPayslipPdf,

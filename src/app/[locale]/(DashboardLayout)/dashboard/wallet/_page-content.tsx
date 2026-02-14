@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
 import { WalletResponse, getWalletPlanName } from "@/types/wallet";
 import { WalletTransactionResponse } from "@/types/wallet";
 import { DepositRequestResponse } from "@/types/deposit";
@@ -13,9 +14,9 @@ import { TransactionChart } from "./_transaction-chart";
 import { TransactionTable } from "./_transaction-table";
 import { DepositTable } from "./_deposit-table";
 import { DepositForm } from "./_deposit-form";
-import { ImageZoomDialog } from "@/app/[locale]/_components/_image-zoom-dialog";
+import { ImageZoomDialog } from "@/app/[locale]/_components/image";
+import { GlassTabs } from "@/app/[locale]/_components/_glass-style";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import {
   AlertDialog,
@@ -58,6 +59,7 @@ export function PageContent({ locale }: PageContentProps) {
   const [cancelDeposit, setCancelDeposit] =
     useState<DepositRequestResponse | null>(null);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("transactions");
 
   // Kiểm tra có phải Tamabee user không (companyId = 0)
   const isTamabeeUser = user?.companyId === 0;
@@ -95,6 +97,14 @@ export function PageContent({ locale }: PageContentProps) {
 
   useEffect(() => {
     fetchAllData();
+  }, [fetchAllData]);
+
+  // Subscribe to real-time notifications để auto refresh khi deposit được duyệt/từ chối
+  useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("WALLET", () => {
+      fetchAllData();
+    });
+    return unsubscribe;
   }, [fetchAllData]);
 
   /** Mở form nạp tiền */
@@ -136,12 +146,6 @@ export function PageContent({ locale }: PageContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("description")}</p>
-      </div>
-
       {/* Wallet Card + Chart */}
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* Wallet Card - width cố định */}
@@ -181,34 +185,47 @@ export function PageContent({ locale }: PageContentProps) {
       </div>
 
       {/* Tabs: Giao dịch / Yêu cầu nạp tiền */}
-      <Tabs defaultValue="transactions" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="transactions">
-            {t("transactions")} ({transactions.length})
-          </TabsTrigger>
-          {!isTamabeeUser && (
-            <TabsTrigger value="deposits">
-              {tDeposits("title")} ({deposits.length})
-            </TabsTrigger>
+      <div className="space-y-4">
+        <GlassTabs
+          tabs={
+            isTamabeeUser
+              ? [
+                  {
+                    value: "transactions",
+                    label: `${t("transactions")} (${transactions.length})`,
+                  },
+                ]
+              : [
+                  {
+                    value: "transactions",
+                    label: `${t("transactions")} (${transactions.length})`,
+                  },
+                  {
+                    value: "deposits",
+                    label: `${tDeposits("title")} (${deposits.length})`,
+                  },
+                ]
+          }
+          value={activeTab}
+          onChange={setActiveTab}
+        />
+
+        <div className="mt-4">
+          {activeTab === "transactions" ? (
+            <TransactionTable locale={locale} data={transactions} />
+          ) : (
+            !isTamabeeUser && (
+              <DepositTable
+                locale={locale}
+                data={deposits}
+                onViewImage={handleViewImage}
+                onCancel={handleCancelRequest}
+                onDeposit={handleDeposit}
+              />
+            )
           )}
-        </TabsList>
-
-        <TabsContent value="transactions">
-          <TransactionTable locale={locale} data={transactions} />
-        </TabsContent>
-
-        {!isTamabeeUser && (
-          <TabsContent value="deposits">
-            <DepositTable
-              locale={locale}
-              data={deposits}
-              onViewImage={handleViewImage}
-              onCancel={handleCancelRequest}
-              onDeposit={handleDeposit}
-            />
-          </TabsContent>
-        )}
-      </Tabs>
+        </div>
+      </div>
 
       {/* Deposit Form Dialog */}
       <DepositForm

@@ -105,30 +105,22 @@ export default function AdminPlansPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("description")}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchPlans}
-            disabled={loading}
-          >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
-            />
-            {t("refresh")}
-          </Button>
-          <Button size="sm" onClick={handleAddPlan}>
-            <Plus className="h-4 w-4 mr-2" />
-            {t("addPlan")}
-          </Button>
-        </div>
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={fetchPlans}
+          disabled={loading}
+        >
+          <RefreshCw
+            className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
+          {t("refresh")}
+        </Button>
+        <Button size="sm" onClick={handleAddPlan}>
+          <Plus className="h-4 w-4 mr-2" />
+          {t("addPlan")}
+        </Button>
       </div>
 
       {loading ? (

@@ -1,8 +1,49 @@
 {
+  "reasonTemplates": {
+    "selectReason": "Select reason",
+    "customReasonPlaceholder": "Enter specific reason...",
+    "leave": {
+      "sick": "Sick leave, not feeling well enough to work",
+      "fever": "Fever / flu symptoms",
+      "hospital": "Medical appointment / follow-up visit",
+      "family": "Family matters to attend to",
+      "childcare": "Taking care of sick child",
+      "funeral": "Attending family funeral",
+      "wedding": "Attending wedding ceremony",
+      "personal": "Personal matters to handle",
+      "government": "Government paperwork / administrative tasks",
+      "moving": "Moving / relocating",
+      "other": "Other reason"
+    },
+    "swap": {
+      "personal": "Personal matters on that day",
+      "family": "Family matters to attend to",
+      "hospital": "Medical appointment scheduled",
+      "childcare": "Need to take care of child",
+      "schedule": "Personal schedule conflict",
+      "emergency": "Emergency situation",
+      "travel": "Travel plans",
+      "study": "Study / exam schedule",
+      "other": "Other reason"
+    },
+    "adjustment": {
+      "forgot": "Forgot to clock in/out",
+      "systemError": "Time clock system error",
+      "cardError": "Time card error / lost card",
+      "overtime": "Worked overtime but forgot to checkout",
+      "earlyArrival": "Arrived early but didn't clock in",
+      "breakError": "Incorrect break time recorded",
+      "wrongTime": "Clocked wrong time",
+      "other": "Other reason"
+    }
+  },
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
+  "deleteAll": "Delete All",
   "edit": "Edit",
+  "create": "Create",
+  "update": "Update",
   "search": "Search",
   "loading": "Loading...",
   "refresh": "Refresh",
@@ -18,6 +59,8 @@
   "previous": "Previous",
   "submit": "Submit",
   "reset": "Reset",
+  "undo": "Undo",
+  "optional": "optional",
   "noResults": "No results found",
   "errorLoading": "Failed to load data",
   "actions": "Actions",
@@ -29,6 +72,7 @@
   "inactive": "Inactive",
   "yes": "Yes",
   "no": "No",
+  "stt": "#",
   "none": "None",
   "total": "Total",
   "details": "Details",
@@ -57,6 +101,7 @@
   "columns": "Columns",
   "rowsSelected": "row(s) selected",
   "updateSuccess": "Updated successfully",
+  "createSuccess": "Created successfully",
   "updateError": "Failed to update",
   "saveError": "Failed to save",
   "saving": "Saving...",
@@ -69,6 +114,7 @@
   "noImage": "No image",
   "minutes": "minutes",
   "viewAll": "View all",
+  "quickSelect": "Quick select",
   "hours": "hours",
   "overview": "Overview",
   "today": "Today",
@@ -81,6 +127,13 @@
   "systemMode": "System",
   "general": "General",
   "account": "Account",
+  "changePassword": "Reset Password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "passwordChanged": "Password changed successfully",
+  "passwordMismatch": "Passwords do not match",
+  "passwordTooShort": "Password must be at least 8 characters",
   "role": "Role",
   "you": "You",
   "dateOfBirth": "Date of Birth",
@@ -119,6 +172,7 @@
   "processing": "Processing...",
   "required": "Required",
   "pagination": "Showing {from} - {to} of {total}",
+  "other": "Other",
   "inactiveCompany": {
     "title": "Account Suspended",
     "description": "Your company has been suspended due to payment failure. Please deposit to continue using the service.",
@@ -127,5 +181,12 @@
     "reactivateSuccess": "Reactivated successfully! Your account is now active.",
     "insufficientBalance": "Insufficient balance to reactivate. Please deposit more.",
     "alreadyActive": "Account is already active."
+  },
+  "viewExplanation": "View explanation",
+  "retry": "Retry",
+  "inactiveAccount": {
+    "title": "Account Deactivated",
+    "description": "Your account is currently deactivated. Please contact your manager or HR department for assistance.",
+    "logout": "Log out"
   }
 }

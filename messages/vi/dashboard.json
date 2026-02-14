@@ -1,0 +1,51 @@
+{
+  "home": { "title": "Tổng quan" },
+  "employees": {
+    "title": "Nhân viên",
+    "detail": "Chi tiết nhân viên",
+    "create": "Thêm nhân viên"
+  },
+  "attendance": { "title": "Chấm công", "detail": "Chi tiết chấm công" },
+  "payroll": {
+    "title": "Bảng lương",
+    "periodDetail": "Chi tiết kỳ lương",
+    "recordDetail": "Chi tiết lương nhân viên"
+  },
+  "settings": { "title": "Cài đặt" },
+  "leaves": { "title": "Nghỉ phép" },
+  "leaveBalance": { "title": "Quản lý ngày phép" },
+  "contracts": { "title": "Hợp đồng" },
+  "shifts": { "title": "Ca làm việc" },
+  "holidays": { "title": "Ngày nghỉ" },
+  "departments": { "title": "Phòng ban" },
+  "adjustments": { "title": "Điều chỉnh", "detail": "Chi tiết điều chỉnh" },
+  "profile": { "title": "Hồ sơ" },
+  "wallet": { "title": "Ví tiền" },
+  "plans": { "title": "Gói dịch vụ" },
+  "support": { "title": "Hỗ trợ" },
+  "payslip": { "title": "Phiếu lương" },
+  "stats": {
+    "totalEmployees": "Tổng nhân viên",
+    "activeEmployees": "Đang hoạt động",
+    "inactiveEmployees": "Ngừng hoạt động",
+    "todayAttendance": "Chấm công hôm nay",
+    "present": "Có mặt",
+    "absent": "Vắng mặt",
+    "late": "Đi muộn",
+    "onLeave": "Nghỉ phép",
+    "pendingRequests": "Yêu cầu chờ duyệt",
+    "pendingLeave": "Nghỉ phép chờ duyệt",
+    "pendingAdjustment": "Điều chỉnh chờ duyệt",
+    "weeklyAttendance": "Chấm công 7 ngày gần nhất",
+    "monthlyLeave": "Nghỉ phép tháng này",
+    "approved": "Đã duyệt",
+    "rejected": "Từ chối",
+    "pending": "Chờ duyệt",
+    "people": "người",
+    "requests": "yêu cầu",
+    "noData": "Chưa có dữ liệu",
+    "payrollOverview": "Tổng hợp lương 6 tháng",
+    "grossSalary": "Lương gộp",
+    "netSalary": "Lương thực nhận"
+  }
+}

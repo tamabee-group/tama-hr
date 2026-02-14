@@ -1,0 +1,38 @@
+{
+  "title": "Leave Balance Management",
+  "bulkAllocate": "Bulk Allocate",
+  "filter": {
+    "year": "Year",
+    "search": "Search by name or employee code..."
+  },
+  "table": {
+    "employee": "Employee",
+    "employeeCode": "Employee Code",
+    "balanceFormat": "Total/Used/Remaining",
+    "noData": "No leave balance data"
+  },
+  "dialog": {
+    "title": "Update Leave Balance",
+    "description": "Update leave balance for employee",
+    "year": "Year",
+    "totalDays": "Total Days",
+    "usedDays": "Used Days",
+    "remainingDays": "Remaining",
+    "days": "days",
+    "updateSuccess": "Leave balance updated successfully"
+  },
+  "bulkDialog": {
+    "title": "Bulk Allocate Leave Balance",
+    "description": "Allocate leave days to multiple employees at once",
+    "year": "Year",
+    "leaveType": "Leave Type",
+    "totalDays": "Days to Allocate",
+    "applyTo": "Apply to",
+    "allEmployees": "All employees ({count} people)",
+    "selectEmployees": "Select specific employees",
+    "selectAll": "Select all",
+    "confirmation": "Will update for {count} employees",
+    "submit": "Allocate",
+    "success": "Leave balance allocated for {count} employees"
+  }
+}

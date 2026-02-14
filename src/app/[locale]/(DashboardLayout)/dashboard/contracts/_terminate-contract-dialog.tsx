@@ -25,7 +25,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { AlertTriangle } from "lucide-react";
 import { EmploymentContract } from "@/types/attendance-records";
 import { terminateContract } from "@/lib/apis/contract-api";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 

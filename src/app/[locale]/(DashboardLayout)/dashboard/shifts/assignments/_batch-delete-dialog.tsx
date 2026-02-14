@@ -35,7 +35,7 @@ import {
   formatDateForApi,
   formatDate,
   getDayOfWeek,
-} from "@/lib/utils/format-date";
+} from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface BatchDeleteDialogProps {
@@ -398,27 +398,13 @@ export function BatchDeleteDialog({
                   {mode === "single" ? (
                     <>
                       （
-                      {getDayOfWeek(
-                        startDate?.toISOString().split("T")[0] || "",
-                        locale,
-                      )}
-                      ）
-                      {formatDate(
-                        startDate?.toISOString().split("T")[0] || "",
-                        locale,
-                      )}
+                      {getDayOfWeek(formatDateForApi(startDate) || "", locale)}
+                      ）{formatDate(formatDateForApi(startDate) || "", locale)}
                     </>
                   ) : (
                     <>
-                      {formatDate(
-                        startDate?.toISOString().split("T")[0] || "",
-                        locale,
-                      )}{" "}
-                      -{" "}
-                      {formatDate(
-                        endDate?.toISOString().split("T")[0] || "",
-                        locale,
-                      )}
+                      {formatDate(formatDateForApi(startDate) || "", locale)} -{" "}
+                      {formatDate(formatDateForApi(endDate) || "", locale)}
                     </>
                   )}
                 </span>

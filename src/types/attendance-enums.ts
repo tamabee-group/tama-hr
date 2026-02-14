@@ -59,24 +59,6 @@ export const ATTENDANCE_STATUS_COLORS: Record<
 };
 
 // ============================================
-// Payroll Status Enums (Trạng thái bảng lương)
-// ============================================
-
-export const PAYROLL_STATUSES = ["DRAFT", "FINALIZED", "PAID"] as const;
-
-export type PayrollStatus = (typeof PAYROLL_STATUSES)[number];
-
-// Màu sắc cho payroll status badge
-export const PAYROLL_STATUS_COLORS: Record<
-  PayrollStatus,
-  "warning" | "info" | "success"
-> = {
-  DRAFT: "warning",
-  FINALIZED: "info",
-  PAID: "success",
-};
-
-// ============================================
 // Payment Status Enums (Trạng thái thanh toán)
 // ============================================
 
@@ -301,8 +283,6 @@ export const PAYROLL_ITEM_STATUSES = [
   "CALCULATED",
   "ADJUSTED",
   "CONFIRMED",
-  "FINALIZED",
-  "PAID",
 ] as const;
 
 export type PayrollItemStatus = (typeof PAYROLL_ITEM_STATUSES)[number];
@@ -314,8 +294,6 @@ export const PAYROLL_ITEM_STATUS_COLORS: Record<
   CALCULATED: "info",
   ADJUSTED: "warning",
   CONFIRMED: "success",
-  FINALIZED: "info",
-  PAID: "success",
 };
 
 // ============================================

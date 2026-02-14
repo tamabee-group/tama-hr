@@ -1,10 +1,10 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { LogoFull } from "../../_components/_logo";
-import Languages from "../../_components/_language-dropdown";
+import { LanguageDropdown as Languages } from "../theme";
 import NavLinks from "./_nav-links";
 import AuthButtons from "./_auth-buttons";
-import { ToggleTheme } from "../_toggle-theme";
+import { ToggleTheme } from "../theme";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -30,7 +30,9 @@ const Header: NextPage<Props> = ({ className }: Props) => {
         <NavLinks />
 
         <div className="flex gap-1 md:gap-4 items-center">
-          <ToggleTheme />
+          <span className="hidden md:inline-block">
+            <ToggleTheme />
+          </span>
           <Languages />
           <AuthButtons />
         </div>

@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import {
   ConfirmChangesDialog,
@@ -44,7 +44,7 @@ import {
   getUserRoleLabel,
 } from "@/lib/utils/get-enum-label";
 import { useZipcode } from "@/hooks/use-zipcode";
-import { ImageCropDialog } from "@/app/[locale]/_components/_image-crop-dialog";
+import { ImageCropDialog } from "@/app/[locale]/_components/image";
 import { compressImageToWebP } from "@/lib/utils/compress-image-to-webp";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -393,43 +393,42 @@ export function BaseUserProfileForm({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-row items-center justify-between">
-          <CardTitle>{title}</CardTitle>
-          {!isEditing ? (
-            <Button size="sm" onClick={() => setIsEditing(true)}>
-              <Edit className="h-4 w-4 mr-2" />
-              {tCommon("edit")}
+    <GlassSection
+      title={title}
+      headerAction={
+        !isEditing ? (
+          <Button size="sm" onClick={() => setIsEditing(true)}>
+            <Edit className="h-4 w-4 mr-2" />
+            {tCommon("edit")}
+          </Button>
+        ) : (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={handleSaveClick}
+              disabled={!hasChanges || isSaving}
+            >
+              {isSaving ? (
+                <Spinner className="h-4 w-4 mr-2" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {isSaving ? tCommon("loading") : tCommon("save")}
             </Button>
-          ) : (
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                onClick={handleSaveClick}
-                disabled={!hasChanges || isSaving}
-              >
-                {isSaving ? (
-                  <Spinner className="h-4 w-4 mr-2" />
-                ) : (
-                  <Save className="h-4 w-4 mr-2" />
-                )}
-                {isSaving ? tCommon("loading") : tCommon("save")}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isSaving}
-              >
-                <X className="h-4 w-4 mr-2" />
-                {tCommon("cancel")}
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isSaving}
+            >
+              <X className="h-4 w-4 mr-2" />
+              {tCommon("cancel")}
+            </Button>
+          </div>
+        )
+      }
+    >
+      <div className="space-y-4">
         {/* Avatar và thông tin cơ bản */}
         <div className="grid grid-cols-3 gap-4">
           <div className="relative w-fit">
@@ -672,7 +671,7 @@ export function BaseUserProfileForm({
             {t("lastUpdated")}: {formatDate(user.updatedAt, locale)}
           </span>
         </div>
-      </CardContent>
+      </div>
 
       {/* Dialog xác nhận thay đổi */}
       <ConfirmChangesDialog
@@ -682,6 +681,6 @@ export function BaseUserProfileForm({
         onConfirm={handleConfirmSave}
         isLoading={isSaving}
       />
-    </Card>
+    </GlassSection>
   );
 }

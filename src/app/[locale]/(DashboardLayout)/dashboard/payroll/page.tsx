@@ -13,13 +13,7 @@ export default async function PayrollPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("periodsTitle")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("description")}
-          </p>
-        </div>
+      <div className="flex justify-end">
         <Link href="/dashboard/payslip">
           <Button variant="outline">
             <FileText className="h-4 w-4 mr-2" />

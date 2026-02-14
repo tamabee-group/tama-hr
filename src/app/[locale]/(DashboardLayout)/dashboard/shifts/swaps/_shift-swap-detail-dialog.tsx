@@ -13,7 +13,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeftRight } from "lucide-react";
 import { ShiftSwapRequest } from "@/types/attendance-records";
-import { formatDate, formatDateTime } from "@/lib/utils/format-date";
+import {
+  formatDateWithDayOfWeek,
+  formatDateTime,
+} from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
@@ -88,7 +91,10 @@ export function ShiftSwapDetailDialog({
                     {swapRequest.requesterShift.shiftName}
                   </div>
                   <div className="text-muted-foreground">
-                    {formatDate(swapRequest.requesterShift.workDate, locale)}
+                    {formatDateWithDayOfWeek(
+                      swapRequest.requesterShift.workDate,
+                      locale,
+                    )}
                   </div>
                   <div className="text-muted-foreground">
                     {formatTime(
@@ -125,7 +131,10 @@ export function ShiftSwapDetailDialog({
                     {swapRequest.targetShift.shiftName}
                   </div>
                   <div className="text-muted-foreground">
-                    {formatDate(swapRequest.targetShift.workDate, locale)}
+                    {formatDateWithDayOfWeek(
+                      swapRequest.targetShift.workDate,
+                      locale,
+                    )}
                   </div>
                   <div className="text-muted-foreground">
                     {formatTime(swapRequest.targetShift.shiftStartTime || "")} -{" "}

@@ -12,11 +12,17 @@ import { decodeJwt } from "@/lib/utils/jwt";
 import {
   isAdminRoute,
   isDashboardRoute,
+  isSupportRoute,
   checkAdminRouteAccess,
   checkDashboardRouteAccess,
+  checkSupportRouteAccess,
 } from "@/lib/utils/route-protection";
 
 console.log("[Proxy] File loaded");
+
+// Routes chỉ được phép truy cập từ domain chính (không phải tenant)
+// Register chỉ được dùng để tạo company/tenant mới, không phải từ tenant subdomain
+const MASTER_ONLY_GUEST_ROUTES = ["/register"];
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -49,6 +55,39 @@ function getLocale(request: NextRequest): string {
   }
   // Fallback: detect từ Accept-Language header
   return parseAcceptLanguage(request.headers.get("Accept-Language"));
+}
+
+/**
+ * Extract tenant domain từ request host.
+ * "tenant-japan.tamabee.local" → "tenant-japan"
+ * "tamabee.local" → "tamabee" (master)
+ * "localhost" → "tamabee" (master)
+ */
+function extractTenantFromHost(request: NextRequest): string {
+  const host = request.headers.get("host") || "";
+
+  // localhost hoặc 127.0.0.1 → master domain
+  if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) {
+    return "tamabee";
+  }
+
+  // Lấy subdomain đầu tiên
+  const parts = host.split(".");
+  if (parts.length >= 3) {
+    return parts[0]; // tenant-japan, tenant-vietnam, etc.
+  } else if (parts.length === 2) {
+    return parts[0]; // tamabee từ tamabee.local
+  }
+
+  return "tamabee";
+}
+
+/**
+ * Kiểm tra có phải master domain không (tamabee hoặc localhost)
+ */
+function isMasterDomain(request: NextRequest): boolean {
+  const tenant = extractTenantFromHost(request);
+  return tenant === "tamabee";
 }
 
 /**
@@ -117,8 +156,9 @@ function parseStatusFromBody(body: string, defaultStatus: number): number {
 /**
  * Middleware chính:
  * 1. Proxy API requests (với auto refresh token)
- * 2. Authentication & Protected routes
- * 3. i18n routing
+ * 2. Proxy WebSocket requests
+ * 3. Authentication & Protected routes
+ * 4. i18n routing
  */
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -144,6 +184,7 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
   const apiPath = pathname.replace("/api", "");
   const targetUrl = `${API_URL}/api${apiPath}${request.nextUrl.search}`;
   const locale = getLocale(request);
+  const isLogoutRequest = apiPath === "/auth/logout";
 
   console.log("[Proxy] API request:", request.method, targetUrl);
   console.log(
@@ -161,12 +202,14 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
   let refreshedCookies: string[] | undefined;
+  const host = request.headers.get("host") || "";
 
   if (!accessToken && refreshToken) {
     console.log("[Proxy] No accessToken, attempting refresh...");
     const refreshResult = await refreshAccessTokenWithCookie(
       refreshToken,
       locale,
+      host,
     );
 
     if (refreshResult.success && refreshResult.cookies) {
@@ -239,6 +282,7 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
         const refreshResult = await refreshAccessTokenWithCookie(
           refreshToken,
           locale,
+          host,
         );
         console.log(
           "[Proxy] Refresh result:",
@@ -283,13 +327,25 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
           }
         }
       }
+
+      // Refresh thất bại hoặc không có refreshToken → xóa cookies để client biết cần đăng nhập lại
+      const body401 = await response.text();
+      const status401 = parseStatusFromBody(body401, response.status);
+      const clearResponse = new NextResponse(body401, {
+        status: status401,
+        statusText: response.statusText,
+      });
+      clearResponse.cookies.set("accessToken", "", { path: "/", maxAge: 0 });
+      clearResponse.cookies.set("refreshToken", "", { path: "/", maxAge: 0 });
+      return clearResponse;
     }
 
     // Response bình thường
-    // Kiểm tra Content-Type để xử lý binary response (PDF, images, etc.)
+    // Kiểm tra Content-Type để xử lý binary response (PDF, ZIP, images, etc.)
     const responseContentType = response.headers.get("content-type") || "";
     const isBinaryResponse =
       responseContentType.includes("application/pdf") ||
+      responseContentType.includes("application/zip") ||
       responseContentType.includes("application/octet-stream") ||
       responseContentType.includes("image/");
 
@@ -316,19 +372,21 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
     // Forward response với Set-Cookie headers
     const responseHeaders = new Headers();
 
-    // Copy tất cả headers từ backend response
+    // Copy tất cả headers từ backend response (trừ set-cookie, xử lý riêng)
     response.headers.forEach((value, key) => {
-      // Bỏ qua một số headers không cần thiết
       if (
-        !["content-encoding", "transfer-encoding", "content-length"].includes(
-          key.toLowerCase(),
-        )
+        ![
+          "content-encoding",
+          "transfer-encoding",
+          "content-length",
+          "set-cookie",
+        ].includes(key.toLowerCase())
       ) {
         responseHeaders.append(key, value);
       }
     });
 
-    // Đảm bảo Set-Cookie được forward (getSetCookie trả về array)
+    // Forward Set-Cookie riêng bằng getSetCookie() để giữ đúng format
     const setCookies = response.headers.getSetCookie();
     if (setCookies && setCookies.length > 0) {
       console.log("[Proxy] Forwarding Set-Cookie headers:", setCookies.length);
@@ -348,16 +406,38 @@ async function handleApiProxy(request: NextRequest): Promise<NextResponse> {
       });
     }
 
+    // Logout request thành công → proxy chủ động xóa cookies
+    if (isLogoutRequest && status === 200) {
+      console.log("[Proxy] Logout successful, clearing auth cookies via proxy");
+      const logoutResponse = new NextResponse(responseBody, {
+        status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+      });
+      logoutResponse.cookies.set("accessToken", "", { path: "/", maxAge: 0 });
+      logoutResponse.cookies.set("refreshToken", "", {
+        path: "/",
+        maxAge: 0,
+        httpOnly: true,
+      });
+      return logoutResponse;
+    }
+
     return new NextResponse(responseBody, {
       status,
       statusText: response.statusText,
       headers: responseHeaders,
     });
   } catch {
-    return NextResponse.json(
+    // Backend không khả dụng → xóa sạch auth cookies để tránh state không nhất quán
+    // Khi backend khởi động lại, user sẽ đăng nhập lại từ trạng thái sạch
+    const errorResponse = NextResponse.json(
       { success: false, message: "API không khả dụng", status: 502 },
       { status: 502 },
     );
+    errorResponse.cookies.set("accessToken", "", { path: "/", maxAge: 0 });
+    errorResponse.cookies.set("refreshToken", "", { path: "/", maxAge: 0 });
+    return errorResponse;
   }
 }
 
@@ -372,17 +452,72 @@ async function handleAuthentication(
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
-  // Skip authentication check cho guest-only routes
-  // Tránh redirect loop khi đang ở login page với expired tokens
+  // ========== MASTER-ONLY GUEST ROUTES CHECK ==========
+  // Chặn truy cập /register từ domain tenant (subdomain)
+  // Register chỉ được dùng từ domain chính (tamabee.local hoặc localhost)
+  if (
+    matchRoute(pathname, MASTER_ONLY_GUEST_ROUTES) &&
+    !isMasterDomain(request)
+  ) {
+    const tenantDomain = extractTenantFromHost(request);
+    console.log(
+      "[Proxy] Blocked access to master-only route from tenant domain:",
+      tenantDomain,
+      pathname,
+    );
+    // Redirect về trang login của tenant
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+  }
+
+  // ========== GUEST-ONLY ROUTES CHECK ==========
+  // Nếu đã đăng nhập (có accessToken hoặc refreshToken) → redirect về dashboard
+  // Kiểm tra này phải thực hiện TRƯỚC khi skip authentication
   if (matchRoute(pathname, GUEST_ONLY_ROUTES)) {
+    const authenticated = !!(accessToken || refreshToken);
+    if (authenticated) {
+      console.log(
+        "[Proxy] User already authenticated, redirecting to dashboard from:",
+        pathname,
+      );
+      return NextResponse.redirect(
+        new URL(`/${locale}/dashboard`, request.url),
+      );
+    }
+    // Chưa đăng nhập → cho phép truy cập guest-only routes
     return null;
   }
 
-  // Không có accessToken nhưng có refreshToken → thử refresh
-  if (!accessToken && refreshToken && matchRoute(pathname, PROTECTED_ROUTES)) {
+  // Kiểm tra accessToken có hết hạn không
+  let isAccessTokenExpired = false;
+  if (accessToken) {
+    const decoded = decodeJwt(accessToken);
+    if (decoded) {
+      isAccessTokenExpired = decoded.exp * 1000 < Date.now();
+      if (isAccessTokenExpired) {
+        console.log(
+          "[Proxy] AccessToken expired at:",
+          new Date(decoded.exp * 1000).toISOString(),
+        );
+      }
+    } else {
+      // Không decode được = token invalid = coi như hết hạn
+      isAccessTokenExpired = true;
+      console.log("[Proxy] Failed to decode accessToken, treating as expired");
+    }
+  }
+
+  // Không có accessToken HOẶC accessToken hết hạn, nhưng có refreshToken → thử refresh
+  if (
+    (!accessToken || isAccessTokenExpired) &&
+    refreshToken &&
+    matchRoute(pathname, PROTECTED_ROUTES)
+  ) {
+    console.log("[Proxy] Attempting to refresh token...");
+    const host = request.headers.get("host") || "";
     const refreshResult = await refreshAccessTokenWithCookie(
       refreshToken,
       locale,
+      host,
     );
 
     if (refreshResult.success && refreshResult.cookies) {
@@ -390,6 +525,9 @@ async function handleAuthentication(
       const hasRefreshed = request.nextUrl.searchParams.get("_refreshed");
 
       if (!hasRefreshed) {
+        console.log(
+          "[Proxy] Refresh successful, redirecting to set new cookies",
+        );
         const redirectUrl = new URL(request.url);
         redirectUrl.searchParams.set("_refreshed", "1");
 
@@ -401,13 +539,19 @@ async function handleAuthentication(
         return response;
       }
     } else {
-      // Refresh thất bại → redirect về login
+      // Refresh thất bại → xóa sạch cookies và redirect về login
+      console.log(
+        "[Proxy] Refresh failed, clearing all auth cookies and redirecting to login",
+      );
       const loginUrl = new URL(`/${locale}/login`, request.url);
-      // Không set redirect nếu đang ở guest-only routes (login, register, etc.)
       if (!matchRoute(pathname, GUEST_ONLY_ROUTES)) {
         loginUrl.searchParams.set("redirect", pathname);
       }
-      return NextResponse.redirect(loginUrl);
+      const response = NextResponse.redirect(loginUrl);
+      // Xóa sạch cả accessToken và refreshToken để tránh state không nhất quán
+      response.cookies.set("accessToken", "", { path: "/", maxAge: 0 });
+      response.cookies.set("refreshToken", "", { path: "/", maxAge: 0 });
+      return response;
     }
   }
 
@@ -423,25 +567,23 @@ async function handleAuthentication(
   // Protected routes: redirect về login nếu chưa đăng nhập
   if (matchRoute(pathname, PROTECTED_ROUTES) && !authenticated) {
     const loginUrl = new URL(`/${locale}/login`, request.url);
-    // Không set redirect nếu đang ở guest-only routes
-    if (!matchRoute(pathname, GUEST_ONLY_ROUTES)) {
-      loginUrl.searchParams.set("redirect", pathname);
-    }
+    loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Guest-only routes: redirect về dashboard nếu đã đăng nhập
-  if (matchRoute(pathname, GUEST_ONLY_ROUTES) && authenticated) {
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
-  }
+  // Guest-only routes đã được xử lý ở trên, không cần check lại ở đây
 
   // ========== ROLE-BASED ROUTE PROTECTION ==========
-  // Chỉ check khi đã authenticated và có accessToken
-  if (authenticated && accessToken) {
+  // Chỉ check khi có accessToken hợp lệ (chưa hết hạn)
+  // Nếu token hết hạn, đã được xử lý ở trên (refresh hoặc redirect)
+  if (accessToken && !isAccessTokenExpired) {
     const decoded = decodeJwt(accessToken);
+
+    console.log("[Proxy] Checking role-based protection for:", pathname);
 
     if (decoded) {
       const { role, tenantDomain } = decoded;
+      console.log("[Proxy] User role:", role, "tenantDomain:", tenantDomain);
 
       // /admin/* routes - chỉ Tamabee admin (ADMIN_TAMABEE hoặc MANAGER_TAMABEE)
       if (isAdminRoute(pathname)) {
@@ -454,18 +596,52 @@ async function handleAuthentication(
         }
       }
 
-      // /dashboard/* routes - cần tenantDomain (kể cả "tamabee")
-      if (isDashboardRoute(pathname)) {
-        const accessResult = checkDashboardRouteAccess(tenantDomain);
+      // /support/* routes - chỉ Tamabee employees
+      if (isSupportRoute(pathname)) {
+        const accessResult = checkSupportRouteAccess(role);
         if (!accessResult.allowed) {
           console.log(
-            "[Proxy] Unauthorized access to /dashboard/* - no tenantDomain",
+            "[Proxy] Unauthorized access to /support/* - role:",
+            role,
           );
           return NextResponse.redirect(
             new URL(`/${locale}/unauthorized`, request.url),
           );
         }
       }
+
+      // /dashboard/* routes - cần tenantDomain (kể cả "tamabee")
+      if (isDashboardRoute(pathname)) {
+        const accessResult = checkDashboardRouteAccess(tenantDomain);
+        console.log(
+          "[Proxy] Dashboard access check - tenantDomain:",
+          tenantDomain,
+          "allowed:",
+          accessResult.allowed,
+        );
+        if (!accessResult.allowed) {
+          console.log(
+            "[Proxy] Unauthorized access to /dashboard/* - no tenantDomain, decoded:",
+            JSON.stringify({ role, tenantDomain, exp: decoded.exp }),
+          );
+          return NextResponse.redirect(
+            new URL(`/${locale}/unauthorized`, request.url),
+          );
+        }
+
+        // EMPLOYEE_TAMABEE không được truy cập dashboard, redirect sang /support
+        if (role === "EMPLOYEE_TAMABEE") {
+          console.log(
+            "[Proxy] EMPLOYEE_TAMABEE accessing /dashboard - redirecting to /support",
+          );
+          return NextResponse.redirect(
+            new URL(`/${locale}/support`, request.url),
+          );
+        }
+      }
+    } else {
+      // Không decode được token - đã được xử lý ở trên
+      console.log("[Proxy] Failed to decode accessToken in role check");
     }
   }
 

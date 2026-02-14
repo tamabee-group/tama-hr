@@ -1,20 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, FileText } from "lucide-react";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 
 import { PayrollItem } from "@/types/attendance-records";
-import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
 import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatDate } from "@/lib/utils/format-date-time";
 
 import { payrollPeriodApi } from "@/lib/apis/payroll-period-api";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
@@ -28,7 +25,6 @@ export function PayslipPageContent() {
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
-  const router = useRouter();
 
   const [payslips, setPayslips] = useState<PayrollItem[]>([]);
   const [page, setPage] = useState(0);
@@ -48,15 +44,13 @@ export function PayslipPageContent() {
           page,
           50,
           employeeIdFilter,
-          undefined,
+          "PAID", // Chỉ hiển thị payslips đã thanh toán
         );
         setPayslips(response.content);
         setTotalPages(response.totalPages);
         setTotalElements(response.totalElements);
       } catch (error) {
         toast.error(getErrorMessage((error as Error).message, tErrors));
-      } finally {
-        // setLoading(false);
       }
     };
 
@@ -89,7 +83,22 @@ export function PayslipPageContent() {
     {
       accessorKey: "payrollPeriodId",
       header: t("period"),
-      cell: ({ row }) => `${row.original.payrollPeriodId}`,
+      cell: ({ row }) => {
+        const item = row.original;
+        if (item.year && item.month) {
+          return `${String(item.month).padStart(2, "0")}/${item.year}`;
+        }
+        return "-";
+      },
+    },
+    {
+      accessorKey: "paidAt",
+      header: t("table.paidAt"),
+      cell: ({ row }) => {
+        const paidAt = row.original.paidAt;
+        if (!paidAt) return "-";
+        return formatDate(paidAt);
+      },
     },
     {
       accessorKey: "baseSalary",
@@ -145,73 +154,41 @@ export function PayslipPageContent() {
         <PayrollItemStatusBadge status={row.original.status} />
       ),
     },
-    {
-      id: "actions",
-      header: tCommon("actions"),
-      cell: ({ row }) => (
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedItem(row.original)}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              router.push(
-                `/dashboard/employees/${row.original.employeeId}?tab=salary`,
-              )
-            }
-          >
-            <FileText className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
-      size: 100,
-    },
   ];
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("payslipHistory")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Filters */}
-          <div className="mb-4 flex gap-4">
-            <Input
-              placeholder={t("table.employee")}
-              value={searchEmployeeId}
-              onChange={(e) => setSearchEmployeeId(e.target.value)}
-              className="max-w-xs"
-            />
-          </div>
-
-          {/* Table */}
-          <BaseTable
-            columns={columns}
-            data={payslips}
-            serverPagination={{
-              page,
-              totalPages,
-              totalElements,
-              onPageChange: setPage,
-            }}
-            noResultsText={tCommon("noData")}
+      <GlassSection title={t("payslipHistory")}>
+        {/* Filters */}
+        <div className="mb-4 flex gap-4">
+          <Input
+            placeholder={t("table.employee")}
+            value={searchEmployeeId}
+            onChange={(e) => setSearchEmployeeId(e.target.value)}
+            className="max-w-xs"
           />
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Table */}
+        <BaseTable
+          columns={columns}
+          data={payslips}
+          onRowClick={(item) => setSelectedItem(item)}
+          serverPagination={{
+            page,
+            totalPages,
+            totalElements,
+            onPageChange: setPage,
+          }}
+          noResultsText={tCommon("noData")}
+        />
+      </GlassSection>
 
       {/* Item Detail Dialog */}
       {selectedItem && (
         <PayrollItemDetailDialog
           open={!!selectedItem}
           onClose={() => setSelectedItem(null)}
-          periodId={selectedItem.payrollPeriodId}
           item={selectedItem}
         />
       )}

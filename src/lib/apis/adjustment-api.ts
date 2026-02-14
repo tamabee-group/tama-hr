@@ -19,15 +19,21 @@ const DEFAULT_LIMIT = 10;
 // Request Types
 // ============================================
 
+export interface BreakAdjustmentItem {
+  breakRecordId?: number; // Optional khi actionType = CREATE
+  actionType?: "ADJUST" | "DELETE" | "CREATE"; // Mặc định là ADJUST
+  requestedBreakStart?: string;
+  requestedBreakEnd?: string;
+}
+
 export interface CreateAdjustmentRequest {
+  requestType?: "ADJUST" | "DELETE_RECORD"; // Loại yêu cầu
   attendanceRecordId?: number; // Optional - có thể không có record
   workDate?: string; // Ngày cần điều chỉnh (khi không có record)
   requestedCheckIn?: string;
   requestedCheckOut?: string;
-  // Break adjustment fields
-  breakRecordId?: number; // ID của break record cần điều chỉnh
-  requestedBreakStart?: string;
-  requestedBreakEnd?: string;
+  // Break items - hỗ trợ nhiều break trong 1 request
+  breakItems?: BreakAdjustmentItem[];
   reason: string;
   assignedTo: number; // ID người được gán xử lý (manager/admin)
 }

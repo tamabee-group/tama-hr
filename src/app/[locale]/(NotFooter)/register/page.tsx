@@ -2,6 +2,7 @@
 
 import { NextPage } from "next";
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useZipcode, localeToRegion } from "@/hooks/use-zipcode";
 import { register } from "@/lib/apis/auth";
 import { toast } from "sonner";
@@ -48,6 +49,7 @@ interface FormState {
 const RegisterPage: NextPage = () => {
   const t = useTranslations("auth");
   const tErrors = useTranslations("errors");
+  const searchParams = useSearchParams();
 
   // Khởi tạo state từ localStorage hoặc default
   const [isInitialized, setIsInitialized] = useState(false);
@@ -86,11 +88,20 @@ const RegisterPage: NextPage = () => {
         setCompanySent(state.companySent);
         setVerified(state.verified);
       }
+
+      // Đọc referral code từ URL param ?ref=XXX
+      const refCode = searchParams.get("ref");
+      if (refCode) {
+        setFormData((prev) => ({
+          ...prev,
+          referralCode: refCode.toUpperCase(),
+        }));
+      }
     } catch (error) {
       console.error("Error loading register data from localStorage:", error);
     }
     setIsInitialized(true);
-  }, []);
+  }, [searchParams]);
 
   // Lưu formData vào localStorage khi thay đổi
   useEffect(() => {

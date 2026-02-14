@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "next-themes";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -19,6 +24,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import type { User as UserType } from "@/types/user";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { apiClient } from "@/lib/utils/fetch-client";
+import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 type SettingsTab = "general" | "account";
 
@@ -42,6 +51,7 @@ export function SidebarSettingsDialog({
   const tHeader = useTranslations("header");
   const tEnums = useTranslations("enums");
   const tAuth = useTranslations("auth");
+  const tErrors = useTranslations("errors");
 
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
 
@@ -50,21 +60,20 @@ export function SidebarSettingsDialog({
   };
 
   const handleLogout = async () => {
-    handleClose();
     await logout();
-    router.push("/");
+    onOpenChange(false);
+    // Hiển thị toast trước khi redirect
     toast.success(tAuth("logoutSuccess"));
+    // Delay nhỏ để đảm bảo cookies được xóa trước khi redirect
+    setTimeout(() => {
+      router.push("/");
+    }, 100);
   };
 
   const handleLanguageChange = (newLocale: string) => {
     const newPathname = pathname.replace(`/${locale}`, `/${newLocale}`);
     // Thêm query param để giữ dialog mở sau khi chuyển ngôn ngữ
     router.push(`${newPathname}?settings=open`);
-  };
-
-  const handleNavigate = (path: string) => {
-    router.push(`/${locale}${path}`);
-    handleClose();
   };
 
   const languages = [
@@ -90,6 +99,9 @@ export function SidebarSettingsDialog({
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">{tHeader("settings")}</DialogTitle>
+        <DialogDescription className="sr-only">
+          {tHeader("settings")}
+        </DialogDescription>
 
         {/* Tabs - horizontal wrap với title và close button */}
         <div className="flex items-center justify-between p-4 pb-3">
@@ -140,10 +152,9 @@ export function SidebarSettingsDialog({
             {activeTab === "account" && (
               <AccountSettings
                 user={user}
-                onNavigate={handleNavigate}
                 t={t}
-                tHeader={tHeader}
                 tEnums={tEnums}
+                tErrors={tErrors}
               />
             )}
           </div>
@@ -151,6 +162,7 @@ export function SidebarSettingsDialog({
         {/* Logout button - bottom right */}
         <div className=" flex justify-end p-4 border-t">
           <Button
+            type="button"
             onClick={handleLogout}
             variant={"destructive"}
             className="flex items-center"
@@ -230,19 +242,54 @@ function GeneralSettings({
 
 interface AccountSettingsProps {
   user: UserType | null;
-  onNavigate: (path: string) => void;
   t: ReturnType<typeof useTranslations>;
-  tHeader: ReturnType<typeof useTranslations>;
   tEnums: ReturnType<typeof useTranslations>;
+  tErrors: ReturnType<typeof useTranslations>;
 }
 
-function AccountSettings({
-  user,
-  onNavigate,
-  t,
-  tHeader,
-  tEnums,
-}: AccountSettingsProps) {
+function AccountSettings({ user, t, tEnums, tErrors }: AccountSettingsProps) {
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const resetForm = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setErrors({});
+    setShowPasswordForm(false);
+  };
+
+  const handleChangePassword = async () => {
+    const newErrors: Record<string, string> = {};
+    if (!currentPassword) newErrors.currentPassword = t("currentPassword");
+    if (!newPassword) newErrors.newPassword = t("newPassword");
+    if (newPassword && newPassword.length < 8)
+      newErrors.newPassword = t("passwordTooShort");
+    if (newPassword !== confirmPassword)
+      newErrors.confirmPassword = t("passwordMismatch");
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    try {
+      setIsSubmitting(true);
+      await apiClient.put("/api/users/me/password", {
+        currentPassword,
+        newPassword,
+      });
+      toast.success(t("passwordChanged"));
+      resetForm();
+    } catch (error) {
+      const errorCode = (error as { errorCode?: string })?.errorCode;
+      toast.error(getErrorMessage(errorCode, tErrors));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div>
       {/* Email */}
@@ -257,15 +304,82 @@ function AccountSettings({
         </span>
       </SettingRow>
 
-      {/* Profile link */}
-      <SettingRow label={tHeader("profile")}>
-        <button
-          onClick={() => onNavigate(`/dashboard/employees/${user?.id}`)}
-          className="text-sm text-primary hover:underline cursor-pointer"
-        >
-          {t("viewDetail")}
-        </button>
-      </SettingRow>
+      {/* Đổi mật khẩu */}
+      {!showPasswordForm ? (
+        <SettingRow label={t("changePassword")}>
+          <button
+            onClick={() => setShowPasswordForm(true)}
+            className="text-sm text-primary hover:underline cursor-pointer"
+          >
+            {t("edit")}
+          </button>
+        </SettingRow>
+      ) : (
+        <div className="space-y-3 pt-2">
+          <div>
+            <Label className="text-xs text-muted-foreground">
+              {t("currentPassword")}
+            </Label>
+            <PasswordInput
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            {errors.currentPassword && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.currentPassword}
+              </p>
+            )}
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">
+              {t("newPassword")}
+            </Label>
+            <PasswordInput
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            {errors.newPassword && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.newPassword}
+              </p>
+            )}
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">
+              {t("confirmPassword")}
+            </Label>
+            <PasswordInput
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            {errors.confirmPassword && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetForm}
+              disabled={isSubmitting}
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleChangePassword}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? t("saving") : t("save")}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

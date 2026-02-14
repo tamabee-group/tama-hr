@@ -18,6 +18,34 @@
   "unlimited": "Không giới hạn",
   "features": "Tính năng",
   "exceedsLimit": "Số nhân viên vượt quá giới hạn gói",
+  "scheduledDowngrade": "Bạn đã lên lịch hạ cấp xuống gói {planName} vào ngày {effectiveDate}. Nếu bạn chọn gói khác, lịch hạ cấp sẽ bị hủy.",
+  "guide": {
+    "title": "Hướng dẫn thay đổi gói",
+    "description": "Hệ thống tính phí theo gói cao nhất đã sử dụng trong kỳ thanh toán để đảm bảo công bằng.",
+    "tip1": "Nâng cấp có hiệu lực ngay lập tức",
+    "tip2": "Hạ cấp sẽ có hiệu lực từ ngày 1 tháng sau",
+    "tip3": "Kỳ thanh toán tính theo giá gói cao nhất đã dùng trong kỳ",
+    "tip4": "Có thể hủy nâng cấp trong vòng 10 ngày (hoặc đến cuối tháng) nếu lỡ chọn nhầm"
+  },
+  "cancelUpgrade": {
+    "message": "Bạn có thể hủy nâng cấp và quay về gói {planName} trước ngày {deadline}",
+    "button": "Hủy nâng cấp"
+  },
+  "confirm": {
+    "upgradeTitle": "Nâng cấp gói dịch vụ",
+    "downgradeTitle": "Hạ cấp gói dịch vụ",
+    "changeTitle": "Đổi gói dịch vụ",
+    "newPlan": "Gói mới",
+    "upgradeImmediate": "✓ Nâng cấp có hiệu lực ngay lập tức",
+    "upgradeBillingNote": "Kỳ thanh toán tiếp theo sẽ tính theo giá gói cao nhất đã sử dụng trong kỳ.",
+    "upgradeGracePeriod": "💡 Bạn có thể hủy nâng cấp trong vòng 10 ngày (hoặc đến cuối tháng)",
+    "downgradeScheduled": "⏱ Hạ cấp sẽ có hiệu lực từ ngày {effectiveDate}",
+    "downgradeBillingNote": "Bạn vẫn sử dụng gói hiện tại cho đến ngày hiệu lực. Kỳ thanh toán này vẫn tính theo giá gói hiện tại.",
+    "trialChange": "✓ Thay đổi có hiệu lực ngay (đang trong thời gian dùng thử)",
+    "cancelScheduledDowngrade": "⚠ Lịch hạ cấp đã đặt trước sẽ bị hủy",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận"
+  },
   "table": {
     "name": "Tên gói",
     "price": "Giá",
@@ -72,7 +100,10 @@
     "deleteError": "Không thể xóa gói dịch vụ",
     "planInUse": "Gói dịch vụ đang được sử dụng, không thể xóa",
     "changeSuccess": "Đổi gói dịch vụ thành công",
-    "changeError": "Không thể đổi gói dịch vụ"
+    "changeError": "Không thể đổi gói dịch vụ",
+    "downgradeScheduled": "Đã lên lịch hạ cấp gói dịch vụ",
+    "cancelUpgradeSuccess": "Đã hủy nâng cấp thành công",
+    "cancelUpgradeError": "Không thể hủy nâng cấp"
   },
   "dialog": {
     "deleteTitle": "Xóa gói dịch vụ",
@@ -82,5 +113,15 @@
     "required": "Trường này là bắt buộc",
     "invalidPrice": "Giá phải lớn hơn hoặc bằng 0",
     "invalidMaxEmployees": "Số nhân viên phải lớn hơn 0"
+  },
+  "history": {
+    "title": "Lịch sử thay đổi gói",
+    "date": "Ngày",
+    "changeType": "Loại thay đổi",
+    "fromPlan": "Từ gói",
+    "toPlan": "Sang gói",
+    "price": "Giá",
+    "effectiveDate": "Ngày hiệu lực",
+    "noHistory": "Chưa có lịch sử thay đổi"
   }
 }

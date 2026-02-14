@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { WalletTransactionResponse } from "@/types/wallet";
 import { formatCurrency } from "@/lib/utils/format-currency";
-import { Card, CardContent } from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import {
   ChartContainer,
   Bar,
@@ -248,77 +248,67 @@ export function TransactionChart({ transactions }: TransactionChartProps) {
   }, [transactions, monthCount]);
 
   return (
-    <Card className="h-[225px]">
-      <CardContent className="h-full">
-        <ChartContainer config={chartConfig} className="h-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              margin={{ top: 20, right: 10, left: -20, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                fontSize={12}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                fontSize={11}
-                width={50}
-                ticks={[0, yAxisMax / 2, yAxisMax]}
-                tickFormatter={(value) =>
-                  value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value
-                }
-                domain={[0, yAxisMax]}
-              />
-              <Tooltip
-                content={
-                  <CustomTooltip
-                    depositLabel={depositLabel}
-                    billingLabel={billingLabel}
-                  />
-                }
-              />
-              <Legend
-                content={
-                  <CustomLegend
-                    depositLabel={depositLabel}
-                    billingLabel={billingLabel}
-                  />
-                }
-                verticalAlign="top"
-              />
-              <Bar
-                dataKey="depositDisplay"
-                name="deposit"
-                radius={[4, 4, 0, 0]}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`deposit-${index}`}
-                    fill={entry.hasDeposit ? "#22c55e" : EMPTY_COLOR}
-                  />
-                ))}
-              </Bar>
-              <Bar
-                dataKey="billingDisplay"
-                name="billing"
-                radius={[4, 4, 0, 0]}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`billing-${index}`}
-                    fill={entry.hasBilling ? "#ef4444" : EMPTY_COLOR}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <GlassCard className="h-[225px] p-4">
+      <ChartContainer config={chartConfig} className="h-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            margin={{ top: 20, right: 10, left: -20, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              fontSize={12}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              fontSize={11}
+              width={50}
+              ticks={[0, yAxisMax / 2, yAxisMax]}
+              tickFormatter={(value) =>
+                value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value
+              }
+              domain={[0, yAxisMax]}
+            />
+            <Tooltip
+              content={
+                <CustomTooltip
+                  depositLabel={depositLabel}
+                  billingLabel={billingLabel}
+                />
+              }
+            />
+            <Legend
+              content={
+                <CustomLegend
+                  depositLabel={depositLabel}
+                  billingLabel={billingLabel}
+                />
+              }
+              verticalAlign="top"
+            />
+            <Bar dataKey="depositDisplay" name="deposit" radius={[4, 4, 0, 0]}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={`deposit-${index}`}
+                  fill={entry.hasDeposit ? "#22c55e" : EMPTY_COLOR}
+                />
+              ))}
+            </Bar>
+            <Bar dataKey="billingDisplay" name="billing" radius={[4, 4, 0, 0]}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={`billing-${index}`}
+                  fill={entry.hasBilling ? "#ef4444" : EMPTY_COLOR}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </GlassCard>
   );
 }

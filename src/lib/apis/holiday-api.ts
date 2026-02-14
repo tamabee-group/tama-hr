@@ -16,6 +16,42 @@ const DEFAULT_PAGE = 0;
 const DEFAULT_LIMIT = 10;
 
 // ============================================
+// Helpers - chuyển đổi giữa frontend (isNational) và backend (type)
+// ============================================
+
+interface BackendHoliday {
+  id: number;
+  companyId: number;
+  name: string;
+  date: string;
+  type: "NATIONAL" | "COMPANY";
+  isPaid: boolean;
+  description?: string;
+}
+
+/** Chuyển response backend → frontend Holiday */
+function toHoliday(h: BackendHoliday): Holiday {
+  return {
+    id: h.id,
+    companyId: h.companyId,
+    name: h.name,
+    date: h.date,
+    isNational: h.type === "NATIONAL",
+    description: h.description,
+  };
+}
+
+/** Chuyển frontend HolidayInput → backend request */
+function toBackendInput(data: HolidayInput) {
+  return {
+    name: data.name,
+    date: data.date,
+    type: data.isNational ? "NATIONAL" : "COMPANY",
+    description: data.description,
+  };
+}
+
+// ============================================
 // CRUD Operations
 // ============================================
 
@@ -33,9 +69,10 @@ export async function getHolidays(
   params.append("size", size.toString());
   if (year) params.append("year", year.toString());
 
-  return apiClient.get<PaginatedResponse<Holiday>>(
+  const res = await apiClient.get<PaginatedResponse<BackendHoliday>>(
     `/api/company/holidays?${params.toString()}`,
   );
+  return { ...res, content: res.content.map(toHoliday) };
 }
 
 /**
@@ -43,7 +80,10 @@ export async function getHolidays(
  * @client-only
  */
 export async function getHolidaysByYear(year: number): Promise<Holiday[]> {
-  return apiClient.get<Holiday[]>(`/api/company/holidays/year/${year}`);
+  const res = await apiClient.get<BackendHoliday[]>(
+    `/api/company/holidays/year/${year}`,
+  );
+  return res.map(toHoliday);
 }
 
 /**
@@ -54,9 +94,10 @@ export async function getHolidaysByDateRange(
   startDate: string,
   endDate: string,
 ): Promise<Holiday[]> {
-  return apiClient.get<Holiday[]>(
+  const res = await apiClient.get<BackendHoliday[]>(
     `/api/company/holidays/range?startDate=${startDate}&endDate=${endDate}`,
   );
+  return res.map(toHoliday);
 }
 
 /**
@@ -64,7 +105,10 @@ export async function getHolidaysByDateRange(
  * @client-only
  */
 export async function getHolidayById(id: number): Promise<Holiday> {
-  return apiClient.get<Holiday>(`/api/company/holidays/${id}`);
+  const res = await apiClient.get<BackendHoliday>(
+    `/api/company/holidays/${id}`,
+  );
+  return toHoliday(res);
 }
 
 /**
@@ -72,7 +116,11 @@ export async function getHolidayById(id: number): Promise<Holiday> {
  * @client-only
  */
 export async function createHoliday(data: HolidayInput): Promise<Holiday> {
-  return apiClient.post<Holiday>("/api/company/holidays", data);
+  const res = await apiClient.post<BackendHoliday>(
+    "/api/company/holidays",
+    toBackendInput(data),
+  );
+  return toHoliday(res);
 }
 
 /**
@@ -83,7 +131,11 @@ export async function updateHoliday(
   id: number,
   data: HolidayInput,
 ): Promise<Holiday> {
-  return apiClient.put<Holiday>(`/api/company/holidays/${id}`, data);
+  const res = await apiClient.put<BackendHoliday>(
+    `/api/company/holidays/${id}`,
+    toBackendInput(data),
+  );
+  return toHoliday(res);
 }
 
 /**
@@ -92,6 +144,14 @@ export async function updateHoliday(
  */
 export async function deleteHoliday(id: number): Promise<void> {
   return apiClient.delete<void>(`/api/company/holidays/${id}`);
+}
+
+/**
+ * Xóa tất cả ngày nghỉ lễ
+ * @client-only
+ */
+export async function deleteAllHolidays(): Promise<void> {
+  return apiClient.delete<void>("/api/company/holidays");
 }
 
 // ============================================
@@ -111,9 +171,25 @@ export async function isHoliday(date: string): Promise<boolean> {
  * @client-only
  */
 export async function getNationalHolidays(year: number): Promise<Holiday[]> {
-  return apiClient.get<Holiday[]>(
+  const res = await apiClient.get<BackendHoliday[]>(
     `/api/company/holidays/national?year=${year}`,
   );
+  return res.map(toHoliday);
+}
+
+// ============================================
+// Sync Operations
+// ============================================
+
+/**
+ * Đồng bộ ngày lễ quốc gia từ Google Calendar
+ * @client-only
+ */
+export async function syncNationalHolidays(year: number): Promise<Holiday[]> {
+  const res = await apiClient.post<BackendHoliday[]>(
+    `/api/company/settings/holidays/sync?year=${year}`,
+  );
+  return res.map(toHoliday);
 }
 
 // ============================================
@@ -128,6 +204,8 @@ export const holidayApi = {
   createHoliday,
   updateHoliday,
   deleteHoliday,
+  deleteAllHolidays,
   isHoliday,
   getNationalHolidays,
+  syncNationalHolidays,
 };

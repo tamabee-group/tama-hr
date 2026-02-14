@@ -1,30 +1,32 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import {
   CommissionResponse,
   CommissionSummaryResponse,
-  CommissionFilterRequest,
+  CommissionSettingsResponse,
 } from "@/types/commission";
 import { commissionApi } from "@/lib/apis/commission-api";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { CommissionStatus } from "@/types/enums";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DEFAULT_PAGE_SIZE } from "@/types/api";
 import { cn } from "@/lib/utils";
-import { formatDateTime } from "@/lib/utils/format-date";
+import { formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { useLocale } from "next-intl";
+import { ReferralTab } from "./_referral-tab";
+import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
 
+type MainTab = "referral" | "commissions";
 type TabStatus = "ALL" | CommissionStatus;
 
 /**
  * Client component chứa state và logic cho trang hoa hồng của Employee
+ * Fetch data 1 lần khi mount, filter ở client-side
  */
 export function EmployeeCommissionsPageContent() {
   const t = useTranslations("commissions");
@@ -32,15 +34,23 @@ export function EmployeeCommissionsPageContent() {
   const tEnums = useTranslations("enums");
   const locale = useLocale() as SupportedLocale;
 
-  const [commissions, setCommissions] = useState<CommissionResponse[]>([]);
+  const [mainTab, setMainTab] = useState<MainTab>("referral");
+  const [allCommissions, setAllCommissions] = useState<CommissionResponse[]>(
+    [],
+  );
   const [summary, setSummary] = useState<CommissionSummaryResponse | null>(
     null,
   );
+  const [settings, setSettings] = useState<CommissionSettingsResponse | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
-  const [summaryLoading, setSummaryLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabStatus>("ALL");
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+
+  const mainTabs: { value: MainTab; label: string }[] = [
+    { value: "referral", label: t("tabs.referral") },
+    { value: "commissions", label: t("tabs.commissions") },
+  ];
 
   const tabs: { value: TabStatus; label: string }[] = [
     { value: "ALL", label: t("tabs.all") },
@@ -49,51 +59,36 @@ export function EmployeeCommissionsPageContent() {
     { value: "PAID", label: t("tabs.paid") },
   ];
 
-  const fetchCommissions = useCallback(async () => {
+  // Fetch tất cả data 1 lần khi mount
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const filter: CommissionFilterRequest = {};
-      if (activeTab !== "ALL") {
-        filter.status = activeTab;
-      }
-
-      const response = await commissionApi.getMyCommissions(
-        filter,
-        page,
-        DEFAULT_PAGE_SIZE,
-      );
-      setCommissions(response.content);
-      setTotalPages(response.totalPages);
+      const [summaryData, settingsData, commissionsData] = await Promise.all([
+        commissionApi.getMySummary(),
+        commissionApi.getMySettings(),
+        commissionApi.getMyCommissions({}, 0, 100), // Lấy tất cả commissions
+      ]);
+      setSummary(summaryData);
+      setSettings(settingsData);
+      setAllCommissions(commissionsData.content);
     } catch (error) {
-      console.error("Failed to fetch commissions:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
-    }
-  }, [activeTab, page]);
-
-  const fetchSummary = useCallback(async () => {
-    setSummaryLoading(true);
-    try {
-      const data = await commissionApi.getMySummary();
-      setSummary(data);
-    } catch (error) {
-      console.error("Failed to fetch summary:", error);
-    } finally {
-      setSummaryLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchCommissions();
-  }, [fetchCommissions]);
+    fetchAllData();
+  }, [fetchAllData]);
 
-  useEffect(() => {
-    fetchSummary();
-  }, [fetchSummary]);
-
-  useEffect(() => {
-    setPage(0);
-  }, [activeTab]);
+  // Filter commissions ở client-side
+  const filteredCommissions = useMemo(() => {
+    if (activeTab === "ALL") {
+      return allCommissions;
+    }
+    return allCommissions.filter((c) => c.status === activeTab);
+  }, [allCommissions, activeTab]);
 
   const columns: ColumnDef<CommissionResponse>[] = [
     {
@@ -146,153 +141,129 @@ export function EmployeeCommissionsPageContent() {
     },
   ];
 
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-1 border-b">
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-24" />
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-48 w-full" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">{t("myCommissions")}</h1>
-        <p className="text-muted-foreground">{t("myDescription")}</p>
+      <BackButton />
+      {/* Main Tabs */}
+      <div className="flex items-center gap-1 border-b">
+        {mainTabs.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setMainTab(tab.value)}
+            className={cn(
+              "px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px",
+              mainTab === tab.value
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50",
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Summary Cards */}
-      {summaryLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-24" />
-          ))}
-        </div>
-      ) : summary ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t("summary.total")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">
-                {formatCurrency(summary.totalAmount)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {summary.totalCommissions} {t("summary.commissions")}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t("summary.pending")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-yellow-600">
-                {formatCurrency(summary.pendingAmount)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {summary.pendingCommissions} {t("summary.commissions")}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t("summary.eligible")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(summary.eligibleAmount || 0)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {summary.eligibleCommissions || 0} {t("summary.commissions")}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t("summary.paid")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.paidAmount)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {summary.paidCommissions} {t("summary.commissions")}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
-
-      {/* Commission Table */}
-      {loading ? (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-10 w-24" />
-            ))}
-          </div>
-          <div className="space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
-          </div>
-        </div>
+      {/* Tab Content */}
+      {mainTab === "referral" ? (
+        <ReferralTab settings={settings} />
       ) : (
-        <div className="space-y-4">
-          <div className="flex items-center gap-1 border-b">
-            {tabs.map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px",
-                  activeTab === tab.value
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50",
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        <>
+          {/* Summary Cards */}
+          {summary ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <GlassSection>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {t("summary.total")}
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(summary.totalAmount)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {summary.totalCommissions} {t("summary.commissions")}
+                </p>
+              </GlassSection>
 
-          <BaseTable
-            columns={columns}
-            data={commissions}
-            showPagination={false}
-            noResultsText={tCommon("noResults")}
-          />
+              <GlassSection>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {t("summary.pending")}
+                </p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {formatCurrency(summary.pendingAmount)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {summary.pendingCommissions} {t("summary.commissions")}
+                </p>
+              </GlassSection>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={page === 0}
-              >
-                {tCommon("previous")}
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                {page + 1} / {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                disabled={page >= totalPages - 1}
-              >
-                {tCommon("next")}
-              </Button>
+              <GlassSection>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {t("summary.eligible")}
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(summary.eligibleAmount || 0)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {summary.eligibleCommissions || 0} {t("summary.commissions")}
+                </p>
+              </GlassSection>
+
+              <GlassSection>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {t("summary.paid")}
+                </p>
+                <p className="text-2xl font-bold text-green-600">
+                  {formatCurrency(summary.paidAmount)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {summary.paidCommissions} {t("summary.commissions")}
+                </p>
+              </GlassSection>
             </div>
-          )}
-        </div>
+          ) : null}
+
+          {/* Commission Table */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-1 border-b">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px",
+                    activeTab === tab.value
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50",
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <BaseTable
+              columns={columns}
+              data={filteredCommissions}
+              showPagination={false}
+              noResultsText={tCommon("noResults")}
+            />
+          </div>
+        </>
       )}
     </div>
   );

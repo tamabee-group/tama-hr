@@ -79,6 +79,7 @@ async function getLocaleFromCookie(): Promise<string | null> {
 
 /**
  * Parse response text thành ApiResponse
+ * Xử lý cả trường hợp backend trả HTML (502/503 từ nginx)
  */
 function parseResponse<T>(
   text: string,
@@ -90,10 +91,25 @@ function parseResponse<T>(
       403: "Không có quyền truy cập",
       404: "Không tìm thấy tài nguyên",
       500: "Lỗi server",
+      502: "API không khả dụng",
+      503: "API đang bảo trì",
     };
     throw new ApiError(
       errorMessages[httpStatus] || `Lỗi HTTP ${httpStatus}`,
       httpStatus || 500,
+    );
+  }
+
+  // Kiểm tra response có phải HTML không (502/503 từ nginx trả HTML)
+  const trimmed = text.trimStart();
+  if (trimmed.startsWith("<") || trimmed.startsWith("<!")) {
+    const errorMessages: Record<number, string> = {
+      502: "API không khả dụng",
+      503: "API đang bảo trì",
+    };
+    throw new ApiError(
+      errorMessages[httpStatus] || `API không khả dụng (HTTP ${httpStatus})`,
+      httpStatus || 502,
     );
   }
 

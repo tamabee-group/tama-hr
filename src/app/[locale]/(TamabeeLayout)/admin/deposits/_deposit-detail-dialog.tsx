@@ -9,17 +9,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ImageZoomDialog } from "@/app/[locale]/_components/_image-zoom-dialog";
+import { ImageZoomDialog } from "@/app/[locale]/_components/image";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { DepositRequestResponse } from "@/types/deposit";
-import { DepositStatusBadge } from "@/app/[locale]/_components/_status-badge";
-import { FallbackImage } from "@/app/[locale]/_components/_fallback-image";
+import { DepositStatusBadge } from "@/app/[locale]/_components/_shared/display";
+import { FallbackImage } from "@/app/[locale]/_components/image";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
 import { depositApi } from "@/lib/apis/deposit-api";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { handleApiError } from "@/lib/utils/api-error-handler";
-import { formatDateTime } from "@/lib/utils/format-date";
+import { formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { toast } from "sonner";
 import { Check, X, Download, Loader2, ZoomIn } from "lucide-react";

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/collapsible";
 import { EmploymentContract } from "@/types/attendance-records";
 import { getExpiringContracts } from "@/lib/apis/contract-api";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface ExpiringContractsBadgeProps {

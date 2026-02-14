@@ -2,13 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import {
   LayoutTemplate,
@@ -49,27 +43,26 @@ export function ShiftDashboard() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {navigationCards.map((card) => (
-        <Card
+        <GlassCard
           key={card.href}
-          className="cursor-pointer hover:shadow-md transition-shadow"
+          variant="interactive"
           onClick={() => router.push(card.href)}
+          className="p-6"
         >
-          <CardHeader className="flex flex-row items-center gap-4">
+          <div className="flex items-center gap-4 mb-4">
             {card.icon}
             <div className="flex-1">
-              <CardTitle className="text-lg">{card.title}</CardTitle>
-              <CardDescription className="mt-1">
+              <h3 className="text-lg font-semibold">{card.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1">
                 {card.description}
-              </CardDescription>
+              </p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <Button variant="ghost" className="w-full justify-between">
-              {t("table.status")}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </CardContent>
-        </Card>
+          </div>
+          <Button variant="ghost" className="w-full justify-between">
+            {t("table.status")}
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </GlassCard>
       ))}
     </div>
   );

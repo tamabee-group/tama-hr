@@ -25,7 +25,6 @@ const DEFAULT_LIMIT = 10;
 export interface CheckInRequest {
   latitude?: number;
   longitude?: number;
-  deviceId?: string;
 }
 
 export interface CheckInResponse {
@@ -37,7 +36,6 @@ export interface CheckInResponse {
 export interface CheckOutRequest {
   latitude?: number;
   longitude?: number;
-  deviceId?: string;
 }
 
 export interface CheckOutResponse {
@@ -209,6 +207,19 @@ export async function getEmployeeAttendanceByMonth(
 }
 
 /**
+ * Lấy chi tiết chấm công của nhân viên cụ thể theo ngày
+ * @client-only
+ */
+export async function getEmployeeAttendanceByDate(
+  employeeId: number,
+  date: string,
+): Promise<AttendanceRecord | null> {
+  return apiClient.get<AttendanceRecord | null>(
+    `/api/company/employees/${employeeId}/attendance/date/${date}`,
+  );
+}
+
+/**
  * Lấy tổng hợp chấm công của nhân viên cụ thể
  * @client-only
  */
@@ -254,6 +265,7 @@ export const attendanceApi = {
   getAttendanceRecords,
   getAttendanceById,
   getEmployeeAttendanceByMonth,
+  getEmployeeAttendanceByDate,
   getEmployeeAttendanceSummary,
   getCompanyAttendanceSummary,
 };

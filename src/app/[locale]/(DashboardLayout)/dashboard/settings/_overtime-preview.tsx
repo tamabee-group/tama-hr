@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
@@ -69,11 +69,8 @@ export function OvertimePreview({ config }: OvertimePreviewProps) {
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">{t("preview")}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <GlassSection title={t("preview")}>
+      <div className="space-y-4">
         {/* Input hourly rate */}
         <div className="space-y-2">
           <Label htmlFor="hourlyRate">{t("sampleHourlyRate")}</Label>
@@ -114,7 +111,7 @@ export function OvertimePreview({ config }: OvertimePreviewProps) {
 
         {/* Ghi chú */}
         <p className="text-xs text-muted-foreground">{t("previewNote")}</p>
-      </CardContent>
-    </Card>
+      </div>
+    </GlassSection>
   );
 }

@@ -19,7 +19,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { payrollPeriodApi } from "@/lib/apis/payroll-period-api";
 import { PayrollPeriodInput } from "@/types/attendance-records";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
-import { formatDateForApi } from "@/lib/utils/format-date";
+import { formatDateForApi } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 interface PayrollPeriodFormDialogProps {

@@ -12,6 +12,7 @@ export const PROTECTED_ROUTES = [
   "/profile",
   "/settings",
   "/admin",
+  "/support",
 ];
 
 // Các route chỉ dành cho guest (chưa đăng nhập)

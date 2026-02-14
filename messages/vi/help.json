@@ -1,0 +1,276 @@
+{
+  "title": "Trung tâm hỗ trợ",
+  "searchPlaceholder": "Tìm kiếm bài viết...",
+  "noResults": "Không tìm thấy kết quả",
+  "noResultsHint": "Vui lòng thử từ khóa khác",
+  "topicLabel": "Thuộc chủ đề: {topic}",
+  "welcome": {
+    "companyTitle": "Chào mừng đến với Tamabee HR! 🎉",
+    "companyContent": "Chào mừng bạn đã đăng ký sử dụng **Tamabee HR** — hệ thống quản lý nhân sự thông minh.\n\n## Bắt đầu thiết lập\n\nĐể hệ thống hoạt động đầy đủ, hãy thực hiện theo thứ tự:\n\n1. **Cài đặt công ty** — Cấu hình giờ làm việc, giải lao, tăng ca, lương tại [Cài đặt](/dashboard/settings)\n2. **Tạo phòng ban** — Tổ chức cơ cấu công ty tại [Phòng ban](/dashboard/departments)\n3. **Thêm nhân viên** — Tạo tài khoản nhân viên tại [Nhân viên](/dashboard/employees)\n4. **Tạo hợp đồng** — Mỗi nhân viên cần ít nhất 1 hợp đồng đang hoạt động\n5. **Cấu hình lương** — Thiết lập mức lương, phụ cấp, khấu trừ cho nhân viên\n\n## Hoạt động hàng ngày\n\n- **Chấm công** — Theo dõi giờ vào/ra nhân viên tại [Chấm công](/dashboard/attendance)\n- **Nghỉ phép** — Duyệt đơn nghỉ phép tại [Nghỉ phép](/dashboard/leave)\n- **Tính lương** — Tính và xác nhận lương hàng tháng tại [Lương](/dashboard/payroll)\n\n## Cần hỗ trợ?\n\nTruy cập [Trung tâm hỗ trợ](/me/help) để xem hướng dẫn chi tiết cho từng tính năng, bao gồm luồng hoạt động hệ thống, cách xử lý lỗi thường gặp, và giải thích cách tính lương.\n\nChúc bạn sử dụng hiệu quả! 🚀",
+    "employeeTitle": "Chào mừng bạn! 🎉",
+    "employeeContent": "Chào mừng bạn đã tham gia hệ thống **Tamabee HR**.\n\n## Các tính năng chính\n\n1. **Chấm công** — Ghi nhận giờ vào/ra hàng ngày tại [Chấm công](/me/attendance). Hỗ trợ GPS, giải lao, nhiều ca\n2. **Nghỉ phép** — Gửi đơn xin nghỉ phép và theo dõi số ngày phép tại [Nghỉ phép](/me/leave)\n3. **Xem lương** — Kiểm tra phiếu lương chi tiết hàng tháng tại [Lương](/me/payroll)\n4. **Hồ sơ cá nhân** — Cập nhật thông tin cá nhân và ngân hàng tại [Hồ sơ](/me/profile)\n\n## Lưu ý quan trọng\n\n- Hãy chấm công đầy đủ mỗi ngày để đảm bảo lương được tính chính xác\n- Nếu quên chấm công, bạn có thể gửi yêu cầu điều chỉnh để quản lý duyệt\n- Nếu công ty bật tính năng giải lao, nhớ bấm bắt đầu/kết thúc giải lao\n\n## Cần hỗ trợ?\n\nTruy cập [Trung tâm hỗ trợ](/me/help) để xem hướng dẫn chi tiết.\n\nChúc bạn làm việc vui vẻ! 🚀"
+  },
+  "topics": {
+    "system_workflow": { "title": "Luồng hệ thống" },
+    "attendance": { "title": "Chấm công" },
+    "breaks": { "title": "Giải lao" },
+    "shifts": { "title": "Ca làm việc" },
+    "leave": { "title": "Nghỉ phép" },
+    "payroll": { "title": "Lương" },
+    "profile": { "title": "Hồ sơ cá nhân" },
+    "employee_management": { "title": "Quản lý nhân viên" },
+    "company_settings": { "title": "Cài đặt công ty" },
+    "platform_admin": { "title": "Quản trị platform" }
+  },
+  "companyInfo": {
+    "title": "Cài đặt công ty của bạn",
+    "workHours": "Giờ làm việc",
+    "lateGrace": "Cho phép đi muộn",
+    "earlyLeaveGrace": "Cho phép về sớm",
+    "geoRequired": "Yêu cầu vị trí GPS",
+    "geoRadius": "Bán kính GPS",
+    "saturdayOff": "Nghỉ thứ 7",
+    "sundayOff": "Nghỉ chủ nhật",
+    "breakEnabled": "Giải lao",
+    "breakType": "Loại giải lao",
+    "defaultBreak": "Thời gian mặc định",
+    "maxBreaks": "Số lần tối đa/ngày",
+    "payDay": "Ngày trả lương",
+    "cutoffDay": "Ngày chốt lương",
+    "overtimeEnabled": "Tăng ca",
+    "overtimeRate": "Hệ số tăng ca",
+    "nightRate": "Hệ số ca đêm",
+    "minutes": " phút",
+    "breakTypePaid": "Có lương",
+    "breakTypeUnpaid": "Không lương"
+  },
+  "articles": {
+    "system_workflow_overview": {
+      "title": "Tổng quan hệ thống Tamabee HR",
+      "content": "**Tamabee HR** là hệ thống quản lý nhân sự toàn diện gồm các module chính:\n\n- **Quản lý nhân viên**: Tạo tài khoản, hợp đồng, cấu hình lương\n- **Chấm công**: Ghi nhận giờ vào/ra, giải lao, hỗ trợ GPS và nhiều ca\n- **Nghỉ phép**: Gửi đơn, phê duyệt, theo dõi số ngày phép\n- **Tính lương**: Tự động tính dựa trên chấm công, phụ cấp, khấu trừ, tăng ca\n- **Cài đặt công ty**: Cấu hình giờ làm, giải lao, tăng ca, lương\n\nMỗi module liên kết chặt chẽ với nhau. Ví dụ: muốn tính lương thì cần có chấm công, muốn chấm công thì nhân viên cần có hợp đồng đang hoạt động."
+    },
+    "system_workflow_setup_steps": {
+      "title": "Các bước thiết lập ban đầu",
+      "content": "Để hệ thống hoạt động đúng, bạn cần thực hiện theo thứ tự:\n\n1. **Đăng ký công ty** — Tạo tài khoản công ty trên Tamabee\n2. **Cài đặt công ty** — Cấu hình giờ làm việc, quy tắc chấm công, giải lao, tăng ca tại Cài đặt\n3. **Tạo phòng ban** — Tổ chức cơ cấu phòng ban cho công ty\n4. **Tạo nhân viên** — Thêm nhân viên với email, tên, phòng ban, vai trò\n5. **Tạo hợp đồng** — Mỗi nhân viên cần ít nhất 1 hợp đồng đang hoạt động \n6. **Cấu hình lương** — Thiết lập mức lương cơ bản cho nhân viên\n7. **Thêm phụ cấp** — Cấu hình các khoản phụ cấp (ăn trưa, đi lại, điện thoại...)\n8. **Thêm khấu trừ** — Cấu hình các khoản khấu trừ (bảo hiểm, thuế...)\n\n**Quan trọng:** Nếu thiếu bất kỳ bước nào, các tính năng phụ thuộc sẽ không hoạt động. Ví dụ: nhân viên không có hợp đồng sẽ không thể chấm công."
+    },
+    "system_workflow_employee_onboarding": {
+      "title": "Quy trình thêm nhân viên mới",
+      "content": "Khi thêm nhân viên mới vào hệ thống, cần thực hiện đầy đủ các bước:\n\n1. **Tạo tài khoản nhân viên** — Nhập email, tên, phòng ban, vai trò. Nhân viên sẽ nhận email mời với mật khẩu tạm thời\n2. **Tạo hợp đồng lao động** — Chọn loại hợp đồng (toàn thời gian, bán thời gian, thời vụ), ngày bắt đầu/kết thúc. Hợp đồng phải ở trạng thái đang hoạt động\n3. **Cấu hình lương** — Thiết lập loại lương (theo tháng, ngày, giờ, ca), mức lương cơ bản\n4. **Thêm phụ cấp** — Thêm các khoản phụ cấp cố định hoặc có điều kiện\n5. **Thêm khấu trừ** — Thêm các khoản khấu trừ cố định hoặc theo phần trăm\n\n**Tại sao cần hợp đồng?** Hệ thống dùng hợp đồng để xác định nhân viên có đang làm việc hay không. Không có hợp đồng đang hoạt động = không thể chấm công, không thể tính lương.\n\n**Tại sao cần cấu hình lương?** Nếu không có cấu hình lương, hệ thống không biết mức lương cơ bản để tính toán. Bảng lương sẽ hiển thị 0đ."
+    },
+    "system_workflow_daily_operations": {
+      "title": "Hoạt động hàng ngày",
+      "content": "Sau khi thiết lập xong, hoạt động hàng ngày gồm:\n\n**Nhân viên:**\n1. Chấm công vào khi bắt đầu làm việc\n2. Bấm giải lao khi nghỉ (nếu công ty bật tính năng giải lao)\n3. Bấm kết thúc giải lao khi quay lại làm việc\n4. Chấm công ra khi kết thúc ca\n5. Gửi đơn nghỉ phép nếu cần\n\n**Quản lý:**\n1. Theo dõi chấm công nhân viên hàng ngày\n2. Duyệt yêu cầu điều chỉnh chấm công\n3. Duyệt đơn nghỉ phép\n4. Kiểm tra báo cáo chấm công"
+    },
+    "system_workflow_monthly_payroll_flow": {
+      "title": "Quy trình tính lương hàng tháng",
+      "content": "Cuối mỗi tháng (hoặc theo ngày chốt lương đã cấu hình), quy trình tính lương gồm:\n\n1. **Chốt chấm công** — Đảm bảo tất cả chấm công trong tháng đã chính xác, các yêu cầu điều chỉnh đã được duyệt\n2. **Tạo kỳ lương** — Hệ thống tạo kỳ lương mới với trạng thái Nháp\n3. **Tính lương tự động** — Hệ thống tính toán dựa trên: lương cơ bản, số ngày/giờ làm thực tế, phụ cấp, khấu trừ, tăng ca, giải lao (nếu không lương)\n4. **Kiểm tra và điều chỉnh** — Quản lý xem lại bảng lương, điều chỉnh nếu cần\n5. **Phê duyệt** — Chuyển trạng thái sang Đã duyệt\n6. **Thanh toán** — Chuyển sang có lương sau khi đã thanh toán\n\n**Công thức cơ bản:**\n- Lương thực nhận = Lương cơ bản + Phụ cấp - Khấu trừ + Tăng ca - Giải lao không lương (nếu có)"
+    },
+    "system_workflow_common_errors": {
+      "title": "Lỗi thường gặp và cách khắc phục",
+      "content": "**Lỗi: Không thể chấm công**\n- Nguyên nhân: Nhân viên chưa có hợp đồng đang hoạt động\n- Khắc phục: Tạo hợp đồng mới hoặc kích hoạt hợp đồng hiện có\n\n**Lỗi: Lương hiển thị 0đ**\n- Nguyên nhân: Chưa cấu hình lương cho nhân viên\n- Khắc phục: Vào quản lý nhân viên, chọn nhân viên, cấu hình mức lương\n\n**Lỗi: Chấm công ngoài vị trí**\n- Nguyên nhân: Nhân viên chấm công ngoài bán kính GPS cho phép\n- Khắc phục: Kiểm tra cài đặt bán kính GPS hoặc thêm vị trí chấm công mới\n\n**Lỗi: Không tính tăng ca**\n- Nguyên nhân: Tính năng tăng ca chưa được bật trong cài đặt\n- Khắc phục: Vào Cài đặt > Tăng ca, bật tính năng tăng ca\n\n**Lỗi: Giải lao không được ghi nhận**\n- Nguyên nhân: Tính năng giải lao chưa được bật\n- Khắc phục: Vào Cài đặt > Giải lao, bật tính năng giải lao"
+    },
+    "attendance_how_to_checkin": {
+      "title": "Cách chấm công vào/ra",
+      "content": "Để chấm công, bạn thực hiện các bước sau:\n\n1. Truy cập trang **Chấm công** từ menu chính\n2. Nhấn nút **Chấm công vào** khi bắt đầu làm việc\n3. Nhấn nút **Chấm công ra** khi kết thúc ca làm\n\nHệ thống sẽ tự động ghi nhận thời gian và vị trí chấm công của bạn.\n\n**Điều kiện để chấm công:**\n- Bạn phải có hợp đồng lao động đang hoạt động \n- Nếu công ty yêu cầu GPS, bạn cần bật định vị và ở trong bán kính cho phép\n- Nếu công ty cấu hình giờ làm cố định, hệ thống sẽ tự động đánh dấu đi muộn/về sớm dựa trên giờ cấu hình"
+    },
+    "attendance_multi_shift": {
+      "title": "Chấm công nhiều ca",
+      "content": "Nếu công ty sử dụng hệ thống ca làm việc, bạn có thể chấm công cho nhiều ca trong ngày:\n\n1. Chấm công vào/ra cho ca đầu tiên\n2. Sau khi kết thúc ca 1, hệ thống cho phép chấm công ca tiếp theo\n3. Mỗi ca được ghi nhận riêng biệt\n\n**Lưu ý:** Số ca tối đa trong ngày phụ thuộc vào cấu hình của công ty. Mỗi ca cần có thời gian bắt đầu và kết thúc rõ ràng."
+    },
+    "attendance_view_history": {
+      "title": "Xem lịch sử chấm công",
+      "content": "Bạn có thể xem lịch sử chấm công theo tháng:\n\n1. Vào trang **Chấm công**\n2. Chọn tháng cần xem trên lịch\n3. Nhấn vào ngày cụ thể để xem chi tiết giờ vào/ra\n\nHệ thống hiển thị trạng thái từng ngày: *đúng giờ*, *đi muộn*, *về sớm*, hoặc *vắng mặt*. Bạn cũng có thể xem tổng số giờ làm việc, số lần đi muộn/về sớm trong tháng."
+    },
+    "attendance_request_adjustment": {
+      "title": "Yêu cầu điều chỉnh chấm công",
+      "content": "Nếu bạn quên chấm công hoặc cần điều chỉnh:\n\n1. Vào trang **Chấm công** và chọn ngày cần điều chỉnh\n2. Nhấn nút **Yêu cầu điều chỉnh**\n3. Nhập thời gian chính xác và lý do\n4. Gửi yêu cầu để quản lý phê duyệt\n\nYêu cầu sẽ được quản lý xem xét và phê duyệt. Sau khi được duyệt, dữ liệu chấm công sẽ được cập nhật tự động."
+    },
+    "attendance_geolocation": {
+      "title": "Chấm công bằng GPS",
+      "content": "Nếu công ty bật tính năng yêu cầu vị trí GPS:\n\n1. Bạn cần **bật định vị** trên thiết bị trước khi chấm công\n2. Hệ thống sẽ kiểm tra vị trí của bạn so với các địa điểm chấm công đã đăng ký\n3. Bạn phải ở trong **bán kính cho phép** để chấm công thành công\n\n**Nếu chấm công thất bại:**\n- Kiểm tra xem định vị đã bật chưa\n- Đảm bảo bạn đang ở trong khu vực cho phép\n- Thử tải lại trang và chấm công lại\n- Liên hệ quản lý nếu vẫn không được"
+    },
+    "attendance_rounding_rules": {
+      "title": "Quy tắc làm tròn thời gian",
+      "content": "Hệ thống có thể làm tròn thời gian chấm công theo cấu hình của công ty:\n\n**Khoảng làm tròn:** 5 phút, 10 phút, 15 phút, 30 phút, hoặc 60 phút\n\n**Hướng làm tròn:**\n- **Làm tròn lên:** 9:07 → 9:10 (với khoảng 5 phút)\n- **Làm tròn xuống:** 9:07 → 9:05\n- **Làm tròn gần nhất:** 9:07 → 9:05, 9:08 → 9:10\n\nQuy tắc làm tròn có thể áp dụng riêng cho: giờ vào, giờ ra, bắt đầu giải lao, kết thúc giải lao. Mỗi loại có thể có cấu hình khác nhau."
+    },
+    "breaks_how_breaks_work": {
+      "title": "Giải lao hoạt động như thế nào",
+      "content": "Tính năng giải lao cho phép ghi nhận thời gian nghỉ giữa ca làm việc.\n\n**Cách hoạt động:**\n1. Sau khi chấm công vào, bạn có thể bấm **Bắt đầu giải lao** khi muốn nghỉ\n2. Khi quay lại làm việc, bấm **Kết thúc giải lao**\n3. Hệ thống ghi nhận thời gian giải lao và tính vào báo cáo\n\n**Ảnh hưởng đến lương:**\n- **Giải lao có lương:** Thời gian giải lao vẫn được tính lương bình thường\n- **Giải lao không lương:** Thời gian giải lao bị trừ khỏi giờ làm việc, ảnh hưởng đến lương\n\n**Lưu ý:** Tính năng giải lao chỉ hoạt động khi công ty đã bật trong cài đặt."
+    },
+    "breaks_start_end_break": {
+      "title": "Bắt đầu và kết thúc giải lao",
+      "content": "Để ghi nhận giải lao:\n\n1. Đảm bảo bạn đã **chấm công vào** trước đó\n2. Nhấn nút **Bắt đầu giải lao** trên trang chấm công\n3. Hệ thống ghi nhận thời điểm bắt đầu nghỉ\n4. Khi quay lại làm việc, nhấn **Kết thúc giải lao**\n5. Hệ thống tính tổng thời gian giải lao\n\n**Lưu ý quan trọng:**\n- Bạn không thể bắt đầu giải lao nếu chưa chấm công vào\n- Bạn không thể chấm công ra khi đang trong trạng thái giải lao\n- Số lần giải lao trong ngày bị giới hạn theo cấu hình công ty"
+    },
+    "breaks_break_types": {
+      "title": "Các loại giải lao",
+      "content": "Hệ thống hỗ trợ 2 loại giải lao:\n\n**1. Giải lao có lương**\n- Thời gian nghỉ vẫn được tính vào giờ làm việc\n- Không ảnh hưởng đến lương\n- Thường áp dụng cho nghỉ giữa ca ngắn (15-30 phút)\n\n**2. Giải lao không lương**\n- Thời gian nghỉ bị trừ khỏi giờ làm việc\n- Ảnh hưởng trực tiếp đến lương (giảm giờ làm = giảm lương)\n- Thường áp dụng cho nghỉ trưa dài (60 phút trở lên)\n\n**Ví dụ:** Nếu lương theo giờ là [[hourlyRate]]/giờ và giải lao không lương 60 phút, lương bị trừ [[hourlyDeduction]] cho ngày đó."
+    },
+    "breaks_break_compliance": {
+      "title": "Tuân thủ luật lao động về giải lao",
+      "content": "Hệ thống hỗ trợ tuân thủ quy định giải lao theo luật lao động:\n\n**Luật lao động Việt Nam:**\n- Làm việc liên tục 8 giờ: nghỉ ít nhất 30 phút\n- Ca đêm (22:00-06:00): nghỉ ít nhất 45 phút\n\n**Luật lao động Nhật Bản:**\n- Làm việc trên 6 giờ: nghỉ ít nhất 45 phút\n- Làm việc trên 8 giờ: nghỉ ít nhất 60 phút\n\nHệ thống có thể tự động áp dụng thời gian giải lao tối thiểu theo locale (vi/ja) nếu bật tùy chọn *Sử dụng mức tối thiểu theo pháp luật* trong cài đặt."
+    },
+    "breaks_break_adjustment": {
+      "title": "Chế độ giải lao cố định và linh hoạt",
+      "content": "Công ty có thể cấu hình giải lao theo 2 chế độ:\n\n**Chế độ cố định:**\n- Giờ giải lao được quy định sẵn (ví dụ: 12:00-13:00)\n- Nhân viên phải nghỉ đúng khung giờ\n- Phù hợp với công ty có quy định giờ nghỉ chặt chẽ\n\n**Chế độ linh hoạt:**\n- Nhân viên tự chọn thời điểm giải lao\n- Chỉ cần đảm bảo tổng thời gian giải lao đúng quy định\n- Phù hợp với công ty có văn hóa làm việc linh hoạt\n\n**Ca đêm:** Hệ thống có cấu hình riêng cho ca đêm (22:00-05:00) với thời gian giải lao tối thiểu và mặc định khác."
+    },
+    "shifts_overview": {
+      "title": "Ca làm việc là gì",
+      "content": "Tính năng ca làm việc cho phép công ty tạo và quản lý các ca làm việc khác nhau:\n\n**Các thành phần chính:**\n- **Mẫu ca:** Định nghĩa tên ca, giờ bắt đầu, giờ kết thúc, màu sắc\n- **Phân công ca:** Gán nhân viên vào ca cụ thể theo ngày\n- **Đổi ca:** Nhân viên có thể yêu cầu đổi ca với đồng nghiệp\n\n**Ví dụ mẫu ca:**\n- Ca sáng: 06:00 - 14:00\n- Ca chiều: 14:00 - 22:00\n- Ca đêm: 22:00 - 06:00\n\n**Lưu ý:** Tính năng ca làm việc cần được quản lý thiết lập trước khi nhân viên có thể xem lịch ca."
+    },
+    "shifts_view_schedule": {
+      "title": "Xem lịch ca làm việc",
+      "content": "Để xem lịch ca của bạn:\n\n1. Truy cập trang **Lịch làm việc** từ menu chính\n2. Xem lịch ca theo tuần hoặc tháng trên giao diện lịch\n3. Nhấn vào ngày cụ thể để xem chi tiết ca\n\nHệ thống hiển thị: *tên ca*, *giờ bắt đầu/kết thúc*, *trạng thái* cho từng ngày. Bạn cũng có thể xem lịch sử đổi ca đã thực hiện."
+    },
+    "shifts_swap_request": {
+      "title": "Yêu cầu đổi ca",
+      "content": "Nếu bạn muốn đổi ca với đồng nghiệp:\n\n1. Vào trang **Lịch làm việc**\n2. Chọn ca bạn muốn đổi\n3. Nhấn **Yêu cầu đổi ca**\n4. Chọn ca của đồng nghiệp mà bạn muốn đổi\n5. Nhập lý do và gửi yêu cầu\n\nYêu cầu sẽ được gửi đến quản lý để phê duyệt. Sau khi được duyệt, lịch ca của cả hai sẽ được cập nhật tự động.\n\n**Lưu ý:**\n- Chỉ có thể đổi ca ở trạng thái chưa diễn ra\n- Bạn có thể hủy yêu cầu đổi ca khi còn chờ duyệt"
+    },
+    "shifts_manage_templates": {
+      "title": "Quản lý mẫu ca làm việc",
+      "content": "Để tạo và quản lý mẫu ca:\n\n1. Vào **Trang quản trị** > **Ca làm việc** > **Mẫu ca**\n2. Nhấn **Tạo mẫu ca mới**\n3. Nhập thông tin:\n- **Tên ca:** Ví dụ: Ca sáng, Ca chiều, Ca đêm\n- **Giờ bắt đầu/kết thúc:** Khung giờ làm việc của ca\n- **Màu sắc:** Để phân biệt trên lịch\n- **Mô tả:** Ghi chú thêm (tùy chọn)\n4. Nhấn **Lưu**\n\nBạn có thể chỉnh sửa hoặc vô hiệu hóa mẫu ca bất kỳ lúc nào. Mẫu ca đã vô hiệu sẽ không hiển thị khi phân công."
+    },
+    "shifts_assign_shifts": {
+      "title": "Phân công ca cho nhân viên",
+      "content": "Để phân công ca:\n\n1. Vào **Ca làm việc** > **Phân công ca**\n2. Chọn nhân viên và mẫu ca\n3. Chọn ngày hoặc khoảng thời gian\n4. Nhấn **Phân công**\n\n**Phân công hàng loạt:** Bạn có thể chọn nhiều nhân viên cùng lúc và phân ca cho một khoảng thời gian. Hệ thống sẽ tự động tạo phân công cho từng ngày.\n\n**Lưu ý:**\n- Mỗi nhân viên chỉ có thể được phân 1 ca/ngày\n- Có thể xóa phân công hàng loạt theo nhân viên và khoảng thời gian"
+    },
+    "shifts_approve_swaps": {
+      "title": "Duyệt yêu cầu đổi ca",
+      "content": "Để duyệt yêu cầu đổi ca:\n\n1. Vào **Ca làm việc** > **Yêu cầu đổi ca**\n2. Xem danh sách yêu cầu chờ duyệt\n3. Nhấn vào yêu cầu để xem chi tiết (ai đổi với ai, ca nào, ngày nào)\n4. Chọn **Phê duyệt** hoặc **Từ chối**\n\nSau khi phê duyệt, lịch ca của cả hai nhân viên sẽ được hoán đổi tự động. Nhân viên sẽ nhận thông báo về kết quả."
+    },
+    "leave_request_leave": {
+      "title": "Cách xin nghỉ phép",
+      "content": "Để xin nghỉ phép:\n\n1. Truy cập trang **Nghỉ phép**\n2. Nhấn nút **Tạo đơn nghỉ phép**\n3. Chọn loại nghỉ phép, ngày bắt đầu và kết thúc\n4. Nhập lý do nghỉ phép\n5. Nhấn **Gửi** để gửi đơn\n\nĐơn nghỉ phép sẽ được gửi đến quản lý để phê duyệt. Bạn sẽ nhận thông báo khi đơn được duyệt hoặc từ chối."
+    },
+    "leave_leave_types": {
+      "title": "Các loại nghỉ phép",
+      "content": "Hệ thống hỗ trợ các loại nghỉ phép sau:\n\n- **Nghỉ phép năm:** Nghỉ phép có lương theo quy định\n- **Nghỉ ốm:** Nghỉ do bệnh, cần giấy xác nhận y tế\n- **Nghỉ thai sản:** Dành cho nhân viên nữ mang thai\n- **Nghỉ chăm con:** Dành cho nhân viên nam khi vợ sinh\n- **Nghỉ tang:** Nghỉ khi có người thân qua đời\n- **Nghỉ không lương:** Nghỉ không được trả lương\n- **Khác:** Các loại nghỉ phép khác\n\nSố ngày phép cho mỗi loại phụ thuộc vào chính sách công ty và hợp đồng lao động."
+    },
+    "leave_check_balance": {
+      "title": "Kiểm tra số ngày phép còn lại",
+      "content": "Để xem số ngày phép còn lại:\n\n1. Vào trang **Nghỉ phép**\n2. Xem thông tin tổng quan ở phần đầu trang\n\nHệ thống hiển thị: *tổng số ngày phép*, *đã sử dụng*, và *còn lại* cho từng loại nghỉ phép."
+    },
+    "leave_cancel_leave": {
+      "title": "Hủy đơn nghỉ phép",
+      "content": "Bạn có thể hủy đơn nghỉ phép đang chờ duyệt:\n\n1. Vào trang **Nghỉ phép**\n2. Tìm đơn nghỉ phép cần hủy\n3. Nhấn nút **Hủy**\n\n**Lưu ý:** Chỉ có thể hủy đơn ở trạng thái *Chờ duyệt*. Đơn đã được phê duyệt cần liên hệ quản lý để hủy."
+    },
+    "payroll_view_payslip": {
+      "title": "Xem phiếu lương",
+      "content": "Để xem phiếu lương hàng tháng:\n\n1. Truy cập trang **Lương**\n2. Chọn tháng cần xem\n3. Nhấn vào phiếu lương để xem chi tiết\n\nPhiếu lương bao gồm: *lương cơ bản*, *phụ cấp*, *khấu trừ*, *tăng ca*, *giải lao không lương (nếu có)*, và *thực nhận*."
+    },
+    "payroll_salary_components": {
+      "title": "Các thành phần lương",
+      "content": "Lương của bạn bao gồm các thành phần:\n\n- **Lương cơ bản**: Mức lương theo hợp đồng (theo tháng, ngày, giờ, hoặc ca)\n- **Phụ cấp**: Các khoản phụ cấp (ăn trưa, đi lại, điện thoại, nhà ở...)\n- **Khấu trừ**: Bảo hiểm xã hội, thuế thu nhập, và các khoản trừ khác\n- **Tăng ca**: Tiền tăng ca tính theo hệ số nhân (x1.25, x1.5...)\n- **Giải lao không lương**: Thời gian giải lao không lương bị trừ khỏi lương\n- **Thực nhận**: Số tiền thực tế nhận được sau khi tính tất cả\n\n**Công thức:** Thực nhận = Lương cơ bản + Phụ cấp - Khấu trừ + Tăng ca - Giải lao không lương"
+    },
+    "payroll_overtime_calculation": {
+      "title": "Cách tính tăng ca",
+      "content": "Tăng ca được tính khi nhân viên làm việc vượt quá giờ tiêu chuẩn:\n\n**Các hệ số tăng ca:**\n- **Tăng ca thường:** x1.25 (làm thêm ngoài giờ bình thường)\n- **Ca đêm:** x1.25 (làm việc từ 22:00-05:00)\n- **Tăng ca đêm:** x1.50 (tăng ca trong khung giờ đêm)\n- **Tăng ca ngày lễ:** x1.35 (làm thêm vào ngày lễ)\n- **Tăng ca đêm ngày lễ:** x1.60 (tăng ca đêm vào ngày lễ)\n\n**Ví dụ:** Lương giờ [[hourlyRate]], tăng ca thường 2 giờ = [[overtimeResult]]\n\n**Lưu ý:** Hệ số tăng ca có thể được công ty tùy chỉnh. Hệ thống cũng hỗ trợ áp dụng mức tối thiểu theo luật lao động Việt Nam hoặc Nhật Bản."
+    },
+    "payroll_break_deduction": {
+      "title": "Khấu trừ giải lao từ lương",
+      "content": "Nếu công ty cấu hình giải lao là **không lương**, thời gian giải lao sẽ bị trừ khỏi lương:\n\n**Cách tính:**\n- Hệ thống tổng hợp tổng thời gian giải lao không lương trong tháng\n- Quy đổi thành giờ và trừ khỏi tổng giờ làm việc\n- Lương bị giảm tương ứng\n\n**Ví dụ:**\n- Lương tháng: [[monthlySalary]] (22 ngày làm, 8 giờ/ngày = 176 giờ)\n- Lương giờ: [[monthlyHourly]]/giờ\n- Giải lao không lương: 60 phút/ngày x 22 ngày = 22 giờ\n- Khấu trừ: [[breakDeduction]]\n\n**Nếu giải lao là có lương:** Không bị trừ lương, thời gian giải lao vẫn tính vào giờ làm việc."
+    },
+    "profile_update_profile": {
+      "title": "Cập nhật thông tin cá nhân",
+      "content": "Để cập nhật hồ sơ cá nhân:\n\n1. Nhấn vào **avatar** ở góc trên bên phải\n2. Chọn **Hồ sơ cá nhân**\n3. Cập nhật các thông tin cần thiết\n4. Nhấn **Lưu** để lưu thay đổi\n\nBạn có thể cập nhật: *tên*, *số điện thoại*, *địa chỉ*, *ảnh đại diện*, và *thông tin liên hệ khẩn cấp*."
+    },
+    "profile_change_language": {
+      "title": "Thay đổi ngôn ngữ",
+      "content": "Hệ thống hỗ trợ 3 ngôn ngữ: Tiếng Việt, English, 日本語.\n\nĐể thay đổi ngôn ngữ:\n\n1. Nhấn vào **avatar** ở góc trên bên phải\n2. Chọn ngôn ngữ mong muốn từ menu\n\nHệ thống sẽ tự động chuyển đổi toàn bộ giao diện sang ngôn ngữ đã chọn."
+    },
+    "profile_bank_info": {
+      "title": "Cập nhật thông tin ngân hàng",
+      "content": "Để cập nhật thông tin tài khoản ngân hàng nhận lương:\n\n1. Vào **Hồ sơ cá nhân**\n2. Tìm phần **Thông tin ngân hàng**\n3. Nhập thông tin tài khoản ngân hàng\n4. Nhấn **Lưu**\n\n**Lưu ý:** Thông tin ngân hàng chính xác rất quan trọng để nhận lương đúng hạn."
+    },
+    "employee_management_create_employee": {
+      "title": "Tạo nhân viên mới",
+      "content": "Để thêm nhân viên mới vào hệ thống:\n\n1. Vào **Trang quản trị** > **Nhân viên**\n2. Nhấn nút **Thêm nhân viên**\n3. Nhập thông tin: email, tên, phòng ban, vai trò\n4. Nhấn **Tạo**\n\nNhân viên sẽ nhận email mời tham gia hệ thống với mật khẩu tạm thời.\n\n**Quan trọng:** Sau khi tạo nhân viên, bạn cần tiếp tục tạo hợp đồng và cấu hình lương để nhân viên có thể sử dụng đầy đủ tính năng."
+    },
+    "employee_management_contract_setup": {
+      "title": "Tạo hợp đồng lao động",
+      "content": "Mỗi nhân viên cần ít nhất 1 hợp đồng đang hoạt động:\n\n1. Vào **Quản lý nhân viên** > chọn nhân viên\n2. Chọn tab **Hợp đồng**\n3. Nhấn **Tạo hợp đồng mới**\n4. Chọn loại hợp đồng: Toàn thời gian, Bán thời gian, Thời vụ, Hợp đồng\n5. Nhập ngày bắt đầu, ngày kết thúc (nếu có)\n6. Nhấn **Lưu**\n\n**Tại sao cần hợp đồng?**\n- Hợp đồng xác định nhân viên có đang làm việc hay không\n- Không có hợp đồng đang hoạt động = không thể chấm công\n- Hợp đồng hết hạn tự động chuyển sang trạng thái hết hạn"
+    },
+    "employee_management_salary_config": {
+      "title": "Cấu hình lương nhân viên",
+      "content": "Sau khi tạo hợp đồng, cần cấu hình lương:\n\n1. Vào **Quản lý nhân viên** > chọn nhân viên\n2. Chọn tab **Lương**\n3. Chọn loại lương: Theo tháng, theo ngày, theo giờ, theo ca\n4. Nhập mức lương cơ bản\n5. Nhấn **Lưu**\n\n**Loại lương ảnh hưởng cách tính:**\n- **Theo tháng:** Lương cố định, trừ theo ngày nghỉ không phép\n- **Theo ngày:** Lương = số ngày làm x đơn giá ngày\n- **Theo giờ:** Lương = số giờ làm x đơn giá giờ\n- **Theo ca:** Lương = số ca làm x đơn giá ca"
+    },
+    "employee_management_allowance_deduction": {
+      "title": "Phụ cấp và khấu trừ",
+      "content": "**Phụ cấp (Allowance):**\n1. Vào nhân viên > tab **Phụ cấp**\n2. Nhấn **Thêm phụ cấp**\n3. Chọn loại: Cố định, Có điều kiện, Một lần\n4. Nhập tên và số tiền\n\n**Khấu trừ (Deduction):**\n1. Vào nhân viên > tab **Khấu trừ**\n2. Nhấn **Thêm khấu trừ**\n3. Chọn loại: Cố định hoặc Theo phần trăm\n4. Nhập tên và số tiền/phần trăm\n\n**Ví dụ phụ cấp:** Ăn trưa [[lunchAllowance]]/tháng, đi lại [[transportAllowance]]/tháng\n**Ví dụ khấu trừ:** BHXH 8%, BHYT 1.5%, thuế TNCN theo bậc"
+    },
+    "employee_management_manage_attendance": {
+      "title": "Quản lý chấm công nhân viên",
+      "content": "Để quản lý chấm công:\n\n1. Vào **Trang quản trị** > **Chấm công**\n2. Xem tổng quan chấm công theo ngày/tháng\n3. Duyệt các yêu cầu điều chỉnh từ nhân viên\n\nBạn có thể xem chi tiết chấm công của từng nhân viên, bao gồm giờ vào/ra, giải lao, tăng ca, và xuất báo cáo."
+    },
+    "employee_management_approve_leave": {
+      "title": "Duyệt đơn nghỉ phép",
+      "content": "Để duyệt đơn nghỉ phép:\n\n1. Vào **Trang quản trị** > **Nghỉ phép**\n2. Xem danh sách đơn chờ duyệt\n3. Nhấn vào đơn để xem chi tiết\n4. Chọn **Phê duyệt** hoặc **Từ chối**\n\nNhân viên sẽ nhận thông báo về kết quả phê duyệt."
+    },
+    "employee_management_manage_payroll": {
+      "title": "Quản lý lương",
+      "content": "Để quản lý lương nhân viên:\n\n1. Vào **Trang quản trị** > **Lương**\n2. Chọn tháng cần tính lương\n3. Xem bảng lương tổng hợp\n4. Kiểm tra và xác nhận bảng lương\n\nHệ thống tự động tính lương dựa trên chấm công, phụ cấp, khấu trừ, tăng ca và giải lao. Trạng thái kỳ lương: Nháp → Đang xem xét → Đã duyệt → có lương."
+    },
+    "company_settings_attendance_settings": {
+      "title": "Cài đặt chấm công",
+      "content": "Để cấu hình quy tắc chấm công:\n\n1. Vào **Trang quản trị** > **Cài đặt**\n2. Chọn tab **Chấm công**\n3. Cấu hình:\n- **Giờ làm việc:** Giờ bắt đầu và kết thúc mặc định\n- **Cho phép đi muộn:** Số phút được phép đi muộn mà không bị đánh dấu\n- **Cho phép về sớm:** Số phút được phép về sớm\n- **Yêu cầu GPS:** Bật/tắt yêu cầu vị trí khi chấm công\n- **Bán kính GPS:** Khoảng cách tối đa cho phép chấm công\n- **Nghỉ cuối tuần:** Cấu hình thứ 7 và chủ nhật có nghỉ không\n- **Làm tròn thời gian:** Cấu hình quy tắc làm tròn cho giờ vào/ra\n4. Nhấn **Lưu**\n\nCác thay đổi sẽ áp dụng cho toàn bộ nhân viên trong công ty."
+    },
+    "company_settings_break_settings": {
+      "title": "Cài đặt giải lao",
+      "content": "Để cấu hình giải lao:\n\n1. Vào **Cài đặt** > tab **Giải lao**\n2. Bật/tắt tính năng giải lao\n3. Cấu hình:\n- **Loại giải lao:** có lương hoặc không lương\n- **Thời gian mặc định:** Số phút giải lao mặc định\n- **Thời gian tối thiểu/tối đa:** Giới hạn thời gian giải lao\n- **Số lần tối đa/ngày:** Giới hạn số lần giải lao trong ngày\n- **Chế độ cố định:** Bật nếu muốn quy định khung giờ giải lao cố định\n- **Tuân thủ pháp luật:** Bật để áp dụng mức tối thiểu theo luật lao động\n- **Ca đêm:** Cấu hình riêng cho ca đêm (22:00-05:00)\n4. Nhấn **Lưu**"
+    },
+    "company_settings_overtime_settings": {
+      "title": "Cài đặt tăng ca",
+      "content": "Để cấu hình tăng ca:\n\n1. Vào **Cài đặt** > tab **Tăng ca**\n2. Bật/tắt tính năng tăng ca\n3. Cấu hình:\n- **Giờ làm tiêu chuẩn:** Số giờ làm chuẩn trước khi tính tăng ca\n- **Hệ số tăng ca thường:** Mặc định x1.25\n- **Hệ số ca đêm:** Mặc định x1.25\n- **Hệ số tăng ca đêm:** Mặc định x1.50\n- **Hệ số tăng ca ngày lễ:** Mặc định x1.35\n- **Hệ số tăng ca đêm ngày lễ:** Mặc định x1.60\n- **Giới hạn tăng ca:** Tối đa giờ/ngày và giờ/tháng\n- **Yêu cầu phê duyệt:** Bật nếu tăng ca cần quản lý duyệt\n4. Nhấn **Lưu**\n\nHệ thống hỗ trợ áp dụng mức tối thiểu theo luật lao động Việt Nam hoặc Nhật Bản."
+    },
+    "company_settings_payroll_settings": {
+      "title": "Cài đặt lương",
+      "content": "Để cấu hình chính sách lương:\n\n1. Vào **Cài đặt** > tab **Lương**\n2. Cấu hình:\n- **Ngày trả lương:** Ngày trong tháng trả lương (ví dụ: ngày 25)\n- **Ngày chốt lương:** Ngày chốt dữ liệu chấm công (ví dụ: ngày 20)\n- **Loại lương mặc định:** theo tháng, theo ngày, theo giờ, hoặc theo ca\n- **Số ngày làm chuẩn/tháng:** Dùng để tính lương theo ngày\n- **Số giờ làm chuẩn/ngày:** Dùng để tính lương theo giờ\n- **Làm tròn lương:** Hướng làm tròn khi tính lương\n3. Nhấn **Lưu**"
+    },
+    "company_settings_department_settings": {
+      "title": "Quản lý phòng ban",
+      "content": "Để quản lý cơ cấu phòng ban:\n\n1. Vào **Trang quản trị** > **Phòng ban**\n2. Thêm, sửa hoặc xóa phòng ban\n3. Phân bổ nhân viên vào phòng ban\n\nMỗi nhân viên thuộc một phòng ban. Phòng ban giúp tổ chức và quản lý nhân sự hiệu quả, đồng thời hỗ trợ lọc báo cáo theo phòng ban."
+    },
+    "platform_admin_manage_companies": {
+      "title": "Quản lý công ty",
+      "content": "Để quản lý các công ty trên platform:\n\n1. Vào **Quản trị** > **Công ty**\n2. Xem danh sách công ty đang hoạt động\n3. Nhấn vào công ty để xem chi tiết\n\nBạn có thể xem thông tin, trạng thái và gói dịch vụ của từng công ty."
+    },
+    "platform_admin_deposit_management": {
+      "title": "Quản lý nạp tiền",
+      "content": "Để xử lý yêu cầu nạp tiền:\n\n1. Vào **Quản trị** > **Nạp tiền**\n2. Xem danh sách yêu cầu nạp tiền\n3. Kiểm tra thông tin chuyển khoản\n4. **Phê duyệt** hoặc **Từ chối** yêu cầu\n\nSau khi phê duyệt, số dư ví của công ty sẽ được cập nhật tự động."
+    },
+    "platform_admin_plan_management": {
+      "title": "Quản lý gói dịch vụ",
+      "content": "Để quản lý các gói dịch vụ:\n\n1. Vào **Quản trị** > **Gói dịch vụ**\n2. Xem danh sách gói hiện có\n3. Tạo mới hoặc chỉnh sửa gói dịch vụ\n\nMỗi gói bao gồm: *tên gói*, *giá*, *tính năng*, và *giới hạn nhân viên*."
+    }
+  },
+  "feedback": {
+    "button": "Gửi góp ý / Yêu cầu hỗ trợ",
+    "historyButton": "Lịch sử góp ý",
+    "dialogTitle": "Gửi góp ý / Yêu cầu hỗ trợ",
+    "dialogDescription": "Gửi báo cáo lỗi, góp ý, đề xuất tính năng hoặc yêu cầu trợ giúp đến Tamabee",
+    "type": "Loại góp ý",
+    "typePlaceholder": "Chọn loại góp ý",
+    "titleLabel": "Tiêu đề",
+    "titlePlaceholder": "Nhập tiêu đề",
+    "description": "Mô tả chi tiết",
+    "descriptionPlaceholder": "Mô tả chi tiết vấn đề hoặc đề xuất của bạn...",
+    "attachments": "Ảnh đính kèm",
+    "attachmentsHint": "Tối đa 3 ảnh (tự động nén sang WebP)",
+    "addImage": "Thêm ảnh",
+    "submit": "Gửi",
+    "cancel": "Hủy",
+    "sending": "Đang gửi...",
+    "success": "Gửi góp ý thành công!",
+    "error": "Gửi góp ý thất bại",
+    "maxImages": "Tối đa 3 ảnh đính kèm",
+    "listTitle": "Lịch sử góp ý",
+    "empty": "Chưa có góp ý nào",
+    "emptyHint": "Bạn chưa gửi góp ý nào. Hãy gửi góp ý để chúng tôi cải thiện dịch vụ!",
+    "detail": "Chi tiết góp ý",
+    "replies": "Phản hồi từ Tamabee",
+    "noReplies": "Chưa có phản hồi",
+    "noRepliesHint": "Tamabee sẽ phản hồi sớm nhất có thể",
+    "status": "Trạng thái",
+    "createdAt": "Thời gian gửi",
+    "repliedBy": "Phản hồi bởi"
+  }
+}

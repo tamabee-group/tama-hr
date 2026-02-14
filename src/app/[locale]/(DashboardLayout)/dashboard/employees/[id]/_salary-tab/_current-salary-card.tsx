@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { FileText } from "lucide-react";
 import { EmployeeSalaryConfig } from "@/types/attendance-records";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 
 interface CurrentSalaryCardProps {
   config: EmployeeSalaryConfig;

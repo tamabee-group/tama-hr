@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Progress } from "@/components/ui/progress";
 import {
   CheckCircle2,
@@ -11,8 +11,6 @@ import {
   Timer,
   Settings2,
   Coffee,
-  Plus,
-  Minus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CompanySettings } from "@/types/attendance-config";
@@ -32,17 +30,15 @@ export function ConfigurationSummaryCard({
 }: ConfigurationSummaryCardProps) {
   const t = useTranslations("companySettings");
 
-  const completenessResult = checkSettingsCompleteness(settings, null);
+  const completenessResult = checkSettingsCompleteness(settings);
 
   return (
-    <Card className={cn("pt-5 gap-1", className)}>
-      <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          <Settings2 className="h-4 w-4" />
-          {t("summary.title")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <GlassSection className={className}>
+      <div className="flex items-center gap-2 mb-4">
+        <Settings2 className="h-4 w-4" />
+        <h3 className="text-base font-semibold">{t("summary.title")}</h3>
+      </div>
+      <div className="space-y-4">
         {/* Completion Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
@@ -92,19 +88,9 @@ export function ConfigurationSummaryCard({
             icon={Timer}
             isComplete={!hasIncompleteSettings("overtime", completenessResult)}
           />
-          <ConfigStatusItem
-            label={t("tabs.allowance")}
-            icon={Plus}
-            isComplete={!hasIncompleteSettings("allowance", completenessResult)}
-          />
-          <ConfigStatusItem
-            label={t("tabs.deduction")}
-            icon={Minus}
-            isComplete={!hasIncompleteSettings("deduction", completenessResult)}
-          />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </GlassSection>
   );
 }
 

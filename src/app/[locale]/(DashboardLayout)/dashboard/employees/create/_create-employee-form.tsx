@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
 import {
   BaseCreateUserForm,
   CreateUserFormData,
@@ -25,15 +26,18 @@ export function CreateEmployeeForm() {
   };
 
   return (
-    <BaseCreateUserForm
-      title={t("createUser")}
-      roles={availableRoles}
-      defaultRole={defaultRole}
-      onSubmit={handleSubmit}
-      submitButtonText={tCommon("add")}
-      loadingText={tCommon("loading")}
-      successMessage={t("messages.createSuccess")}
-      successRedirectUrl="/dashboard/employees"
-    />
+    <div className="space-y-4">
+      <BackButton />
+      <BaseCreateUserForm
+        title={t("createUser")}
+        roles={availableRoles}
+        defaultRole={defaultRole}
+        onSubmit={handleSubmit}
+        submitButtonText={tCommon("add")}
+        loadingText={tCommon("loading")}
+        successMessage={t("messages.createSuccess")}
+        successRedirectUrl="/dashboard/employees"
+      />
+    </div>
   );
 }

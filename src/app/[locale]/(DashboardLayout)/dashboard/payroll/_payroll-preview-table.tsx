@@ -7,7 +7,7 @@ import { Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/_status-badge";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -25,8 +25,9 @@ import {
   PayrollPreviewRecord,
 } from "@/lib/apis/payroll-period-api";
 import { YearMonth } from "@/types/attendance-records";
-import { formatCurrency } from "@/lib/utils/format-currency";
+import { formatPayslip } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
+import { useAuth } from "@/hooks/use-auth";
 import { PayrollDetailDialog } from "./_payroll-detail-dialog";
 
 interface PayrollPreviewTableProps {
@@ -45,6 +46,8 @@ export function PayrollPreviewTable({
   const t = useTranslations("payroll");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // State
   const [records, setRecords] = useState<PayrollPreviewRecord[]>([]);
@@ -87,10 +90,8 @@ export function PayrollPreviewTable({
     }
   };
 
-  // Check if any record is already finalized
-  const hasFinalized = records.some(
-    (r) => r.status === "FINALIZED" || r.status === "PAID",
-  );
+  // Check if any record is already confirmed (final status)
+  const hasFinalized = records.some((r) => r.status === "CONFIRMED");
 
   // Define columns
   const columns: ColumnDef<PayrollPreviewRecord>[] = [
@@ -111,7 +112,7 @@ export function PayrollPreviewTable({
       accessorKey: "baseSalary",
       header: t("table.baseSalary"),
       cell: ({ row }) => {
-        formatCurrency(row.original.baseSalary);
+        return formatPayslip(row.original.baseSalary, companyLocale);
       },
     },
     {
@@ -121,7 +122,9 @@ export function PayrollPreviewTable({
         const overtime = row.original.totalOvertimePay;
         if (!overtime || overtime === 0) return "-";
         return (
-          <span className="text-blue-600">{formatCurrency(overtime)}</span>
+          <span className="text-blue-600">
+            {formatPayslip(overtime, companyLocale)}
+          </span>
         );
       },
     },
@@ -132,7 +135,9 @@ export function PayrollPreviewTable({
         const allowances = row.original.totalAllowances;
         if (!allowances || allowances === 0) return "-";
         return (
-          <span className="text-green-600">{formatCurrency(allowances)}</span>
+          <span className="text-green-600">
+            {formatPayslip(allowances, companyLocale)}
+          </span>
         );
       },
     },
@@ -143,7 +148,9 @@ export function PayrollPreviewTable({
         const deductions = row.original.totalDeductions;
         if (!deductions || deductions === 0) return "-";
         return (
-          <span className="text-red-600">-{formatCurrency(deductions)}</span>
+          <span className="text-red-600">
+            -{formatPayslip(deductions, companyLocale)}
+          </span>
         );
       },
     },
@@ -152,7 +159,7 @@ export function PayrollPreviewTable({
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary)}
+          {formatPayslip(row.original.netSalary, companyLocale)}
         </span>
       ),
     },

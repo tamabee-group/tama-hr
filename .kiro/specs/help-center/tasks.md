@@ -1,0 +1,290 @@
+# Implementation Plan: Help Center, System Notification & Feedback
+
+## Overview
+
+- Triển khai 3 module: Help Center (frontend-only i18n), System Notification (mở rộng notification hiện có với Markdown), và Feedback & Support (backend + frontend). Backend dùng Java/Spring Boot, frontend dùng TypeScript/Next.js.
+
+- Khi kiro thực hiện task hãy phản hồi tôi bằng tiếng việt.
+
+## Tasks
+
+- [x] 1. Backend — Mở rộng Notification Entity và Database Schema
+  - [x] 1.1 Cập nhật Flyway migration V1 — thêm cột `title`, `content`, `system_notification_id` vào bảng `notifications` (tenant DB)
+    - Thêm `title VARCHAR(255)`, `content TEXT`, `system_notification_id BIGINT`
+    - _Requirements: 8.1, 9.3, 9.5_
+  - [x] 1.2 Cập nhật Flyway migration V1 — tạo bảng `system_notifications` trong master DB
+    - Tạo bảng với các cột: id, title_vi/en/ja, content_vi/en/ja, target_audience, created_by_user_id, created_by_name, created_at, updated_at
+    - Tạo index `idx_system_notifications_created_at`
+    - _Requirements: 8.1_
+  - [x] 1.3 Cập nhật Flyway migration V1 — tạo bảng `feedbacks` và `feedback_replies` trong master DB
+    - Tạo bảng `feedbacks` với indexes: status, type, tenant_user, created_at
+    - Tạo bảng `feedback_replies` với index: feedback_id
+    - _Requirements: 12.6_
+  - [x] 1.4 Cập nhật `NotificationEntity` — thêm 3 trường `title`, `content`, `systemNotificationId`
+    - _Requirements: 8.1, 9.5_
+  - [x] 1.5 Tạo `SystemNotificationEntity` trong `entity/core/`
+    - Extends BaseEntity, không soft delete
+    - Các trường: titleVi/En/Ja, contentVi/En/Ja, targetAudience, createdByUserId, createdByName
+    - _Requirements: 8.1_
+  - [x] 1.6 Tạo `FeedbackEntity` và `FeedbackReplyEntity` trong `entity/core/`
+    - FeedbackEntity: userId, tenantDomain, userName, userEmail, companyName, type, title, description, attachmentUrls, status
+    - FeedbackReplyEntity: feedbackId, repliedByUserId, repliedByName, content
+    - Không soft delete
+    - _Requirements: 12.6_
+  - [x] 1.7 Tạo enums: `TargetAudience`, `FeedbackType`, `FeedbackStatus`
+    - Thêm `FEEDBACK` vào `NotificationType`
+    - Thêm `FEEDBACK_SUBMITTED`, `FEEDBACK_REPLIED`, `SYSTEM_ANNOUNCEMENT` vào `NotificationCode`
+    - _Requirements: 8.4, 12.6_
+
+- [x] 2. Backend — Repositories và DTOs
+  - [x] 2.1 Tạo `SystemNotificationRepository` trong `repository/core/`
+    - `findAllByOrderByCreatedAtDesc(Pageable)`
+    - _Requirements: 11.2, 11.4_
+  - [x] 2.2 Tạo `FeedbackRepository` và `FeedbackReplyRepository` trong `repository/core/`
+    - FeedbackRepository: findByTenantDomainAndUserId, findByStatus, findByType, findByStatusAndType (với Pageable)
+    - FeedbackReplyRepository: findByFeedbackIdOrderByCreatedAtAsc
+    - _Requirements: 13.2, 13.6, 13.7, 14.1_
+  - [x] 2.3 Tạo Request DTOs: `CreateSystemNotificationRequest`, `CreateFeedbackRequest`, `CreateFeedbackReplyRequest`, `UpdateFeedbackStatusRequest`
+    - Đặt trong `dto/request/`
+    - _Requirements: 8.2, 12.2, 13.4, 13.5_
+  - [x] 2.4 Tạo Response DTOs: `SystemNotificationResponse`, `FeedbackResponse`, `FeedbackDetailResponse`, `FeedbackReplyResponse`
+    - Đặt trong `dto/response/`
+    - Mở rộng `NotificationResponse` thêm `title`, `content`, `systemNotificationId`
+    - _Requirements: 9.5, 11.2, 13.2, 13.3_
+  - [x] 2.5 Tạo Mappers: `SystemNotificationMapper`, `FeedbackMapper` trong `mapper/admin/` và `mapper/core/`
+    - _Requirements: 8.1, 12.6_
+
+- [x] 3. Backend — System Notification Service
+  - [x] 3.1 Tạo `ISystemNotificationService` interface trong `service/admin/interfaces/`
+    - Methods: create, getAll (Pageable), getById
+    - _Requirements: 8.2, 8.3, 11.2, 11.3_
+  - [x] 3.2 Tạo `SystemNotificationServiceImpl` trong `service/admin/impl/`
+    - Implement create: lưu master copy, lặp qua tất cả tenant bằng TenantDataSourceManager, query users theo target_audience, chọn title/content theo locale user, insert notification bằng JDBC, push WebSocket
+    - Implement getAll, getById
+    - Wrap cross-tenant operations trong try-catch
+    - _Requirements: 8.3, 8.5, 8.6, 11.2, 11.3, 11.4_
+  - [ ]\* 3.3 Viết property test — System notification gửi đúng audience
+    - **Property 3: System notification sends to correct audience**
+    - **Validates: Requirements 8.3, 8.5, 8.6**
+  - [ ]\* 3.4 Viết property test — Nội dung notification khớp locale user
+    - **Property 6: System notification content matches user locale**
+    - **Validates: Requirements 8.3, 10.4**
+
+- [x] 4. Backend — Mở rộng Notification Service và Controller
+  - [x] 4.1 Mở rộng `NotificationResponse` và `NotificationMapper` — thêm title, content, systemNotificationId
+    - _Requirements: 9.5_
+  - [x] 4.2 Thêm endpoint `GET /api/users/me/notifications/{id}` vào NotificationController
+    - Trả về chi tiết notification bao gồm title + content
+    - _Requirements: 9.2, 9.5, 9.6_
+  - [x] 4.3 Tạo `SystemNotificationController` tại `/api/admin/system-notifications`
+    - POST / — tạo và gửi system notification
+    - GET / — danh sách (phân trang)
+    - GET /{id} — chi tiết (nội dung 3 ngôn ngữ, isAuthenticated)
+    - _Requirements: 8.2, 8.3, 11.1, 11.2, 11.3, 11.4_
+
+- [x] 5. Checkpoint — Backend System Notification
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 6. Backend — Feedback Service
+  - [x] 6.1 Tạo `IFeedbackService` interface trong `service/admin/interfaces/`
+    - Methods: create, getByUser, getByIdForUser, getAll (filter status/type), getById, reply, updateStatus
+    - _Requirements: 12.4, 13.2, 13.3, 13.4, 13.5, 14.1_
+  - [x] 6.2 Tạo `FeedbackServiceImpl` trong `service/admin/impl/`
+    - create: lưu feedback, gửi notification + email đến Tamabee staff
+    - reply: lưu reply, gửi notification đến người gửi feedback (cross-tenant)
+    - updateStatus: validate transition (OPEN→IN_PROGRESS→RESOLVED→CLOSED, any→CLOSED)
+    - getByUser: filter theo userId + tenantDomain
+    - getAll: filter theo status/type với Pageable
+    - _Requirements: 12.3, 12.4, 12.5, 12.6, 13.4, 13.5, 13.6, 13.7, 14.1, 14.4_
+  - [ ]\* 6.3 Viết property test — Feedback creation persists correctly
+    - **Property 7: Feedback creation persists correctly**
+    - **Validates: Requirements 12.3, 12.4, 12.6**
+  - [ ]\* 6.4 Viết property test — Feedback status transitions are valid
+    - **Property 10: Feedback status transitions are valid**
+    - **Validates: Requirements 13.5**
+  - [ ]\* 6.5 Viết property test — Feedback filtering returns correct results
+    - **Property 11: Feedback filtering returns correct results**
+    - **Validates: Requirements 13.6**
+  - [ ]\* 6.6 Viết property test — User feedback listing returns only own feedbacks
+    - **Property 12: User feedback listing returns only own feedbacks**
+    - **Validates: Requirements 14.1**
+
+- [x] 7. Backend — Feedback Controllers
+  - [x] 7.1 Tạo `FeedbackController` tại `/api/admin/feedbacks`
+    - GET / — danh sách (phân trang, lọc status/type)
+    - GET /{id} — chi tiết + replies
+    - POST /{id}/replies — gửi phản hồi
+    - PUT /{id}/status — cập nhật trạng thái
+    - PreAuthorize: ADMIN_TAMABEE, MANAGER_TAMABEE, EMPLOYEE_TAMABEE
+    - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
+  - [x] 7.2 Tạo `UserFeedbackController` tại `/api/users/me/feedbacks`
+    - POST / — gửi feedback mới (multipart form)
+    - GET / — danh sách feedback của user (phân trang)
+    - GET /{id} — chi tiết feedback + replies
+    - PreAuthorize: isAuthenticated
+    - _Requirements: 12.1, 12.2, 12.4, 14.1, 14.2, 14.3_
+
+- [x] 8. Checkpoint — Backend Feedback
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 9. Frontend — Help Center Page (i18n + role-based)
+  - [x] 9.1 Tạo constants `help-center.ts` — định nghĩa topic/article metadata với role mapping
+    - Định nghĩa HelpTopic[], HelpArticle[] với key, icon, roles
+    - _Requirements: 1.1, 3.1_
+  - [x] 9.2 Tạo i18n messages `messages/{vi,en,ja}/help.json` — nội dung hướng dẫn theo chủ đề
+    - Topics: chấm công, nghỉ phép, lương, quản lý nhân viên, cài đặt công ty, quản trị platform, hồ sơ cá nhân
+    - _Requirements: 5.1, 5.2_
+  - [x] 9.3 Tạo trang `/me/help` — page.tsx (server) + `_help-content.tsx` (client)
+    - Layout 2 cột: GlassNav sidebar (desktop) / GlassTabs (mobile) + nội dung articles
+    - Tự động chọn topic đầu tiên khi load
+    - _Requirements: 1.1, 1.2, 1.4, 6.1, 6.2, 6.3_
+  - [x] 9.4 Tạo `_help-article-list.tsx` — hiển thị articles dạng Accordion
+    - Click mở rộng/thu gọn, chỉ 1 article mở tại 1 thời điểm
+    - Hỗ trợ rich text: đoạn văn, danh sách, bold/italic
+    - _Requirements: 2.1, 2.2, 2.3, 2.4_
+  - [x] 9.5 Tạo `_help-search.tsx` — ô tìm kiếm articles
+    - Lọc articles theo keyword (case-insensitive) trên title + content
+    - Hiển thị kết quả gộp từ tất cả topics, kèm tên topic
+    - Empty state khi không có kết quả
+    - Xóa keyword → quay về topic đang chọn
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+  - [x] 9.6 Implement logic lọc topics/articles theo role user
+    - Hàm filterByRole dựa trên Role_Group hierarchy: employee ⊂ company_admin ⊂ tamabee_staff
+    - Fallback về "employee" khi role không xác định
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+  - [ ]\* 9.7 Viết property test (fast-check) — Role-based content filtering
+    - **Property 1: Role-based content filtering**
+    - **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5**
+  - [ ]\* 9.8 Viết property test (fast-check) — Search returns matching articles
+    - **Property 2: Search returns matching articles with topic info**
+    - **Validates: Requirements 4.2, 4.3**
+
+- [x] 10. Frontend — Tích hợp Help Center vào navigation
+  - [x] 10.1 Thêm menu item "Trung tâm hỗ trợ" vào sidebar config của PersonalLayout
+    - Thêm vào `_sidebar-config.tsx` với icon và label i18n
+    - _Requirements: 7.2_
+  - [x] 10.2 Thêm title vào HeaderConfig cho route `/me/help` và các sub-routes
+    - _Requirements: 7.3_
+  - [x] 10.3 Thêm i18n keys cho help center vào `messages/{vi,en,ja}/` (sidebar label, header title)
+    - _Requirements: 7.1, 7.2, 7.3_
+
+- [x] 11. Frontend — Markdown Renderer Component
+  - [x] 11.1 Tạo `_markdown-renderer.tsx` trong `_components/_shared/`
+    - Sử dụng `react-markdown` + Tailwind CSS typography (prose class)
+    - Custom link renderer: internal links (`/me/`, `/dashboard/`) dùng `router.push()`
+    - _Requirements: 9.3, 9.4_
+  - [ ]\* 11.2 Viết property test (fast-check) — Markdown rendering with internal link handling
+    - **Property 4: Markdown rendering with internal link handling**
+    - **Validates: Requirements 9.3, 9.4**
+
+- [x] 12. Frontend — Notification Detail Page
+  - [x] 12.1 Tạo trang `/me/notifications/[id]` — page.tsx (server) + `_notification-detail.tsx` (client)
+    - Fetch notification detail qua API `GET /api/users/me/notifications/{id}`
+    - Render Markdown content bằng MarkdownRenderer
+    - Hiển thị title, thời gian tạo, nội dung
+    - _Requirements: 9.1, 9.2, 9.3, 9.5_
+  - [x] 12.2 Implement logic Welcome notification — render từ i18n template
+    - Kiểm tra code WELCOME_COMPANY/WELCOME_EMPLOYEE → render nội dung rich từ `help.json`
+    - Nếu có systemNotificationId → fetch nội dung đa ngôn ngữ từ API
+    - _Requirements: 10.1, 10.2, 10.3, 10.4_
+  - [x] 12.3 Xử lý error states: notification không tồn tại, không thuộc user
+    - _Requirements: 9.6_
+  - [ ]\* 12.4 Viết property test (fast-check) — Welcome notification uses frontend-only content
+    - **Property 5: Welcome notification uses frontend-only content**
+    - **Validates: Requirements 10.1, 10.2, 10.4**
+
+- [x] 13. Checkpoint — Frontend Help Center + Notification Detail
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 14. Frontend — Feedback Form và History (User side)
+  - [x] 14.1 Tạo API functions cho feedback trong `lib/apis/`
+    - createFeedback, getMyFeedbacks, getMyFeedbackDetail
+    - _Requirements: 12.2, 12.4, 14.1, 14.3_
+  - [x] 14.2 Tạo types `feedback.ts` trong `types/`
+    - Feedback, FeedbackReply, FeedbackDetail, FeedbackType, FeedbackStatus
+    - _Requirements: 12.6_
+  - [x] 14.3 Tạo `_feedback-dialog.tsx` trong `/me/help/` — dialog gửi feedback
+    - Form: loại feedback (select), tiêu đề, mô tả (textarea), ảnh đính kèm (tối đa 3, compress WebP)
+    - Tự động lấy thông tin user từ auth context
+    - _Requirements: 12.1, 12.2, 12.3_
+  - [x] 14.4 Tạo trang `/me/help/feedbacks` — danh sách feedback đã gửi
+    - Hiển thị: loại, tiêu đề, trạng thái, thời gian tạo
+    - _Requirements: 14.1, 14.2_
+  - [x] 14.5 Tạo trang `/me/help/feedbacks/[id]` — chi tiết feedback + replies
+    - Hiển thị nội dung, ảnh đính kèm, danh sách phản hồi từ Tamabee
+    - BackButton component
+    - _Requirements: 14.3, 14.4_
+  - [x] 14.6 Thêm i18n keys cho feedback vào `messages/{vi,en,ja}/`
+    - Labels, placeholders, enum translations, error messages
+    - _Requirements: 5.1_
+
+- [x] 15. Frontend — Admin System Notifications Page
+  - [x] 15.1 Tạo API functions cho system notifications trong `lib/apis/`
+    - createSystemNotification, getSystemNotifications, getSystemNotificationById
+    - _Requirements: 8.2, 11.2, 11.3_
+  - [x] 15.2 Tạo types `system-notification.ts` trong `types/`
+    - SystemNotification, TargetAudience, CreateSystemNotificationRequest
+    - _Requirements: 8.1_
+  - [x] 15.3 Tạo trang `/admin/system-notifications` — page.tsx + `_notification-table.tsx`
+    - BaseTable với cột: tiêu đề, đối tượng nhận, người tạo, thời gian tạo
+    - Phân trang
+    - _Requirements: 11.1, 11.2, 11.4_
+  - [x] 15.4 Tạo `_notification-dialog.tsx` — dialog tạo system notification mới
+    - Form: tiêu đề (vi/en/ja), nội dung Markdown (vi/en/ja), target audience (select)
+    - Markdown preview
+    - _Requirements: 8.2_
+  - [x] 15.5 Tạo trang `/admin/system-notifications/[id]` — chi tiết notification (Markdown render)
+    - Hiển thị nội dung 3 ngôn ngữ, tabs chuyển đổi
+    - _Requirements: 11.3_
+  - [x] 15.6 Thêm menu item và HeaderConfig cho `/admin/system-notifications`
+    - Cập nhật TamabeeLayout sidebar config
+    - _Requirements: 11.1_
+  - [x] 15.7 Thêm i18n keys cho system notifications vào `messages/{vi,en,ja}/`
+    - _Requirements: 5.1_
+
+- [x] 16. Frontend — Admin Feedbacks Page
+  - [x] 16.1 Tạo API functions cho admin feedbacks trong `lib/apis/`
+    - getAdminFeedbacks, getAdminFeedbackDetail, replyFeedback, updateFeedbackStatus
+    - _Requirements: 13.2, 13.3, 13.4, 13.5_
+  - [x] 16.2 Tạo trang `/admin/feedbacks` — page.tsx + `_feedback-table.tsx`
+    - BaseTable với cột: STT, loại, tiêu đề, người gửi, công ty, trạng thái, thời gian
+    - Lọc theo status và type
+    - Phân trang
+    - _Requirements: 13.1, 13.2, 13.6, 13.7_
+  - [x] 16.3 Tạo trang `/admin/feedbacks/[id]` — chi tiết feedback + reply form
+    - Hiển thị nội dung, ảnh đính kèm, danh sách replies (kèm tên người phản hồi)
+    - Form reply (textarea)
+    - Dropdown cập nhật trạng thái
+    - BackButton component
+    - _Requirements: 13.3, 13.4, 13.5, 13.8_
+  - [x] 16.4 Thêm menu item và HeaderConfig cho `/admin/feedbacks`
+    - Cập nhật TamabeeLayout sidebar config
+    - _Requirements: 13.1_
+  - [x] 16.5 Thêm i18n keys cho admin feedbacks vào `messages/{vi,en,ja}/`
+    - _Requirements: 5.1_
+
+- [x] 17. Frontend — Notification i18n và real-time subscriptions
+  - [x] 17.1 Thêm notification codes mới vào `messages/{vi,en,ja}/notifications.json`
+    - SYSTEM_ANNOUNCEMENT, FEEDBACK_SUBMITTED, FEEDBACK_REPLIED
+    - _Requirements: 8.4, 12.5, 14.4_
+  - [x] 17.2 Thêm subscribeToNotificationEvents cho các trang liên quan
+    - `/admin/feedbacks` subscribe "FEEDBACK"
+    - `/admin/system-notifications` subscribe "SYSTEM"
+    - `/me/help/feedbacks` subscribe "FEEDBACK_REPLIED"
+    - _Requirements: 12.5, 14.4_
+
+- [x] 18. Final Checkpoint
+  - Ensure all tests pass, ask the user if questions arise.
+  - Kiểm tra tất cả routes hoạt động đúng
+  - Kiểm tra i18n đầy đủ 3 ngôn ngữ
+  - Kiểm tra responsive layout (desktop/mobile)
+
+## Notes
+
+- Tasks marked with `*` are optional and can be skipped for faster MVP
+- Backend dùng Java/Spring Boot với jqwik cho property tests
+- Frontend dùng TypeScript/Next.js với fast-check cho property tests
+- Help Center là frontend-only, không cần backend API
+- System Notification và Feedback cần cả backend + frontend
+- Feedback và system_notifications dùng master DB (cross-tenant)
+- Cross-tenant notification gửi bằng JdbcTemplate, không dùng Repository

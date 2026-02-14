@@ -9,14 +9,7 @@ import {
   LocaleKey,
 } from "@/types/plan";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Edit, Trash2, Users, Star } from "lucide-react";
@@ -51,24 +44,26 @@ export function PlanCard({
   );
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader>
+    <GlassCard className="flex flex-col h-full p-0">
+      {/* Header */}
+      <div className="p-6 pb-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl">
+            <h3 className="text-xl font-semibold">
               {getPlanName(plan, localeKey)}
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-sm text-muted-foreground">
               {getPlanDescription(plan, localeKey)}
-            </CardDescription>
+            </p>
           </div>
           <Badge variant={plan.isActive ? "default" : "secondary"}>
             {plan.isActive ? t("card.active") : t("card.inactive")}
           </Badge>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="flex-1 space-y-4">
+      {/* Content */}
+      <div className="flex-1 px-6 pb-4 space-y-4">
         <div className="flex items-baseline gap-1">
           <span className="text-3xl font-bold text-primary">
             {formatCurrency(plan.monthlyPrice)}
@@ -107,9 +102,10 @@ export function PlanCard({
             </ul>
           </div>
         )}
-      </CardContent>
+      </div>
 
-      <CardFooter className="flex gap-2 pt-4">
+      {/* Footer */}
+      <div className="flex gap-2 p-6 pt-4 border-t border-gray-200/50 dark:border-white/10">
         {onSelect && (
           <Button onClick={onSelect} className="flex-1">
             {t("card.select")}
@@ -138,7 +134,7 @@ export function PlanCard({
             )}
           </>
         )}
-      </CardFooter>
-    </Card>
+      </div>
+    </GlassCard>
   );
 }

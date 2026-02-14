@@ -9,6 +9,14 @@
   "noTemplates": "No templates yet",
   "templateName": "Shift Name",
   "templateNamePlaceholder": "Enter shift name...",
+  "shiftNames": {
+    "morning": "Morning Shift",
+    "noon": "Noon Shift",
+    "afternoon": "Afternoon Shift",
+    "evening": "Evening Shift",
+    "night": "Night Shift",
+    "fullDay": "Full Day Shift"
+  },
   "startTime": "Start Time",
   "endTime": "End Time",
   "breakMinutes": "Break Duration",
@@ -130,16 +138,17 @@
     "templatesDesc": "Shift templates are reusable fixed time frames for assigning to employees.",
     "templatesTip1": "Create templates with clear names (e.g., Morning, Afternoon, Night) and set start time, end time, break duration",
     "templatesTip2": "Configure pay multiplier for special shifts (e.g., night shift x1.5)",
-    "templatesNote": "Templates are required for both work modes. When assigning shifts to employees, you must select an existing template.",
     "assignmentsTitle": "Shift Assignment Guide",
     "assignmentsDesc": "Assign specific shifts to employees by date.",
     "assignmentsTip1": "Select employees (can select multiple), choose shift template, select work dates (can select multiple dates)",
     "assignmentsTip2": "System automatically checks for conflicts when assigning",
-    "assignmentsNote": "Employees can work multiple shifts per day (e.g., morning 9am-12pm and evening 5pm-9pm) as long as shifts don't overlap. When clocking in/out, the system will automatically create break records for time between shifts.",
     "swapsTitle": "Shift Swap Guide",
     "swapsDesc": "Manage shift swap requests between employees.",
     "swapsTip1": "Employee submits swap request with specific reason, selects shift to swap and target shift",
-    "swapsTip2": "Manager reviews and approves/rejects request. After approval, system automatically updates assignments",
-    "swapsNote": "Swaps only allowed within same day or week (per configuration). Approved requests cannot be undone."
+    "swapsTip2": "Manager reviews and approves/rejects request. After approval, system automatically updates assignments"
+  },
+  "overnightShift": {
+    "title": "Overnight Shift",
+    "description": "You are creating an overnight shift (starts at {startTime} and ends at {endTime} the next day). Confirm to continue?"
   }
 }

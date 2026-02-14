@@ -16,6 +16,7 @@
     "startDate": "Ngày bắt đầu",
     "endDate": "Ngày kết thúc",
     "days": "Số ngày",
+    "daysUnit": "ngày",
     "reason": "Lý do",
     "status": "Trạng thái",
     "approvedBy": "Người duyệt",

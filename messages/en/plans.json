@@ -18,6 +18,34 @@
   "unlimited": "Unlimited",
   "features": "Features",
   "exceedsLimit": "Employee count exceeds plan limit",
+  "scheduledDowngrade": "You have scheduled a downgrade to {planName} on {effectiveDate}. If you select a different plan, the scheduled downgrade will be cancelled.",
+  "guide": {
+    "title": "Plan Change Guide",
+    "description": "The system charges based on the highest plan used during the billing period to ensure fairness.",
+    "tip1": "Upgrades take effect immediately",
+    "tip2": "Downgrades take effect on the 1st of next month",
+    "tip3": "Billing is calculated at the highest plan price used during the period",
+    "tip4": "You can cancel an upgrade within 10 days (or until end of month) if you made a mistake"
+  },
+  "cancelUpgrade": {
+    "message": "You can cancel the upgrade and return to {planName} before {deadline}",
+    "button": "Cancel Upgrade"
+  },
+  "confirm": {
+    "upgradeTitle": "Upgrade Plan",
+    "downgradeTitle": "Downgrade Plan",
+    "changeTitle": "Change Plan",
+    "newPlan": "New plan",
+    "upgradeImmediate": "✓ Upgrade takes effect immediately",
+    "upgradeBillingNote": "Next billing will be charged at the highest plan price used during the period.",
+    "upgradeGracePeriod": "💡 You can cancel the upgrade within 10 days (or until end of month)",
+    "downgradeScheduled": "⏱ Downgrade will take effect on {effectiveDate}",
+    "downgradeBillingNote": "You will continue using the current plan until the effective date. This billing period will be charged at the current plan price.",
+    "trialChange": "✓ Change takes effect immediately (during free trial)",
+    "cancelScheduledDowngrade": "⚠ Previously scheduled downgrade will be cancelled",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
   "table": {
     "name": "Plan Name",
     "price": "Price",
@@ -72,7 +100,10 @@
     "deleteError": "Failed to delete plan",
     "planInUse": "Plan is in use and cannot be deleted",
     "changeSuccess": "Plan changed successfully",
-    "changeError": "Failed to change plan"
+    "changeError": "Failed to change plan",
+    "downgradeScheduled": "Plan downgrade has been scheduled",
+    "cancelUpgradeSuccess": "Upgrade cancelled successfully",
+    "cancelUpgradeError": "Failed to cancel upgrade"
   },
   "dialog": {
     "deleteTitle": "Delete Plan",
@@ -82,5 +113,15 @@
     "required": "This field is required",
     "invalidPrice": "Price must be greater than or equal to 0",
     "invalidMaxEmployees": "Max employees must be greater than 0"
+  },
+  "history": {
+    "title": "Plan Change History",
+    "date": "Date",
+    "changeType": "Change Type",
+    "fromPlan": "From Plan",
+    "toPlan": "To Plan",
+    "price": "Price",
+    "effectiveDate": "Effective Date",
+    "noHistory": "No change history"
   }
 }

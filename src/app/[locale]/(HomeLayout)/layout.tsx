@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Tamabee | " + t("hero.title"),
       description: t("hero.subtitle"),
-      images: ["/images/hero.jpg"],
+      images: ["/logo/dark-bg-rounded.svg"],
     },
   };
 }

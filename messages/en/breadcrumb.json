@@ -19,5 +19,6 @@
   "myAttendance": "My Attendance",
   "payroll": "Payroll",
   "myPayslip": "My Payslip",
-  "leaves": "Leaves"
+  "leaves": "Leaves",
+  "systemAdmin": "System Admin"
 }

@@ -27,7 +27,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { EmployeeSalaryConfig } from "@/types/attendance-records";
 import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate, formatDateForApi } from "@/lib/utils/format-date-time";
 import {
   deleteSalaryConfig,
   applySalaryConfig,
@@ -100,7 +100,7 @@ export function SalaryConfigDetailDialog({
     if (config.isActive) {
       return { label: t("statusActive"), variant: "default" as const };
     }
-    const today = new Date().toISOString().split("T")[0];
+    const today = formatDateForApi(new Date()) || "";
 
     // Quá hạn: effectiveTo < today
     if (config.effectiveTo && config.effectiveTo < today) {
@@ -120,7 +120,7 @@ export function SalaryConfigDetailDialog({
   const canApply = () => {
     if (config.isActive) return false;
     if (!canModify) return false;
-    const today = new Date().toISOString().split("T")[0];
+    const today = formatDateForApi(new Date()) || "";
     // Quá hạn thì không cho áp dụng
     if (config.effectiveTo && config.effectiveTo < today) return false;
     return true;

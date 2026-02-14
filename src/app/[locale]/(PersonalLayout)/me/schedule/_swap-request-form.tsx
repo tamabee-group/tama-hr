@@ -5,10 +5,10 @@ import { useTranslations, useLocale } from "next-intl";
 import { Calendar, Clock, User, ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
+import { ReasonTemplateSelect } from "@/app/[locale]/_components/_shared/_reason-template-select";
 import {
   Select,
   SelectContent,
@@ -25,7 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { shiftApi } from "@/lib/apis/shift-api";
-import { formatDateWithDayOfWeek } from "@/lib/utils/format-date";
+import { formatDateWithDayOfWeek } from "@/lib/utils/format-date-time";
 import type { ShiftAssignment } from "@/types/attendance-records";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
@@ -144,29 +144,62 @@ export function SwapRequestForm({ shifts, onSuccess }: SwapRequestFormProps) {
   return (
     <div className="space-y-6">
       {/* Chọn ca của mình */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t("selectMyShift")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {myShifts.length === 0 ? (
+      <GlassSection title={t("selectMyShift")}>
+        {myShifts.length === 0 ? (
+          <p className="text-muted-foreground">{t("noAssignedShifts")}</p>
+        ) : (
+          <Select
+            value={selectedMyShift?.id.toString() || ""}
+            onValueChange={handleSelectMyShift}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t("selectMyShift")} />
+            </SelectTrigger>
+            <SelectContent>
+              {myShifts.map((shift) => {
+                const info = getShiftInfo(shift);
+                return (
+                  <SelectItem key={shift.id} value={shift.id.toString()}>
+                    {info.name} -{" "}
+                    {formatDateWithDayOfWeek(shift.workDate, locale)} (
+                    {info.startTime} - {info.endTime})
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        )}
+
+        {/* Hiển thị chi tiết ca đã chọn */}
+        {selectedMyShift && (
+          <div className="mt-4 p-3 bg-muted rounded-md">
+            <ShiftDetail shift={selectedMyShift} locale={locale} />
+          </div>
+        )}
+      </GlassSection>
+
+      {/* Chọn ca muốn đổi */}
+      {selectedMyShift && (
+        <GlassSection title={t("availableShifts")}>
+          {isLoadingAvailable ? (
+            <Skeleton className="h-10" />
+          ) : availableShifts.length === 0 ? (
             <p className="text-muted-foreground">{t("noAssignedShifts")}</p>
           ) : (
             <Select
-              value={selectedMyShift?.id.toString() || ""}
-              onValueChange={handleSelectMyShift}
+              value={selectedTargetShift?.id.toString() || ""}
+              onValueChange={handleSelectTargetShift}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t("selectMyShift")} />
+                <SelectValue placeholder={t("selectTargetShift")} />
               </SelectTrigger>
               <SelectContent>
-                {myShifts.map((shift) => {
+                {availableShifts.map((shift) => {
                   const info = getShiftInfo(shift);
                   return (
                     <SelectItem key={shift.id} value={shift.id.toString()}>
-                      {info.name} -{" "}
-                      {formatDateWithDayOfWeek(shift.workDate, locale)} (
-                      {info.startTime} - {info.endTime})
+                      {shift.employeeName} - {info.name} -{" "}
+                      {formatDateWithDayOfWeek(shift.workDate, locale)}
                     </SelectItem>
                   );
                 })}
@@ -174,82 +207,35 @@ export function SwapRequestForm({ shifts, onSuccess }: SwapRequestFormProps) {
             </Select>
           )}
 
-          {/* Hiển thị chi tiết ca đã chọn */}
-          {selectedMyShift && (
+          {/* Hiển thị chi tiết ca muốn đổi */}
+          {selectedTargetShift && (
             <div className="mt-4 p-3 bg-muted rounded-md">
-              <ShiftDetail shift={selectedMyShift} locale={locale} />
+              <ShiftDetail
+                shift={selectedTargetShift}
+                locale={locale}
+                showEmployee
+              />
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Chọn ca muốn đổi */}
-      {selectedMyShift && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("availableShifts")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoadingAvailable ? (
-              <Skeleton className="h-10" />
-            ) : availableShifts.length === 0 ? (
-              <p className="text-muted-foreground">{t("noAssignedShifts")}</p>
-            ) : (
-              <Select
-                value={selectedTargetShift?.id.toString() || ""}
-                onValueChange={handleSelectTargetShift}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t("selectTargetShift")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableShifts.map((shift) => {
-                    const info = getShiftInfo(shift);
-                    return (
-                      <SelectItem key={shift.id} value={shift.id.toString()}>
-                        {shift.employeeName} - {info.name} -{" "}
-                        {formatDateWithDayOfWeek(shift.workDate, locale)}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            )}
-
-            {/* Hiển thị chi tiết ca muốn đổi */}
-            {selectedTargetShift && (
-              <div className="mt-4 p-3 bg-muted rounded-md">
-                <ShiftDetail
-                  shift={selectedTargetShift}
-                  locale={locale}
-                  showEmployee
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        </GlassSection>
       )}
 
       {/* Lý do đổi ca */}
       {selectedMyShift && selectedTargetShift && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("swapReason")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder={t("swapReasonPlaceholder")}
+        <GlassSection title={t("swapReason")}>
+          <div className="space-y-4">
+            <ReasonTemplateSelect
+              category="swap"
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={3}
+              onChange={setReason}
             />
 
             <Button onClick={handleOpenConfirm} className="w-full">
               <ArrowRightLeft className="h-4 w-4 mr-2" />
               {t("requestSwap")}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </GlassSection>
       )}
 
       {/* Confirmation Dialog */}

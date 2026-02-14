@@ -1,4 +1,31 @@
 {
   "title": "Hỗ trợ khách hàng",
-  "description": "Xem thông tin ví và giao dịch công ty"
+  "description": "Xem thông tin ví và giao dịch công ty",
+  "home": {
+    "title": "Tổng quan",
+    "companies": "công ty giới thiệu",
+    "pending": "đang chờ",
+    "paid": "đã thanh toán",
+    "open": "đang mở"
+  },
+  "referrals": {
+    "title": "Công ty giới thiệu"
+  },
+  "commissions": {
+    "title": "Hoa hồng"
+  },
+  "feedbacks": {
+    "title": "Phản hồi khách hàng"
+  },
+  "sidebar": {
+    "main": "Hỗ trợ",
+    "personal": "Cá nhân"
+  },
+  "navigation": {
+    "home": "Tổng quan",
+    "referrals": "Công ty giới thiệu",
+    "commissions": "Hoa hồng",
+    "feedbacks": "Phản hồi khách hàng",
+    "myPortal": "Trang cá nhân"
+  }
 }

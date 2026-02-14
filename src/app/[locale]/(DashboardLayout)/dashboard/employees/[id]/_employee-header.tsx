@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Mail, Phone, MoreHorizontal, Trash2 } from "lucide-react";
+import { Mail, Phone, MoreHorizontal, Trash2 } from "lucide-react";
+
+import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,23 +72,18 @@ export function EmployeeHeader({ employee }: EmployeeHeaderProps) {
   return (
     <>
       <div className="flex items-center gap-4">
-        {/* Back arrow */}
-        <Link href="/dashboard/employees" className="hover:opacity-70">
-          <ArrowLeft className="h-6 w-6" />
-        </Link>
+        {/* Back button */}
+        <BackButton />
 
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold truncate">
+            <h1 className="text-md font-bold truncate">
               {employee.profile?.name || employee.email}
             </h1>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs border-primary">
               {employee.employeeCode}
             </Badge>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {employee.profile?.name && <span>{employee.email}</span>}
           </div>
         </div>
 

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Company, INDUSTRY_LABELS } from "@/types/company";
 import { getFileUrl } from "@/lib/utils/file-url";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { useParams } from "next/navigation";
 import { SupportedLocale } from "@/lib/utils/format-currency";
 import { getLocaleLabel } from "@/lib/utils/get-enum-label";

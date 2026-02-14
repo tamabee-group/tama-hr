@@ -21,17 +21,20 @@ export interface ReferredCompany {
 
 /**
  * Tổng hợp thống kê hoa hồng của nhân viên
+ * Khớp với CommissionSummaryResponse từ backend
  */
 export interface CommissionSummary {
   employeeCode: string;
   employeeName: string;
   totalReferrals: number;
+  totalCommissions: number;
+  totalAmount: number;
   pendingCommissions: number;
+  pendingAmount: number;
   eligibleCommissions: number;
+  eligibleAmount: number;
   paidCommissions: number;
-  totalPendingAmount: number;
-  totalEligibleAmount: number;
-  totalPaidAmount: number;
+  paidAmount: number;
 }
 
 // Request types cho Employee Referral API

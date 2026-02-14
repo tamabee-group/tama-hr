@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CompanyDetailCard } from "@/app/[locale]/_components/_company-detail-card";
+import { CompanyDetailCard } from "@/app/[locale]/_components/company";
 import { Company } from "@/types/company";
 import { updateMyCompany, uploadMyCompanyLogo } from "@/lib/apis/company-api";
 import { useAuth } from "@/hooks/use-auth";
@@ -24,6 +24,8 @@ export function CompanyProfileForm({ company, canEdit }: ProfileFormProps) {
       industry: string;
       zipcode: string;
       address: string;
+      locale: string;
+      language: string;
     },
     logoFile: File | null,
   ) => {

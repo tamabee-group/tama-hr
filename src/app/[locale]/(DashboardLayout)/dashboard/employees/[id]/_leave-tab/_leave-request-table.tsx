@@ -14,7 +14,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LeaveRequest } from "@/types/attendance-records";
 import { PaginatedResponse } from "@/types/api";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { cn } from "@/lib/utils";
 

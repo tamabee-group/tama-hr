@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { SupportedLocale } from "@/lib/utils/format-currency";
@@ -9,6 +9,8 @@ import { AdminDepositTable } from "./_deposit-table";
 import { DepositDetailDialog } from "./_deposit-detail-dialog";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
+import { useNotificationHighlight } from "@/hooks/use-notification-highlight";
 
 /**
  * Trang quản lý yêu cầu nạp tiền (Tamabee Admin)
@@ -19,18 +21,20 @@ import { RefreshCw } from "lucide-react";
 export default function AdminDepositsPage() {
   const params = useParams();
   const locale = (params.locale as SupportedLocale) || "vi";
-  const t = useTranslations("deposits");
   const tCommon = useTranslations("common");
+
+  // Highlight từ notification click
+  const { highlightId, onHighlightHandled } = useNotificationHighlight();
 
   const [selectedDeposit, setSelectedDeposit] =
     useState<DepositRequestResponse | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const handleViewDetail = (deposit: DepositRequestResponse) => {
+  const handleViewDetail = useCallback((deposit: DepositRequestResponse) => {
     setSelectedDeposit(deposit);
     setDetailDialogOpen(true);
-  };
+  }, []);
 
   const handleSuccess = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -40,15 +44,17 @@ export default function AdminDepositsPage() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  // Subscribe to real-time notifications để auto refresh khi có deposit mới
+  useEffect(() => {
+    const unsubscribe = subscribeToNotificationEvents("WALLET", () => {
+      setRefreshTrigger((prev) => prev + 1);
+    });
+    return unsubscribe;
+  }, []);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("description")}
-          </p>
-        </div>
+      <div className="flex items-center justify-end">
         <Button variant="outline" onClick={handleRefresh}>
           <RefreshCw className="h-4 w-4 mr-2" />
           {tCommon("refresh")}
@@ -59,6 +65,8 @@ export default function AdminDepositsPage() {
         locale={locale}
         onViewDetail={handleViewDetail}
         refreshTrigger={refreshTrigger}
+        highlightId={highlightId ?? undefined}
+        onHighlightHandled={onHighlightHandled}
       />
 
       <DepositDetailDialog

@@ -10,7 +10,9 @@
     "work": "Work",
     "attendance": "Attendance",
     "hr": "HR",
-    "attendancePayroll": "Attendance & Payroll"
+    "attendancePayroll": "Attendance & Payroll",
+    "personal": "Personal",
+    "payrollLeave": "Payroll & Leave"
   },
   "items": {
     "home": "Home",
@@ -28,6 +30,7 @@
     "commissions": "Commissions",
     "billing": "Billing",
     "settings": "Settings",
+    "companySettings": "Company Settings",
     "company": "Company",
     "companyInfo": "Company Info",
     "support": "Support",
@@ -42,8 +45,8 @@
     "payslips": "Payslips",
     "holidays": "Holidays",
     "leaveRequests": "Leave Requests",
+    "leaveBalances": "Leave Balances",
     "leave": "Leave",
-    "reports": "Reports",
     "myAttendance": "My Attendance",
     "mySchedule": "My Schedule",
     "myAdjustments": "Adjustment Requests",
@@ -51,6 +54,16 @@
     "myLeave": "My Leave",
     "myProfile": "My Profile",
     "shifts": "Shift Management",
-    "contracts": "Contracts"
+    "contracts": "Contracts",
+    "systemAdmin": "System Admin",
+    "schedulers": "Schedulers",
+    "payrollScheduler": "Payroll",
+    "contractExpiry": "Contract Expiry",
+    "companyCleanup": "Company Cleanup",
+    "tenantCleanup": "Tenant Cleanup",
+    "myPortal": "My Portal",
+    "customerSupport": "Customer Support",
+    "systemNotifications": "System Notifications",
+    "feedbacks": "Feedbacks"
   }
 }

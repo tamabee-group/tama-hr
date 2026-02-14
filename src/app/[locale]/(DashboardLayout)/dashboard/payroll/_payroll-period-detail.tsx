@@ -16,11 +16,8 @@ import {
 import { toast } from "sonner";
 
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
-import {
-  PayrollStatusBadge,
-  PayrollItemStatusBadge,
-} from "@/app/[locale]/_components/_shared/_status-badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { PayrollItemStatusBadge } from "@/app/[locale]/_components/_shared/display/_status-badge";
+import { GlassCard } from "@/app/[locale]/_components/_glass-style";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -39,9 +36,10 @@ import {
   PayrollSummary,
   YearMonth,
 } from "@/types/attendance-records";
-import { formatCurrency, SupportedLocale } from "@/lib/utils/format-currency";
+import { formatPayslip, SupportedLocale } from "@/lib/utils/format-currency";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { PaymentStatusTable } from "./_payment-status-table";
+import { useAuth } from "@/hooks/use-auth";
 
 interface PayrollPeriodDetailProps {
   period: YearMonth;
@@ -60,6 +58,8 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
   const router = useRouter();
+  const { user } = useAuth();
+  const companyLocale = user?.locale || "vi";
 
   // State
   const [summary, setSummary] = useState<PayrollSummary | null>(null);
@@ -197,26 +197,24 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
       accessorKey: "baseSalary",
       header: t("table.baseSalary"),
       cell: ({ row }) => {
-        formatCurrency(row.original.baseSalary);
+        return formatPayslip(row.original.baseSalary, companyLocale);
       },
     },
     {
       accessorKey: "totalOvertimePay",
       header: t("table.overtime"),
-      cell: ({ row }) => {
-        const overtime = row.original.totalOvertimePay;
-        if (!overtime || overtime === 0) return "-";
-        return (
-          <span className="text-blue-600">{formatCurrency(overtime)}</span>
-        );
-      },
+      cell: ({ row }) => (
+        <span className="text-blue-600">
+          {formatPayslip(row.original.totalOvertimePay, companyLocale)}
+        </span>
+      ),
     },
     {
       accessorKey: "netSalary",
       header: t("table.netSalary"),
       cell: ({ row }) => (
         <span className="font-bold text-green-600">
-          {formatCurrency(row.original.netSalary)}
+          {formatPayslip(row.original.netSalary, companyLocale)}
         </span>
       ),
     },
@@ -274,49 +272,41 @@ export function PayrollPeriodDetail({ period }: PayrollPeriodDetailProps) {
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalEmployees")}
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {summary.totalEmployees}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalEmployees")}
+            </p>
+            <p className="text-2xl font-bold text-blue-600">
+              {summary.totalEmployees}
+            </p>
+          </GlassCard>
 
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalPayroll")}
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalNetSalary)}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalPayroll")}
+            </p>
+            <p className="text-2xl font-bold text-green-600">
+              {formatPayslip(summary.totalNetSalary, companyLocale)}
+            </p>
+          </GlassCard>
 
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalOvertime")}
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(summary.totalOvertimePay)}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalOvertime")}
+            </p>
+            <p className="text-2xl font-bold text-blue-600">
+              {formatPayslip(summary.totalOvertimePay, companyLocale)}
+            </p>
+          </GlassCard>
 
-          <Card className="py-2">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t("summary.totalAllowances")}
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(summary.totalAllowances)}
-              </p>
-            </CardContent>
-          </Card>
+          <GlassCard className="p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("summary.totalAllowances")}
+            </p>
+            <p className="text-2xl font-bold text-green-600">
+              {formatPayslip(summary.totalAllowances, companyLocale)}
+            </p>
+          </GlassCard>
         </div>
       )}
 

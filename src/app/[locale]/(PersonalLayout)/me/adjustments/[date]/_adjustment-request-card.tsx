@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FileEdit, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { formatTime } from "@/lib/utils/format-date";
+import { formatTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { adjustmentApi } from "@/lib/apis/adjustment-api";
@@ -80,14 +80,11 @@ export function AdjustmentRequestCard({
 
   return (
     <>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <FileEdit className="h-4 w-4" />
-            {t("adjustment.requestHistory")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <GlassSection
+        title={t("adjustment.requestHistory")}
+        icon={<FileEdit className="h-4 w-4" />}
+      >
+        <div className="space-y-4">
           {requests.map((request) => (
             <div key={request.id} className="p-3 border rounded-lg space-y-2">
               {/* Status badge và nút thu hồi */}
@@ -147,24 +144,24 @@ export function AdjustmentRequestCard({
                     </span>
                   </div>
                 )}
-                {request.requestedBreakStart && (
-                  <div>
-                    <span className="text-muted-foreground">
-                      {t("breakStart")}:{" "}
-                    </span>
-                    <span className="font-medium">
-                      {formatTime(request.requestedBreakStart)}
-                    </span>
-                  </div>
-                )}
-                {request.requestedBreakEnd && (
-                  <div>
-                    <span className="text-muted-foreground">
-                      {t("breakEnd")}:{" "}
-                    </span>
-                    <span className="font-medium">
-                      {formatTime(request.requestedBreakEnd)}
-                    </span>
+                {/* Hiển thị break items */}
+                {request.breakItems && request.breakItems.length > 0 && (
+                  <div className="space-y-1">
+                    {request.breakItems.map((item) => (
+                      <div key={item.id} className="text-xs">
+                        <span className="text-muted-foreground">
+                          {item.actionType === "DELETE"
+                            ? t("adjustment.deleteBreak")
+                            : t("breakStart")}
+                          :{" "}
+                        </span>
+                        <span className="font-medium">
+                          {item.actionType === "DELETE"
+                            ? `${formatTime(item.originalBreakStart)} - ${formatTime(item.originalBreakEnd)}`
+                            : `${formatTime(item.requestedBreakStart)} - ${formatTime(item.requestedBreakEnd)}`}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -198,8 +195,8 @@ export function AdjustmentRequestCard({
               )}
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </GlassSection>
 
       {/* Confirm dialog */}
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>

@@ -72,11 +72,6 @@ export function AdjustmentDetailContent({
     }
   };
 
-  // Handle back
-  const handleBack = () => {
-    router.push(`/${locale}/dashboard/adjustments`);
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -100,7 +95,6 @@ export function AdjustmentDetailContent({
       request={request}
       onApprove={handleApprove}
       onReject={handleReject}
-      onBack={handleBack}
     />
   );
 }

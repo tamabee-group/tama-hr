@@ -11,7 +11,7 @@
   "payroll": "Payroll",
   "featureUpdating": "Feature is being updated",
   "noUsers": "No users yet",
-  "searchEmail": "Search email...",
+  "searchPlaceholder": "Search by code or name...",
   "referralCode": "Referral Code",
   "viewAttendance": "View Attendance",
   "viewPayroll": "View Payroll",

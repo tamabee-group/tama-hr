@@ -32,6 +32,8 @@ export interface SidebarItem {
   requiredPermission?: PermissionKey;
   /** Permission key yêu cầu để hiển thị item này (Company) */
   requiredCompanyPermission?: CompanyPermissionKey;
+  /** Số badge hiển thị bên phải item (ví dụ: pending count) */
+  badgeCount?: number;
 }
 
 /**

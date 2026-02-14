@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, Star, Users } from "lucide-react";
 import {
@@ -125,20 +124,20 @@ function PlanCard({
 
   return (
     <div
-      className={`bg-card border rounded-xl p-6 flex flex-col hover:shadow-lg transition-shadow ${
+      className={`relative overflow-hidden bg-card border rounded-xl p-6 flex flex-col hover:shadow-lg transition-shadow ${
         isCurrentPlan ? "border-primary ring-2 ring-primary/20" : ""
       } ${isDisabled ? "opacity-60" : ""}`}
     >
+      {isCurrentPlan && (
+        <span className="absolute top-0 right-0 bg-primary px-3 py-1 rounded-bl-xl text-primary-foreground text-sm">
+          {t("current")}
+        </span>
+      )}
       {/* Header */}
       <div className="flex items-start justify-between mb-1">
         <h3 className="text-lg font-semibold">
           {getPlanName(plan, localeKey)}
         </h3>
-        {isCurrentPlan && (
-          <Badge variant="default" className="text-xs">
-            {t("current")}
-          </Badge>
-        )}
       </div>
       <p className="text-sm text-muted-foreground mb-4">
         {getPlanDescription(plan, localeKey)}

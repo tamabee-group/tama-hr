@@ -10,7 +10,9 @@
     "work": "Công việc",
     "attendance": "Chấm công",
     "hr": "Nhân sự",
-    "attendancePayroll": "Chấm công & Lương"
+    "attendancePayroll": "Chấm công & Lương",
+    "personal": "Cá nhân",
+    "payrollLeave": "Lương & Nghỉ phép"
   },
   "items": {
     "home": "Trang chủ",
@@ -28,6 +30,7 @@
     "commissions": "Hoa hồng",
     "billing": "Thanh toán",
     "settings": "Cài đặt",
+    "companySettings": "Thiết lập quy định",
     "company": "Công ty",
     "companyInfo": "Thông tin công ty",
     "support": "Hỗ trợ",
@@ -42,8 +45,8 @@
     "payslips": "Phiếu lương",
     "holidays": "Ngày nghỉ lễ",
     "leaveRequests": "Yêu cầu nghỉ phép",
+    "leaveBalances": "Quản lý ngày phép",
     "leave": "Nghỉ phép",
-    "reports": "Báo cáo",
     "myAttendance": "Chấm công của tôi",
     "mySchedule": "Lịch làm việc của tôi",
     "myAdjustments": "Yêu cầu điều chỉnh",
@@ -51,6 +54,16 @@
     "myLeave": "Nghỉ phép của tôi",
     "myProfile": "Hồ sơ của tôi",
     "shifts": "Quản lý ca",
-    "contracts": "Hợp đồng"
+    "contracts": "Hợp đồng",
+    "systemAdmin": "System Admin",
+    "schedulers": "Schedulers",
+    "payrollScheduler": "Lương",
+    "contractExpiry": "Hợp đồng hết hạn",
+    "companyCleanup": "Dọn dẹp công ty",
+    "tenantCleanup": "Dọn dẹp tenant",
+    "myPortal": "Trang cá nhân",
+    "customerSupport": "Hỗ trợ khách hàng",
+    "systemNotifications": "Thông báo hệ thống",
+    "feedbacks": "Phản hồi"
   }
 }

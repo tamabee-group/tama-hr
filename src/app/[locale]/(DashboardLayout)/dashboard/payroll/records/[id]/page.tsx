@@ -1,19 +1,12 @@
-import { PayrollRecordDetail } from "../../_payroll-record-detail";
+import { PayrollRecordDetailContent } from "./_payroll-record-detail-content";
 
-interface PayrollRecordPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
-/**
- * Trang chi tiết bản ghi lương
- * Server Component - fetch translations và render PayrollRecordDetail
- */
-export default async function PayrollRecordPage({
-  params,
-}: PayrollRecordPageProps) {
+export default async function PayrollRecordDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const itemId = parseInt(id, 10);
 
-  return <PayrollRecordDetail recordId={parseInt(id, 10)} />;
+  return <PayrollRecordDetailContent itemId={itemId} />;
 }

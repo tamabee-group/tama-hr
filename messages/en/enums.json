@@ -57,9 +57,9 @@
     "MINUTES_60": "60 minutes"
   },
   "roundingDirection": {
-    "UP": "Round up",
-    "DOWN": "Round down",
-    "NEAREST": "Round to nearest"
+    "UP": "Up",
+    "DOWN": "Down",
+    "NEAREST": "Nearest"
   },
   "salaryType": {
     "MONTHLY": "Monthly",
@@ -72,11 +72,6 @@
     "ABSENT": "Absent",
     "LEAVE": "On Leave",
     "HOLIDAY": "Holiday"
-  },
-  "payrollStatus": {
-    "DRAFT": "Draft",
-    "FINALIZED": "Finalized",
-    "PAID": "Paid"
   },
   "paymentStatus": {
     "PENDING": "Pending",
@@ -160,6 +155,13 @@
     "EXPIRED": "Expired",
     "TERMINATED": "Terminated"
   },
+  "documentType": {
+    "CONTRACT": "Contract",
+    "ID_CARD": "ID Card/Passport",
+    "CERTIFICATE": "Certificate",
+    "RESUME": "Resume",
+    "OTHER": "Other"
+  },
   "industry": {
     "technology": "Information Technology",
     "manufacturing": "Manufacturing",
@@ -171,5 +173,28 @@
     "hospitality": "Hospitality & Restaurant",
     "logistics": "Transportation & Logistics",
     "other": "Other"
+  },
+  "planChangeType": {
+    "INITIAL": "Initial Registration",
+    "UPGRADE": "Upgrade",
+    "DOWNGRADE": "Downgrade",
+    "TRIAL_CHANGE": "Trial Change",
+    "SCHEDULED_APPLY": "Scheduled Apply"
+  },
+  "feedbackType": {
+    "BUG_REPORT": "Bug Report",
+    "FEATURE_REQUEST": "Feature Request",
+    "GENERAL_FEEDBACK": "General Feedback",
+    "SUPPORT_REQUEST": "Support Request"
+  },
+  "feedbackStatus": {
+    "OPEN": "Open",
+    "IN_PROGRESS": "In Progress",
+    "RESOLVED": "Resolved",
+    "CLOSED": "Closed"
+  },
+  "targetAudience": {
+    "COMPANY_ADMINS": "Company Admins",
+    "ALL_USERS": "All Users"
   }
 }

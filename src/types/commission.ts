@@ -86,3 +86,12 @@ export interface CommissionFilterRequest {
   endDate?: string;
   companyId?: number;
 }
+
+/**
+ * Cấu hình hoa hồng từ hệ thống
+ */
+export interface CommissionSettingsResponse {
+  commissionAmount: number; // Số tiền hoa hồng (JPY)
+  referralBonusMonths: number; // Số tháng miễn phí cho company được giới thiệu
+  freeTrialMonths: number; // Số tháng dùng thử miễn phí mặc định
+}

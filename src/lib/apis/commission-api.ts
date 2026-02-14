@@ -3,6 +3,7 @@ import {
   CommissionResponse,
   CommissionSummaryResponse,
   CommissionFilterRequest,
+  CommissionSettingsResponse,
 } from "@/types/commission";
 import {
   PaginatedResponse,
@@ -54,6 +55,16 @@ export async function getMyCommissions(
 export async function getMySummary(): Promise<CommissionSummaryResponse> {
   return apiClient.get<CommissionSummaryResponse>(
     "/api/employee/commissions/summary",
+  );
+}
+
+/**
+ * Lấy thông tin cấu hình hoa hồng (số tiền, điều kiện...)
+ * @client-only
+ */
+export async function getMySettings(): Promise<CommissionSettingsResponse> {
+  return apiClient.get<CommissionSettingsResponse>(
+    "/api/employee/commissions/settings",
   );
 }
 
@@ -123,6 +134,7 @@ export const commissionApi = {
   // Employee APIs
   getMyCommissions,
   getMySummary,
+  getMySettings,
 
   // Admin APIs
   getAll,

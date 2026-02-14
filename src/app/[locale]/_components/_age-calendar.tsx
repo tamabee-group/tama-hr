@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { useLocale } from "next-intl";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/format-date-time";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 import { Button } from "@/components/ui/button";

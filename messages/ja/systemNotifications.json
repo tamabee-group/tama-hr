@@ -1,0 +1,44 @@
+{
+  "title": "システム通知",
+  "table": {
+    "title": "タイトル",
+    "targetAudience": "対象者",
+    "createdBy": "作成者",
+    "createdAt": "作成日時",
+    "stt": "番号"
+  },
+  "dialog": {
+    "title": "システム通知を作成",
+    "titleVi": "タイトル（ベトナム語）",
+    "titleEn": "タイトル（英語）",
+    "titleJa": "タイトル（日本語）",
+    "contentVi": "内容（ベトナム語）",
+    "contentEn": "内容（英語）",
+    "contentJa": "内容（日本語）",
+    "targetAudience": "対象者",
+    "selectAudience": "対象者を選択",
+    "preview": "プレビュー",
+    "edit": "編集",
+    "send": "通知を送信",
+    "sending": "送信中...",
+    "success": "通知を送信しました",
+    "error": "通知の送信に失敗しました",
+    "useTemplate": "テンプレートを使用",
+    "selectTemplate": "テンプレートを選択",
+    "templates": {
+      "maintenance": "システムメンテナンス",
+      "update": "機能アップデート",
+      "policy": "ポリシー変更"
+    }
+  },
+  "detail": {
+    "title": "通知詳細",
+    "tabVi": "ベトナム語",
+    "tabEn": "英語",
+    "tabJa": "日本語",
+    "targetAudience": "対象者",
+    "createdBy": "作成者",
+    "createdAt": "作成日時"
+  },
+  "create": "通知を作成"
+}

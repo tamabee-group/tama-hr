@@ -14,6 +14,7 @@
   "balance": "Balance",
   "lastBilling": "Last Billing",
   "nextBilling": "Next Billing",
+  "nextBillingAmount": "Billing Amount",
   "statistics": "Statistics",
   "limit": "Limit",
   "timeline": "Timeline",

@@ -16,7 +16,10 @@
   "logout": "Đăng xuất",
   "wallet": "Ví tiền",
   "menu": {
-    "dashboard": "Bảng điều khiển",
+    "dashboard": "Quản lý",
+    "management": "Quản lý",
+    "hrManagement": "Quản lý nhân viên",
+    "platformManagement": "Quản lý hệ thống",
     "platformAdmin": "Quản trị hệ thống",
     "companies": "Quản lý công ty",
     "customers": "Quản lý khách hàng",

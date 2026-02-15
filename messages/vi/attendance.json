@@ -206,6 +206,8 @@
     "deleteRecordTitle": "Xác nhận xóa dữ liệu chấm công",
     "deleteRecordDesc": "Yêu cầu xóa toàn bộ dữ liệu chấm công ngày này sẽ được gửi đến người duyệt. Bạn có chắc chắn?",
     "deleteRecordDirectDesc": "Toàn bộ dữ liệu chấm công ngày này sẽ bị xóa vĩnh viễn. Bạn có chắc chắn?",
+    "overnightConfirmTitle": "Xác nhận ca qua đêm",
+    "overnightConfirmDesc": "Giờ chấm công ra ({checkOut}) nhỏ hơn giờ chấm công vào ({checkIn}), hệ thống sẽ tính là qua đêm sang ngày hôm sau. Bạn có muốn tiếp tục?",
     "deleteRecordRequest": "Yêu cầu xóa dữ liệu chấm công",
     "deleteRecordInfo": "Toàn bộ dữ liệu chấm công của ngày này sẽ bị xóa nếu yêu cầu được duyệt.",
     "deleteBreakRequest": "Yêu cầu xóa giờ nghỉ",

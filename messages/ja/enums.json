@@ -188,10 +188,10 @@
     "SUPPORT_REQUEST": "サポートリクエスト"
   },
   "feedbackStatus": {
-    "OPEN": "オープン",
-    "IN_PROGRESS": "対応中",
-    "RESOLVED": "解決済み",
-    "CLOSED": "クローズ"
+    "RECEIVED": "受付済み",
+    "INVESTIGATING": "調査中",
+    "IN_DISCUSSION": "やり取り中",
+    "RESOLVED": "解決済み"
   },
   "targetAudience": {
     "COMPANY_ADMINS": "会社管理者",

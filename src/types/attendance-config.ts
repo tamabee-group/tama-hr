@@ -5,7 +5,6 @@ import {
   RoundingInterval,
   RoundingDirection,
   SalaryType,
-  BreakType,
 } from "./attendance-enums";
 
 // ============================================
@@ -100,32 +99,10 @@ export interface OvertimeConfig {
 // Break Configuration
 // ============================================
 
-export interface BreakPeriod {
-  name: string;
-  startTime: string;
-  endTime: string;
-  durationMinutes: number;
-  isFlexible: boolean;
-  order: number;
-}
-
 export interface BreakConfig {
   breakEnabled: boolean;
-  breakType: BreakType;
   defaultBreakMinutes: number;
-  minimumBreakMinutes: number;
-  maximumBreakMinutes: number;
-  useLegalMinimum: boolean;
-  locale: string;
-  fixedBreakMode: boolean;
-  breakPeriodsPerAttendance: number;
-  fixedBreakPeriods: BreakPeriod[];
-  maxBreaksPerDay: number; // Giới hạn số lần nghỉ trong ngày
-  // Night shift configuration
-  nightShiftStartTime: string; // "22:00"
-  nightShiftEndTime: string; // "05:00"
-  nightShiftMinimumBreakMinutes: number;
-  nightShiftDefaultBreakMinutes: number;
+  maxBreaksPerDay: number;
 }
 
 // ============================================

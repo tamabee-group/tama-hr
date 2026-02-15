@@ -126,11 +126,62 @@ function combineDateTime(date: string, time: string): string {
   return `${date}T${time}:00`;
 }
 
+// Format date thành yyyy-MM-dd (local timezone, không dùng toISOString để tránh lệch ngày do UTC)
+function addOneDay(dateStr: string): string {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const d = new Date(year, month - 1, day + 1);
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, "0");
+  const dd = d.getDate().toString().padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+
+// Tạo datetime cho checkOut, hỗ trợ ca qua đêm
+function combineDateTimeForCheckOut(
+  date: string,
+  checkOutTime: string,
+  checkInTime: string,
+): string {
+  if (!checkOutTime) return "";
+  const checkInMin = timeToMinutes(checkInTime);
+  const checkOutMin = timeToMinutes(checkOutTime);
+  // Nếu checkOut <= checkIn → qua đêm → +1 ngày
+  if (checkOutMin <= checkInMin && checkInTime) {
+    return `${addOneDay(date)}T${checkOutTime}:00`;
+  }
+  return `${date}T${checkOutTime}:00`;
+}
+
+// Tạo datetime cho break time, hỗ trợ ca qua đêm
+// Break time trước checkIn (theo giờ) → coi như ngày hôm sau
+function combineDateTimeForBreak(
+  date: string,
+  breakTime: string,
+  checkInTime: string,
+): string {
+  if (!breakTime) return "";
+  const checkInMin = timeToMinutes(checkInTime);
+  const breakMin = timeToMinutes(breakTime);
+  if (breakMin < checkInMin && checkInTime) {
+    return `${addOneDay(date)}T${breakTime}:00`;
+  }
+  return `${date}T${breakTime}:00`;
+}
+
+// Kiểm tra có phải ca qua đêm không
+function isOvernightShift(checkIn: string, checkOut: string): boolean {
+  if (!checkIn || !checkOut) return false;
+  return timeToMinutes(checkOut) <= timeToMinutes(checkIn);
+}
+
 function calculateBreakMinutes(start: string, end: string): number {
   if (!start || !end) return 0;
   const [startH, startM] = start.split(":").map(Number);
   const [endH, endM] = end.split(":").map(Number);
-  return endH * 60 + endM - (startH * 60 + startM);
+  let minutes = endH * 60 + endM - (startH * 60 + startM);
+  // Hỗ trợ qua đêm: nếu kết quả âm, cộng thêm 24h
+  if (minutes < 0) minutes += 24 * 60;
+  return minutes;
 }
 
 function formatDurationByLocale(minutes: number, locale: string): string {
@@ -204,26 +255,12 @@ function calculateWorkingMinutes(
 }
 
 // Xác định minimum break cần thiết theo thời gian làm việc (theo luật Nhật)
+// Lấy thời gian giải lao mặc định từ cấu hình
 function getRequiredBreakMinutes(
-  workingMinutes: number,
+  _workingMinutes: number,
   breakConfig: BreakConfig | null,
 ): number {
-  if (!breakConfig?.useLegalMinimum) {
-    return breakConfig?.minimumBreakMinutes || 0;
-  }
-
-  // Theo luật Nhật Bản:
-  // - Làm việc 6-8 giờ: tối thiểu 45 phút nghỉ
-  // - Làm việc trên 8 giờ: tối thiểu 60 phút nghỉ
-  // - Dưới 6 giờ: không bắt buộc
-  const workingHours = workingMinutes / 60;
-
-  if (workingHours > 8) {
-    return 60;
-  } else if (workingHours > 6) {
-    return 45;
-  }
-  return 0;
+  return breakConfig?.defaultBreakMinutes || 0;
 }
 
 // Chuyển đổi time string (HH:mm) thành số phút từ 00:00
@@ -234,6 +271,7 @@ function timeToMinutes(time: string): number {
 }
 
 // Kiểm tra break time có nằm trong khoảng checkIn - checkOut không
+// Hỗ trợ ca qua đêm (checkOut < checkIn)
 function isBreakTimeInRange(
   breakStart: string,
   breakEnd: string,
@@ -244,30 +282,40 @@ function isBreakTimeInRange(
     return { valid: true }; // Không thể validate nếu chưa có checkIn/checkOut
   }
 
-  const checkInMinutes = timeToMinutes(checkIn);
-  const checkOutMinutes = timeToMinutes(checkOut);
+  const checkInMin = timeToMinutes(checkIn);
+  const checkOutMin = timeToMinutes(checkOut);
+  const isOvernight = checkOutMin <= checkInMin;
+
+  // Normalize time to continuous range for overnight shifts
+  // Overnight: checkIn=23:00(1380) checkOut=02:30(150) → checkOut becomes 1380+150=1530 (26:30)
+  const normalizeTime = (minutes: number): number => {
+    if (isOvernight && minutes < checkInMin) {
+      return minutes + 24 * 60;
+    }
+    return minutes;
+  };
+
+  const normCheckIn = checkInMin;
+  const normCheckOut = isOvernight ? checkOutMin + 24 * 60 : checkOutMin;
 
   if (breakStart) {
-    const breakStartMinutes = timeToMinutes(breakStart);
-    if (
-      breakStartMinutes < checkInMinutes ||
-      breakStartMinutes > checkOutMinutes
-    ) {
+    const normBreakStart = normalizeTime(timeToMinutes(breakStart));
+    if (normBreakStart < normCheckIn || normBreakStart > normCheckOut) {
       return { valid: false, error: "breakStartOutOfRange" };
     }
   }
 
   if (breakEnd) {
-    const breakEndMinutes = timeToMinutes(breakEnd);
-    if (breakEndMinutes < checkInMinutes || breakEndMinutes > checkOutMinutes) {
+    const normBreakEnd = normalizeTime(timeToMinutes(breakEnd));
+    if (normBreakEnd < normCheckIn || normBreakEnd > normCheckOut) {
       return { valid: false, error: "breakEndOutOfRange" };
     }
   }
 
   if (breakStart && breakEnd) {
-    const breakStartMinutes = timeToMinutes(breakStart);
-    const breakEndMinutes = timeToMinutes(breakEnd);
-    if (breakStartMinutes >= breakEndMinutes) {
+    const normBreakStart = normalizeTime(timeToMinutes(breakStart));
+    const normBreakEnd = normalizeTime(timeToMinutes(breakEnd));
+    if (normBreakStart >= normBreakEnd) {
       return { valid: false, error: "breakStartAfterEnd" };
     }
   }
@@ -315,6 +363,7 @@ export function AdjustmentDialog({
     open: false,
     type: null,
   });
+  const [overnightConfirmOpen, setOvernightConfirmOpen] = React.useState(false);
 
   // Reset form khi dialog mở
   React.useEffect(() => {
@@ -538,6 +587,19 @@ export function AdjustmentDialog({
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    // Kiểm tra ca qua đêm → hiện dialog xác nhận
+    if (
+      isOvernightShift(formData.requestedCheckIn, formData.requestedCheckOut) &&
+      !overnightConfirmOpen
+    ) {
+      setOvernightConfirmOpen(true);
+      return;
+    }
+
+    await doSubmit();
+  };
+
+  const doSubmit = async () => {
     try {
       setIsSubmitting(true);
 
@@ -566,11 +628,19 @@ export function AdjustmentDialog({
               breakRecordId: br.breakRecordId,
               breakStartTime:
                 br.newStart !== br.originalStart
-                  ? combineDateTime(workDate, br.newStart)
+                  ? combineDateTimeForBreak(
+                      workDate,
+                      br.newStart,
+                      formData.requestedCheckIn,
+                    )
                   : null,
               breakEndTime:
                 br.newEnd !== br.originalEnd
-                  ? combineDateTime(workDate, br.newEnd)
+                  ? combineDateTimeForBreak(
+                      workDate,
+                      br.newEnd,
+                      formData.requestedCheckIn,
+                    )
                   : null,
             }));
 
@@ -579,7 +649,11 @@ export function AdjustmentDialog({
               ? combineDateTime(workDate, formData.requestedCheckIn)
               : null,
             checkOutTime: formData.requestedCheckOut
-              ? combineDateTime(workDate, formData.requestedCheckOut)
+              ? combineDateTimeForCheckOut(
+                  workDate,
+                  formData.requestedCheckOut,
+                  formData.requestedCheckIn,
+                )
               : null,
             breakAdjustments:
               breakAdjustments.length > 0 ? breakAdjustments : null,
@@ -591,13 +665,15 @@ export function AdjustmentDialog({
             formData.newBreakStart && formData.newBreakEnd
               ? [
                   {
-                    breakStartTime: combineDateTime(
+                    breakStartTime: combineDateTimeForBreak(
                       workDate,
                       formData.newBreakStart,
+                      formData.requestedCheckIn,
                     ),
-                    breakEndTime: combineDateTime(
+                    breakEndTime: combineDateTimeForBreak(
                       workDate,
                       formData.newBreakEnd,
+                      formData.requestedCheckIn,
                     ),
                   },
                 ]
@@ -610,7 +686,11 @@ export function AdjustmentDialog({
               ? combineDateTime(workDate, formData.requestedCheckIn)
               : null,
             checkOutTime: formData.requestedCheckOut
-              ? combineDateTime(workDate, formData.requestedCheckOut)
+              ? combineDateTimeForCheckOut(
+                  workDate,
+                  formData.requestedCheckOut,
+                  formData.requestedCheckIn,
+                )
               : null,
             breakItems,
             reason: formData.reason.trim(),
@@ -645,11 +725,19 @@ export function AdjustmentDialog({
             actionType: "ADJUST",
             requestedBreakStart:
               br.newStart !== br.originalStart
-                ? combineDateTime(workDate, br.newStart)
+                ? combineDateTimeForBreak(
+                    workDate,
+                    br.newStart,
+                    formData.requestedCheckIn,
+                  )
                 : undefined,
             requestedBreakEnd:
               br.newEnd !== br.originalEnd
-                ? combineDateTime(workDate, br.newEnd)
+                ? combineDateTimeForBreak(
+                    workDate,
+                    br.newEnd,
+                    formData.requestedCheckIn,
+                  )
                 : undefined,
           });
         }
@@ -657,11 +745,16 @@ export function AdjustmentDialog({
         if (formData.newBreakStart && formData.newBreakEnd) {
           breakItems.push({
             actionType: "CREATE",
-            requestedBreakStart: combineDateTime(
+            requestedBreakStart: combineDateTimeForBreak(
               workDate,
               formData.newBreakStart,
+              formData.requestedCheckIn,
             ),
-            requestedBreakEnd: combineDateTime(workDate, formData.newBreakEnd),
+            requestedBreakEnd: combineDateTimeForBreak(
+              workDate,
+              formData.newBreakEnd,
+              formData.requestedCheckIn,
+            ),
           });
         }
 
@@ -675,7 +768,11 @@ export function AdjustmentDialog({
               : undefined,
           requestedCheckOut:
             checkOutChanged && formData.requestedCheckOut
-              ? combineDateTime(workDate, formData.requestedCheckOut)
+              ? combineDateTimeForCheckOut(
+                  workDate,
+                  formData.requestedCheckOut,
+                  formData.requestedCheckIn,
+                )
               : undefined,
           breakItems: breakItems.length > 0 ? breakItems : undefined,
           reason: formData.reason.trim(),
@@ -974,10 +1071,11 @@ export function AdjustmentDialog({
                   </span>
                   <span
                     className={
-                      workingTimeAnalysis.isBreakInsufficient ||
                       !breakTimeValidation.valid
                         ? "text-destructive font-medium"
-                        : ""
+                        : workingTimeAnalysis.isBreakInsufficient
+                          ? "text-amber-600 dark:text-amber-500 font-medium"
+                          : ""
                     }
                   >
                     {formatDurationByLocale(
@@ -993,31 +1091,29 @@ export function AdjustmentDialog({
                   </span>
                 </div>
 
-                {/* Gộp tất cả lỗi vào 1 alert */}
-                {(workingTimeAnalysis.isBreakInsufficient ||
-                  !breakTimeValidation.valid) && (
+                {/* Break time validation error - ngoài khoảng check-in/check-out */}
+                {!breakTimeValidation.valid && breakTimeValidation.error && (
                   <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
-                      <ul className="list-disc list-inside space-y-1">
-                        {!breakTimeValidation.valid &&
-                          breakTimeValidation.error && (
-                            <li>
-                              {t(`adjustment.${breakTimeValidation.error}`)}
-                            </li>
-                          )}
-                        {workingTimeAnalysis.isBreakInsufficient && (
-                          <li>
-                            {t("adjustment.breakInsufficientWarning", {
-                              current: workingTimeAnalysis.totalBreakMinutes,
-                              minimum: workingTimeAnalysis.requiredBreakMinutes,
-                            })}
-                          </li>
-                        )}
-                      </ul>
+                      {t(`adjustment.${breakTimeValidation.error}`)}
                     </AlertDescription>
                   </Alert>
                 )}
+
+                {/* Break insufficient warning - chỉ cảnh báo, không bắt buộc */}
+                {workingTimeAnalysis.isBreakInsufficient &&
+                  breakTimeValidation.valid && (
+                    <Alert variant="warning">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        {t("adjustment.breakInsufficientWarning", {
+                          current: workingTimeAnalysis.totalBreakMinutes,
+                          minimum: workingTimeAnalysis.requiredBreakMinutes,
+                        })}
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </div>
             )}
 
@@ -1156,6 +1252,37 @@ export function AdjustmentDialog({
               {isSubmitting && deleteConfirm.type === "record" && (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               )}
+              {tCommon("confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Overnight shift confirm dialog */}
+      <AlertDialog
+        open={overnightConfirmOpen}
+        onOpenChange={setOvernightConfirmOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("adjustment.overnightConfirmTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("adjustment.overnightConfirmDesc", {
+                checkIn: formData.requestedCheckIn,
+                checkOut: formData.requestedCheckOut,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setOvernightConfirmOpen(false);
+                doSubmit();
+              }}
+            >
               {tCommon("confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MessageSquarePlus, History } from "lucide-react";
 import {
   GlassNav,
@@ -35,6 +35,11 @@ export function HelpContent() {
   const t = useTranslations("help");
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Đọc topic và article từ URL params
+  const urlTopic = searchParams.get("topic");
+  const urlArticle = searchParams.get("article");
 
   // Dialog gửi feedback
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -56,8 +61,16 @@ export function HelpContent() {
     [roleGroup],
   );
 
-  // Topic đang chọn — mặc định là topic đầu tiên
-  const [activeTopic, setActiveTopic] = useState(filteredTopics[0]?.key || "");
+  // Topic đang chọn — ưu tiên từ URL, fallback topic đầu tiên
+  const [activeTopic, setActiveTopic] = useState(
+    urlTopic && filteredTopics.some((tp) => tp.key === urlTopic)
+      ? urlTopic
+      : filteredTopics[0]?.key || "",
+  );
+
+  // Article mở sẵn từ URL (format: "topicKey-articleKey")
+  const defaultOpenArticle =
+    urlTopic && urlArticle ? `${urlTopic}-${urlArticle}` : undefined;
 
   // Trạng thái tìm kiếm
   const [searchQuery, setSearchQuery] = useState("");
@@ -152,12 +165,7 @@ export function HelpContent() {
     // Format time: "09:00:00" → "09:00"
     const fmtTime = formatTime;
 
-    // Translate breakType enum
-    const breakTypeMap: Record<string, string> = {
-      PAID: t("companyInfo.breakTypePaid"),
-      UNPAID: t("companyInfo.breakTypeUnpaid"),
-    };
-
+    // Translate breakType enum — không còn dùng
     return {
       workStart: fmtTime(a.defaultWorkStartTime),
       workEnd: fmtTime(a.defaultWorkEndTime),
@@ -168,7 +176,6 @@ export function HelpContent() {
       saturdayOff: a.saturdayOff,
       sundayOff: a.sundayOff,
       breakEnabled: b.breakEnabled,
-      breakType: breakTypeMap[b.breakType] ?? b.breakType,
       defaultBreakMinutes: b.defaultBreakMinutes,
       maxBreaksPerDay: b.maxBreaksPerDay,
       payDay: p.payDay,
@@ -177,7 +184,7 @@ export function HelpContent() {
       regularOvertimeRate: o.regularOvertimeRate,
       nightWorkRate: o.nightWorkRate,
     };
-  }, [settings, t]);
+  }, [settings]);
 
   return (
     <div className="space-y-4">
@@ -221,6 +228,7 @@ export function HelpContent() {
               title={t("companyInfo.title")}
               description={`${t("companyInfo.workHours")}: ${settingsInfo.workStart} - ${settingsInfo.workEnd}`}
               defaultCollapsed
+              tipsLabel={t("companyInfo.details")}
               tips={[
                 `${t("companyInfo.lateGrace")}: ${settingsInfo.lateGrace}${t("companyInfo.minutes")}`,
                 `${t("companyInfo.earlyLeaveGrace")}: ${settingsInfo.earlyLeaveGrace}${t("companyInfo.minutes")}`,
@@ -236,8 +244,8 @@ export function HelpContent() {
               title={t("companyInfo.title")}
               description={`${t("companyInfo.breakEnabled")}: ${settingsInfo.breakEnabled ? "✓" : "✗"}`}
               defaultCollapsed
+              tipsLabel={t("companyInfo.details")}
               tips={[
-                `${t("companyInfo.breakType")}: ${settingsInfo.breakType}`,
                 `${t("companyInfo.defaultBreak")}: ${settingsInfo.defaultBreakMinutes}${t("companyInfo.minutes")}`,
                 `${t("companyInfo.maxBreaks")}: ${settingsInfo.maxBreaksPerDay}`,
               ]}
@@ -249,6 +257,7 @@ export function HelpContent() {
               title={t("companyInfo.title")}
               description={`${t("companyInfo.payDay")}: ${settingsInfo.payDay} | ${t("companyInfo.cutoffDay")}: ${settingsInfo.cutoffDay}`}
               defaultCollapsed
+              tipsLabel={t("companyInfo.details")}
               tips={[
                 `${t("companyInfo.overtimeEnabled")}: ${settingsInfo.overtimeEnabled ? "✓" : "✗"}`,
                 ...(settingsInfo.overtimeEnabled
@@ -277,6 +286,9 @@ export function HelpContent() {
                   topicTitle: t(`topics.${currentTopic.key}.title`),
                 }))}
                 currencyMap={currencyMap}
+                defaultOpenArticle={
+                  activeTopic === urlTopic ? defaultOpenArticle : undefined
+                }
               />
             ) : null}
           </GlassSection>

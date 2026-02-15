@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { InfoPanel } from "@/components/ui/info-panel";
+import { HelpLink } from "@/components/ui/help-link";
 import {
   InputGroup,
   InputGroupAddon,
@@ -99,38 +99,6 @@ export function AttendanceConfigForm({
   ) => {
     setBreakFormData((prev) => ({ ...prev, [field]: value }));
   };
-
-  // Thông tin giải thích cho section Vị trí
-  const locationInfo = [
-    {
-      label: t("attendance.requireGeoLocation"),
-      description: t("attendance.geoLocationTooltip"),
-    },
-  ];
-
-  // Thông tin giải thích cho section Phương thức chấm công
-  const checkInMethodInfo = [
-    {
-      label: t("attendance.allowMobileCheckIn"),
-      description: t("attendance.allowMobileCheckInDesc"),
-    },
-    {
-      label: t("attendance.allowWebCheckIn"),
-      description: t("attendance.allowWebCheckInDesc"),
-    },
-  ];
-
-  // Thông tin giải thích cho section Thời gian cho phép
-  const graceTimeInfo = [
-    {
-      label: t("attendance.lateGraceMinutes"),
-      description: t("attendance.lateGraceTooltip"),
-    },
-    {
-      label: t("attendance.earlyLeaveGraceMinutes"),
-      description: t("attendance.earlyLeaveGraceTooltip"),
-    },
-  ];
 
   return (
     <>
@@ -243,10 +211,10 @@ export function AttendanceConfigForm({
                 </div>
               </div>
 
-              {/* Info panel cho thời gian cho phép */}
-              <InfoPanel
-                title={tCommon("viewExplanation")}
-                items={graceTimeInfo}
+              {/* Link đến help cho thời gian cho phép */}
+              <HelpLink
+                topic="company_settings"
+                article="attendance_settings"
               />
             </div>
           </GlassSection>
@@ -288,9 +256,9 @@ export function AttendanceConfigForm({
                 </div>
               </div>
 
-              <InfoPanel
-                title={tCommon("viewExplanation")}
-                items={checkInMethodInfo}
+              <HelpLink
+                topic="company_settings"
+                article="attendance_settings"
               />
             </div>
           </GlassSection>
@@ -403,10 +371,7 @@ export function AttendanceConfigForm({
               </div>
             )}
 
-            <InfoPanel
-              title={tCommon("viewExplanation")}
-              items={locationInfo}
-            />
+            <HelpLink topic="company_settings" article="attendance_settings" />
           </div>
         </GlassSection>
       </div>

@@ -183,6 +183,7 @@
     "alreadyActive": "アカウントは既に有効です。"
   },
   "viewExplanation": "説明を見る",
+  "viewHelp": "詳しいガイドを見る",
   "retry": "再試行",
   "inactiveAccount": {
     "title": "アカウント無効",

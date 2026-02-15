@@ -19,10 +19,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
 import {
   Settings,
   LogOut,
@@ -45,6 +53,8 @@ import {
   Wrench,
   MessageSquare,
   LifeBuoy,
+  CircleQuestionMark,
+  ArrowRightLeft,
 } from "lucide-react";
 import { getFileUrl } from "@/lib/utils/file-url";
 import { useAuth } from "@/hooks/use-auth";
@@ -56,10 +66,16 @@ import { SidebarSettingsDialog } from "@/app/[locale]/_components/_base/_sidebar
  * subPageTitles: Map pathname prefix -> translation key (cho trang con có title riêng)
  * namespace: Translation namespace cho titles
  */
+export interface HelpMapping {
+  topic: string;
+  article?: string;
+}
+
 export interface HeaderConfig {
   mainPages: Record<string, string>;
   subPageTitles?: Record<string, string>;
   namespace: string;
+  helpMapping?: Record<string, HelpMapping>;
 }
 
 export interface LayoutHeaderProps {
@@ -72,6 +88,7 @@ export interface LayoutHeaderProps {
 interface HeaderInfo {
   title: string;
   showBackButton: boolean;
+  help?: HelpMapping;
 }
 
 /**
@@ -85,6 +102,22 @@ function useHeaderInfo(config: HeaderConfig): HeaderInfo {
   // Loại bỏ locale prefix
   const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}\//, "/");
 
+  // Resolve help mapping cho route hiện tại
+  const resolveHelp = (): HelpMapping | undefined => {
+    if (!config.helpMapping) return undefined;
+    // Exact match trước
+    if (config.helpMapping[pathWithoutLocale]) {
+      return config.helpMapping[pathWithoutLocale];
+    }
+    // Prefix match cho sub-pages
+    for (const [prefix, mapping] of Object.entries(config.helpMapping)) {
+      if (prefix.endsWith("/") && pathWithoutLocale.startsWith(prefix)) {
+        return mapping;
+      }
+    }
+    return undefined;
+  };
+
   // Kiểm tra có phải trang chính không
   const titleKey = config.mainPages[pathWithoutLocale];
 
@@ -92,6 +125,7 @@ function useHeaderInfo(config: HeaderConfig): HeaderInfo {
     return {
       title: t(titleKey),
       showBackButton: false,
+      help: resolveHelp(),
     };
   }
 
@@ -102,6 +136,7 @@ function useHeaderInfo(config: HeaderConfig): HeaderInfo {
         return {
           title: t(key),
           showBackButton: false,
+          help: resolveHelp(),
         };
       }
     }
@@ -111,18 +146,145 @@ function useHeaderInfo(config: HeaderConfig): HeaderInfo {
   return {
     title: "",
     showBackButton: false,
+    help: resolveHelp(),
   };
 }
 
 /**
+ * Xác định layout hiện tại từ pathname
+ */
+type LayoutKey = "personal" | "dashboard" | "admin" | "support";
+
+function useCurrentLayout(): LayoutKey {
+  const pathname = usePathname();
+  if (pathname.includes("/admin")) return "admin";
+  if (pathname.includes("/dashboard")) return "dashboard";
+  if (pathname.includes("/support")) return "support";
+  return "personal";
+}
+
+/**
+ * Lấy danh sách layouts mà user có quyền truy cập
+ */
+interface LayoutOption {
+  key: LayoutKey;
+  href: string;
+  labelKey: string;
+}
+
+function useAvailableLayouts(): LayoutOption[] {
+  const locale = useLocale();
+  const { user } = useAuth();
+  const role = user?.role;
+
+  const layouts: LayoutOption[] = [
+    { key: "personal", href: `/${locale}/me`, labelKey: "myPortal" },
+  ];
+
+  const canAccessDashboard =
+    role?.includes("ADMIN") || role?.includes("MANAGER");
+  const isTamabeeEmployee = role?.includes("TAMABEE") ?? false;
+  const isTamabeeAdmin = role === "ADMIN_TAMABEE";
+
+  if (canAccessDashboard) {
+    layouts.push({
+      key: "dashboard",
+      href: `/${locale}/dashboard`,
+      labelKey: "hrManagement",
+    });
+  }
+
+  if (isTamabeeAdmin) {
+    layouts.push({
+      key: "admin",
+      href: `/${locale}/admin/companies`,
+      labelKey: "platformManagement",
+    });
+  }
+
+  if (isTamabeeEmployee) {
+    layouts.push({
+      key: "support",
+      href: `/${locale}/support`,
+      labelKey: "support",
+    });
+  }
+
+  return layouts;
+}
+
+/**
+ * LayoutSwitcher - Nút chuyển layout trên desktop header
+ * - 1 layout: không hiển thị
+ * - 2 layouts: nút toggle đơn giản
+ * - 3+ layouts: select dropdown
+ */
+function LayoutSwitcher() {
+  const router = useRouter();
+  const t = useTranslations("header.menu");
+  const tSidebar = useTranslations("sidebar.items");
+  const currentLayout = useCurrentLayout();
+  const layouts = useAvailableLayouts();
+
+  // Chỉ có 1 layout → không cần switcher
+  if (layouts.length <= 1) return null;
+
+  // 2 layouts → nút toggle chuyển sang layout còn lại
+  if (layouts.length === 2) {
+    const otherLayout = layouts.find((l) => l.key !== currentLayout);
+    if (!otherLayout) return null;
+
+    const label =
+      otherLayout.key === "personal"
+        ? tSidebar("myPortal")
+        : t(otherLayout.labelKey);
+
+    return (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-1.5 text-muted-foreground hover:text-foreground"
+        onClick={() => router.push(otherLayout.href)}
+      >
+        <ArrowRightLeft className="h-4 w-4" />
+        <span className="text-xs">{label}</span>
+      </Button>
+    );
+  }
+
+  // 3+ layouts → select dropdown
+  return (
+    <Select
+      value={currentLayout}
+      onValueChange={(value) => {
+        const target = layouts.find((l) => l.key === value);
+        if (target) router.push(target.href);
+      }}
+    >
+      <SelectTrigger className="h-8 w-auto min-w-[170px] gap-1.5 border-none bg-transparent shadow-none text-muted-foreground hover:text-foreground text-xs focus:ring-0 [&>svg]:h-3 [&>svg]:w-3">
+        <ArrowRightLeft className="h-4 w-4 shrink-0" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {layouts.map((layout) => (
+          <SelectItem key={layout.key} value={layout.key} className="text-xs">
+            {layout.key === "personal"
+              ? tSidebar("myPortal")
+              : t(layout.labelKey)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+/**
  * DesktopHeader - Header cho desktop (md và lớn hơn)
- * - Trang chính: hiển thị title với text-lg font-semibold
- * - Trang con có title trong subPageTitles: hiển thị title
- * - Trang con khác: không hiển thị gì (BackButton ở content page)
- * - NotificationBell ở bên phải
+ * Bố cục: [SidebarTrigger | Title] ... [LayoutSwitcher] [HelpLink] [NotificationBell]
  */
 export function DesktopHeader({ config }: LayoutHeaderProps) {
-  const { title } = useHeaderInfo(config);
+  const { title, help } = useHeaderInfo(config);
+  const t = useTranslations("header");
 
   return (
     <div className="sticky top-0 z-10 hidden md:flex items-center w-full bg-primary-foreground border-b border-primary/20 h-[50px] px-4">
@@ -133,9 +295,20 @@ export function DesktopHeader({ config }: LayoutHeaderProps) {
       />
       {title && <h1 className="text-lg font-semibold">{title}</h1>}
 
-      {/* Đẩy NotificationBell sang bên phải */}
-      <div className="ml-auto">
+      {/* Right side: LayoutSwitcher → Help → NotificationBell */}
+      <div className="ml-auto flex items-center gap-2">
+        {help && (
+          <Link
+            href={`/me/help?topic=${help.topic}${help.article ? `&article=${help.article}` : ""}`}
+            target="_blank"
+            className="bg-none inline-flex items-center gap-1.5 px-2 py-1 mr-2 text-xs text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <CircleQuestionMark className="h-4 w-4" />
+            {t("help")}
+          </Link>
+        )}
         <NotificationBell />
+        <LayoutSwitcher />
       </div>
     </div>
   );
@@ -530,6 +703,14 @@ export function MobileHeader() {
                   <DropdownMenuSeparator />
                 </>
               )}
+
+              {/* Trung tâm trợ giúp */}
+              <Link href={`/${locale}/me/help`}>
+                <DropdownMenuItem>
+                  <CircleQuestionMark className="mr-2 h-4 w-4" />
+                  {t("helpCenter")}
+                </DropdownMenuItem>
+              </Link>
 
               {/* Settings */}
               <DropdownMenuItem onClick={() => setSettingsOpen(true)}>

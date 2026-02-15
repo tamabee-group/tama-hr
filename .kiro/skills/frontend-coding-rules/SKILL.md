@@ -52,6 +52,20 @@ const t = await getTranslations("deposits");
   - `formatDateForApi()` - Format ngày cho API (yyyy-MM-dd)
   - `formatDateWithDayOfWeek()` - Format ngày với thứ
   - `formatMinutesToTime()` - Format phút thành giờ (vi/en: `HH:MM`, ja: `X時YY分`)
+- **Date Manipulation**: KHÔNG dùng `toISOString()` để lấy ngày (bị lệch do UTC). Luôn dùng `getFullYear()`, `getMonth()`, `getDate()` (local timezone):
+
+  ```tsx
+  // ❌ SAI - toISOString() chuyển sang UTC, timezone +9 sẽ bị lệch ngày
+  const dateStr = new Date(date).toISOString().split("T")[0];
+
+  // ✅ ĐÚNG - dùng local timezone
+  const d = new Date(date);
+  const dateStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
+
+  // ✅ ĐÚNG - hoặc dùng formatDateForApi() từ format-date-time.ts
+  const dateStr = formatDateForApi(new Date(date));
+  ```
+
 - **Currency**:
   - `formatCurrency()` từ `@/lib/utils/format-currency` - Dùng cho tiền của Tamabee (plans, deposits, wallet) - JPY format `¥1,234`
   - `formatPayslip()` từ `@/lib/utils/format-currency` - Dùng cho tiền lương nhân viên trong company - Format theo locale từ `useAuth().user?.locale`

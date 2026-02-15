@@ -206,6 +206,8 @@
     "deleteRecordTitle": "Confirm delete attendance data",
     "deleteRecordDesc": "A request to delete all attendance data for this day will be sent to the approver. Are you sure?",
     "deleteRecordDirectDesc": "All attendance data for this day will be permanently deleted. Are you sure?",
+    "overnightConfirmTitle": "Confirm overnight shift",
+    "overnightConfirmDesc": "Check-out time ({checkOut}) is earlier than check-in time ({checkIn}), the system will treat this as an overnight shift into the next day. Do you want to continue?",
     "deleteRecordRequest": "Request to delete attendance data",
     "deleteRecordInfo": "All attendance data for this day will be deleted if the request is approved.",
     "deleteBreakRequest": "Request to delete break",

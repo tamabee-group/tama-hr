@@ -78,6 +78,20 @@ export function PayrollItemDetailDialog({
     return name;
   };
 
+  // Lấy label lương theo loại lương
+  const getSalaryLabel = () => {
+    switch (item.salaryType) {
+      case "HOURLY":
+        return t("card.hourlySalary");
+      case "DAILY":
+        return t("card.dailySalary");
+      case "SHIFT_BASED":
+        return t("card.shiftSalary");
+      default:
+        return t("card.baseSalary");
+    }
+  };
+
   const totalOvertimeMinutes =
     (item.regularOvertimeMinutes || 0) +
     (item.nightOvertimeMinutes || 0) +
@@ -167,6 +181,21 @@ export function PayrollItemDetailDialog({
                     : "-"}
                 </p>
               </div>
+              {/* Mức lương/giờ/ngày/ca cho loại lương không phải MONTHLY */}
+              {item.salaryType &&
+                item.salaryType !== "MONTHLY" &&
+                item.baseSalary > 0 && (
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">
+                      {item.salaryType === "HOURLY" && t("card.hourlyRate")}
+                      {item.salaryType === "DAILY" && t("card.dailyRate")}
+                      {item.salaryType === "SHIFT_BASED" && t("card.shiftRate")}
+                    </p>
+                    <p className="font-medium">
+                      {formatPayslip(item.baseSalary, companyLocale)}
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
 
@@ -201,7 +230,7 @@ export function PayrollItemDetailDialog({
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-0.5">
-                    {t("breakdown.baseSalary")}
+                    {getSalaryLabel()}
                   </p>
                   <p className="font-semibold">
                     {formatPayslip(item.calculatedBaseSalary, companyLocale)}

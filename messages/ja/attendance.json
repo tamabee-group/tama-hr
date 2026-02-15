@@ -206,6 +206,8 @@
     "deleteRecordTitle": "勤怠データ削除の確認",
     "deleteRecordDesc": "この日のすべての勤怠データの削除申請が承認者に送信されます。よろしいですか？",
     "deleteRecordDirectDesc": "この日の勤怠データがすべて完全に削除されます。よろしいですか？",
+    "overnightConfirmTitle": "夜勤の確認",
+    "overnightConfirmDesc": "退勤時間（{checkOut}）が出勤時間（{checkIn}）より早いため、翌日にまたがる夜勤として処理されます。続行しますか？",
     "deleteRecordRequest": "勤怠データ削除の申請",
     "deleteRecordInfo": "申請が承認されると、この日のすべての勤怠データが削除されます。",
     "deleteBreakRequest": "休憩削除の申請",

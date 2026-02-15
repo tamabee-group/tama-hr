@@ -41,6 +41,17 @@ const personalHeaderConfig: HeaderConfig = {
     "/me/help/": "help.title",
     "/me/notifications/": "notifications.title",
   },
+  helpMapping: {
+    "/me": { topic: "attendance", article: "how_to_checkin" },
+    "/me/attendance": { topic: "attendance", article: "view_history" },
+    "/me/attendance/": { topic: "attendance", article: "view_history" },
+    "/me/schedule": { topic: "shifts", article: "view_schedule" },
+    "/me/leave": { topic: "leave", article: "request_leave" },
+    "/me/payroll": { topic: "payroll", article: "view_payslip" },
+    "/me/profile": { topic: "profile", article: "update_profile" },
+    "/me/contract": { topic: "employee_management", article: "contract_setup" },
+    "/me/adjustments": { topic: "attendance", article: "request_adjustment" },
+  },
 };
 
 /**

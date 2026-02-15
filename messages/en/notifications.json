@@ -7,7 +7,7 @@
   "unread": "Unseen",
   "codes": {
     "WELCOME_COMPANY": "Welcome {companyName} to Tamabee HR!",
-    "WELCOME_EMPLOYEE": "Welcome to {companyName}!",
+    "WELCOME_EMPLOYEE": "Welcome to {companyName}! Please change your password to secure your account.",
     "PAYROLL_PERIOD_CREATED": "Payroll period {periodName} has been created",
     "PAYROLL_CONFIRMED": "Payslip for {month}/{year} has been confirmed",
     "PAYROLL_SUBMITTED": "Payroll period {month}/{year} has been submitted for approval",

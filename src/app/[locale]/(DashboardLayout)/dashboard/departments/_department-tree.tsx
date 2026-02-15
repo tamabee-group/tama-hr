@@ -102,7 +102,7 @@ function DepartmentCard({
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground pt-1">
           <Users className="h-4 w-4" />
           <span>
-            {node.employeeCount} {t("fields.employeeCount").toLowerCase()}
+            {node.employeeCount} {t("fields.employeeUnit")}
           </span>
         </div>
       </div>
@@ -226,7 +226,7 @@ function CollapsibleTreeItem({
           <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
             <Users className="h-3 w-3" />
             <span>
-              {node.employeeCount} {t("fields.employeeCount").toLowerCase()}
+              {node.employeeCount} {t("fields.employeeUnit")}
             </span>
           </div>
         </div>

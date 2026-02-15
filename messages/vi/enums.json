@@ -188,10 +188,10 @@
     "SUPPORT_REQUEST": "Yêu cầu hỗ trợ"
   },
   "feedbackStatus": {
-    "OPEN": "Mở",
-    "IN_PROGRESS": "Đang xử lý",
-    "RESOLVED": "Đã giải quyết",
-    "CLOSED": "Đã đóng"
+    "RECEIVED": "Đã tiếp nhận",
+    "INVESTIGATING": "Đang kiểm tra",
+    "IN_DISCUSSION": "Đang trao đổi",
+    "RESOLVED": "Đã xử lý"
   },
   "targetAudience": {
     "COMPANY_ADMINS": "Quản trị viên công ty",

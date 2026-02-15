@@ -15,7 +15,8 @@
     "description": "Mô tả",
     "parent": "Phòng ban cha",
     "manager": "Quản lý",
-    "employeeCount": "Số nhân viên"
+    "employeeCount": "Số nhân viên",
+    "employeeUnit": "nhân viên"
   },
   "placeholders": {
     "name": "Nhập tên phòng ban",

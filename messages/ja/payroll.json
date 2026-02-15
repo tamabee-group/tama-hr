@@ -23,6 +23,12 @@
     "workingHours": "勤務時間",
     "overtimeHours": "残業時間",
     "baseSalary": "基本給",
+    "hourlySalary": "時給",
+    "dailySalary": "日給",
+    "shiftSalary": "シフト給",
+    "hourlyRate": "時給単価",
+    "dailyRate": "日給単価",
+    "shiftRate": "シフト単価",
     "allowance": "手当",
     "overtimePay": "残業手当",
     "total": "合計",
@@ -104,6 +110,7 @@
     "paymentStatus": "支払い",
     "paidAt": "支払日",
     "salaryType": "給与タイプ",
+    "calculatedSalary": "計算済み給与",
     "workingDays": "勤務日数"
   },
   "summary": {

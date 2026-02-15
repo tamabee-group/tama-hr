@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { Switch } from "@/components/ui/switch";
-import { InfoPanel } from "@/components/ui/info-panel";
+import { HelpLink } from "@/components/ui/help-link";
 import {
   Select,
   SelectContent,
@@ -76,16 +76,7 @@ export function RoundingSection({
   updateField,
 }: RoundingSectionProps) {
   const t = useTranslations("companySettings");
-  const tCommon = useTranslations("common");
   const tEnums = useTranslations("enums");
-
-  // Thông tin giải thích
-  const roundingInfo = [
-    {
-      label: t("attendance.rounding"),
-      description: t("attendance.roundingTooltip"),
-    },
-  ];
 
   // Ví dụ cho check-in
   const checkInExample = formData.enableCheckInRounding
@@ -461,8 +452,8 @@ export function RoundingSection({
           />
         </div>
 
-        {/* Info panel */}
-        <InfoPanel title={tCommon("viewExplanation")} items={roundingInfo} />
+        {/* Link đến help */}
+        <HelpLink topic="company_settings" article="rounding_settings" />
       </div>
     </GlassSection>
   );

@@ -39,7 +39,7 @@ export function SupportHome() {
             referralApi.getCommissionSummary().catch(() => null),
             commissionApi.getMySummary().catch(() => null),
             feedbackApi.getAdminFeedbacks(0, 1).catch(() => null),
-            feedbackApi.getAdminFeedbacks(0, 1, "OPEN").catch(() => null),
+            feedbackApi.getAdminFeedbacks(0, 1, "RECEIVED").catch(() => null),
           ]);
 
         setStats({

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/input-group";
 import { HelpCircle } from "lucide-react";
 import { toast } from "sonner";
+import { HelpLink } from "@/components/ui/help-link";
 import { PayrollConfig } from "@/types/attendance-config";
 import { SALARY_TYPES, SalaryType } from "@/types/attendance-enums";
 import { companySettingsApi } from "@/lib/apis/company-settings-api";
@@ -242,6 +243,8 @@ export function PayrollConfigForm({
               </InputGroup>
             </div>
           </div>
+
+          <HelpLink topic="company_settings" article="payroll_settings" />
         </GlassSection>
       </div>
     </div>

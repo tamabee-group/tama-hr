@@ -18,7 +18,6 @@ import {
   formatPayslipFilename,
   formatPayslipFullTitle,
 } from "@/lib/utils/format-payslip";
-import { Span } from "next/dist/trace";
 
 // System item codes được tạo tự động bởi backend
 const SYSTEM_ITEM_CODES = ["OVERTIME", "SHORTFALL"];
@@ -149,8 +148,22 @@ export function PayslipDetailView({
     return `${hours}:${String(mins).padStart(2, "0")}`;
   };
 
+  // Lấy label lương theo loại lương
+  const getSalaryLabel = () => {
+    switch (item.salaryType) {
+      case "HOURLY":
+        return t("card.hourlySalary");
+      case "DAILY":
+        return t("card.dailySalary");
+      case "SHIFT_BASED":
+        return t("card.shiftSalary");
+      default:
+        return t("card.baseSalary");
+    }
+  };
+
   const totalIncome =
-    (item.baseSalary || 0) +
+    (item.calculatedBaseSalary || item.baseSalary || 0) +
     (item.allowanceDetails?.reduce((sum, a) => sum + (a.amount || 0), 0) || 0);
 
   const totalDeductions =
@@ -256,6 +269,22 @@ export function PayslipDetailView({
                   {formatOvertimeHours(item.regularOvertimeMinutes || 0)}
                 </span>
               </div>
+              {/* Mức lương/giờ/ngày/ca */}
+              {item.salaryType &&
+                item.salaryType !== "MONTHLY" &&
+                item.baseSalary > 0 && (
+                  <div className="flex justify-between text-xs sm:text-sm gap-1">
+                    <span>
+                      {item.salaryType === "HOURLY" && t("card.hourlyRate")}
+                      {item.salaryType === "DAILY" && t("card.dailyRate")}
+                      {item.salaryType === "SHIFT_BASED" && t("card.shiftRate")}
+                    </span>
+                    <CurrencyDisplay
+                      amount={item.baseSalary}
+                      className="font-semibold text-xs sm:text-sm text-right"
+                    />
+                  </div>
+                )}
             </div>
           </div>
 
@@ -266,9 +295,9 @@ export function PayslipDetailView({
             </div>
             <div className="p-2 sm:p-4 space-y-2 sm:space-y-3 lg:min-h-[350px] flex flex-col">
               <div className="flex justify-between text-xs sm:text-sm gap-1">
-                <span>{t("card.baseSalary")}</span>
+                <span>{getSalaryLabel()}</span>
                 <CurrencyDisplay
-                  amount={item.baseSalary}
+                  amount={item.calculatedBaseSalary || item.baseSalary}
                   className="font-semibold text-xs sm:text-sm text-right"
                 />
               </div>

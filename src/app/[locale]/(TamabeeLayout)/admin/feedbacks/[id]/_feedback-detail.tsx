@@ -1,14 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Loader2, Paperclip, MessageSquareOff, Send } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
+import {
+  Loader2,
+  Paperclip,
+  MessageSquareOff,
+  Trash2,
+  ExternalLink,
+} from "lucide-react";
 import { toast } from "sonner";
 import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
 import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { ImageZoomDialog } from "@/app/[locale]/_components/image/_image-zoom-dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -16,11 +23,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { feedbackApi } from "@/lib/apis/feedback-api";
 import { formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getFileUrl } from "@/lib/utils/file-url";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
 import type {
   FeedbackDetail,
@@ -29,14 +48,14 @@ import type {
 } from "@/types/feedback";
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
-// Màu badge theo status
 const STATUS_BADGE_CLASSES: Record<FeedbackStatus, string> = {
-  OPEN: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  IN_PROGRESS:
+  RECEIVED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  INVESTIGATING:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+  IN_DISCUSSION:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
   RESOLVED:
     "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  CLOSED: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
 };
 
 const TYPE_BADGE_CLASSES: Record<FeedbackType, string> = {
@@ -49,93 +68,67 @@ const TYPE_BADGE_CLASSES: Record<FeedbackType, string> = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
-/**
- * Lấy danh sách trạng thái hợp lệ cho transition
- * OPEN → IN_PROGRESS, IN_PROGRESS → RESOLVED, RESOLVED → CLOSED, any → CLOSED
- */
-function getValidTransitions(current: FeedbackStatus): FeedbackStatus[] {
-  switch (current) {
-    case "OPEN":
-      return ["IN_PROGRESS", "CLOSED"];
-    case "IN_PROGRESS":
-      return ["RESOLVED", "CLOSED"];
-    case "RESOLVED":
-      return ["CLOSED"];
-    case "CLOSED":
-      return [];
-    default:
-      return [];
-  }
+// Admin Tamabee có thể chuyển sang bất kỳ trạng thái nào
+function getOtherStatuses(current: FeedbackStatus): FeedbackStatus[] {
+  const all: FeedbackStatus[] = [
+    "RECEIVED",
+    "INVESTIGATING",
+    "IN_DISCUSSION",
+    "RESOLVED",
+  ];
+  return all.filter((s) => s !== current);
 }
-
-const REPLY_TEMPLATE_KEYS = [
-  "received",
-  "investigating",
-  "resolved",
-  "needInfo",
-  "planned",
-] as const;
 
 interface AdminFeedbackDetailProps {
   feedbackId: number;
 }
 
 /**
- * Chi tiết feedback cho admin — hiển thị nội dung, ảnh, replies, form reply, cập nhật trạng thái
+ * Chi tiết feedback cho admin — chỉ giám sát, không phản hồi.
+ * Có thể cập nhật trạng thái và xóa feedback.
+ * Phản hồi được thực hiện ở /support.
  */
 export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
   const t = useTranslations("adminFeedbacks");
+  const tDialogs = useTranslations("dialogs");
   const tEnums = useTranslations("enums");
   const tErrors = useTranslations("errors");
   const locale = useLocale() as SupportedLocale;
+  const router = useRouter();
+  const params = useParams();
 
   const [feedback, setFeedback] = useState<FeedbackDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [replyContent, setReplyContent] = useState("");
-  const [sending, setSending] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    const loadFeedback = async () => {
+  const fetchFeedback = useCallback(
+    async (showLoading = false) => {
       try {
+        if (showLoading) setLoading(true);
         const data = await feedbackApi.getAdminFeedbackDetail(feedbackId);
-        if (isMounted) setFeedback(data);
+        setFeedback(data);
       } catch (error) {
         console.error("Failed to fetch feedback:", error);
       } finally {
-        if (isMounted) setLoading(false);
+        if (showLoading) setLoading(false);
       }
-    };
-    loadFeedback();
-    return () => {
-      isMounted = false;
-    };
-  }, [feedbackId]);
+    },
+    [feedbackId],
+  );
 
-  // Gửi phản hồi
-  const handleReply = async () => {
-    if (!replyContent.trim()) return;
-    setSending(true);
-    try {
-      const reply = await feedbackApi.replyFeedback(
-        feedbackId,
-        replyContent.trim(),
-      );
-      setFeedback((prev) =>
-        prev ? { ...prev, replies: [...prev.replies, reply] } : prev,
-      );
-      setReplyContent("");
-      toast.success(t("reply.success"));
-    } catch (error) {
-      toast.error(getErrorMessage(error, tErrors));
-    } finally {
-      setSending(false);
-    }
-  };
+  useEffect(() => {
+    fetchFeedback(true);
+  }, [fetchFeedback]);
 
-  // Cập nhật trạng thái
+  useEffect(() => {
+    const unsub = subscribeToNotificationEvents("FEEDBACK", () => {
+      fetchFeedback();
+    });
+    return unsub;
+  }, [fetchFeedback]);
+
   const handleStatusChange = async (newStatus: string) => {
     setUpdatingStatus(true);
     try {
@@ -151,6 +144,19 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
       toast.error(getErrorMessage(error, tErrors));
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await feedbackApi.deleteFeedback(feedbackId);
+      toast.success(t("detail.deleteSuccess"));
+      router.push(`/${params.locale}/admin/feedbacks`);
+    } catch (error) {
+      toast.error(getErrorMessage(error, tErrors));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -173,7 +179,7 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
     );
   }
 
-  const validTransitions = getValidTransitions(feedback.status);
+  const otherStatuses = getOtherStatuses(feedback.status);
 
   return (
     <div className="max-w-[800px] mx-auto space-y-4">
@@ -182,7 +188,7 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
       {/* Thông tin feedback */}
       <GlassSection>
         <div className="p-6 space-y-4">
-          {/* Badges + Status update */}
+          {/* Badges + Actions */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
               <span
@@ -203,36 +209,69 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
               </span>
             </div>
 
-            {/* Dropdown cập nhật trạng thái */}
-            {validTransitions.length > 0 && (
-              <Select
-                value={feedback.status}
-                onValueChange={handleStatusChange}
-                disabled={updatingStatus}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder={t("detail.updateStatus")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={feedback.status} disabled>
-                    {getEnumLabel("feedbackStatus", feedback.status, tEnums)}
-                  </SelectItem>
-                  {validTransitions.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {getEnumLabel("feedbackStatus", status, tEnums)}
+            <div className="flex items-center gap-2">
+              {otherStatuses.length > 0 && (
+                <Select
+                  value={feedback.status}
+                  onValueChange={handleStatusChange}
+                  disabled={updatingStatus}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder={t("detail.updateStatus")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={feedback.status} disabled>
+                      {getEnumLabel("feedbackStatus", feedback.status, tEnums)}
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+                    {otherStatuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {getEnumLabel("feedbackStatus", status, tEnums)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
+              {/* Nút xóa */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="icon" disabled={deleting}>
+                    {deleting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {tDialogs("delete.title")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t("detail.deleteConfirm")}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {tDialogs("delete.cancel")}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {tDialogs("delete.confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
 
-          {/* Tiêu đề */}
           <h1 className="text-xl font-semibold leading-tight">
             {feedback.title}
           </h1>
 
-          {/* Thông tin người gửi */}
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             <span>
               {t("detail.sender")}:{" "}
@@ -262,14 +301,12 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
             </span>
           </div>
 
-          {/* Mô tả */}
           <div className="pt-2 border-t">
             <p className="text-sm whitespace-pre-wrap">
               {feedback.description}
             </p>
           </div>
 
-          {/* Ảnh đính kèm */}
           {feedback.attachmentUrls && feedback.attachmentUrls.length > 0 && (
             <div className="pt-2 border-t space-y-2">
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -281,12 +318,14 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
                   <button
                     key={index}
                     onClick={() => setZoomImage(getFileUrl(url))}
-                    className="w-24 h-24 rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
+                    className="relative w-24 h-24 rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
                   >
-                    <img
+                    <Image
                       src={getFileUrl(url)}
                       alt={`attachment-${index + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      unoptimized
+                      className="object-cover"
                     />
                   </button>
                 ))}
@@ -296,24 +335,64 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
         </div>
       </GlassSection>
 
-      {/* Phản hồi */}
+      {/* Phản hồi (chỉ đọc) */}
       <GlassSection>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-semibold">{t("reply.title")}</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">{t("reply.title")}</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                router.push(`/${params.locale}/support/feedbacks/${feedbackId}`)
+              }
+              className="gap-1.5"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              {t("detail.replyInSupport")}
+            </Button>
+          </div>
 
           {feedback.replies && feedback.replies.length > 0 ? (
             <div className="space-y-4">
               {feedback.replies.map((reply) => (
-                <div key={reply.id} className="border rounded-lg p-4 space-y-2">
+                <div
+                  key={reply.id}
+                  className={cn(
+                    "border rounded-lg p-4 space-y-2",
+                    reply.fromUser && "border-primary/30 bg-primary/5",
+                  )}
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">
-                      {reply.repliedByName}
+                      {reply.fromUser
+                        ? `👤 ${reply.repliedByName}`
+                        : reply.repliedByName}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {formatDateTime(reply.createdAt, locale)}
                     </span>
                   </div>
                   <p className="text-sm whitespace-pre-wrap">{reply.content}</p>
+                  {reply.attachmentUrls && reply.attachmentUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {reply.attachmentUrls.map((url, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setZoomImage(getFileUrl(url))}
+                          className="relative w-20 h-20 rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
+                        >
+                          <Image
+                            src={getFileUrl(url)}
+                            alt={`reply-img-${i + 1}`}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -323,56 +402,11 @@ export function AdminFeedbackDetail({ feedbackId }: AdminFeedbackDetailProps) {
               <p className="text-sm text-muted-foreground">
                 {t("reply.noReplies")}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {t("reply.noRepliesHint")}
-              </p>
             </div>
           )}
-
-          {/* Form reply */}
-          <div className="pt-2 border-t space-y-3">
-            <div className="flex items-center gap-2">
-              <Select
-                onValueChange={(key) => {
-                  setReplyContent(t(`reply.templates.${key}`));
-                }}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder={t("reply.useTemplate")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {REPLY_TEMPLATE_KEYS.map((key) => (
-                    <SelectItem key={key} value={key}>
-                      {t(`reply.templates.${key}`).substring(0, 50)}...
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Textarea
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              placeholder={t("reply.placeholder")}
-              rows={3}
-            />
-            <div className="flex justify-end">
-              <Button
-                onClick={handleReply}
-                disabled={!replyContent.trim() || sending}
-              >
-                {sending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4 mr-2" />
-                )}
-                {sending ? t("reply.sending") : t("reply.send")}
-              </Button>
-            </div>
-          </div>
         </div>
       </GlassSection>
 
-      {/* Image zoom dialog */}
       <ImageZoomDialog
         open={!!zoomImage}
         onOpenChange={() => setZoomImage(null)}

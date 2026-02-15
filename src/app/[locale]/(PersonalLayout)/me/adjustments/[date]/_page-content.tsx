@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Coffee } from "lucide-react";
 import { GlassSection } from "@/app/[locale]/_components/_glass-style";
 import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
-import { AttendanceDayDetail } from "@/app/[locale]/_components/_shared";
+import { GlassAttendanceDetail } from "@/app/[locale]/_components/_shared/attendance";
 import { AdjustmentDialog } from "../../../../_components/_shared/attendance/_adjustment-dialog";
 import { BreakTimeline } from "../../attendance/[date]/_break-timeline";
 import { unifiedAttendanceApi } from "@/lib/apis/unified-attendance-api";
@@ -175,15 +175,6 @@ export function AttendanceDayDetailContent({
     fetchData();
   };
 
-  // Kiểm tra có yêu cầu pending không
-  const hasPendingRequest = adjustmentRequests.some(
-    (req) => req.status === "PENDING",
-  );
-
-  // Lấy minimumBreakRequired từ appliedSettings
-  const minimumBreakRequired =
-    record?.appliedSettings?.breakConfig?.legalMinimumBreakMinutes ?? 0;
-
   return (
     <div className="space-y-4">
       {/* Back button */}
@@ -193,15 +184,13 @@ export function AttendanceDayDetailContent({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Left column - Day detail (2/3 width on lg) */}
         <div className="lg:col-span-2">
-          <AttendanceDayDetail
+          <GlassAttendanceDetail
+            mode="employee"
             date={date}
             record={record}
             isLoading={isLoading}
-            mode="employee"
-            onAction={() => setIsAdjustmentDialogOpen(true)}
-            minimumBreakRequired={minimumBreakRequired}
-            hasPendingRequest={hasPendingRequest}
-            hideBreakTimeline
+            adjustmentRequests={adjustmentRequests}
+            onCreateRequest={() => setIsAdjustmentDialogOpen(true)}
             onPreviousDay={handlePreviousDay}
             onNextDay={handleNextDay}
             canGoPrevious={canGoPrevious}
@@ -216,7 +205,9 @@ export function AttendanceDayDetailContent({
             <BreakTimeline
               breakRecords={record.breakRecords}
               totalBreakMinutes={record.totalBreakMinutes}
-              minimumRequired={minimumBreakRequired}
+              minimumRequired={
+                record.appliedSettings?.breakConfig?.minimumBreakMinutes ?? 0
+              }
               maxBreaksPerDay={
                 record.appliedSettings?.breakConfig?.maxBreaksPerDay ?? 3
               }

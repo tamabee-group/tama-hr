@@ -15,7 +15,8 @@
     "description": "Description",
     "parent": "Parent Department",
     "manager": "Manager",
-    "employeeCount": "Employees"
+    "employeeCount": "Employees",
+    "employeeUnit": "employees"
   },
   "placeholders": {
     "name": "Enter department name",

@@ -87,7 +87,9 @@ export function HomeContent() {
     null,
   );
   const [loading, setLoading] = React.useState(true);
-  const [submitting, setSubmitting] = React.useState(false);
+  const [submittingAction, setSubmittingAction] = React.useState<string | null>(
+    null,
+  );
   const [currentTime, setCurrentTime] = React.useState(new Date());
   const [showNextShiftConfirm, setShowNextShiftConfirm] = React.useState(false);
   const [requireGeoLocation, setRequireGeoLocation] = React.useState(false);
@@ -105,10 +107,13 @@ export function HomeContent() {
    * Nếu ngoài phạm vi → hiện dialog cảnh báo, user chọn tiếp tục hoặc hủy.
    */
   const checkGeofenceAndExecute = React.useCallback(
-    async (action: (pos: GeoPosition | null) => Promise<void>) => {
+    async (
+      action: (pos: GeoPosition | null) => Promise<void>,
+      actionName?: string,
+    ) => {
       try {
         // Bật loading ngay khi bắt đầu lấy vị trí
-        setSubmitting(true);
+        setSubmittingAction(actionName || "unknown");
 
         // Chỉ lấy GPS khi company yêu cầu bắt buộc
         let position: GeoPosition | null = null;
@@ -118,7 +123,7 @@ export function HomeContent() {
           // Nếu không lấy được GPS và company yêu cầu bắt buộc
           if (!position) {
             toast.error(t("gpsRequired"));
-            setSubmitting(false);
+            setSubmittingAction(null);
             return;
           }
 
@@ -129,11 +134,14 @@ export function HomeContent() {
               setPendingPosition(position);
               setPendingAction(() => () => action(position));
               setShowGeofenceWarning(true);
-              setSubmitting(false);
+              setSubmittingAction(null);
               return;
             }
           }
         }
+
+        // Hiện spinner ít nhất 300ms trước khi gọi API
+        await new Promise((resolve) => setTimeout(resolve, 300));
 
         // Thực hiện action
         await action(position);
@@ -144,7 +152,7 @@ export function HomeContent() {
             tErrors,
           ),
         );
-        setSubmitting(false);
+        setSubmittingAction(null);
       }
     },
     [requireGeoLocation, activeLocations, t, tErrors],
@@ -155,7 +163,7 @@ export function HomeContent() {
    */
   const handleGeofenceConfirm = async () => {
     if (pendingAction) {
-      setSubmitting(true);
+      setSubmittingAction("geofence");
       await pendingAction();
     }
     setShowGeofenceWarning(false);
@@ -295,9 +303,9 @@ export function HomeContent() {
           ),
         );
       } finally {
-        setSubmitting(false);
+        setSubmittingAction(null);
       }
-    });
+    }, "checkIn");
   };
 
   const performCheckIn = async () => {
@@ -317,10 +325,10 @@ export function HomeContent() {
           ),
         );
       } finally {
-        setSubmitting(false);
+        setSubmittingAction(null);
         setShowNextShiftConfirm(false);
       }
-    });
+    }, "checkIn");
   };
 
   const handleBreakStart = async () => {
@@ -340,9 +348,9 @@ export function HomeContent() {
           ),
         );
       } finally {
-        setSubmitting(false);
+        setSubmittingAction(null);
       }
-    });
+    }, "breakStart");
   };
 
   const handleBreakEnd = async () => {
@@ -363,9 +371,9 @@ export function HomeContent() {
           ),
         );
       } finally {
-        setSubmitting(false);
+        setSubmittingAction(null);
       }
-    });
+    }, "breakEnd");
   };
 
   const handleCheckOut = async () => {
@@ -385,9 +393,9 @@ export function HomeContent() {
           ),
         );
       } finally {
-        setSubmitting(false);
+        setSubmittingAction(null);
       }
-    });
+    }, "checkOut");
   };
 
   // Timeline events
@@ -520,7 +528,8 @@ export function HomeContent() {
                 }
                 state={buttonStates.checkIn}
                 onClick={handleCheckIn}
-                isSubmitting={submitting}
+                isSubmitting={submittingAction === "checkIn"}
+                isAnySubmitting={!!submittingAction}
                 variant="success"
               />
               <ActionButton
@@ -529,7 +538,8 @@ export function HomeContent() {
                 time={getLastBreakStart()}
                 state={buttonStates.breakStart}
                 onClick={handleBreakStart}
-                isSubmitting={submitting}
+                isSubmitting={submittingAction === "breakStart"}
+                isAnySubmitting={!!submittingAction}
                 variant="warning"
               />
               <ActionButton
@@ -538,7 +548,8 @@ export function HomeContent() {
                 time={getLastBreakEnd()}
                 state={buttonStates.breakEnd}
                 onClick={handleBreakEnd}
-                isSubmitting={submitting}
+                isSubmitting={submittingAction === "breakEnd"}
+                isAnySubmitting={!!submittingAction}
                 variant="info"
               />
               <ActionButton
@@ -549,7 +560,8 @@ export function HomeContent() {
                 }
                 state={buttonStates.checkOut}
                 onClick={handleCheckOut}
-                isSubmitting={submitting}
+                isSubmitting={submittingAction === "checkOut"}
+                isAnySubmitting={!!submittingAction}
                 variant="destructive"
               />
             </div>
@@ -605,15 +617,17 @@ export function HomeContent() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={submitting}>
+            <AlertDialogCancel disabled={!!submittingAction}>
               {t("nextShift.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={performCheckIn}
-              disabled={submitting}
+              disabled={!!submittingAction}
               className="bg-green-600 hover:bg-green-700"
             >
-              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {submittingAction === "checkIn" && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               {t("nextShift.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>

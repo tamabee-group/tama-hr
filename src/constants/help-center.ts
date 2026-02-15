@@ -16,7 +16,11 @@ import {
 // Types
 // ============================================
 
-export type RoleGroup = "employee" | "company_admin" | "tamabee_staff";
+export type RoleGroup =
+  | "employee"
+  | "company_manager"
+  | "company_admin"
+  | "tamabee_staff";
 
 export interface HelpArticle {
   key: string;
@@ -31,13 +35,19 @@ export interface HelpTopic {
 }
 
 // ============================================
-// Role Hierarchy: employee ⊂ company_admin ⊂ tamabee_staff
+// Role Hierarchy: employee ⊂ company_manager ⊂ company_admin ⊂ tamabee_staff
 // ============================================
 
 const ROLE_HIERARCHY: Record<RoleGroup, RoleGroup[]> = {
   employee: ["employee"],
-  company_admin: ["employee", "company_admin"],
-  tamabee_staff: ["employee", "company_admin", "tamabee_staff"],
+  company_manager: ["employee", "company_manager"],
+  company_admin: ["employee", "company_manager", "company_admin"],
+  tamabee_staff: [
+    "employee",
+    "company_manager",
+    "company_admin",
+    "tamabee_staff",
+  ],
 };
 
 /**
@@ -45,9 +55,10 @@ const ROLE_HIERARCHY: Record<RoleGroup, RoleGroup[]> = {
  */
 export function toRoleGroup(role: string | undefined): RoleGroup {
   if (!role) return "employee";
-  if (role.includes("TAMABEE")) return "tamabee_staff";
-  if (role === "ADMIN_COMPANY" || role === "MANAGER_COMPANY")
-    return "company_admin";
+  if (role === "ADMIN_TAMABEE") return "tamabee_staff";
+  if (role === "ADMIN_COMPANY") return "company_admin";
+  if (role === "MANAGER_TAMABEE" || role === "MANAGER_COMPANY")
+    return "company_manager";
   return "employee";
 }
 
@@ -76,7 +87,7 @@ export function filterByRole(
 // ============================================
 
 export const HELP_TOPICS: HelpTopic[] = [
-  // Luồng hoạt động hệ thống - cho Admin
+  // Luồng hoạt động hệ thống - cho Admin only
   {
     key: "system_workflow",
     icon: Route,
@@ -101,6 +112,7 @@ export const HELP_TOPICS: HelpTopic[] = [
       { key: "request_adjustment", roles: ["employee"] },
       { key: "geolocation", roles: ["employee"] },
       { key: "rounding_rules", roles: ["employee"] },
+      { key: "second_checkin", roles: ["employee"] },
     ],
   },
   // Giải lao - cho Employee
@@ -127,7 +139,7 @@ export const HELP_TOPICS: HelpTopic[] = [
       { key: "cancel_leave", roles: ["employee"] },
     ],
   },
-  // Ca làm việc - cho Employee (xem lịch, đổi ca) và Admin (quản lý ca)
+  // Ca làm việc - cho Employee (xem lịch, đổi ca) và Manager+ (quản lý ca)
   {
     key: "shifts",
     icon: CalendarClock,
@@ -137,8 +149,8 @@ export const HELP_TOPICS: HelpTopic[] = [
       { key: "view_schedule", roles: ["employee"] },
       { key: "swap_request", roles: ["employee"] },
       { key: "manage_templates", roles: ["company_admin"] },
-      { key: "assign_shifts", roles: ["company_admin"] },
-      { key: "approve_swaps", roles: ["company_admin"] },
+      { key: "assign_shifts", roles: ["company_manager"] },
+      { key: "approve_swaps", roles: ["company_manager"] },
     ],
   },
   {
@@ -148,6 +160,7 @@ export const HELP_TOPICS: HelpTopic[] = [
     articles: [
       { key: "view_payslip", roles: ["employee"] },
       { key: "salary_components", roles: ["employee"] },
+      { key: "salary_types", roles: ["employee"] },
       { key: "overtime_calculation", roles: ["employee"] },
       { key: "break_deduction", roles: ["employee"] },
     ],
@@ -158,33 +171,40 @@ export const HELP_TOPICS: HelpTopic[] = [
     roles: ["employee"],
     articles: [
       { key: "update_profile", roles: ["employee"] },
+      { key: "change_password", roles: ["employee"] },
       { key: "change_language", roles: ["employee"] },
       { key: "bank_info", roles: ["employee"] },
     ],
   },
+  // Quản lý nhân viên - Manager có thể quản lý chấm công, duyệt phép
+  // Admin thêm: tạo nhân viên, hợp đồng, cấu hình lương, quản lý lương
   {
     key: "employee_management",
     icon: Users,
-    roles: ["company_admin"],
+    roles: ["company_manager"],
     articles: [
       { key: "create_employee", roles: ["company_admin"] },
       { key: "contract_setup", roles: ["company_admin"] },
       { key: "salary_config", roles: ["company_admin"] },
       { key: "allowance_deduction", roles: ["company_admin"] },
-      { key: "manage_attendance", roles: ["company_admin"] },
-      { key: "approve_leave", roles: ["company_admin"] },
+      { key: "manage_attendance", roles: ["company_manager"] },
+      { key: "approve_leave", roles: ["company_manager"] },
       { key: "manage_payroll", roles: ["company_admin"] },
     ],
   },
+  // Cài đặt công ty - chỉ Admin
   {
     key: "company_settings",
     icon: Settings,
     roles: ["company_admin"],
     articles: [
       { key: "attendance_settings", roles: ["company_admin"] },
+      { key: "rounding_settings", roles: ["company_admin"] },
+      { key: "location_settings", roles: ["company_admin"] },
       { key: "break_settings", roles: ["company_admin"] },
       { key: "overtime_settings", roles: ["company_admin"] },
       { key: "payroll_settings", roles: ["company_admin"] },
+      { key: "allowance_deduction_settings", roles: ["company_admin"] },
       { key: "department_settings", roles: ["company_admin"] },
     ],
   },

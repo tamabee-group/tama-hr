@@ -79,8 +79,14 @@ export function PayrollItemTable({
       ),
     },
     {
+      accessorKey: "salaryType",
+      header: t("table.salaryType"),
+      cell: ({ row }) =>
+        getEnumLabel("salaryType", row.original.salaryType, tEnums),
+    },
+    {
       accessorKey: "calculatedBaseSalary",
-      header: t("table.baseSalary"),
+      header: t("table.calculatedSalary"),
       cell: ({ row }) =>
         formatPayslip(row.original.calculatedBaseSalary, companyLocale),
     },

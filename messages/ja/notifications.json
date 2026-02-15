@@ -7,7 +7,7 @@
   "unread": "未読",
   "codes": {
     "WELCOME_COMPANY": "{companyName}様、Tamabee HRへようこそ！",
-    "WELCOME_EMPLOYEE": "{companyName}へようこそ！",
+    "WELCOME_EMPLOYEE": "{companyName}へようこそ！アカウントのセキュリティのため、パスワードを変更してください。",
     "PAYROLL_PERIOD_CREATED": "給与期間{periodName}が作成されました",
     "PAYROLL_CONFIRMED": "{year}年{month}月の給与明細が確定しました",
     "PAYROLL_SUBMITTED": "{year}年{month}月の給与期間が承認申請されました",

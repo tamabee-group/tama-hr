@@ -25,6 +25,7 @@
   "typeShiftBased": "シフト給",
   "salaryType": "給与タイプ",
   "salaryTypePlaceholder": "給与タイプを選択...",
+  "salaryTypeNote": "給与計算時、システムは期間終了日時点で有効な給与設定を使用します。各従業員には1つの給与タイプのみが期間全体に適用されます。期間中に給与タイプを変更する場合は、次の給与期間の開始日から有効にするか、給与調整で差額を補正してください。",
   "monthlySalary": "月給",
   "monthlySalaryPlaceholder": "月給を入力...",
   "dailyRate": "日給",

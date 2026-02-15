@@ -24,7 +24,11 @@
     "status": "ステータス",
     "updateStatus": "ステータス更新",
     "statusUpdated": "ステータスを更新しました",
-    "statusError": "ステータスの更新に失敗しました"
+    "statusError": "ステータスの更新に失敗しました",
+    "delete": "フィードバックを削除",
+    "deleteConfirm": "このフィードバックと関連するすべての返信を削除しますか？元に戻せません。",
+    "deleteSuccess": "フィードバックを削除しました",
+    "replyInSupport": "Supportページで返信"
   },
   "reply": {
     "title": "返信",
@@ -32,17 +36,41 @@
     "send": "返信を送信",
     "sending": "送信中...",
     "success": "返信を送信しました",
+    "addImage": "画像を添付",
     "error": "返信の送信に失敗しました",
     "noReplies": "返信はまだありません",
     "noRepliesHint": "このフィードバックに最初の返信を送信してください",
     "useTemplate": "テンプレート返信",
     "selectTemplate": "テンプレートを選択",
+    "templateLabels": {
+      "received": "受付済み",
+      "investigating": "調査中",
+      "resolved": "解決済み",
+      "needInfo": "情報追加",
+      "planned": "記録済み"
+    },
     "templates": {
-      "received": "フィードバックをいただきありがとうございます。受け付けましたので、できるだけ早く対応いたします。",
-      "investigating": "ご報告いただいた問題を調査中です。結果が分かり次第ご連絡いたします。",
-      "resolved": "ご報告いただいた問題は解決しました。再度ご確認いただき、問題が続く場合はお知らせください。",
-      "needInfo": "ご要望を処理するために追加情報が必要です。詳細をお知らせください。",
-      "planned": "ご提案ありがとうございます。記録し、今後のアップデートで検討いたします。"
+      "vi": {
+        "received": "Cảm ơn bạn đã gửi phản hồi. Chúng tôi đã tiếp nhận và sẽ xử lý trong thời gian sớm nhất.",
+        "investigating": "Chúng tôi đang kiểm tra vấn đề bạn báo cáo. Sẽ cập nhật kết quả cho bạn sớm.",
+        "resolved": "Vấn đề bạn báo cáo đã được khắc phục. Vui lòng kiểm tra lại và cho chúng tôi biết nếu vẫn còn vấn đề.",
+        "needInfo": "Chúng tôi cần thêm thông tin để xử lý yêu cầu của bạn. Vui lòng cung cấp thêm chi tiết.",
+        "planned": "Cảm ơn đề xuất của bạn. Chúng tôi đã ghi nhận và sẽ xem xét trong các bản cập nhật tiếp theo."
+      },
+      "en": {
+        "received": "Thank you for your feedback. We have received it and will process it as soon as possible.",
+        "investigating": "We are investigating the issue you reported. We will update you with the results shortly.",
+        "resolved": "The issue you reported has been resolved. Please check again and let us know if the problem persists.",
+        "needInfo": "We need more information to process your request. Please provide additional details.",
+        "planned": "Thank you for your suggestion. We have noted it and will consider it in upcoming updates."
+      },
+      "ja": {
+        "received": "フィードバックをいただきありがとうございます。受け付けましたので、できるだけ早く対応いたします。",
+        "investigating": "ご報告いただいた問題を調査中です。結果が分かり次第ご連絡いたします。",
+        "resolved": "ご報告いただいた問題は解決しました。再度ご確認いただき、問題が続く場合はお知らせください。",
+        "needInfo": "ご要望を処理するために追加情報が必要です。詳細をお知らせください。",
+        "planned": "ご提案ありがとうございます。記録し、今後のアップデートで検討いたします。"
+      }
     }
   }
 }

@@ -55,6 +55,53 @@ const dashboardHeaderConfig: HeaderConfig = {
     "/dashboard/employees/": "employees.detail",
     "/dashboard/adjustments/": "adjustments.detail",
   },
+  helpMapping: {
+    "/dashboard/employees": {
+      topic: "employee_management",
+      article: "create_employee",
+    },
+    "/dashboard/employees/": { topic: "employee_management" },
+    "/dashboard/departments": {
+      topic: "company_settings",
+      article: "department_settings",
+    },
+    "/dashboard/contracts": {
+      topic: "employee_management",
+      article: "contract_setup",
+    },
+    "/dashboard/attendance": {
+      topic: "employee_management",
+      article: "manage_attendance",
+    },
+    "/dashboard/attendance/": {
+      topic: "employee_management",
+      article: "manage_attendance",
+    },
+    "/dashboard/adjustments": {
+      topic: "attendance",
+      article: "request_adjustment",
+    },
+    "/dashboard/adjustments/": {
+      topic: "attendance",
+      article: "request_adjustment",
+    },
+    "/dashboard/shifts": { topic: "shifts", article: "manage_templates" },
+    "/dashboard/payroll": {
+      topic: "employee_management",
+      article: "manage_payroll",
+    },
+    "/dashboard/payroll/": {
+      topic: "employee_management",
+      article: "manage_payroll",
+    },
+    "/dashboard/leaves": {
+      topic: "employee_management",
+      article: "approve_leave",
+    },
+    "/dashboard/leave-balances": { topic: "leave", article: "check_balance" },
+    "/dashboard/holidays": { topic: "company_settings" },
+    "/dashboard/settings": { topic: "company_settings" },
+  },
 };
 
 // Các routes được phép truy cập khi company INACTIVE

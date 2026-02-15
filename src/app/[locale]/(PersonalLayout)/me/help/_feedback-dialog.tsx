@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import Image from "next/image";
 import { Loader2, ImagePlus, X } from "lucide-react";
 import {
   Dialog,
@@ -225,10 +226,12 @@ export function FeedbackDialog({
                   key={index}
                   className="relative w-20 h-20 rounded-lg overflow-hidden border"
                 >
-                  <img
+                  <Image
                     src={preview}
                     alt={`attachment-${index}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    unoptimized
+                    className="object-cover"
                   />
                   <button
                     type="button"

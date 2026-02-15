@@ -11,6 +11,7 @@ import { salaryItemTemplateApi } from "@/lib/apis/salary-item-template-api";
 import { BaseTable } from "@/app/[locale]/_components/_base/base-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { SalaryItemTemplateDialog } from "./_salary-item-template-dialog";
+import { HelpLink } from "@/components/ui/help-link";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 interface SalaryItemTemplateConfigProps {
@@ -233,6 +234,11 @@ export function SalaryItemTemplateConfig({
         onSave={handleSave}
         onDelete={handleDelete}
         isSaving={isSaving}
+      />
+
+      <HelpLink
+        topic="company_settings"
+        article="allowance_deduction_settings"
       />
     </>
   );

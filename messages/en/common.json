@@ -183,6 +183,7 @@
     "alreadyActive": "Account is already active."
   },
   "viewExplanation": "View explanation",
+  "viewHelp": "View detailed guide",
   "retry": "Retry",
   "inactiveAccount": {
     "title": "Account Deactivated",

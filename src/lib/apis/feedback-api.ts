@@ -72,6 +72,29 @@ export async function getMyFeedbackDetail(id: number): Promise<FeedbackDetail> {
   return apiClient.get<FeedbackDetail>(`/api/users/me/feedbacks/${id}`);
 }
 
+/**
+ * Gửi tin nhắn cho feedback (user reply, chat-style, có thể kèm ảnh)
+ * @client-only
+ */
+export async function replyMyFeedback(
+  feedbackId: number,
+  content: string,
+  files?: File[],
+): Promise<FeedbackReply> {
+  const formData = new FormData();
+  formData.append(
+    "reply",
+    new Blob([JSON.stringify({ content })], { type: "application/json" }),
+  );
+  if (files && files.length > 0) {
+    files.forEach((file) => formData.append("files", file));
+  }
+  return apiClient.upload<FeedbackReply>(
+    `/api/users/me/feedbacks/${feedbackId}/replies`,
+    formData,
+  );
+}
+
 // ============================================
 // Feedback API object
 // ============================================
@@ -112,16 +135,25 @@ export async function getAdminFeedbackDetail(
 }
 
 /**
- * Gửi phản hồi cho feedback
+ * Gửi phản hồi cho feedback (có thể kèm ảnh)
  * @client-only
  */
 export async function replyFeedback(
   feedbackId: number,
   content: string,
+  files?: File[],
 ): Promise<FeedbackReply> {
-  return apiClient.post<FeedbackReply>(
+  const formData = new FormData();
+  formData.append(
+    "reply",
+    new Blob([JSON.stringify({ content })], { type: "application/json" }),
+  );
+  if (files && files.length > 0) {
+    files.forEach((file) => formData.append("files", file));
+  }
+  return apiClient.upload<FeedbackReply>(
     `/api/admin/feedbacks/${feedbackId}/replies`,
-    { content },
+    formData,
   );
 }
 
@@ -138,6 +170,14 @@ export async function updateFeedbackStatus(
   });
 }
 
+/**
+ * Xóa feedback (chỉ admin)
+ * @client-only
+ */
+export async function deleteFeedback(feedbackId: number): Promise<void> {
+  return apiClient.delete<void>(`/api/admin/feedbacks/${feedbackId}`);
+}
+
 // ============================================
 // Feedback API object
 // ============================================
@@ -146,8 +186,10 @@ export const feedbackApi = {
   createFeedback,
   getMyFeedbacks,
   getMyFeedbackDetail,
+  replyMyFeedback,
   getAdminFeedbacks,
   getAdminFeedbackDetail,
   replyFeedback,
   updateFeedbackStatus,
+  deleteFeedback,
 };

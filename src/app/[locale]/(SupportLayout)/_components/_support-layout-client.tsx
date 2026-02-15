@@ -8,6 +8,7 @@ import { BaseSidebar } from "@/app/[locale]/_components/_base/base-sidebar";
 import { SidebarLogo } from "@/app/[locale]/_components/_logo";
 import { useAuth } from "@/hooks/use-auth";
 import { SUPPORT_MENU_ITEMS } from "@/constants/menu-items";
+import { useAdminPendingCounts } from "@/hooks/use-admin-pending-counts";
 import type {
   SidebarGroup,
   SidebarHeaderConfig,
@@ -57,11 +58,13 @@ function buildSidebarGroups(
   t: ReturnType<typeof useTranslations>,
   tSidebar: ReturnType<typeof useTranslations>,
   canAccessDashboard: boolean,
+  badgeCounts?: Record<string, number>,
 ): SidebarGroup[] {
   const mainItems: SidebarItem[] = SUPPORT_MENU_ITEMS.map((item) => ({
     title: t(item.labelKey),
     url: item.href,
     icon: <item.icon className="h-4 w-4" />,
+    badgeCount: badgeCounts?.[item.code],
   }));
 
   const groups: SidebarGroup[] = [
@@ -116,6 +119,7 @@ export function SupportLayoutClient({
   const { user, status } = useAuth();
   const t = useTranslations("support");
   const tSidebar = useTranslations("sidebar");
+  const adminCounts = useAdminPendingCounts();
 
   // Kiểm tra có quyền truy cập dashboard không
   const canAccessDashboard =
@@ -150,6 +154,9 @@ export function SupportLayoutClient({
     t,
     tSidebar,
     canAccessDashboard ?? false,
+    {
+      "support-feedbacks": adminCounts.openFeedbacks,
+    },
   );
 
   return (

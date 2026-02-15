@@ -19,10 +19,10 @@ export type FeedbackType = (typeof FEEDBACK_TYPES)[number];
 // ============================================
 
 export const FEEDBACK_STATUSES = [
-  "OPEN",
-  "IN_PROGRESS",
+  "RECEIVED",
+  "INVESTIGATING",
+  "IN_DISCUSSION",
   "RESOLVED",
-  "CLOSED",
 ] as const;
 
 export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
@@ -32,10 +32,10 @@ export const FEEDBACK_STATUS_COLORS: Record<
   FeedbackStatus,
   "info" | "warning" | "success" | "secondary"
 > = {
-  OPEN: "info",
-  IN_PROGRESS: "warning",
+  RECEIVED: "info",
+  INVESTIGATING: "warning",
+  IN_DISCUSSION: "secondary",
   RESOLVED: "success",
-  CLOSED: "secondary",
 };
 
 // Màu sắc cho feedback type badge
@@ -72,7 +72,7 @@ export interface Feedback {
 }
 
 /**
- * Phản hồi từ nhân viên Tamabee
+ * Phản hồi từ nhân viên Tamabee hoặc tin nhắn từ user
  */
 export interface FeedbackReply {
   id: number;
@@ -80,6 +80,8 @@ export interface FeedbackReply {
   repliedByUserId: number;
   repliedByName: string;
   content: string;
+  fromUser: boolean;
+  attachmentUrls: string[];
   createdAt: string;
 }
 
@@ -87,5 +89,7 @@ export interface FeedbackReply {
  * Chi tiết feedback bao gồm danh sách phản hồi
  */
 export interface FeedbackDetail extends Feedback {
+  /** Ngôn ngữ của user gửi feedback (vi/en/ja) */
+  userLanguage: string;
   replies: FeedbackReply[];
 }

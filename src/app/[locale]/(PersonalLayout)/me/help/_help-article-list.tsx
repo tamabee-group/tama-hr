@@ -26,6 +26,8 @@ interface HelpArticleListProps {
   isSearchResult?: boolean;
   /** Map of placeholder → value to replace in article content, e.g. { hourlyRate: "50,000đ" } */
   currencyMap?: Record<string, string>;
+  /** Article key mở sẵn khi load (format: "topicKey-articleKey") */
+  defaultOpenArticle?: string;
 }
 
 // ============================================
@@ -163,9 +165,10 @@ export function HelpArticleList({
   articles,
   isSearchResult = false,
   currencyMap,
+  defaultOpenArticle,
 }: HelpArticleListProps) {
   const t = useTranslations("help");
-  const [openItem, setOpenItem] = useState<string>("");
+  const [openItem, setOpenItem] = useState<string>(defaultOpenArticle || "");
 
   /** Replace currency placeholders like [[hourlyRate]] in content */
   const applyMap = (text: string) => {

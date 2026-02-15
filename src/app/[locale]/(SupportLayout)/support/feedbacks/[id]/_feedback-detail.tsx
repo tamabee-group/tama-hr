@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Loader2, Paperclip, MessageSquareOff, Send } from "lucide-react";
+import Image from "next/image";
+import {
+  ImagePlus,
+  Loader2,
+  Paperclip,
+  MessageSquareOff,
+  Send,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { BackButton } from "@/app/[locale]/_components/_base/_back-button";
 import { GlassSection } from "@/app/[locale]/_components/_glass-style";
@@ -21,6 +29,7 @@ import { formatDateTime } from "@/lib/utils/format-date-time";
 import { getEnumLabel } from "@/lib/utils/get-enum-label";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { getFileUrl } from "@/lib/utils/file-url";
+import { subscribeToNotificationEvents } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
 import type {
   FeedbackDetail,
@@ -30,12 +39,13 @@ import type {
 import type { SupportedLocale } from "@/lib/utils/format-currency";
 
 const STATUS_BADGE_CLASSES: Record<FeedbackStatus, string> = {
-  OPEN: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  IN_PROGRESS:
+  RECEIVED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  INVESTIGATING:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+  IN_DISCUSSION:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
   RESOLVED:
     "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  CLOSED: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
 };
 
 const TYPE_BADGE_CLASSES: Record<FeedbackType, string> = {
@@ -48,22 +58,18 @@ const TYPE_BADGE_CLASSES: Record<FeedbackType, string> = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
-/** Trạng thái hợp lệ cho transition */
-function getValidTransitions(current: FeedbackStatus): FeedbackStatus[] {
-  switch (current) {
-    case "OPEN":
-      return ["IN_PROGRESS", "CLOSED"];
-    case "IN_PROGRESS":
-      return ["RESOLVED", "CLOSED"];
-    case "RESOLVED":
-      return ["CLOSED"];
-    case "CLOSED":
-      return [];
-    default:
-      return [];
-  }
+// Admin Tamabee có thể chuyển sang bất kỳ trạng thái nào
+function getOtherStatuses(current: FeedbackStatus): FeedbackStatus[] {
+  const all: FeedbackStatus[] = [
+    "RECEIVED",
+    "INVESTIGATING",
+    "IN_DISCUSSION",
+    "RESOLVED",
+  ];
+  return all.filter((s) => s !== current);
 }
 
+// Danh sách key mẫu phản hồi
 const REPLY_TEMPLATE_KEYS = [
   "received",
   "investigating",
@@ -76,10 +82,6 @@ interface SupportFeedbackDetailProps {
   feedbackId: number;
 }
 
-/**
- * Chi tiết feedback cho SupportLayout
- * Tương tự AdminFeedbackDetail nhưng dùng trong SupportLayout
- */
 export function SupportFeedbackDetail({
   feedbackId,
 }: SupportFeedbackDetailProps) {
@@ -91,46 +93,69 @@ export function SupportFeedbackDetail({
   const [feedback, setFeedback] = useState<FeedbackDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [replyContent, setReplyContent] = useState("");
+  const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    const loadFeedback = async () => {
+  const fetchFeedback = useCallback(
+    async (showLoading = false) => {
       try {
+        if (showLoading) setLoading(true);
         const data = await feedbackApi.getAdminFeedbackDetail(feedbackId);
-        if (isMounted) setFeedback(data);
+        setFeedback(data);
       } catch (error) {
         console.error("Failed to fetch feedback:", error);
       } finally {
-        if (isMounted) setLoading(false);
+        if (showLoading) setLoading(false);
       }
-    };
-    loadFeedback();
-    return () => {
-      isMounted = false;
-    };
-  }, [feedbackId]);
+    },
+    [feedbackId],
+  );
+
+  useEffect(() => {
+    fetchFeedback(true);
+  }, [fetchFeedback]);
+
+  useEffect(() => {
+    const unsub = subscribeToNotificationEvents("FEEDBACK", () => {
+      fetchFeedback();
+    });
+    return unsub;
+  }, [fetchFeedback]);
 
   const handleReply = async () => {
-    if (!replyContent.trim()) return;
+    if (!replyContent.trim() && replyFiles.length === 0) return;
     setSending(true);
     try {
       const reply = await feedbackApi.replyFeedback(
         feedbackId,
         replyContent.trim(),
+        replyFiles.length > 0 ? replyFiles : undefined,
       );
       setFeedback((prev) =>
         prev ? { ...prev, replies: [...prev.replies, reply] } : prev,
       );
       setReplyContent("");
+      setReplyFiles([]);
       toast.success(t("reply.success"));
     } catch (error) {
       toast.error(getErrorMessage(error, tErrors));
     } finally {
       setSending(false);
     }
+  };
+
+  // Chọn ảnh đính kèm (tối đa 3)
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setReplyFiles((prev) => [...prev, ...files].slice(0, 3));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeFile = (index: number) => {
+    setReplyFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleStatusChange = async (newStatus: string) => {
@@ -151,6 +176,9 @@ export function SupportFeedbackDetail({
     }
   };
 
+  // Ngôn ngữ của user gửi feedback (dùng để chọn template đúng ngôn ngữ)
+  const userLang = feedback?.userLanguage || "vi";
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -170,7 +198,7 @@ export function SupportFeedbackDetail({
     );
   }
 
-  const validTransitions = getValidTransitions(feedback.status);
+  const otherStatuses = getOtherStatuses(feedback.status);
 
   return (
     <div className="max-w-[800px] mx-auto space-y-4">
@@ -199,7 +227,7 @@ export function SupportFeedbackDetail({
               </span>
             </div>
 
-            {validTransitions.length > 0 && (
+            {otherStatuses.length > 0 && (
               <Select
                 value={feedback.status}
                 onValueChange={handleStatusChange}
@@ -212,7 +240,7 @@ export function SupportFeedbackDetail({
                   <SelectItem value={feedback.status} disabled>
                     {getEnumLabel("feedbackStatus", feedback.status, tEnums)}
                   </SelectItem>
-                  {validTransitions.map((status) => (
+                  {otherStatuses.map((status) => (
                     <SelectItem key={status} value={status}>
                       {getEnumLabel("feedbackStatus", status, tEnums)}
                     </SelectItem>
@@ -272,12 +300,14 @@ export function SupportFeedbackDetail({
                   <button
                     key={index}
                     onClick={() => setZoomImage(getFileUrl(url))}
-                    className="w-24 h-24 rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
+                    className="relative w-24 h-24 rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
                   >
-                    <img
+                    <Image
                       src={getFileUrl(url)}
                       alt={`attachment-${index + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      unoptimized
+                      className="object-cover"
                     />
                   </button>
                 ))}
@@ -295,16 +325,43 @@ export function SupportFeedbackDetail({
           {feedback.replies && feedback.replies.length > 0 ? (
             <div className="space-y-4">
               {feedback.replies.map((reply) => (
-                <div key={reply.id} className="border rounded-lg p-4 space-y-2">
+                <div
+                  key={reply.id}
+                  className={cn(
+                    "border rounded-lg p-4 space-y-2",
+                    reply.fromUser && "border-primary/30 bg-primary/5",
+                  )}
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">
-                      {reply.repliedByName}
+                      {reply.fromUser
+                        ? `👤 ${reply.repliedByName}`
+                        : reply.repliedByName}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {formatDateTime(reply.createdAt, locale)}
                     </span>
                   </div>
                   <p className="text-sm whitespace-pre-wrap">{reply.content}</p>
+                  {reply.attachmentUrls && reply.attachmentUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {reply.attachmentUrls.map((url, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setZoomImage(getFileUrl(url))}
+                          className="relative w-20 h-20 rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
+                        >
+                          <Image
+                            src={getFileUrl(url)}
+                            alt={`reply-img-${i + 1}`}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -320,36 +377,86 @@ export function SupportFeedbackDetail({
             </div>
           )}
 
-          {/* Form reply */}
+          {/* Form reply — template theo ngôn ngữ user */}
           <div className="pt-2 border-t space-y-3">
             <div className="flex items-center gap-2">
               <Select
                 onValueChange={(key) => {
-                  setReplyContent(t(`reply.templates.${key}`));
+                  setReplyContent(t(`reply.templates.${userLang}.${key}`));
                 }}
               >
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-[220px]">
                   <SelectValue placeholder={t("reply.useTemplate")} />
                 </SelectTrigger>
                 <SelectContent>
                   {REPLY_TEMPLATE_KEYS.map((key) => (
                     <SelectItem key={key} value={key}>
-                      {t(`reply.templates.${key}`).substring(0, 50)}...
+                      {t(`reply.templateLabels.${key}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <span className="text-xs text-muted-foreground">
+                ({userLang.toUpperCase()})
+              </span>
             </div>
+            {/* Preview ảnh đã chọn */}
+            {replyFiles.length > 0 && (
+              <div className="flex gap-2">
+                {replyFiles.map((file, i) => (
+                  <div
+                    key={i}
+                    className="relative w-16 h-16 rounded-lg border overflow-hidden"
+                  >
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                    <button
+                      onClick={() => removeFile(i)}
+                      className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <Textarea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder={t("reply.placeholder")}
               rows={3}
             />
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={replyFiles.length >= 3 || sending}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImagePlus className="h-4 w-4 mr-1" />
+                  {t("reply.addImage")}
+                </Button>
+              </div>
               <Button
                 onClick={handleReply}
-                disabled={!replyContent.trim() || sending}
+                disabled={
+                  (!replyContent.trim() && replyFiles.length === 0) || sending
+                }
               >
                 {sending ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

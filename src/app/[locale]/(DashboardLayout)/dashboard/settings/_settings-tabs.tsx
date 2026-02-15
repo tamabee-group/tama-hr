@@ -125,20 +125,8 @@ const TAB_EXPLANATIONS: Record<TabKey, TabExplanation> = {
 function getDefaultBreakConfig(): BreakConfig {
   return {
     breakEnabled: true,
-    breakType: "UNPAID",
     defaultBreakMinutes: 60,
-    minimumBreakMinutes: 45,
-    maximumBreakMinutes: 90,
-    useLegalMinimum: true,
-    locale: "ja",
-    fixedBreakMode: false,
-    breakPeriodsPerAttendance: 1,
-    fixedBreakPeriods: [],
     maxBreaksPerDay: 3,
-    nightShiftStartTime: "22:00",
-    nightShiftEndTime: "05:00",
-    nightShiftMinimumBreakMinutes: 60,
-    nightShiftDefaultBreakMinutes: 60,
   };
 }
 

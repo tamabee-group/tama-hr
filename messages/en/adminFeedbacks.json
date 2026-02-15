@@ -24,7 +24,11 @@
     "status": "Status",
     "updateStatus": "Update Status",
     "statusUpdated": "Status updated successfully",
-    "statusError": "Failed to update status"
+    "statusError": "Failed to update status",
+    "delete": "Delete feedback",
+    "deleteConfirm": "Delete this feedback and all related replies? This cannot be undone.",
+    "deleteSuccess": "Feedback deleted",
+    "replyInSupport": "Reply in Support page"
   },
   "reply": {
     "title": "Replies",
@@ -32,17 +36,41 @@
     "send": "Send Reply",
     "sending": "Sending...",
     "success": "Reply sent successfully",
+    "addImage": "Attach image",
     "error": "Failed to send reply",
     "noReplies": "No replies yet",
     "noRepliesHint": "Send the first reply for this feedback",
     "useTemplate": "Quick Reply",
     "selectTemplate": "Select a template",
+    "templateLabels": {
+      "received": "Received",
+      "investigating": "Investigating",
+      "resolved": "Resolved",
+      "needInfo": "Need info",
+      "planned": "Planned"
+    },
     "templates": {
-      "received": "Thank you for your feedback. We have received it and will process it as soon as possible.",
-      "investigating": "We are investigating the issue you reported. We will update you with the results shortly.",
-      "resolved": "The issue you reported has been resolved. Please check again and let us know if the problem persists.",
-      "needInfo": "We need more information to process your request. Please provide additional details.",
-      "planned": "Thank you for your suggestion. We have noted it and will consider it in upcoming updates."
+      "vi": {
+        "received": "Cảm ơn bạn đã gửi phản hồi. Chúng tôi đã tiếp nhận và sẽ xử lý trong thời gian sớm nhất.",
+        "investigating": "Chúng tôi đang kiểm tra vấn đề bạn báo cáo. Sẽ cập nhật kết quả cho bạn sớm.",
+        "resolved": "Vấn đề bạn báo cáo đã được khắc phục. Vui lòng kiểm tra lại và cho chúng tôi biết nếu vẫn còn vấn đề.",
+        "needInfo": "Chúng tôi cần thêm thông tin để xử lý yêu cầu của bạn. Vui lòng cung cấp thêm chi tiết.",
+        "planned": "Cảm ơn đề xuất của bạn. Chúng tôi đã ghi nhận và sẽ xem xét trong các bản cập nhật tiếp theo."
+      },
+      "en": {
+        "received": "Thank you for your feedback. We have received it and will process it as soon as possible.",
+        "investigating": "We are investigating the issue you reported. We will update you with the results shortly.",
+        "resolved": "The issue you reported has been resolved. Please check again and let us know if the problem persists.",
+        "needInfo": "We need more information to process your request. Please provide additional details.",
+        "planned": "Thank you for your suggestion. We have noted it and will consider it in upcoming updates."
+      },
+      "ja": {
+        "received": "フィードバックをいただきありがとうございます。受け付けましたので、できるだけ早く対応いたします。",
+        "investigating": "ご報告いただいた問題を調査中です。結果が分かり次第ご連絡いたします。",
+        "resolved": "ご報告いただいた問題は解決しました。再度ご確認いただき、問題が続く場合はお知らせください。",
+        "needInfo": "ご要望を処理するために追加情報が必要です。詳細をお知らせください。",
+        "planned": "ご提案ありがとうございます。記録し、今後のアップデートで検討いたします。"
+      }
     }
   }
 }

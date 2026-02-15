@@ -8,7 +8,7 @@
     "companyTitle": "Welcome to Tamabee HR! 🎉",
     "companyContent": "Welcome to **Tamabee HR** — the smart HR management system.\n\n## Getting Started\n\nTo get the system fully operational, follow these steps in order:\n\n1. **Company Settings** — Configure working hours, breaks, overtime, payroll at [Settings](/dashboard/settings)\n2. **Create Departments** — Organize your company structure at [Departments](/dashboard/departments)\n3. **Add Employees** — Create employee accounts at [Employees](/dashboard/employees)\n4. **Create Contracts** — Each employee needs at least 1 active contract\n5. **Configure Salary** — Set base salary, allowances, and deductions for each employee\n\n## Daily Operations\n\n- **Attendance** — Monitor employee check-in/out at [Attendance](/dashboard/attendance)\n- **Leave** — Approve leave requests at [Leave](/dashboard/leave)\n- **Payroll** — Calculate and confirm monthly payroll at [Payroll](/dashboard/payroll)\n\n## Need Help?\n\nVisit the [Help Center](/me/help) for detailed guides on each feature, including system workflow, common error troubleshooting, and salary calculation explanations.\n\nWishing you a productive experience! 🚀",
     "employeeTitle": "Welcome! 🎉",
-    "employeeContent": "Welcome to **Tamabee HR**.\n\n## Key Features\n\n1. **Attendance** — Record your daily check-in/out at [Attendance](/me/attendance). Supports GPS, breaks, and multi-shift\n2. **Leave** — Submit leave requests and track your balance at [Leave](/me/leave)\n3. **Payroll** — View your detailed monthly payslip at [Payroll](/me/payroll)\n4. **Profile** — Update your personal and bank information at [Profile](/me/profile)\n\n## Important Notes\n\n- Check in/out every day to ensure accurate salary calculation\n- If you forget to check in, you can submit an adjustment request for manager approval\n- If your company enables breaks, remember to start/end breaks during your shift\n\n## Need Help?\n\nVisit the [Help Center](/me/help) for detailed guides.\n\nHave a great time! 🚀"
+    "employeeContent": "Welcome to **Tamabee HR**.\n\n## ⚠️ Change Your Password Now\n\nYour account is using a default password provided by your manager. Please **change your password** immediately to secure your account.\n\n👉 [See how to change your password](/me/help?topic=profile&article=change_password)\n\n## Key Features\n\n1. **Attendance** — Record your daily check-in/out at [Attendance](/me/attendance). Supports GPS, breaks, and multi-shift\n2. **Leave** — Submit leave requests and track your balance at [Leave](/me/leave)\n3. **Payroll** — View your detailed monthly payslip at [Payroll](/me/payroll)\n4. **Profile** — Update your personal and bank information at [Profile](/me/profile)\n\n## Important Notes\n\n- Check in/out every day to ensure accurate salary calculation\n- If you forget to check in, you can submit an adjustment request for manager approval\n- If your company enables breaks, remember to start/end breaks during your shift\n\n## Need Help?\n\nVisit the [Help Center](/me/help) for detailed guides.\n\nHave a great time! 🚀"
   },
   "topics": {
     "system_workflow": { "title": "System Workflow" },
@@ -32,7 +32,6 @@
     "saturdayOff": "Saturday off",
     "sundayOff": "Sunday off",
     "breakEnabled": "Breaks",
-    "breakType": "Break type",
     "defaultBreak": "Default duration",
     "maxBreaks": "Max breaks/day",
     "payDay": "Pay day",
@@ -41,8 +40,7 @@
     "overtimeRate": "Overtime rate",
     "nightRate": "Night rate",
     "minutes": " min",
-    "breakTypePaid": "Paid",
-    "breakTypeUnpaid": "Unpaid"
+    "details": "Details"
   },
   "articles": {
     "system_workflow_overview": {
@@ -93,25 +91,29 @@
       "title": "Time rounding rules",
       "content": "The system can round attendance times based on company configuration:\n\n**Rounding intervals:** 5 min, 10 min, 15 min, 30 min, or 60 min\n\n**Rounding directions:**\n- **Round up:** 9:07 → 9:10 (with 5-min interval)\n- **Round down:** 9:07 → 9:05\n- **Round nearest:** 9:07 → 9:05, 9:08 → 9:10\n\nRounding can be configured separately for: check-in, check-out, break start, break end. Each can have different settings."
     },
+    "attendance_second_checkin": {
+      "title": "Second check-in of the day",
+      "content": "When you check in a second time on the same day (e.g., working 2 shifts), the system handles it as follows:\n\n**Automatic break record:**\nThe system automatically creates a break record for the time between the previous shift's check-out and the new shift's check-in. This time is counted as break and deducted from working hours.\n\n**Example:**\n- Shift 1: In 8:00, Out 12:00\n- Shift 2: In 13:00, Out 17:00\n- Auto break: 12:00 - 13:00 (60 minutes)\n- Total work: 9 hours - 1 hour break = 8 hours\n\n**Notes:**\n- This automatic break record is marked separately from manual breaks\n- You can still take manual breaks within each shift"
+    },
     "breaks_how_breaks_work": {
       "title": "How breaks work",
-      "content": "The break feature allows recording rest time during work shifts.\n\n**How it works:**\n1. After checking in, press **Start Break** when you want to rest\n2. When returning to work, press **End Break**\n3. The system records break time and includes it in reports\n\n**Impact on salary:**\n- **Paid breaks:** Break time is still counted as working time\n- **Unpaid breaks:** Break time is deducted from working hours, affecting salary\n\n**Note:** Breaks only work when the company has enabled the feature in settings."
+      "content": "The break feature allows recording rest time during work shifts.\n\n**How it works:**\n1. After checking in, press **Start Break** when you want to rest\n2. When returning to work, press **End Break**\n3. The system records break time and deducts it from working hours\n\n**Impact on salary:**\nBreak time is always deducted from working hours and not paid. For example: if you work 8 hours and take a 1-hour break, your actual working hours are 7 hours.\n\n**Note:** Breaks only work when the company has enabled the feature in settings."
     },
     "breaks_start_end_break": {
       "title": "Starting and ending breaks",
       "content": "To record a break:\n\n1. Ensure you have **checked in** first\n2. Press the **Start Break** button on the attendance page\n3. The system records the break start time\n4. When returning to work, press **End Break**\n5. The system calculates total break duration\n\n**Important notes:**\n- You cannot start a break without checking in first\n- You cannot check out while on a break\n- Number of breaks per day is limited by company configuration"
     },
     "breaks_break_types": {
-      "title": "Break types",
-      "content": "The system supports 2 break types:\n\n**1. Paid breaks**\n- Rest time is still counted as working hours\n- No impact on salary\n- Typically for short mid-shift breaks (15-30 minutes)\n\n**2. Unpaid breaks**\n- Rest time is deducted from working hours\n- Directly impacts salary (less hours = less pay)\n- Typically for long lunch breaks (60+ minutes)\n\n**Example:** If hourly rate is [[hourlyRate]]/hour and unpaid break is 60 minutes, salary is reduced by [[hourlyDeduction]] for that day."
+      "title": "How break time is calculated",
+      "content": "When you take a break, that time is deducted from your working hours:\n\n**Calculation:**\n- Actual working hours = Total hours - Break time\n- Salary is calculated based on actual working hours\n\n**Example:**\n- Work from 9:00 to 18:00 (9 hours)\n- Break: 1 hour\n- Actual working hours: 9 - 1 = 8 hours\n- Salary calculated on 8 working hours\n\n**Break limit:** The company can limit the number of breaks per day (default: 3 times)."
     },
     "breaks_break_compliance": {
-      "title": "Labor law break compliance",
-      "content": "The system supports compliance with labor law break requirements:\n\n**Vietnam labor law:**\n- 8 continuous working hours: minimum 30-minute break\n- Night shift (22:00-06:00): minimum 45-minute break\n\n**Japan labor law:**\n- Over 6 working hours: minimum 45-minute break\n- Over 8 working hours: minimum 60-minute break\n\nThe system can automatically apply minimum break times based on locale (vi/ja) if *Use legal minimum* is enabled in settings."
+      "title": "Default break duration",
+      "content": "The company can configure default break duration for employees:\n\n**Default duration:** Default break minutes per session (e.g., 60 minutes)\n\n**Max breaks/day:** Daily break count limit (e.g., 3 times)\n\n**Note:** Actual break time is calculated from when you press Start Break to End Break, regardless of the default duration."
     },
     "breaks_break_adjustment": {
-      "title": "Fixed and flexible break modes",
-      "content": "Companies can configure breaks in 2 modes:\n\n**Fixed mode:**\n- Break times are predetermined (e.g., 12:00-13:00)\n- Employees must take breaks at specified times\n- Suitable for companies with strict break schedules\n\n**Flexible mode:**\n- Employees choose when to take breaks\n- Just need to meet total break time requirements\n- Suitable for companies with flexible work culture\n\n**Night shifts:** The system has separate configuration for night shifts (22:00-05:00) with different minimum and default break times."
+      "title": "Break adjustment",
+      "content": "If you forgot to record a break or need an adjustment:\n\n**Employees:** Contact your manager to request a break time adjustment.\n\n**Managers:** Can adjust break times when editing an employee's attendance record.\n\n**Note:** When checking in for the next shift (multiple shifts per day), the system automatically creates a break record for the time between shifts."
     },
     "shifts_overview": {
       "title": "What are work shifts",
@@ -131,7 +133,7 @@
     },
     "shifts_assign_shifts": {
       "title": "Assign shifts to employees",
-      "content": "To assign shifts:\n\n1. Go to **Shifts** > **Assignments**\n2. Select employees and shift template\n3. Select date or date range\n4. Press **Assign**\n\n**Batch assignment:** You can select multiple employees at once and assign shifts for a date range. The system will automatically create assignments for each day.\n\n**Notes:**\n- Each employee can only be assigned 1 shift per day\n- You can batch delete assignments by employee and date range"
+      "content": "To assign shifts:\n\n1. Go to **Shifts** > **Assignments**\n2. Select employees and shift template\n3. Select date or date range\n4. Press **Assign**\n\n**Batch assignment:** You can select multiple employees at once and assign shifts for a date range. The system will automatically create assignments for each day.\n\n**Notes:**\n- Each employee can have multiple shifts per day as long as the times do not overlap\n- You can batch delete assignments by employee and date range"
     },
     "shifts_approve_swaps": {
       "title": "Approve shift swap requests",
@@ -161,21 +163,29 @@
       "title": "Salary components",
       "content": "Your salary consists of:\n\n- **Base salary**: Salary per contract (monthly, daily, hourly, or shift-based)\n- **Allowances**: Additional benefits (lunch, transport, phone, housing...)\n- **Deductions**: Social insurance, income tax, and other deductions\n- **Overtime**: Overtime pay calculated with multipliers (x1.25, x1.5...)\n- **Unpaid breaks**: Unpaid break time deducted from salary\n- **Net pay**: Actual amount received after all calculations\n\n**Formula:** Net pay = Base salary + Allowances - Deductions + Overtime - Unpaid breaks"
     },
+    "payroll_salary_types": {
+      "title": "Salary types and calculation",
+      "content": "The system supports 4 salary types:\n\n**1. Monthly (MONTHLY)**\n- Fixed monthly salary\n- If working hours fall short of the standard, the system automatically deducts the shortfall\n- Payslip shows: Base Salary, Working Hours Shortfall (if any)\n\n**2. Hourly (HOURLY)**\n- Salary = Actual working hours x Rate/Hour\n- No shortfall deduction (pay is based on actual hours worked)\n- Payslip shows: Hourly Pay, Rate/Hour\n\n**3. Daily (DAILY)**\n- Salary = Actual working days x Rate/Day\n- No shortfall deduction\n- Payslip shows: Daily Pay, Rate/Day\n\n**4. Shift-based (SHIFT_BASED)**\n- Salary = Actual shifts worked x Rate/Shift\n- No shortfall deduction\n- Payslip shows: Shift Pay, Rate/Shift\n\n**Note:** Only 1 salary type applies per employee for the entire payroll period. The system uses the configuration effective at the period end date."
+    },
     "payroll_overtime_calculation": {
       "title": "Overtime calculation",
       "content": "Overtime is calculated when employees work beyond standard hours:\n\n**Overtime multipliers:**\n- **Regular overtime:** x1.25 (extra hours on normal days)\n- **Night work:** x1.25 (working 22:00-05:00)\n- **Night overtime:** x1.50 (overtime during night hours)\n- **Holiday overtime:** x1.35 (extra hours on holidays)\n- **Holiday night overtime:** x1.60 (night overtime on holidays)\n\n**Example:** Hourly rate [[hourlyRate]], regular overtime 2 hours = [[overtimeResult]]\n\n**Note:** Overtime multipliers can be customized by the company. The system also supports applying legal minimums per Vietnam or Japan labor law."
     },
     "payroll_break_deduction": {
       "title": "Break deduction from salary",
-      "content": "If the company configures breaks as **unpaid**, break time is deducted from salary:\n\n**Calculation:**\n- System totals all unpaid break time for the month\n- Converts to hours and deducts from total working hours\n- Salary is reduced accordingly\n\n**Example:**\n- Monthly salary: [[monthlySalary]] (22 days, 8 hours/day = 176 hours)\n- Hourly rate: [[monthlyHourly]]/hour\n- Unpaid breaks: 60 min/day x 22 days = 22 hours\n- Deduction: [[breakDeduction]]\n\n**If breaks are paid:** No salary deduction, break time counts as working hours."
+      "content": "Break time is always deducted from working hours and affects salary:\n\n**Calculation:**\n- System totals all break time for the month\n- Converts to hours and deducts from total working hours\n- Salary is calculated based on actual working hours (after break deduction)\n\n**Example:**\n- Monthly salary: [[monthlySalary]] (22 days, 8 hours/day = 176 hours)\n- Hourly rate: [[monthlyHourly]]/hour\n- Breaks: 60 min/day x 22 days = 22 hours\n- Deduction: [[breakDeduction]]"
     },
     "profile_update_profile": {
       "title": "Update personal information",
       "content": "To update your profile:\n\n1. Click on your **avatar** in the top right corner\n2. Select **Personal Profile**\n3. Update the necessary information\n4. Press **Save**\n\nYou can update: *name*, *phone number*, *address*, *avatar*, and *emergency contact information*."
     },
+    "profile_change_password": {
+      "title": "Change password",
+      "content": "When your account is first created, you receive a default password from your manager. Please change it immediately to secure your account.\n\n## How to change your password\n\n**On Desktop:**\n1. Click on your **avatar** at the bottom of the sidebar on the left\n2. Select **Settings** from the menu\n3. In the Settings dialog, click **Change Password**\n4. Enter your current password and new password\n5. Press **Save**\n\n**On Mobile:**\n1. Tap on your **avatar** in the top right corner\n2. Select **Settings** from the dropdown menu\n3. Tap **Change Password**\n4. Enter your current password and new password\n5. Press **Save**\n\n## Forgot your password?\n\nIf you forgot your password, click **Forgot Password** on the login page to receive a password reset link via email.\n\n**Note:** Password must be at least 8 characters."
+    },
     "profile_change_language": {
       "title": "Change language",
-      "content": "The system supports 3 languages: Tiếng Việt, English, 日本語.\n\nTo change the language:\n\n1. Click on your **avatar** in the top right corner\n2. Select the desired language from the menu\n\nThe system will automatically switch the entire interface to the selected language."
+      "content": "The system supports 3 languages: Tiếng Việt, English, 日本語.\n\n**On Desktop:**\n1. Click on your **avatar** at the bottom of the sidebar on the left\n2. Select **Settings** from the menu\n3. In the Settings dialog, choose your preferred language\n\n**On Mobile:**\n1. Tap on your **avatar** in the top right corner\n2. Select **Settings** from the dropdown menu\n3. In the Settings dialog, choose your preferred language\n\nThe system will automatically switch the entire interface to the selected language."
     },
     "profile_bank_info": {
       "title": "Update bank information",
@@ -191,7 +201,7 @@
     },
     "employee_management_salary_config": {
       "title": "Configure employee salary",
-      "content": "After creating a contract, configure salary:\n\n1. Go to **Employee Management** > select employee\n2. Select the **Salary** tab\n3. Choose salary type: Monthly, Daily, Hourly, Shift-based\n4. Enter base salary amount\n5. Press **Save**\n\n**Salary type affects calculation:**\n- **Monthly:** Fixed salary, deducted for unauthorized absences\n- **Daily:** Salary = working days x daily rate\n- **Hourly:** Salary = working hours x hourly rate\n- **Shift-based:** Salary = shifts worked x shift rate"
+      "content": "After creating a contract, configure salary:\n\n1. Go to **Employee Management** > select employee\n2. Select the **Salary** tab\n3. Choose salary type: Monthly, Daily, Hourly, Shift-based\n4. Enter base salary amount\n5. Press **Save**\n\n**Salary type affects calculation:**\n- **Monthly:** Fixed salary, deducted for unauthorized absences\n- **Daily:** Salary = working days x daily rate\n- **Hourly:** Salary = working hours x hourly rate\n- **Shift-based:** Salary = shifts worked x shift rate\n\n**Important note about payroll periods:**\n- When calculating payroll, the system uses the salary configuration effective at the **period end date**\n- Only **1 salary type** applies per employee for the entire period\n- If salary type is changed mid-period (e.g., from monthly to hourly), the latest configuration applies to the entire period\n- **Recommendation:** Set the effective date to the start of the next pay period, or use **Salary Adjustment** to compensate for differences"
     },
     "employee_management_allowance_deduction": {
       "title": "Allowances and deductions",
@@ -215,7 +225,7 @@
     },
     "company_settings_break_settings": {
       "title": "Break settings",
-      "content": "To configure breaks:\n\n1. Go to **Settings** > **Breaks** tab\n2. Enable/disable break feature\n3. Configure:\n- **Break type:** paid or unpaid\n- **Default duration:** Default break minutes\n- **Min/max duration:** Break time limits\n- **Max breaks/day:** Daily break count limit\n- **Fixed mode:** Enable for predetermined break schedules\n- **Legal compliance:** Enable to apply legal minimum break times\n- **Night shift:** Separate configuration for night shifts (22:00-05:00)\n4. Press **Save**"
+      "content": "To configure breaks:\n\n1. Go to **Settings** > **Breaks** tab\n2. Enable/disable break feature\n3. Configure:\n- **Default duration:** Default break minutes\n- **Max breaks/day:** Daily break count limit\n4. Press **Save**\n\nWhen employees take breaks, that time is deducted from working hours and not paid."
     },
     "company_settings_overtime_settings": {
       "title": "Overtime settings",
@@ -224,6 +234,18 @@
     "company_settings_payroll_settings": {
       "title": "Payroll settings",
       "content": "To configure payroll policies:\n\n1. Go to **Settings** > **Payroll** tab\n2. Configure:\n- **Pay day:** Day of month for salary payment (e.g., 25th)\n- **Cutoff day:** Day to finalize attendance data (e.g., 20th)\n- **Default salary type:** monthly, daily, hourly, or shift-based\n- **Standard working days/month:** Used for daily salary calculation\n- **Standard working hours/day:** Used for hourly salary calculation\n- **Salary rounding:** Rounding direction for salary calculation\n3. Press **Save**"
+    },
+    "company_settings_rounding_settings": {
+      "title": "Time rounding settings",
+      "content": "To configure time rounding rules:\n\n1. Go to **Settings** > **Attendance** tab > **Time Rounding** section\n2. Enable/disable rounding for each type:\n- **Check-in:** Round check-in time\n- **Check-out:** Round check-out time\n- **Break Start:** Round break start time\n- **Break End:** Round break end time\n3. Select rounding interval: 5 min, 10 min, 15 min, 30 min, or 60 min\n4. Select rounding direction: Up, Down, or Nearest\n5. Press **Save**\n\n**Example:** With 15-min interval, nearest direction:\n- 9:07 → 9:00 (closer to 9:00)\n- 9:08 → 9:15 (closer to 9:15)\n\n**Note:** Each time type can have different rounding settings. For example: check-in rounds up, check-out rounds down."
+    },
+    "company_settings_location_settings": {
+      "title": "Attendance location settings",
+      "content": "To manage GPS attendance locations:\n\n1. Go to **Settings** > **Attendance** tab > **Attendance Locations** section\n2. Press **Add Location** to create a new location\n3. Enter details:\n- **Location name:** e.g., Main Office, Branch A\n- **Address:** Full address\n- **GPS coordinates:** Latitude and longitude (from Google Maps)\n- **Allowed radius:** Maximum distance (meters) for check-in\n- **Status:** Enable/disable location\n4. Press **Save**\n\n**How to get coordinates from Google Maps:**\n1. Open Google Maps (maps.google.com)\n2. Search for the company address\n3. Right-click on the exact location\n4. Click the coordinates to copy\n5. Paste the first number into Latitude, the second into Longitude\n\n**Note:** If no specific locations are added, the system allows check-in from anywhere (GPS is only required to be enabled). The default radius in attendance settings is a suggested value when creating new locations."
+    },
+    "company_settings_allowance_deduction_settings": {
+      "title": "Allowance & deduction settings",
+      "content": "To manage allowance and deduction templates:\n\n1. Go to **Settings** > **Allowance & Deduction** tab\n2. Create allowance or deduction templates\n3. Enter template name (code is auto-generated when saved)\n4. Press **Save**\n\n**Allowances:** Additional amounts added to salary (lunch, transport, phone, housing...)\n\n**Deductions:** Amounts subtracted from salary (social insurance, income tax...)\n\n**Usage:** After creating templates here, you can apply them to individual employees at Employee Management > Salary tab.\n\n**Note:** Deleting a template will also remove the allowance/deduction from all employees currently using that template."
     },
     "company_settings_department_settings": {
       "title": "Department management",
@@ -266,11 +288,16 @@
     "empty": "No feedback yet",
     "emptyHint": "You haven't submitted any feedback yet. Send feedback to help us improve!",
     "detail": "Feedback Detail",
-    "replies": "Replies from Tamabee",
-    "noReplies": "No replies yet",
+    "replies": "Conversation",
+    "noReplies": "No messages yet",
     "noRepliesHint": "Tamabee will respond as soon as possible",
     "status": "Status",
     "createdAt": "Submitted at",
-    "repliedBy": "Replied by"
+    "repliedBy": "Replied by",
+    "replyPlaceholder": "Type a message...",
+    "sendReply": "Send",
+    "sendingReply": "Sending...",
+    "replySent": "Message sent",
+    "you": "You"
   }
 }

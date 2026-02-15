@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { InfoPanel } from "@/components/ui/info-panel";
+import { HelpLink } from "@/components/ui/help-link";
 import {
   InputGroup,
   InputGroupAddon,
@@ -407,15 +407,10 @@ export function OvertimeConfigForm({
                   </Select>
                 </div>
 
-                {/* Info panel */}
-                <InfoPanel
-                  title={tCommon("viewExplanation")}
-                  items={[
-                    {
-                      label: t("overtime.useLegalMinimum"),
-                      description: t("overtime.useLegalMinimumTooltip"),
-                    },
-                  ]}
+                {/* Link đến help */}
+                <HelpLink
+                  topic="company_settings"
+                  article="overtime_settings"
                 />
 
                 {/* Bảng hệ số */}

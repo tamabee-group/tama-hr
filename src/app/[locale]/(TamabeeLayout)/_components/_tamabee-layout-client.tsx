@@ -9,6 +9,7 @@ import { SidebarLogo } from "@/app/[locale]/_components/_logo";
 import { useAuth } from "@/hooks/use-auth";
 import { ADMIN_MENU_ITEMS, type MenuItem } from "@/constants/menu-items";
 import { filterMenuItems } from "@/lib/utils/filter-menu-items";
+import { useAdminPendingCounts } from "@/hooks/use-admin-pending-counts";
 import type {
   SidebarGroup,
   SidebarHeaderConfig,
@@ -27,11 +28,13 @@ import { LifeBuoy, User } from "lucide-react";
 function convertMenuItem(
   item: MenuItem,
   t: ReturnType<typeof useTranslations>,
+  badgeCounts?: Record<string, number>,
 ): SidebarItem {
   const sidebarItem: SidebarItem = {
     title: t(item.labelKey),
     url: item.href,
     icon: <item.icon className="h-4 w-4" />,
+    badgeCount: badgeCounts?.[item.code],
   };
 
   // Chuyển đổi children thành sub-items
@@ -51,6 +54,7 @@ function convertMenuItem(
 function convertToSidebarGroups(
   items: MenuItem[],
   t: ReturnType<typeof useTranslations>,
+  badgeCounts?: Record<string, number>,
 ): SidebarGroup[] {
   // Nhóm items theo category
   const platformItems = items.filter((item) =>
@@ -72,21 +76,21 @@ function convertToSidebarGroups(
   if (platformItems.length > 0) {
     groups.push({
       label: t("sidebar.groups.management"),
-      items: platformItems.map((item) => convertMenuItem(item, t)),
+      items: platformItems.map((item) => convertMenuItem(item, t, badgeCounts)),
     });
   }
 
   if (financeItems.length > 0) {
     groups.push({
       label: t("sidebar.groups.finance"),
-      items: financeItems.map((item) => convertMenuItem(item, t)),
+      items: financeItems.map((item) => convertMenuItem(item, t, badgeCounts)),
     });
   }
 
   if (systemItems.length > 0) {
     groups.push({
       label: t("sidebar.groups.system"),
-      items: systemItems.map((item) => convertMenuItem(item, t)),
+      items: systemItems.map((item) => convertMenuItem(item, t, badgeCounts)),
     });
   }
 
@@ -143,6 +147,17 @@ const headerConfig: HeaderConfig = {
     "/admin/system-notifications/": "systemNotifications.title",
     "/admin/feedbacks/": "feedbacks.title",
   },
+  helpMapping: {
+    "/admin/companies": {
+      topic: "platform_admin",
+      article: "manage_companies",
+    },
+    "/admin/deposits": {
+      topic: "platform_admin",
+      article: "deposit_management",
+    },
+    "/admin/plans": { topic: "platform_admin", article: "plan_management" },
+  },
 };
 
 /**
@@ -157,6 +172,7 @@ export function TamabeeLayoutClient({
   const router = useRouter();
   const { user, status } = useAuth();
   const t = useTranslations();
+  const adminCounts = useAdminPendingCounts();
 
   // Kiểm tra quyền truy cập
   useEffect(() => {
@@ -188,7 +204,11 @@ export function TamabeeLayoutClient({
 
   // Filter menu items theo role
   const filteredItems = filterMenuItems(ADMIN_MENU_ITEMS, user.role);
-  const sidebarGroups = convertToSidebarGroups(filteredItems, t);
+  const badgeCounts: Record<string, number> = {
+    deposits: adminCounts.pendingDeposits,
+    feedbacks: adminCounts.openFeedbacks,
+  };
+  const sidebarGroups = convertToSidebarGroups(filteredItems, t, badgeCounts);
 
   return (
     <div className="flex flex-col justify-center">

@@ -7,6 +7,8 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -438,6 +440,14 @@ export function SalaryConfigFormDialog({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Ghi chú về loại lương và kỳ lương */}
+            <Alert className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-xs text-blue-800 dark:text-blue-300">
+                {t("salaryTypeNote")}
+              </AlertDescription>
+            </Alert>
 
             {/* Amount */}
             <div className="space-y-2">

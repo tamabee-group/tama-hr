@@ -161,7 +161,7 @@ export function NotificationBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="relative top-0.5 mr-6 p-2 rounded-full hover:bg-accent transition-colors cursor-pointer"
+          className="relative top-0.5 mr-4 p-2 rounded-full hover:bg-accent transition-colors cursor-pointer"
           aria-label={t("title")}
         >
           <Bell

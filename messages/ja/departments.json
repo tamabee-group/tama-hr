@@ -15,7 +15,8 @@
     "description": "説明",
     "parent": "親部署",
     "manager": "管理者",
-    "employeeCount": "社員数"
+    "employeeCount": "社員数",
+    "employeeUnit": "名"
   },
   "placeholders": {
     "name": "部署名を入力",

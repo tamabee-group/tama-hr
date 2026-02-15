@@ -25,6 +25,7 @@
   "typeShiftBased": "Shift-Based",
   "salaryType": "Salary Type",
   "salaryTypePlaceholder": "Select salary type...",
+  "salaryTypeNote": "When calculating payroll, the system uses the salary configuration effective at the period end date. Only one salary type applies per employee for the entire period. If changing salary type mid-period, set the effective date to the start of the next pay period, or use Salary Adjustment to compensate.",
   "monthlySalary": "Monthly Salary",
   "monthlySalaryPlaceholder": "Enter monthly salary...",
   "dailyRate": "Daily Rate",

@@ -23,6 +23,7 @@ import {
 
 import { AttendanceLocation } from "@/types/attendance-config";
 import { attendanceLocationApi } from "@/lib/apis/attendance-location-api";
+import { HelpLink } from "@/components/ui/help-link";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 
 // ============================================
@@ -201,6 +202,7 @@ export function LocationManagementSection({
           showPagination={false}
           noResultsText={t("locations.noData")}
         />
+        <HelpLink topic="company_settings" article="location_settings" />
       </GlassSection>
 
       {/* Dialog xác nhận xóa */}

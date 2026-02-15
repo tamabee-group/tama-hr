@@ -30,7 +30,7 @@
     "commissions": "Hoa hồng",
     "billing": "Thanh toán",
     "settings": "Cài đặt",
-    "companySettings": "Thiết lập quy định",
+    "companySettings": "Cài đặt công ty",
     "company": "Công ty",
     "companyInfo": "Thông tin công ty",
     "support": "Hỗ trợ",
@@ -64,6 +64,7 @@
     "myPortal": "Trang cá nhân",
     "customerSupport": "Hỗ trợ khách hàng",
     "systemNotifications": "Thông báo hệ thống",
-    "feedbacks": "Phản hồi"
+    "feedbacks": "Phản hồi",
+    "helpCenter": "Trung tâm hỗ trợ"
   }
 }

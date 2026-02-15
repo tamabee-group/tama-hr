@@ -7,7 +7,7 @@
   "unread": "Chưa xem",
   "codes": {
     "WELCOME_COMPANY": "Chào mừng {companyName} đến với Tamabee HR!",
-    "WELCOME_EMPLOYEE": "Chào mừng bạn đến với {companyName}!",
+    "WELCOME_EMPLOYEE": "Chào mừng bạn đến với {companyName}! Hãy đổi mật khẩu ngay để bảo mật tài khoản.",
     "PAYROLL_PERIOD_CREATED": "Kỳ lương {periodName} đã được tạo",
     "PAYROLL_CONFIRMED": "Phiếu lương tháng {month}/{year} đã được xác nhận",
     "PAYROLL_SUBMITTED": "Kỳ lương tháng {month}/{year} đã được gửi duyệt",

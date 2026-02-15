@@ -23,6 +23,12 @@
     "workingHours": "Working Hours",
     "overtimeHours": "Overtime Hours",
     "baseSalary": "Base Salary",
+    "hourlySalary": "Hourly Pay",
+    "dailySalary": "Daily Pay",
+    "shiftSalary": "Shift Pay",
+    "hourlyRate": "Rate/Hour",
+    "dailyRate": "Rate/Day",
+    "shiftRate": "Rate/Shift",
     "allowance": "Allowance",
     "overtimePay": "Overtime Pay",
     "total": "Total",
@@ -104,6 +110,7 @@
     "paymentStatus": "Payment",
     "paidAt": "Paid At",
     "salaryType": "Salary Type",
+    "calculatedSalary": "Calculated Salary",
     "workingDays": "Working Days"
   },
   "summary": {

@@ -23,6 +23,12 @@
     "workingHours": "Giờ công",
     "overtimeHours": "Giờ tăng ca",
     "baseSalary": "Lương cơ bản",
+    "hourlySalary": "Lương giờ",
+    "dailySalary": "Lương ngày",
+    "shiftSalary": "Lương ca",
+    "hourlyRate": "Mức lương/giờ",
+    "dailyRate": "Mức lương/ngày",
+    "shiftRate": "Mức lương/ca",
     "allowance": "Phụ cấp",
     "overtimePay": "Lương tăng ca",
     "total": "Tổng",
@@ -104,6 +110,7 @@
     "paymentStatus": "Thanh toán",
     "paidAt": "Ngày thanh toán",
     "salaryType": "Loại lương",
+    "calculatedSalary": "Lương tính toán",
     "workingDays": "Ngày công"
   },
   "summary": {

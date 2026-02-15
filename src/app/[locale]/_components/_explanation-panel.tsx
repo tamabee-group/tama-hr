@@ -13,6 +13,7 @@ interface ExplanationPanelProps {
   title: string;
   description: string;
   tips?: string[];
+  tipsLabel?: string;
   defaultCollapsed?: boolean;
   className?: string;
 }
@@ -26,6 +27,7 @@ export function ExplanationPanel({
   title,
   description,
   tips,
+  tipsLabel = "Tips",
   defaultCollapsed = false,
   className,
 }: ExplanationPanelProps) {
@@ -57,7 +59,7 @@ export function ExplanationPanel({
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Lightbulb className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm font-medium">Tips</span>
+                  <span className="text-sm font-medium">{tipsLabel}</span>
                 </div>
                 <ul className="space-y-1 pl-6">
                   {tips.map((tip, index) => (

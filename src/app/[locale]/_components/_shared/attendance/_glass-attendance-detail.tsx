@@ -221,7 +221,9 @@ export function GlassAttendanceDetail({
                     locale,
                   })}
                   valueColor={
-                    record.overtimeMinutes > 0 ? "text-blue-600" : undefined
+                    record.overtimeMinutes > 0
+                      ? "text-blue-600 dark:text-blue-400"
+                      : undefined
                   }
                 />
                 <StatGlassCard
@@ -239,8 +241,8 @@ export function GlassAttendanceDetail({
                   })}
                   valueColor={
                     record.netWorkingMinutes < 0
-                      ? "text-red-600"
-                      : "text-green-600"
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-green-600 dark:text-green-400"
                   }
                 />
               </div>
@@ -252,7 +254,7 @@ export function GlassAttendanceDetail({
                     icon={<Moon className="h-4 w-4" />}
                     label={t("table.nightHours")}
                     value={formatMinutesToTime(record.nightMinutes, { locale })}
-                    valueColor="text-indigo-600"
+                    valueColor="text-indigo-600 dark:text-indigo-400"
                   />
                   <StatGlassCard
                     icon={<Moon className="h-4 w-4" />}
@@ -260,7 +262,7 @@ export function GlassAttendanceDetail({
                     value={formatMinutesToTime(record.nightOvertimeMinutes, {
                       locale,
                     })}
-                    valueColor="text-purple-600"
+                    valueColor="text-purple-600 dark:text-purple-400"
                   />
                 </div>
               )}
@@ -355,10 +357,12 @@ function TimeCard({
 }: TimeCardProps) {
   const isIn = type === "in";
   const Icon = isIn ? LogIn : LogOut;
-  const iconColor = isIn ? "text-green-600" : "text-red-600";
+  const iconColor = isIn
+    ? "text-green-600 dark:text-green-400"
+    : "text-red-600 dark:text-red-400";
   const bgGradient = isIn
-    ? "from-green-500/20 to-emerald-500/10"
-    : "from-red-500/20 to-orange-500/10";
+    ? "from-green-500/20 to-emerald-500/10 dark:from-green-500/10 dark:to-emerald-500/5"
+    : "from-red-500/20 to-orange-500/10 dark:from-red-500/10 dark:to-orange-500/5";
 
   return (
     <GlassCard className={`p-4 lg:p-5 bg-linear-to-br ${bgGradient}`}>
@@ -371,7 +375,7 @@ function TimeCard({
         </span>
       </div>
 
-      <p className="text-3xl lg:text-4xl font-bold tabular-nums">
+      <p className="text-3xl lg:text-4xl font-bold tabular-nums text-foreground">
         {time ? formatTime(time) : "--:--"}
       </p>
 
@@ -382,7 +386,7 @@ function TimeCard({
       )}
 
       {warningMinutes > 0 && (
-        <div className="flex items-center gap-1 mt-2 text-xs text-orange-600">
+        <div className="flex items-center gap-1 mt-2 text-xs text-orange-600 dark:text-orange-400">
           <AlertTriangle className="h-3 w-3" />
           <span>
             {warningLabel}: {formatMinutesToTime(warningMinutes, { locale })}
@@ -412,7 +416,7 @@ function StatGlassCard({ icon, label, value, valueColor }: StatGlassCardProps) {
         <span className="text-xs lg:text-sm">{label}</span>
       </div>
       <p
-        className={`text-xl lg:text-2xl font-semibold tabular-nums ${valueColor || ""}`}
+        className={`text-xl lg:text-2xl font-semibold tabular-nums ${valueColor || "text-foreground"}`}
       >
         {value || "--:--"}
       </p>
@@ -453,8 +457,8 @@ function BreakRecordsCard({
             variant="outline"
             className={
               isCompliant
-                ? "text-green-600 border-green-300 bg-green-50/50"
-                : "text-orange-600 border-orange-300 bg-orange-50/50"
+                ? "text-green-700 border-green-300 bg-green-50/50 dark:text-green-400 dark:border-green-700 dark:bg-green-950/30"
+                : "text-orange-700 border-orange-300 bg-orange-50/50 dark:text-orange-400 dark:border-orange-700 dark:bg-orange-950/30"
             }
           >
             {isCompliant ? t("breakCompliant") : t("breakNonCompliant")}
@@ -478,7 +482,7 @@ function BreakRecordsCard({
                   <div className="flex items-center justify-center w-6 h-6 lg:w-7 lg:h-7 rounded-full text-xs font-medium bg-primary/10 text-primary">
                     {record.breakNumber}
                   </div>
-                  <span className="text-sm tabular-nums">
+                  <span className="text-sm tabular-nums text-foreground">
                     {record.breakStart
                       ? formatTime(record.breakStart)
                       : "--:--"}
@@ -486,18 +490,20 @@ function BreakRecordsCard({
                     {record.breakEnd ? formatTime(record.breakEnd) : "..."}
                   </span>
                 </div>
-                <span className="text-sm font-medium tabular-nums">
+                <span className="text-sm font-medium tabular-nums text-foreground">
                   {record.actualBreakMinutes || 0}分
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-white/20">
+          <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-white/20 dark:border-white/10">
             <span className="text-muted-foreground">
               {t("editDialog.totalBreak")}
             </span>
-            <span className="font-semibold">{totalBreakMinutes}分</span>
+            <span className="font-semibold text-foreground">
+              {totalBreakMinutes}分
+            </span>
           </div>
         </>
       )}
@@ -615,8 +621,8 @@ function AdjustmentHistoryCard({
                 variant="outline"
                 className={
                   request.status === "APPROVED"
-                    ? "text-green-600 border-green-300 bg-green-50/50"
-                    : "text-red-600 border-red-300 bg-red-50/50"
+                    ? "text-green-700 border-green-300 bg-green-50/50 dark:text-green-400 dark:border-green-700 dark:bg-green-950/30"
+                    : "text-red-700 border-red-300 bg-red-50/50 dark:text-red-400 dark:border-red-700 dark:bg-red-950/30"
                 }
               >
                 {request.status === "APPROVED"
@@ -637,9 +643,9 @@ function AdjustmentHistoryCard({
         .map((request) => (
           <div
             key={`rejection-${request.id}`}
-            className="mt-3 p-3 rounded-xl bg-red-50/50 dark:bg-red-900/10 border border-red-200/50"
+            className="mt-3 p-3 rounded-xl bg-red-50/50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-800/30"
           >
-            <p className="text-xs text-red-600 font-medium mb-1">
+            <p className="text-xs text-red-600 dark:text-red-400 font-medium mb-1">
               {t("adjustment.rejectionReason")}:
             </p>
             <p className="text-sm text-red-700 dark:text-red-400">

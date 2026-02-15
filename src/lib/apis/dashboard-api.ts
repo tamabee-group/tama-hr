@@ -59,3 +59,16 @@ export interface PendingCounts {
 export async function getPendingCounts(): Promise<PendingCounts> {
   return apiClient.get<PendingCounts>("/api/company/dashboard/pending-counts");
 }
+
+export interface AdminPendingCounts {
+  pendingDeposits: number;
+  openFeedbacks: number;
+}
+
+/**
+ * Lấy số yêu cầu chờ xử lý cho admin sidebar badge
+ * @client-only
+ */
+export async function getAdminPendingCounts(): Promise<AdminPendingCounts> {
+  return apiClient.get<AdminPendingCounts>("/api/admin/pending-counts");
+}

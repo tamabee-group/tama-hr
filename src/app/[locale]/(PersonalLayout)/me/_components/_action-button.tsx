@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatTime } from "@/lib/utils/format-date-time";
 import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 // ============================================
 // Types
@@ -17,6 +17,7 @@ export interface ActionButtonProps {
   state: { active: boolean; completed: boolean };
   onClick: () => void;
   isSubmitting: boolean;
+  isAnySubmitting?: boolean;
   variant: "success" | "warning" | "info" | "destructive";
 }
 
@@ -66,6 +67,7 @@ export function ActionButton({
   state,
   onClick,
   isSubmitting,
+  isAnySubmitting = false,
   variant,
 }: ActionButtonProps) {
   const { active, completed } = state;
@@ -83,14 +85,10 @@ export function ActionButton({
             : disabledStyle,
       )}
       onClick={onClick}
-      disabled={!active || isSubmitting}
+      disabled={!active || isAnySubmitting}
     >
       <span className="flex items-center gap-3">
-        {isSubmitting && active ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
-        ) : (
-          icon
-        )}
+        {isSubmitting ? <Spinner className="h-5 w-5 animate-spin" /> : icon}
         <span className="font-medium">{label}</span>
       </span>
       {time && (

@@ -20,6 +20,7 @@ import {
   Bell,
   MessageSquare,
   LifeBuoy,
+  CircleQuestionMark,
 } from "lucide-react";
 import type { UserRole } from "@/types/enums";
 
@@ -163,6 +164,12 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     href: "/admin/settings",
     roles: ["ADMIN_TAMABEE"],
   },
+  {
+    code: "help-center",
+    labelKey: "sidebar.items.helpCenter",
+    icon: CircleQuestionMark,
+    href: "/me/help",
+  },
 ];
 // ============================================================================
 // SUPPORT MENU (SupportLayout - /support/*)
@@ -193,6 +200,12 @@ export const SUPPORT_MENU_ITEMS: MenuItem[] = [
     labelKey: "navigation.feedbacks",
     icon: MessageSquare,
     href: "/support/feedbacks",
+  },
+  {
+    code: "help-center",
+    labelKey: "navigation.helpCenter",
+    icon: CircleQuestionMark,
+    href: "/me/help",
   },
 ];
 
@@ -417,6 +430,12 @@ export const DASHBOARD_MENU_GROUPS: MenuGroup[] = [
         labelKey: "sidebar.items.myPortal",
         icon: User,
         href: "/me",
+      },
+      {
+        code: "help-center",
+        labelKey: "sidebar.items.helpCenter",
+        icon: CircleQuestionMark,
+        href: "/me/help",
       },
     ],
   },
